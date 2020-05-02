@@ -1,0 +1,5 @@
+ChangeLog.
+
+Caerus 0.0.1-SNAPSHOT - 02/05/2020
+- Correction du probléme d'affichage sur les fenêtre (taille démesuré)
+- Ajout de la prise en charge des corrections sur les données meta du corpus

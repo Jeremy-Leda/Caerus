@@ -76,7 +76,7 @@ public class FilePickerPanel implements IFilePickerPanel {
 	 * Permet d'activer l'affichage de la fenêtre pour choisir le fichier
 	 */
 	private void buttonActionPerformed() {
-        if (fileChooser.showOpenDialog(getJPanel()) == JFileChooser.APPROVE_OPTION) {
+        if (fileChooser.showSaveDialog(getJPanel()) == JFileChooser.APPROVE_OPTION) {
         	String absolutePath = fileChooser.getSelectedFile().getAbsolutePath();
         	String extension = FilenameUtils.getExtension(absolutePath);
         	if (!"xls".equals(extension)) {

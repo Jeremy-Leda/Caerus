@@ -3,3 +3,9 @@ ChangeLog.
 Caerus 0.0.1-SNAPSHOT - 02/05/2020
 - Correction du probléme d'affichage sur les fenêtre (taille démesuré)
 - Ajout de la prise en charge des corrections sur les données meta du corpus
+
+Caerus 0.0.1-SNAPSHOT - 03/05/2020
+- Ajout des numéro de ligne et du fichier traité pour la correction des balises erroné (traitement 1)
+- Corrections des anomalies sur la prise en charge du chargement de plusieurs fichiers .txt pour analyse et correction
+- Améliorations de la détection des erreurs de balises (pas de [ en début de ligne)
+- Modifications de la fenêtre pour sélectionner le fichier à enregistrer (remplacement de ouvrir par enregistrer)

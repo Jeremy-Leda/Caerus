@@ -124,6 +124,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	private void updateContentWithNextError() {
 		getControler().loadNextErrorBlankLine();
 		this.contentPanel.refreshComponents(getControler().getConfigurationFieldCommonFile());
+		refreshFilePanel();
 	}
 
 	/**

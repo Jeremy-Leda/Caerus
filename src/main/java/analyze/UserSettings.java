@@ -162,6 +162,23 @@ public class UserSettings {
 	public Boolean haveMetaBlankLineError() {
 		return !this.KEYS_META_BLANK_LINE_ERROR_LIST.isEmpty();
 	}
+	
+	/**
+	 * Permet de savoir si il reste des ligne vides dans les balises meta
+	 * 
+	 * @return Vrai si il y a des ligne vides dans les balises meta
+	 */
+	public Boolean haveMetaBlankLineInErrorRemaining() {
+		return !getKeysMetaBlankLineErrorList().isEmpty();
+	}
+	
+	/**
+	 * Permet de savoir le nombre de corpus contenant des lignes vide meta à corriger.
+	 * @return Le nombre de corpus contenant des lignes vide meta à corriger.
+	 */
+	public Integer getNbMetaBlankLineToFixed() {
+		return getKeysMetaBlankLineErrorList().size();
+	}
 
 	/**
 	 * Permet de savoir s'il y a des lignes vides en erreurs a corrigé
@@ -819,11 +836,17 @@ public class UserSettings {
 			writeLines(writer, mapFieldCommonFileToWrite);
 			writer.addBreakLine();
 		}
+		logger.debug(String.format("[FIN] writeFixedText : %s", file));
+	}
+	
+	/**
+	 * Permet de nettoyer les informations après l'enregistrement des fichiers
+	 */
+	public void clearAfterWriteFixedText() {
 		this.clearUserStructuredTextList();
 		this.clearEditingCorpus();
 		this.clearKeysStructuredTextErrorList();
 		this.editingCorpusNameFile = StringUtils.EMPTY;
-		logger.debug(String.format("[FIN] writeFixedText : %s", file));
 	}
 
 	/**

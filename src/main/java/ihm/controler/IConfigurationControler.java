@@ -12,6 +12,7 @@ import analyze.beans.Configuration;
 import analyze.beans.StructuredFile;
 import analyze.beans.StructuringError;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import ihm.beans.ErrorStructuredLine;
 
 public interface IConfigurationControler {
 
@@ -71,7 +72,7 @@ public interface IConfigurationControler {
 	
 	Integer getNbLinesError();
 	
-	String getErrorLine(Integer index);
+	ErrorStructuredLine getErrorLine(Integer index);
 	
 	void updateLineError(Integer index, String lineFixed);
 	
@@ -114,4 +115,8 @@ public interface IConfigurationControler {
 	Boolean haveMetaBlankLineError();
 	
 	void loadNextErrorMetaBlankLine();
+	
+	Boolean haveMetaBlankLineInErrorRemaining();
+	
+	Integer getNbMetaBlankLineToFixed();
 }

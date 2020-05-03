@@ -117,4 +117,8 @@ public interface IConfigurationModel {
 	Boolean haveMetaBlankLineError();
 	
 	void loadNextErrorMetaBlankLine();
+	
+	Boolean haveMetaBlankLineInErrorRemaining();
+	
+	Integer getNbMetaBlankLineToFixed();
 }

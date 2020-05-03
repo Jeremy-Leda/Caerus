@@ -61,6 +61,7 @@ public class FixedMetaBlankLine extends ModalJFrameAbstract {
 		refreshFilePanel();
 		refreshActionPanelMessage();
 		createContent();
+		this.actionPanel.addAction(0, saveAndGoToNextOrQuit());
 	}
 	
 	/**
@@ -101,9 +102,13 @@ public class FixedMetaBlankLine extends ModalJFrameAbstract {
 	 */
 	private void refreshActionPanelMessage() {
 		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
-		messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_QUIT_BUTTON_LABEL));
+		if (getControler().getNbMetaBlankLineToFixed() > 1) {
+			messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_NEXT_BUTTON_LABEL));
+		} else {
+			messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_QUIT_BUTTON_LABEL));
+		}
 		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_ACTION_PANEL_TITLE), messageButtonMap);
-		this.actionPanel.addAction(0, saveAndQuit());
+
 	}
 	
 	/**
@@ -112,6 +117,8 @@ public class FixedMetaBlankLine extends ModalJFrameAbstract {
 	private void updateContentWithNextError() {
 		getControler().loadNextErrorMetaBlankLine();
 		updateContentInformationsCorpusPanel();
+		refreshFilePanel();
+		refreshActionPanelMessage();
 	}
 	
 	
@@ -120,18 +127,22 @@ public class FixedMetaBlankLine extends ModalJFrameAbstract {
 	 * 
 	 * @return
 	 */
-	private ActionListener saveAndQuit() {
+	private ActionListener saveAndGoToNextOrQuit() {
 		return new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-					getControler().applyFixedErrorText();
+				getControler().applyFixedErrorText();
+				if (getControler().haveMetaBlankLineInErrorRemaining()) {
+					updateContentWithNextError();
+				} else {
 					try {
 						getControler().writeFixedText();
 					} catch (IOException e1) {
 						logger.error(e1.getMessage(), e1);
 					}
-					closeFrame();
+					closeFrame();					
+				}
 			}
 
 		};

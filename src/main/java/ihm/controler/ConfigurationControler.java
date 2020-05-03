@@ -19,6 +19,7 @@ import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
 import analyze.beans.StructuringError;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import ihm.beans.ErrorStructuredLine;
 import ihm.model.ConfigurationModel;
 import ihm.model.IConfigurationModel;
 
@@ -214,11 +215,12 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public String getErrorLine(Integer index) {
+	public ErrorStructuredLine getErrorLine(Integer index) {
 		if (null != index && index < getNbLinesError()) {
-			return this.configurationModel.getErrorLine(index).getLineWithError();
+			LineError errorLine = this.configurationModel.getErrorLine(index);
+			return new ErrorStructuredLine(errorLine.getPath().toString(), errorLine.getLineWithError(), errorLine.getIndex() + 1);
 		}
-		return StringUtils.EMPTY;
+		return null;
 	}
 
 	@Override
@@ -350,6 +352,16 @@ public class ConfigurationControler implements IConfigurationControler {
 		if (haveMetaBlankLineError()) {
 			this.configurationModel.loadNextErrorMetaBlankLine();
 		}
+	}
+
+	@Override
+	public Boolean haveMetaBlankLineInErrorRemaining() {
+		return this.configurationModel.haveMetaBlankLineInErrorRemaining();
+	}
+
+	@Override
+	public Integer getNbMetaBlankLineToFixed() {
+		return this.configurationModel.getNbMetaBlankLineToFixed();
 	}
 
 }

@@ -104,6 +104,7 @@ public class FixedText extends ModalJFrameAbstract {
 		getControler().loadNextErrorText();
 		this.informationsTextPanel.refreshComponents(getControler().getConfigurationFieldCommonFile());
 		this.informationsTextPanel.addKeyListenerOnAllField(getKeyListenerForIncreaseRow());
+		refreshFilePanel();
 	}
 
 	/**

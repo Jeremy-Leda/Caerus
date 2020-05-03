@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ihm.abstracts.ModalJFrameAbstract;
+import ihm.beans.ErrorStructuredLine;
 import ihm.controler.IConfigurationControler;
 import ihm.utils.ConfigurationUtils;
 import ihm.utils.Constants;
@@ -36,6 +37,8 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	private static Logger logger = LoggerFactory.getLogger(FixedErrorLine.class);
 	private final JPanel panContent = new JPanel();
 	private final JButton nextButton = new JButton();
+	private final JLabel numberLineValue = new JLabel();
+	private final JLabel pathLineValue = new JLabel();
 	private final JTextField textErrorLine = new JTextField(StringUtils.EMPTY, 30);
 	private final JTextField textFixedLine = new JTextField(StringUtils.EMPTY, 30);
 	private Integer currentIndex = 0;
@@ -50,6 +53,16 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	public void initComponents() {
 		fillTextWithErrorAndRefreshDisplay();
 		panContent.setLayout(new BoxLayout(panContent, BoxLayout.Y_AXIS));
+		JPanel subPanPathErrorLine = new JPanel();
+		JLabel pathLineLabel = new JLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_FILE_LABEL));
+		subPanPathErrorLine.add(pathLineLabel);
+		subPanPathErrorLine.add(pathLineValue);
+		panContent.add(subPanPathErrorLine);
+		JPanel subPanNumberErrorLine = new JPanel();
+		JLabel numberLineLabel = new JLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_NUMBER_LABEL));
+		subPanNumberErrorLine.add(numberLineLabel);
+		subPanNumberErrorLine.add(numberLineValue);
+		panContent.add(subPanNumberErrorLine);
 		JPanel subPanErrorLine = new JPanel();
 		JLabel errorLineLabel = new JLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_ERROR_LABEL));
 		subPanErrorLine.add(errorLineLabel);
@@ -82,18 +95,22 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	private void fillTextWithErrorAndRefreshDisplay() {
 		logger.debug("[DEBUT] fillTextWithErrorAndRefreshDisplay");
 		logger.debug(String.format("Load index %d", currentIndex));
-		String errorLine = getControler().getErrorLine(currentIndex);
-		logger.debug(String.format("Ligne chargé %s", errorLine));
-		String panContentLabel = String.format(
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_TITLE), currentIndex + 1,
-				getControler().getNbLinesError());
-		panContent.setBorder(BorderFactory.createTitledBorder(panContentLabel));
-		textErrorLine.setText(errorLine);
-		textFixedLine.setText(errorLine);
-		if (currentIndex + 1 == getControler().getNbLinesError()) {
-			nextButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_SAVE_QUIT_BUTTON_LABEL));
-		} else {
-			nextButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_SAVE_NEXT_BUTTON_LABEL));
+		ErrorStructuredLine errorLine = getControler().getErrorLine(currentIndex);
+		if (null != errorLine) {
+			logger.debug(String.format("Ligne chargé %s", errorLine));
+			String panContentLabel = String.format(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_TITLE), currentIndex + 1,
+					getControler().getNbLinesError());
+			panContent.setBorder(BorderFactory.createTitledBorder(panContentLabel));
+			textErrorLine.setText(errorLine.getLine());
+			textFixedLine.setText(errorLine.getLine());
+			numberLineValue.setText(errorLine.getNumLine().toString());
+			pathLineValue.setText(errorLine.getPath());
+			if (currentIndex + 1 == getControler().getNbLinesError()) {
+				nextButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_SAVE_QUIT_BUTTON_LABEL));
+			} else {
+				nextButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_SAVE_NEXT_BUTTON_LABEL));
+			}
 		}
 		logger.debug("[FIN] fillTextWithErrorAndRefreshDisplay");
 	}

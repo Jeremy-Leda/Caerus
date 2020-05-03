@@ -626,6 +626,7 @@ public class Dispatcher {
 				UserSettings.getInstance().writeFixedText(writer, file);
 			}
 		}
+		UserSettings.getInstance().clearAfterWriteFixedText();
 		PathUtils.deleteFile(getCurrentStateFile());
 		logger.debug("[FIN] writeFixedText");
 	}
@@ -720,6 +721,14 @@ public class Dispatcher {
 		// TODO se poser la question pour le chargement de plusieurs corpus en même temps
 		return UserSettings.getInstance().haveMetaBlankLineError();
 	}
+	
+	/**
+	 * Permet de savoir s'il reste des meta vides dans les textes
+	 * @return Vrai si oui
+	 */
+	public Boolean haveMetaBlankLineInErrorRemaining() {
+		return UserSettings.getInstance().haveMetaBlankLineInErrorRemaining();
+	}
 
 	/**
 	 * Permet de charger le texte en erreur suivant
@@ -785,6 +794,14 @@ public class Dispatcher {
 		List<SpecificConfiguration> forbiddenSpecificConfigurationList = UserSettings.getInstance().getCurrentConfiguration()
 				.getSpecificConfigurationList().stream().filter(sc -> !sc.getLabel().equals(labelSpecificConfiguration)).collect(Collectors.toList());
 		return forbiddenSpecificConfigurationList.stream().flatMap(sc -> sc.getTreatmentFieldList().stream()).distinct().collect(Collectors.toList());
+	}
+	
+	/**
+	 * Permet de savoir le nombre de corpus contenant des lignes vide meta à corriger.
+	 * @return Le nombre de corpus contenant des lignes vide meta à corriger.
+	 */
+	public Integer getNbMetaBlankLineToFixed() {
+		return UserSettings.getInstance().getNbMetaBlankLineToFixed();
 	}
 
 }

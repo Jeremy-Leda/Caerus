@@ -127,6 +127,8 @@ public final class Constants {
 	
 	public static final String WINDOW_FIXED_ERROR_LINE_TITLE = "window.fixed.error.line.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_TITLE = "window.fixed.error.line.content.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_FILE_LABEL = "window.fixed.error.line.content.panel.line.file.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_NUMBER_LABEL = "window.fixed.error.line.content.panel.line.number.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_ERROR_LABEL = "window.fixed.error.line.content.panel.line.error.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_FIXED_LABEL = "window.fixed.error.line.content.panel.line.fixed.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_TITLE = "window.fixed.error.line.action.panel.title";
@@ -182,6 +184,7 @@ public final class Constants {
 
 	
 	public static final String WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_TITLE = "window.fixed.error.meta.blank.line.panel.title";
+	public static final String WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_NEXT_BUTTON_LABEL = "window.fixed.error.meta.blank.line.panel.save.next.button.label";
 	public static final String WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_QUIT_BUTTON_LABEL = "window.fixed.error.meta.blank.line.panel.save.quit.button.label";
 	
 }

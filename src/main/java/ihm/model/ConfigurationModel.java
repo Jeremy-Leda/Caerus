@@ -408,5 +408,21 @@ public class ConfigurationModel implements IConfigurationModel {
 		}
 	}
 
+	@Override
+	public Boolean haveMetaBlankLineInErrorRemaining() {
+		if (null != dispatcher) {
+			return this.dispatcher.haveMetaBlankLineInErrorRemaining();
+		}
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public Integer getNbMetaBlankLineToFixed() {
+		if (null != dispatcher) {
+			return this.dispatcher.getNbMetaBlankLineToFixed();
+		}
+		return 0;
+	}
+
 
 }

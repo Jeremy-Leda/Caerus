@@ -24,6 +24,7 @@ public class StructuredText {
 	private final List<Content> listContent = new ArrayList<Content>();
 	private Boolean haveBlankLine = Boolean.FALSE;
 	private Boolean haveMetaBlankLine = Boolean.FALSE;
+	private String uniqueKey;
 	private static Logger logger = LoggerFactory.getLogger(StructuredText.class);
 	
 	public List<Content> getListContent() {
@@ -85,17 +86,18 @@ public class StructuredText {
 		StructuredText duplicateStructuredText = new StructuredText();
 		List<Content> collect = this.listContent.stream().map(c -> c.duplicate()).collect(Collectors.toList());
 		duplicateStructuredText.getListContent().addAll(collect);
+		duplicateStructuredText.setUniqueKey(new String(uniqueKey));
+		duplicateStructuredText.setHaveBlankLine(haveBlankLine.booleanValue());
+		duplicateStructuredText.setHaveMetaBlankLine(haveMetaBlankLine.booleanValue());
 		return duplicateStructuredText;
 	}
-	
-	/*
-	 * 
-	 */
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((listContent == null) ? 0 : listContent.hashCode());
+		result = prime * result + ((uniqueKey == null) ? 0 : uniqueKey.hashCode());
 		return result;
 	}
 
@@ -123,6 +125,14 @@ public class StructuredText {
 
 	public void setHaveMetaBlankLine(Boolean haveMetaBlankLine) {
 		this.haveMetaBlankLine = haveMetaBlankLine;
+	}
+
+	public String getUniqueKey() {
+		return uniqueKey;
+	}
+
+	public void setUniqueKey(String uniqueKey) {
+		this.uniqueKey = uniqueKey;
 	}
 
 }

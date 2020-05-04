@@ -51,46 +51,51 @@ import utils.PathUtils;
 public class Dispatcher {
 
 	private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
-	private List<StructuredFile> structuredFiles;
+	private List<StructuredFile> structuredFiles = new ArrayList<>();
 	private Boolean excelCreated = Boolean.FALSE;
 	private List<ConfigurationStructuredText> configurationStructuredTextListe = new ArrayList<>();
 	private static final String FOLDER_CONTEXT = "context";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 
-	public Dispatcher() {
-
-	}
-
 	/**
-	 * Constructeur qui prend en chemin à analyser
-	 * 
-	 * @param pathFolderToAnalyze chemin à analyser
-	 * @throws IOException
+	 * Permet de lancer l'analyse des textes dans le dossier d'analyse
+	 * @throws IOException 
 	 */
-	public Dispatcher(String pathFolderToAnalyze, Configuration configuration) throws IOException {
+	public void launchAnalyze() throws IOException {
+		processAndLoadTexts(FolderSettingsEnum.FOLDER_ANALYZE);
+	}
+	
+	/**
+	 * Permet de charger les textes dans le folder des textes
+	 * @throws IOException 
+	 */
+	public void loadTexts() throws IOException {
+		processAndLoadTexts(FolderSettingsEnum.FOLDER_TEXTS);
+	}
+	
+	/**
+	 * Permet de définir la configuration courante
+	 * @param configuration configuration
+	 */
+	public void setCurrentConfiguration(Configuration configuration) {
 		UserSettings.getInstance().setCurrentConfiguration(configuration);
-		this.setAnalyzeFolder(new File(pathFolderToAnalyze));
-		logger.debug("Analyze : " + UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE));
-		List<MemoryFile> memoryFiles = getMemoryFiles(pathFolderToAnalyze);
+	}
+	
+	private void processAndLoadTexts(FolderSettingsEnum folderType) throws IOException {
+		//UserSettings.getInstance().setCurrentConfiguration(configuration);
+		//this.setAnalyzeFolder(UserSettings.getInstance().getFolder(folderType));
+		logger.debug("Analyze : " + UserSettings.getInstance().getFolder(folderType));
+		List<MemoryFile> memoryFiles = getMemoryFiles(UserSettings.getInstance().getFolder(folderType).toString());
 		UserSettings.getInstance().clearAllSession();
 		UserSettings.getInstance().addMemoryFilesList(memoryFiles);
-		structuredFiles = memoryFiles.parallelStream().map(f -> new Structuring(f, configuration).getStructuredFile()).collect(Collectors.toList());
+		structuredFiles = memoryFiles.parallelStream().map(f -> new Structuring(f, folderType).getStructuredFile()).collect(Collectors.toList());
 		if (UserSettings.getInstance().getNbLineError() > 0) {
 			return;
 		}
-		configuration.getSpecificConfigurationList().stream()
+		UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
 				.forEach(sc -> configurationStructuredTextListe.add(new ConfigurationStructuredText(sc)));
-		configurationStructuredTextListe.stream().forEach(st -> structuredTextSpecificProcess(memoryFiles, configuration, st));
+		configurationStructuredTextListe.stream().forEach(st -> structuredTextSpecificProcess(memoryFiles, folderType, st));
 
-		/* -- SPECIFIC CONFIGURATION PROCESSING -- */
-//		System.out.println("Début du processing pour le fichier actividadClaseConfiguration");
-//		structuredTextSpecificProcess(memoryFiles, configuration, ConfigurationSpecificTemplate.actividadClaseConfiguration());
-//		System.out.println("Début du processing pour le fichier enunciadoActividadConfiguration");
-//		structuredTextSpecificProcess(memoryFiles, configuration, ConfigurationSpecificTemplate.enunciadoActividadConfiguration());
-//		System.out.println("Début du processing pour le fichier vocabularioTextoConfiguration");
-//		structuredTextSpecificProcess(memoryFiles, configuration, ConfigurationSpecificTemplate.vocabularioTextoConfiguration());
-		/* -- SPECIFIC CONFIGURATION PROCESSING -- */
-		// System.out.println(structuredFiles.toString());
 	}
 
 	/**
@@ -331,10 +336,10 @@ public class Dispatcher {
 	 * @param memoryFiles           liste des fichiers mémoires
 	 * @param configurationSpecific configuration specifique
 	 */
-	private void structuredTextSpecificProcess(List<MemoryFile> memoryFiles, Configuration configuration,
+	private void structuredTextSpecificProcess(List<MemoryFile> memoryFiles, FolderSettingsEnum folderType,
 			ConfigurationStructuredText configurationSpecific) {
 		List<StructuredFile> structuredFileList = memoryFiles.stream() // TODO passer en parallel
-				.map(f -> new Structuring(f, configuration, configurationSpecific).getStructuredFile()).collect(Collectors.toList());
+				.map(f -> new Structuring(f, folderType, configurationSpecific).getStructuredFile()).collect(Collectors.toList());
 		configurationSpecific.getStructuredFileList().addAll(structuredFileList);
 	}
 
@@ -614,10 +619,6 @@ public class Dispatcher {
 	 * @throws IOException Erreur d'entrée sortie
 	 */
 	public void writeFixedText() throws IOException {
-		// TODO modifier pour prendre en charge la correction de plusieurs textes
-		// Pour cela il faut faire un distinct sur les textes en userstrcuturedtexte
-		// (namefile)
-		// Et parcourir puis le passer en parametre avec le writer
 		logger.debug("[DEBUT] writeFixedText");
 		List<String> filesList = UserSettings.getInstance().getUserStructuredTextList().stream().map(ust -> ust.getFileName()).distinct()
 				.collect(Collectors.toList());
@@ -718,7 +719,6 @@ public class Dispatcher {
 	 * @return Vrai si c'est le cas
 	 */
 	public Boolean haveMetaBlankLineError() {
-		// TODO se poser la question pour le chargement de plusieurs corpus en même temps
 		return UserSettings.getInstance().haveMetaBlankLineError();
 	}
 	

@@ -14,10 +14,9 @@ import analyze.beans.MemoryFile;
 import analyze.beans.StructuredField;
 import analyze.beans.StructuredFile;
 import analyze.beans.StructuredText;
-import analyze.beans.StructuringError;
-import analyze.beans.StructuringErrorDetails;
 import analyze.beans.UserStructuredText;
 import analyze.beans.specific.ConfigurationStructuredText;
+import analyze.constants.FolderSettingsEnum;
 import exceptions.StructuringException;
 import utils.KeyGenerator;
 
@@ -33,13 +32,13 @@ public class Structuring {
 	private final StructuredFile structuredFile;
 	private final List<Content> lstMetaContent = new ArrayList<Content>();
 
-	public Structuring(MemoryFile memoryFile, Configuration configuration) {
-		this(memoryFile, configuration, null);
+	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType) {
+		this(memoryFile, folderType, null);
 	}
 
-	public Structuring(MemoryFile memoryFile, Configuration configuration,
+	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType,
 			ConfigurationStructuredText beanConfiguration) {
-		this.structuredFile = construct(memoryFile, configuration, beanConfiguration);
+		this.structuredFile = construct(memoryFile, folderType, beanConfiguration);
 	}
 
 	public StructuredFile getStructuredFile() {
@@ -53,7 +52,7 @@ public class Structuring {
 	 * @param beanConfiguration bean de configuration nécessaire pour le spécifique
 	 * @return le fichier structuré
 	 */
-	private StructuredFile construct(MemoryFile memoryFile, Configuration configuration,
+	private StructuredFile construct(MemoryFile memoryFile, FolderSettingsEnum folderType,
 			ConfigurationStructuredText beanConfiguration) {
 		final StructuredFile sf = new StructuredFile(memoryFile);
 		final List<String> listLines = new ArrayList<String>();
@@ -61,26 +60,31 @@ public class Structuring {
 		Integer number = 1;
 		while (memoryFile.hasLine()) {
 			String l = memoryFile.getNextLine();
-			checkLineAndAddErrorIfNecessary(configuration, l, memoryFile);
+			checkLineAndAddErrorIfNecessary(l, memoryFile);
 			if (StringUtils.isEmpty(l)) {
 				try {
-					StructuredText structuredText = prepareStructuredText(listLines, configuration);
+					StructuredText structuredText = prepareStructuredText(listLines);
 					StringBuilder keyTextBuilder = new StringBuilder();
 					keyTextBuilder.append(memoryFile.nameFile());
 					keyTextBuilder.append(number.toString());
 					structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
+					String keyStructuredText = KeyGenerator.generateKey(structuredText);
 					if (null != structuredText && structuredText.getHaveBlankLine()) {
-						String keyStructuredText = KeyGenerator.generateKey(structuredText);
 						UserSettings.getInstance().addKeyBlankLineError(keyStructuredText);
 					}
 					if (null != structuredText && structuredText.getHaveMetaBlankLine()) {
-						String keyStructuredText = KeyGenerator.generateKey(structuredText);
 						UserSettings.getInstance().addKeyMetaBlankLineError(keyStructuredText);
 					}
 					listLines.clear();
 					if (null != beanConfiguration && null != structuredText) {
-						sf.getListStructuredText().addAll(processingStructuredTextWithConfigurationBean(structuredText,
-								beanConfiguration, memoryFile, sf));
+						try {
+							sf.getListStructuredText().addAll(processingStructuredTextWithConfigurationBean(structuredText,
+									beanConfiguration, memoryFile, sf));
+							
+						} catch (IndexOutOfBoundsException e) {
+							UserSettings.getInstance().addKeyStructuredTextError(keyStructuredText);
+						}
+						
 					} else if (null != structuredText) {
 						UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
 								structuredText);
@@ -107,30 +111,18 @@ public class Structuring {
 	 * @return la liste des textes structuré
 	 */
 	private List<StructuredText> processingStructuredTextWithConfigurationBean(StructuredText structuredText,
-			ConfigurationStructuredText beanConfiguration, MemoryFile memoryFile, StructuredFile structuredFile) {
-		String keyStructuredText = KeyGenerator.generateKey(structuredText);
-		// beanConfiguration.getSpecificConfiguration().getIgnoredFieldList().forEach(it
-		// -> structuredText.deleteContent(it));
+			ConfigurationStructuredText beanConfiguration, MemoryFile memoryFile, StructuredFile structuredFile) throws IndexOutOfBoundsException {
 		List<StructuredText> structuredTextProcessedList = new ArrayList<StructuredText>();
 		final Map<String, List<String>> mapTagValuesProcessed = new HashedMap<String, List<String>>();
 		beanConfiguration.getSpecificConfiguration().getTreatmentFieldList()
 				.forEach(tag -> mapTagValuesProcessed.put(tag, structuredText.getContentWithDelimiterProcess(tag,
 						beanConfiguration.getSpecificConfiguration().getDelimiter())));
-		try {
-			for (int i = 0; i < mapTagValuesProcessed.values().stream().mapToInt(s -> s.size()).max().getAsInt(); i++) {
-				StructuredText structuredTextProcessed = structuredText.duplicate();
-				for (String tag : mapTagValuesProcessed.keySet()) {
-					structuredTextProcessed.modifyContent(tag, mapTagValuesProcessed.get(tag).get(i).trim());
-				}
-				structuredTextProcessedList.add(structuredTextProcessed);
+		for (int i = 0; i < mapTagValuesProcessed.values().stream().mapToInt(s -> s.size()).max().getAsInt(); i++) {
+			StructuredText structuredTextProcessed = structuredText.duplicate();
+			for (String tag : mapTagValuesProcessed.keySet()) {
+				structuredTextProcessed.modifyContent(tag, mapTagValuesProcessed.get(tag).get(i).trim());
 			}
-		} catch (IndexOutOfBoundsException e) {
-			UserSettings.getInstance().addKeyStructuredTextError(keyStructuredText);
-			StringBuilder sb = new StringBuilder();
-			beanConfiguration.getSpecificConfiguration().getTreatmentFieldList()
-					.forEach(s -> sb.append(s).append(" : ").append(structuredText.getContent(s)).append("\n"));
-			structuredFile.getListStructuringError()
-					.add(constructStructuringError(mapTagValuesProcessed, memoryFile.nameFile(), sb.toString()));
+			structuredTextProcessedList.add(structuredTextProcessed);
 		}
 		return structuredTextProcessedList;
 	}
@@ -142,7 +134,7 @@ public class Structuring {
 	 * @return le texte structuré
 	 * @throws StructuringException
 	 */
-	private StructuredText prepareStructuredText(List<String> textLines, Configuration configuration)
+	private StructuredText prepareStructuredText(List<String> textLines)
 			throws StructuringException {
 		if (textLines.isEmpty()) {
 			return null;
@@ -152,11 +144,11 @@ public class Structuring {
 		if (!listMetaToAddIsEmpty) {
 			st.getListContent().addAll(lstMetaContent);
 		}
-		integrateContentToStructuredText(st, configuration, textLines);
-		st.setHaveBlankLine(st.getHaveBlankLine() || !checkAllFieldArePresent(st, configuration, Boolean.FALSE));
+		integrateContentToStructuredText(st, textLines);
+		st.setHaveBlankLine(st.getHaveBlankLine() || !checkAllFieldArePresent(st, Boolean.FALSE));
 		if (listMetaToAddIsEmpty) {
 			st.setHaveMetaBlankLine(
-					st.getHaveMetaBlankLine() || !checkAllFieldArePresent(st, configuration, Boolean.TRUE));
+					st.getHaveMetaBlankLine() || !checkAllFieldArePresent(st, Boolean.TRUE));
 		}
 		return st;
 	}
@@ -170,8 +162,9 @@ public class Structuring {
 	 *                       meta
 	 * @return
 	 */
-	private Boolean checkAllFieldArePresent(StructuredText structuredText, Configuration configuration,
+	private Boolean checkAllFieldArePresent(StructuredText structuredText,
 			Boolean onlyMeta) {
+		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (onlyMeta) {
 			return configuration.getStructuredFieldList().stream()
 					.map(field -> !field.getIsMetaFile()
@@ -190,14 +183,13 @@ public class Structuring {
 	 * 
 	 * @param st          le texte structuré à renseigner
 	 * @param lines       les lignes à traiter
-	 * @param lastContent le dernier contenu traité
 	 * @throws StructuringException
 	 */
-	private void integrateContentToStructuredText(StructuredText st, Configuration configuration, List<String> lines)
+	private void integrateContentToStructuredText(StructuredText st, List<String> lines)
 			throws StructuringException {
 		Content lastContent = null;
 		for (String line : lines) {
-			lastContent = prepareAndIntegrateContent(st, configuration, line, lastContent);
+			lastContent = prepareAndIntegrateContent(st, line, lastContent);
 		}
 	}
 
@@ -210,8 +202,9 @@ public class Structuring {
 	 * @return le contenu traité
 	 * @throws StructuringException
 	 */
-	private Content prepareAndIntegrateContent(StructuredText st, Configuration configuration, String line,
+	private Content prepareAndIntegrateContent(StructuredText st, String line,
 			Content lastContent) throws StructuringException {
+		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (StringUtils.startsWith(line, configuration.getBaseCode())) {
 			String lineWithoutLedaBalise = StringUtils.remove(line, configuration.getBaseCode());
 			Optional<StructuredField> optionalStructuredField = configuration.getStructuredFieldList().stream()
@@ -249,15 +242,15 @@ public class Structuring {
 	/**
 	 * Permet de vérifier la ligne et d'ajouter les erreurs si nécessaire
 	 * 
-	 * @param configuration configuration
 	 * @param line          ligne
 	 * @param memoryFile    memory file
 	 */
-	private void checkLineAndAddErrorIfNecessary(Configuration configuration, String line, MemoryFile memoryFile) {
+	private void checkLineAndAddErrorIfNecessary(String line, MemoryFile memoryFile) {
+		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (StringUtils.isBlank(line)) {
 			return;
 		}
-		if (!StringUtils.startsWith(line, "[") && !checkIfHaveFieldsCode(configuration, line)) {
+		if (!StringUtils.startsWith(line, "[") && !checkIfHaveFieldsCode(line)) {
 			return;
 		} else {
 			if (StringUtils.startsWith(line, configuration.getBaseCode())) {
@@ -267,7 +260,7 @@ public class Structuring {
 				if (optionalStructuredField.isPresent()) {
 					return;
 				}
-			} else if (!checkIfHaveFieldsCode(configuration, line)) {
+			} else if (!checkIfHaveFieldsCode(line)) {
 				return;
 			}
 		}
@@ -280,7 +273,8 @@ public class Structuring {
 	 * @param line ligne à analyser
 	 * @return Vrai s'il n'y a pas de balise
 	 */
-	private Boolean checkIfHaveFieldsCode(Configuration configuration, String line) {
+	private Boolean checkIfHaveFieldsCode(String line) {
+		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (!StringUtils.contains(line,
 				StringUtils.remove(StringUtils.remove(configuration.getBaseCode(), "["), "]"))) {
 			return false;
@@ -292,28 +286,6 @@ public class Structuring {
 			return false;
 		}
 		return true;
-	}
-
-	
-	
-	/**
-	 * 
-	 * Permet de construire l'erreur a partir des éléments du texte
-	 * 
-	 * @param mapTagValuesProcessed la map des tags en train d'être compilés
-	 * @param keyFile               la clé du fichier
-	 * @param keyText               la clé du texte
-	 * @return l'erreur de structure
-	 */
-	private StructuringError constructStructuringError(final Map<String, List<String>> mapTagValuesProcessed,
-			String keyFile, String keyText) {
-		StructuringError st = new StructuringError(keyFile, keyText);
-		mapTagValuesProcessed.entrySet().forEach(es -> {
-			StructuringErrorDetails sed = new StructuringErrorDetails(es.getKey());
-			sed.getListElements().addAll(es.getValue());
-			st.getDetails().add(sed);
-		});
-		return st;
 	}
 
 }

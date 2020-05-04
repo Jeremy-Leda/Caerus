@@ -16,7 +16,9 @@ import ihm.beans.ErrorStructuredLine;
 
 public interface IConfigurationControler {
 
-	void analyzePath(File path, Configuration configuration);
+	void launchAnalyze();
+	
+	void setCurrentConfiguration(Configuration configuration);
 	
 	List<StructuredFile> getListOfStructuredFile();
 	

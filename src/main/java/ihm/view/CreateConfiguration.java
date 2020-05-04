@@ -22,7 +22,7 @@ public class CreateConfiguration extends JFrame {
 	}
 	
 	public Boolean isLoaded() {
-		return null != this.controler.getListOfStructuredFile();
+		return !this.controler.getListOfStructuredFile().isEmpty();
 	}
 	
 	public Boolean errorProcessing() {

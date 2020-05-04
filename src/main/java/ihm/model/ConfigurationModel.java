@@ -2,12 +2,9 @@ package ihm.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,27 +22,24 @@ public class ConfigurationModel implements IConfigurationModel {
 
 	private Logger logger = LoggerFactory.getLogger(ConfigurationModel.class);
 	private Dispatcher dispatcher = new Dispatcher();
-	
+
 	@Override
-	public void analyzePath(String path, Configuration configuration) {
+	public void launchAnalyze() {
 		try {
-			dispatcher = new Dispatcher(path, configuration);
+			this.dispatcher.launchAnalyze();
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
 	}
 
 	@Override
-	public List<StructuredFile> getListOfStructuredFile() {
-		if (null != dispatcher) {
-			return this.dispatcher.getStructuredFiles();
-		}
-		return null;
+	public void setCurrentConfiguration(Configuration configuration) {
+		this.dispatcher.setCurrentConfiguration(configuration);
 	}
 
 	@Override
-	public Boolean isLoaded() {
-		return null != dispatcher;
+	public List<StructuredFile> getListOfStructuredFile() {
+			return this.dispatcher.getStructuredFiles();
 	}
 
 	@Override
@@ -59,12 +53,12 @@ public class ConfigurationModel implements IConfigurationModel {
 
 	@Override
 	public Boolean isExcelCreated() {
-		return null != this.dispatcher && this.dispatcher.getExcelCreated();
+		return this.dispatcher.getExcelCreated();
 	}
 
 	@Override
 	public Boolean errorProcessing() throws IOException {
-		return null != this.dispatcher && this.dispatcher.errorProcessing();
+		return this.dispatcher.errorProcessing();
 	}
 
 	@Override
@@ -75,354 +69,232 @@ public class ConfigurationModel implements IConfigurationModel {
 
 	@Override
 	public List<StructuringError> getStructuringErrorList() {
-		if (null != dispatcher) {
-			return this.dispatcher.getStructuringErrorList();
-		}
-		return null;
+		return this.dispatcher.getStructuringErrorList();
 	}
-	
+
 	@Override
 	public File getTextsFolder() {
-		if (null != dispatcher) {
-			return this.dispatcher.getTextsFolder();
-		}
-		return null;
+		return this.dispatcher.getTextsFolder();
 	}
-	
+
 	@Override
 	public File getAnalyzeFolder() {
-		if (null != dispatcher) {
-			return this.dispatcher.getAnalyzeFolder();
-		}
-		return null;
+		return this.dispatcher.getAnalyzeFolder();
 	}
-	
+
 	@Override
 	public String getConfigurationName() {
-		if (null != dispatcher) {
-			return this.dispatcher.getConfigurationName();
-		}
-		return null;
+		return this.dispatcher.getConfigurationName();
 	}
 
 	@Override
 	public void setTextsFolder(File textsFolder) {
-		if (null != dispatcher) {
-			this.dispatcher.setTextsFolder(textsFolder);
-		}
+		this.dispatcher.setTextsFolder(textsFolder);
 	}
-	
 
 	@Override
 	public void setAnalyzeFolder(File folderAnalyze) {
-		if (null != dispatcher) {
-			this.dispatcher.setAnalyzeFolder(folderAnalyze);
-		}
+		this.dispatcher.setAnalyzeFolder(folderAnalyze);
 	}
 
 	@Override
 	public Map<String, String> getConfigurationFieldMetaFile() {
-		if (null != dispatcher) {
-			return this.dispatcher.getListFieldMetaFile();
-		}
-		return new HashMap<String, String>();
+		return this.dispatcher.getListFieldMetaFile();
 	}
 
 	@Override
 	public void createNewCorpus(String nameFile, Map<String, String> metaFileFieldMap) {
-		if (null != dispatcher) {
-			this.dispatcher.createNewCorpus(nameFile, metaFileFieldMap);
-		}
+		this.dispatcher.createNewCorpus(nameFile, metaFileFieldMap);
 	}
 
 	@Override
 	public Boolean haveEditingCorpus() {
-		if (null != dispatcher) {
-			return this.dispatcher.haveEditingCorpus();
-		}
-		return false;
+		return this.dispatcher.haveEditingCorpus();
 	}
 
 	@Override
 	public void clearEditingCorpus() {
-		if (null != dispatcher) {
-			this.dispatcher.clearEditingCorpus();
-		}
+		this.dispatcher.clearEditingCorpus();
 	}
 
 	@Override
 	public Map<String, String> getConfigurationFieldCommonFile() {
-		if (null != dispatcher) {
-			return this.dispatcher.getListFieldCommonFile();
-		}
-		return new HashMap<String, String>();
+		return this.dispatcher.getListFieldCommonFile();
 	}
 
 	@Override
 	public String getEditingCorpusName() {
-		if (null != dispatcher) {
-			return this.dispatcher.getEditingCorpusName();
-		}
-		return StringUtils.EMPTY;
+		return this.dispatcher.getEditingCorpusName();
 	}
 
 	@Override
 	public Map<String, String> getListFieldSpecific(Integer index) {
-		if (null != dispatcher) {
-			return this.dispatcher.getListFieldSpecific(index);
-		}
-		return new HashMap<String, String>();
+		return this.dispatcher.getListFieldSpecific(index);
 	}
-	
+
 	@Override
 	public Map<String, String> getListFieldHeaderSpecific(Integer index) {
-		if (null != dispatcher) {
-			return this.dispatcher.getListFieldHeaderSpecific(index);
-		}
-		return new HashMap<String, String>();
+		return this.dispatcher.getListFieldHeaderSpecific(index);
 	}
 
 	@Override
 	public Integer getNbSpecificConfiguration() {
-		if (null != dispatcher) {
-			return this.dispatcher.getNbSpecificConfiguration();
-		}
-		return 0;
+		return this.dispatcher.getNbSpecificConfiguration();
 	}
 
 	@Override
 	public void updateSpecificFieldInEditingCorpus(Integer index, Map<String, List<String>> specificFieldMap) {
-		if (null != dispatcher) {
-			this.dispatcher.updateSpecificFieldInEditingCorpus(index, specificFieldMap);
-		}
+		this.dispatcher.updateSpecificFieldInEditingCorpus(index, specificFieldMap);
 	}
 
 	@Override
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
-		if (null != dispatcher) {
-			return this.dispatcher.getSpecificFieldInEditingCorpus(index);
-		}
-		return new HashMap<>();
+		return this.dispatcher.getSpecificFieldInEditingCorpus(index);
 	}
 
 	@Override
 	public String getFieldInEditingCorpus(String key) {
-		if (null != dispatcher) {
-			return this.dispatcher.getFieldInEditingCorpus(key);
-		}
-		return StringUtils.EMPTY;
+		return this.dispatcher.getFieldInEditingCorpus(key);
 	}
 
 	@Override
 	public void updateFieldInEditingCorpus(String key, String value) {
-		if (null != dispatcher) {
-			this.dispatcher.updateFieldInEditingCorpus(key, value);
-		}
+		this.dispatcher.updateFieldInEditingCorpus(key, value);
 	}
 
 	@Override
 	public void writeCorpus() throws IOException {
-		if (null != dispatcher) {
-			this.dispatcher.writeCorpus();
-		}
+		this.dispatcher.writeCorpus();
 	}
 
 	@Override
 	public void addEditingTextToCurrentCorpus() {
-		if (null != dispatcher) {
-			this.dispatcher.addEditingTextToCurrentCorpus();
-		}
+		this.dispatcher.addEditingTextToCurrentCorpus();
 	}
 
 	@Override
 	public Integer getNbLinesError() {
-		if (null != dispatcher) {
-			return this.dispatcher.getNbLinesError();
-		}
-		return 0;
+		return this.dispatcher.getNbLinesError();
 	}
 
 	@Override
 	public LineError getErrorLine(Integer index) {
-		if (null != dispatcher) {
-			return this.dispatcher.getErrorLine(index);
-		}
-		return null;
+		return this.dispatcher.getErrorLine(index);
 	}
 
 	@Override
 	public void updateLineError(Integer index, LineError lineError) {
-		if (null != dispatcher) {
-			this.dispatcher.updateLineError(index, lineError);
-		}
+		this.dispatcher.updateLineError(index, lineError);
 	}
 
 	@Override
 	public void saveFileAfteFixedErrorLine() throws IOException {
-		if (null != dispatcher) {
-			this.dispatcher.saveFileAfteFixedErrorLine();
-		}
+		this.dispatcher.saveFileAfteFixedErrorLine();
 	}
 
 	@Override
 	public Integer getNbTextsError() {
-		if (null != dispatcher) {
-			return this.dispatcher.getNbTextsError();
-		}
-		return 0;
+		return this.dispatcher.getNbTextsError();
 	}
 
 	@Override
 	public void loadNextErrorText() {
-		if (null != dispatcher) {
-			this.dispatcher.loadNextErrorText();
-		}
+		this.dispatcher.loadNextErrorText();
 	}
 
 	@Override
 	public void saveCurrentStateOfFixedText() {
-		if (null != dispatcher) {
-			this.dispatcher.saveCurrentStateOfFixedText();
-		}
+		this.dispatcher.saveCurrentStateOfFixedText();
 	}
 
 	@Override
 	public void writeFixedText() throws IOException {
-		if (null != dispatcher) {
-			this.dispatcher.writeFixedText();
-		}
+		this.dispatcher.writeFixedText();
 	}
 
 	@Override
 	public void applyFixedErrorText() {
-		if (null != dispatcher) {
-			this.dispatcher.applyFixedErrorText();
-		}
+		this.dispatcher.applyFixedErrorText();
 	}
 
 	@Override
 	public Boolean haveCurrentStateFile() {
-		if (null != dispatcher) {
-			return this.dispatcher.haveCurrentStateFile();
-		}
-		return Boolean.FALSE;
+		return this.dispatcher.haveCurrentStateFile();
 	}
 
 	@Override
 	public void restoreCurrentState() throws JsonParseException, JsonMappingException, IOException {
-		if (null != dispatcher) {
-			this.dispatcher.restoreCurrentState();
-		}
+		this.dispatcher.restoreCurrentState();
 	}
 
 	@Override
 	public Boolean haveTextsInErrorRemaining() {
-		if (null != dispatcher) {
-			return this.dispatcher.haveTextsInErrorRemaining();
-		}
-		return Boolean.FALSE;
+		return this.dispatcher.haveTextsInErrorRemaining();
 	}
 
 	@Override
 	public Integer getNbBlankLinesError() {
-		if (null != dispatcher) {
-			return this.dispatcher.getNbBlankLinesError();
-		}
-		return 0;
+		return this.dispatcher.getNbBlankLinesError();
 	}
 
 	@Override
 	public void loadNextErrorBlankLine() {
-		if (null != dispatcher) {
-			this.dispatcher.loadNextErrorBlankLine();
-		}
+		this.dispatcher.loadNextErrorBlankLine();
 	}
 
 	@Override
 	public Integer getNbTextLoaded() {
-		if (null != dispatcher) {
-			return this.dispatcher.getNbTextLoaded();
-		}
-		return 0;
+		return this.dispatcher.getNbTextLoaded();
 	}
 
 	@Override
 	public Boolean haveBlankLinesInErrorRemaining() {
-		if (null != dispatcher) {
-			return this.dispatcher.haveBlankLinesInErrorRemaining();
-		}
-		return Boolean.FALSE;
+		return this.dispatcher.haveBlankLinesInErrorRemaining();
 	}
 
 	@Override
 	public Map<String, String> getConfigurationSpecificLabelNameFileMap() {
-		if (null != dispatcher) {
-			return this.dispatcher.getConfigurationSpecificLabelNameFileMap();
-		}
-		return new HashMap<>();
+		return this.dispatcher.getConfigurationSpecificLabelNameFileMap();
 	}
 
 	@Override
 	public void generateExcel(ExcelGenerateConfigurationCmd cmd) throws IOException {
-		if (null != dispatcher && null != cmd) {
-			this.dispatcher.generateExcel(cmd);
-		}
+		this.dispatcher.generateExcel(cmd);
 	}
 
 	@Override
 	public Map<String, String> getFieldConfigurationNameLabelMap() {
-		if (null != dispatcher) {
-			return this.dispatcher.getFieldConfigurationNameLabelMap();
-		}
-		return new HashMap<>();
+		return this.dispatcher.getFieldConfigurationNameLabelMap();
 	}
 
 	@Override
 	public List<String> getFieldListToProcess(String labelSpecificConfiguration) {
-		if (null != dispatcher) {
-			return this.dispatcher.getFieldListToProcess(labelSpecificConfiguration);
-		}
-		return new ArrayList<String>();
+		return this.dispatcher.getFieldListToProcess(labelSpecificConfiguration);
 	}
 
 	@Override
 	public List<String> getFieldListForbiddenToDisplay(String labelSpecificConfiguration) {
-		if (null != dispatcher) {
-			return this.dispatcher.getFieldListForbiddenToDisplay(labelSpecificConfiguration);
-		}
-		return new ArrayList<String>();
+		return this.dispatcher.getFieldListForbiddenToDisplay(labelSpecificConfiguration);
 	}
 
 	@Override
 	public Boolean haveMetaBlankLineError() {
-		if (null != dispatcher) {
-			return this.dispatcher.haveMetaBlankLineError();
-		}
-		return Boolean.FALSE;
+		return this.dispatcher.haveMetaBlankLineError();
 	}
 
 	@Override
 	public void loadNextErrorMetaBlankLine() {
-		if (null != dispatcher) {
-			this.dispatcher.loadNextErrorMetaBlankLine();
-		}
+		this.dispatcher.loadNextErrorMetaBlankLine();
 	}
 
 	@Override
 	public Boolean haveMetaBlankLineInErrorRemaining() {
-		if (null != dispatcher) {
-			return this.dispatcher.haveMetaBlankLineInErrorRemaining();
-		}
-		return Boolean.FALSE;
+		return this.dispatcher.haveMetaBlankLineInErrorRemaining();
 	}
 
 	@Override
 	public Integer getNbMetaBlankLineToFixed() {
-		if (null != dispatcher) {
-			return this.dispatcher.getNbMetaBlankLineToFixed();
-		}
-		return 0;
+		return this.dispatcher.getNbMetaBlankLineToFixed();
 	}
-
 
 }

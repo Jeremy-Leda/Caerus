@@ -24,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import analyze.beans.Configuration;
 import ihm.beans.ConfigurationType;
 import ihm.controler.IConfigurationControler;
 import ihm.utils.ConfigurationUtils;
@@ -173,7 +172,7 @@ public class LoadTextConfigurationSelector extends JFrame {
 	}
 
 	public Boolean isLoaded() {
-		return null != this.controler.getListOfStructuredFile();
+		return !this.controler.getListOfStructuredFile().isEmpty();
 	}
 	
 	public Boolean errorProcessing() {
@@ -223,16 +222,16 @@ public class LoadTextConfigurationSelector extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				Configuration configuration = new Configuration();
 				if (ConfigurationType.DIDACTIC.equals(mapDisplayToConfiguration.get(typeConfigurationComboList.getSelectedItem()))) {
 					try {
-						configuration = ConfigurationUtils.getInstance().getClassicalConfiguration();
+						controler.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
 					} catch (Exception e1) {
 						System.err.println(e1.getMessage());
 						System.err.println("Erreur");
 					}
 				}
-				controler.analyzePath(folderFile, configuration);
+				controler.setAnalyzeFolder(folderFile);
+				controler.launchAnalyze();
 				close();
 			}
 		};

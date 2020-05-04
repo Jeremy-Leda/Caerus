@@ -20,6 +20,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import ihm.controler.ConfigurationControler;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
@@ -48,7 +51,8 @@ public class Main extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = -1355570409059243038L;
-
+	private static Logger logger = LoggerFactory.getLogger(Main.class);
+	
 	private JMenuItem createAnalyze = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE)),
 			saveConfiguration = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE)),
 			saveCustomExcel = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_CUSTOM_TITLE)),
@@ -425,7 +429,7 @@ public class Main extends JFrame {
 	private void refreshDisplay() throws HeadlessException, IOException {
 		if (configurationControler.getNbTextsError() == 0
 				&& configurationControler.getNbBlankLinesError() == 0
-						&& (configurationControler.getListOfStructuredFile() == null || configurationControler.getListOfStructuredFile().isEmpty())) {
+						&& configurationControler.getListOfStructuredFile().isEmpty()) {
 			panLineError.setVisible(false);
 			panTextError.setVisible(false);
 
@@ -571,6 +575,11 @@ public class Main extends JFrame {
 				chooser.setAcceptAllFileFilterUsed(false);
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setAnalyzeFolder(chooser.getSelectedFile());
+					try {
+						configurationControler.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+					} catch (IOException e1) {
+						logger.error(e1.getMessage(), e1);
+					}
 					launchAnalyze();
 				}
 			}
@@ -582,7 +591,7 @@ public class Main extends JFrame {
 	 */
 	private void launchAnalyze() {
 		try {
-			configurationControler.analyzePath(configurationControler.getAnalyzeFolder(), ConfigurationUtils.getInstance().getClassicalConfiguration());
+			configurationControler.launchAnalyze();
 			refreshDisplay();
 		} catch (IOException e) {
 			e.printStackTrace();

@@ -16,11 +16,11 @@ import excel.beans.ExcelGenerateConfigurationCmd;
 
 public interface IConfigurationModel {
 
-	void analyzePath(String path, Configuration configuration);
+	void launchAnalyze();
+	
+	void setCurrentConfiguration(Configuration configuration);
 	
 	List<StructuredFile> getListOfStructuredFile();
-	
-	Boolean isLoaded();
 	
 	void createExcel(File path);
 	

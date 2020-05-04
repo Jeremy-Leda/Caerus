@@ -22,7 +22,7 @@ public class SaveConfiguration extends JFrame {
 	}
 	
 	public Boolean isLoaded() {
-		return null != this.controler.getListOfStructuredFile();
+		return !this.controler.getListOfStructuredFile().isEmpty();
 	}
 
 	private void fileChoose() {

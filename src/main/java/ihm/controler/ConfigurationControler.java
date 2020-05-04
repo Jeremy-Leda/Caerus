@@ -28,21 +28,28 @@ public class ConfigurationControler implements IConfigurationControler {
 	private Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
 	private IConfigurationModel configurationModel = new ConfigurationModel();
 
+
 	@Override
-	public void analyzePath(File path, Configuration configuration) {
-		if (null != path && path.isDirectory() && null != configuration) {
-			configurationModel.analyzePath(path.toString(), configuration);
+	public void launchAnalyze() {
+		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName()) 
+				&& null != this.configurationModel.getAnalyzeFolder()
+				&& this.configurationModel.getAnalyzeFolder().isDirectory()) {
+			configurationModel.launchAnalyze();
 		} else {
-			logger.error(String.format("Le chemin demandé n'est pas compatible : %s", path));
+			logger.error("Configuration or path is not compatible");
+		}
+	}
+
+	@Override
+	public void setCurrentConfiguration(Configuration configuration) {
+		if (null != configuration) {
+			this.configurationModel.setCurrentConfiguration(configuration);
 		}
 	}
 
 	@Override
 	public List<StructuredFile> getListOfStructuredFile() {
-		if (this.configurationModel.isLoaded()) {
-			return this.configurationModel.getListOfStructuredFile();
-		}
-		return null;
+		return this.configurationModel.getListOfStructuredFile();
 	}
 
 	@Override

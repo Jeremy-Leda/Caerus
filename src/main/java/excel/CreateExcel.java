@@ -6,11 +6,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import excel.beans.ExcelRow;
 
@@ -31,8 +31,8 @@ public class CreateExcel {
 	}
 
 	public void generateExcel() throws IOException {
-		try (HSSFWorkbook workbook = new HSSFWorkbook()) {
-			HSSFSheet sheet = workbook.createSheet("Textos");
+		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
+			XSSFSheet sheet = workbook.createSheet("Textos");
 			rows.forEach(er -> createRow(sheet, er));
 
 			try (FileOutputStream fos = new FileOutputStream(path)) {
@@ -41,21 +41,17 @@ public class CreateExcel {
 		}
 	}
 
-	private void createRow(HSSFSheet sheet, ExcelRow er) {
-		HSSFRow row = null;
-		if (sheet.getPhysicalNumberOfRows()>1) {
-			row = sheet.createRow(sheet.getLastRowNum()+1);
-		} else {
-			row = sheet.createRow(sheet.getLastRowNum()+sheet.getPhysicalNumberOfRows());
-		}
+	private void createRow(XSSFSheet sheet, ExcelRow er) {
+		XSSFRow row = null;
+		row = sheet.createRow(sheet.getLastRowNum()+1);
 		for (String ecell : er.getCells()) {
-			HSSFCell cell = null;
+			XSSFCell cell = null;
 			if (row.getLastCellNum() < 0) {
 				cell = row.createCell(row.getLastCellNum()+1);
 			} else {
 				cell = row.createCell(row.getLastCellNum());
 			}
-			cell.setCellValue(new HSSFRichTextString(ecell.replaceAll("\\R", " ")));
+			cell.setCellValue(new XSSFRichTextString(ecell.replaceAll("\\R", " ")));
 		}
 	}
 

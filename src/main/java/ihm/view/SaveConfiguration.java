@@ -30,7 +30,7 @@ public class SaveConfiguration extends JFrame {
 		chooser.setCurrentDirectory(new java.io.File("."));
 		chooser.setDialogTitle("Fichier excel à créer");
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel", "xls");
+		FileNameExtensionFilter filter = new FileNameExtensionFilter("Excel", "xlsx");
 		chooser.addChoosableFileFilter(filter);
 		if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			System.out.println("getSelectedFile(): " + chooser.getSelectedFile());

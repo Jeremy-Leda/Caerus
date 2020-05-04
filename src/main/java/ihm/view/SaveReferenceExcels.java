@@ -147,9 +147,9 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 	private String getFileName(ICheckBoxTextFieldPanel checkBoxTextField) {
 		String nameFile = checkBoxTextField.getText();
 		String extension = FilenameUtils.getExtension(nameFile);
-		if (!"xls".equals(extension)) {
+		if (!"xlsx".equals(extension)) {
 			StringBuilder sbNameFile = new StringBuilder(nameFile);
-			sbNameFile.append(".xls");
+			sbNameFile.append(".xlsx");
 			nameFile = sbNameFile.toString();
 		}
 		String base = FilenameUtils.removeExtension(filePickerPanel.getFile());

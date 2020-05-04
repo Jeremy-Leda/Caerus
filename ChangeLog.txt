@@ -9,3 +9,6 @@ Caerus 0.0.1-SNAPSHOT - 03/05/2020
 - Corrections des anomalies sur la prise en charge du chargement de plusieurs fichiers .txt pour analyse et correction
 - Améliorations de la détection des erreurs de balises (pas de [ en début de ligne)
 - Modifications de la fenêtre pour sélectionner le fichier à enregistrer (remplacement de ouvrir par enregistrer)
+
+Caerus 0.0.1-SNAPSHOT - 04/05/2020
+- Modification de la génération des fichiers excel pour générer des "xlsx" (version 2010 et +) 

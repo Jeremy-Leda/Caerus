@@ -79,9 +79,9 @@ public class FilePickerPanel implements IFilePickerPanel {
         if (fileChooser.showSaveDialog(getJPanel()) == JFileChooser.APPROVE_OPTION) {
         	String absolutePath = fileChooser.getSelectedFile().getAbsolutePath();
         	String extension = FilenameUtils.getExtension(absolutePath);
-        	if (!"xls".equals(extension)) {
+        	if (!"xlsx".equals(extension)) {
         		StringBuilder sb = new StringBuilder(absolutePath);
-        		sb.append(".xls");
+        		sb.append(".xlsx");
         		absolutePath = sb.toString();
         	}
             textField.setText(absolutePath);

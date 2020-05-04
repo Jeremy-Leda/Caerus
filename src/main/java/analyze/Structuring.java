@@ -155,7 +155,8 @@ public class Structuring {
 		integrateContentToStructuredText(st, configuration, textLines);
 		st.setHaveBlankLine(st.getHaveBlankLine() || !checkAllFieldArePresent(st, configuration, Boolean.FALSE));
 		if (listMetaToAddIsEmpty) {
-			st.setHaveMetaBlankLine(st.getHaveMetaBlankLine() || !checkAllFieldArePresent(st, configuration, Boolean.TRUE));
+			st.setHaveMetaBlankLine(
+					st.getHaveMetaBlankLine() || !checkAllFieldArePresent(st, configuration, Boolean.TRUE));
 		}
 		return st;
 	}
@@ -164,15 +165,17 @@ public class Structuring {
 	 * Permet de savoir si tous les champs de la configuration sont renseigné
 	 * 
 	 * @param structuredText texte structuré
-	 * @param configuration configuration
-	 * @param onlyMeta Vrai : On inclut que les meta, Faux : on ignore les meta
+	 * @param configuration  configuration
+	 * @param onlyMeta       Vrai : On inclut que les meta, Faux : on ignore les
+	 *                       meta
 	 * @return
 	 */
 	private Boolean checkAllFieldArePresent(StructuredText structuredText, Configuration configuration,
 			Boolean onlyMeta) {
 		if (onlyMeta) {
 			return configuration.getStructuredFieldList().stream()
-					.map(field -> !field.getIsMetaFile() || StringUtils.isNotBlank(structuredText.getContent(field.getFieldName())))
+					.map(field -> !field.getIsMetaFile()
+							|| StringUtils.isNotBlank(structuredText.getContent(field.getFieldName())))
 					.reduce(Boolean::logicalAnd).get();
 		} else {
 			return configuration.getStructuredFieldList().stream()
@@ -254,34 +257,45 @@ public class Structuring {
 		if (StringUtils.isBlank(line)) {
 			return;
 		}
-		if (!StringUtils.startsWith(line, "[")) {
-			// On recherche des éléments permettant de déterminer si la ligne n'est pas
-			// érroné car il manque un crocher au début.
-			// On ne peut pas être sur que cette ligne est la suite d'une autre.
-			// Donc on va rechercher si la ligne detient une balise avec le code et le base
-			// code dans le texte, si oui, on envisage que cela est une erreur.
-			// On respecte la casse bien évidemment.
-			if (!StringUtils.contains(line,
-					StringUtils.remove(StringUtils.remove(configuration.getBaseCode(), "["), "]"))) {
-				return;
-			}
-			if (!configuration.getStructuredFieldList().stream()
-					.map(field -> StringUtils.contains(line,
-							StringUtils.remove(StringUtils.remove(field.getFieldName(), "["), "]")))
-					.reduce(Boolean::logicalOr).get()) {
-				return;
-			}
-		} else if (StringUtils.startsWith(line, configuration.getBaseCode())) {
-			String lineWithoutLedaBalise = StringUtils.remove(line, configuration.getBaseCode());
-			Optional<StructuredField> optionalStructuredField = configuration.getStructuredFieldList().stream()
-					.filter(field -> lineWithoutLedaBalise.startsWith(field.getFieldName())).findFirst();
-			if (optionalStructuredField.isPresent()) {
+		if (!StringUtils.startsWith(line, "[") && !checkIfHaveFieldsCode(configuration, line)) {
+			return;
+		} else {
+			if (StringUtils.startsWith(line, configuration.getBaseCode())) {
+				String lineWithoutLedaBalise = StringUtils.remove(line, configuration.getBaseCode());
+				Optional<StructuredField> optionalStructuredField = configuration.getStructuredFieldList().stream()
+						.filter(field -> lineWithoutLedaBalise.startsWith(field.getFieldName())).findFirst();
+				if (optionalStructuredField.isPresent()) {
+					return;
+				}
+			} else if (!checkIfHaveFieldsCode(configuration, line)) {
 				return;
 			}
 		}
 		UserSettings.getInstance().addLineError(memoryFile.getPath(), line, memoryFile.getCurrentLine());
 	}
 
+	/**
+	 * Permet de vérifier si la ligne détient des informations de balises
+	 * @param configuration configuration
+	 * @param line ligne à analyser
+	 * @return Vrai s'il n'y a pas de balise
+	 */
+	private Boolean checkIfHaveFieldsCode(Configuration configuration, String line) {
+		if (!StringUtils.contains(line,
+				StringUtils.remove(StringUtils.remove(configuration.getBaseCode(), "["), "]"))) {
+			return false;
+		}
+		if (!configuration.getStructuredFieldList().stream()
+				.map(field -> StringUtils.contains(line,
+						StringUtils.remove(StringUtils.remove(field.getFieldName(), "["), "]")))
+				.reduce(Boolean::logicalOr).get()) {
+			return false;
+		}
+		return true;
+	}
+
+	
+	
 	/**
 	 * 
 	 * Permet de construire l'erreur a partir des éléments du texte

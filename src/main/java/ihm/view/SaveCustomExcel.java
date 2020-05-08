@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import excel.beans.ExcelGenerateConfigurationCmd;
 import ihm.abstracts.ModalJFrameAbstract;
-import ihm.beans.ImageTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionPanel;
 import ihm.interfaces.ICheckBoxPanel;
@@ -71,7 +71,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_LIST_SPECIFIC_PANEL_TITLE),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_LIST_SPECIFIC_LABEL));
 		this.checkBoxFieldsPanel = new CheckBoxPanel(getControler().getFieldConfigurationNameLabelMap().size(), true);
-		this.informationPanel = new InformationPanel(ImageTypeEnum.INFORMATION,
+		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION,
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TEXT_NOTHING), false);
 		this.actionPanel = new ActionPanel(1);

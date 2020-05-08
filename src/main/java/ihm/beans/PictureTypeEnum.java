@@ -7,7 +7,7 @@ package ihm.beans;
  * @author jerem
  *
  */
-public enum ImageTypeEnum {
+public enum PictureTypeEnum {
 	INFORMATION("icons/icons_information.png"),
 	WARNING("icons/icons_warning.png");
 
@@ -15,7 +15,7 @@ public enum ImageTypeEnum {
 	 * Constructeur pour l'image
 	 * @param fileName
 	 */
-	private ImageTypeEnum(String fileName) {
+	private PictureTypeEnum(String fileName) {
 		this.fileName = fileName;
 	}
 

@@ -4,8 +4,11 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -20,9 +23,12 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import exceptions.MoveFileException;
+import ihm.beans.PictureTypeEnum;
 import ihm.controler.ConfigurationControler;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
@@ -37,6 +43,7 @@ import ihm.view.FixedText;
 import ihm.view.LoadTextConfigurationSelector;
 import ihm.view.SaveCustomExcel;
 import ihm.view.SaveReferenceExcels;
+import ihm.view.UserInformation;
 
 /**
  * 
@@ -52,27 +59,39 @@ public class Main extends JFrame {
 	 */
 	private static final long serialVersionUID = -1355570409059243038L;
 	private static Logger logger = LoggerFactory.getLogger(Main.class);
-	
-	private JMenuItem createAnalyze = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE)),
-			saveConfiguration = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE)),
-			saveCustomExcel = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_CUSTOM_TITLE)),
+
+	private JMenuItem createAnalyze = new JMenuItem(
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE)),
+			saveConfiguration = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE)),
+			saveCustomExcel = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_CUSTOM_TITLE)),
 			exit = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_EXIT_TITLE)),
-			//displayError = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.ERROR_DISPLAY_TITLE)),
-			textLoadLibrary = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE)),
-			createTextLibrary = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_CREATE_MENU_TITLE)),
-			configurationLoadLibrary = new JMenuItem(
-					ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
+			// displayError = new
+			// JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.ERROR_DISPLAY_TITLE)),
+			textLoadLibrary = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE)),
+			createTextLibrary = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_CREATE_MENU_TITLE)),
+			configurationLoadLibrary = new JMenuItem(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
 	private List<JMenuItem> languages = new ArrayList<JMenuItem>();
-	private JMenu fileMenu = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
-	//private JMenu errorMenu = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.ERROR_MENU_TITLE));
-	private JMenu languageMenu = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.LANGUAGE_MENU_TITLE));
-	private JMenu textLibrary = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
-	private JMenu configurationLibrary = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
+	private JMenu fileMenu = new JMenu(
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
+	// private JMenu errorMenu = new
+	// JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.ERROR_MENU_TITLE));
+	private JMenu languageMenu = new JMenu(
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.LANGUAGE_MENU_TITLE));
+	private JMenu textLibrary = new JMenu(
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
+	private JMenu configurationLibrary = new JMenu(
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
 	private JMenuBar menuBar = new JMenuBar();
 	private final JPanel panContent = new JPanel();
 	private final JPanel panAnalyze = new JPanel();
 	private final JPanel panLineError = new JPanel();
 	private final JPanel panTextError = new JPanel();
+	private final JPanel panMoveFileLibrary = new JPanel();
 	private final JPanel panBlankLineError = new JPanel();
 	private final JLabel stateConfigurationLibrayLabel = new JLabel();
 	private final JLabel stateConfigurationLibrayValue = new JLabel();
@@ -104,6 +123,7 @@ public class Main extends JFrame {
 	private final JButton fixedBlankLineErrorButton = new JButton();
 	private final JButton fixedMetaBlankLineErrorButton = new JButton();
 	private final JButton stateAnalyzeButton = new JButton();
+	private final JButton moveFileLibraryButton = new JButton();
 	private final IConfigurationControler configurationControler = new ConfigurationControler();
 
 	/**
@@ -161,7 +181,8 @@ public class Main extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					ConfigurationUtils.getInstance().loadBundleLangage(ConfigurationUtils.getInstance().getMapLanguages().get(s));
+					ConfigurationUtils.getInstance()
+							.loadBundleLangage(ConfigurationUtils.getInstance().getMapLanguages().get(s));
 					reloadLanguage();
 				}
 			});
@@ -186,20 +207,20 @@ public class Main extends JFrame {
 
 			}
 		});
-		
-		
 
 		saveConfiguration.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new SaveReferenceExcels(configurationControler);
-				
-				//new SaveConfiguration(configurationControler);
+
+				// new SaveConfiguration(configurationControler);
 				if (configurationControler.isExcelCreated()) {
-					JOptionPane.showMessageDialog(null, "Fichier excel enregistré", "Information", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Fichier excel enregistré", "Information",
+							JOptionPane.INFORMATION_MESSAGE);
 				} else {
-					JOptionPane.showMessageDialog(null, "Aucun fichier enregistré", "Erreur", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Aucun fichier enregistré", "Erreur",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -209,16 +230,18 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new SaveCustomExcel(configurationControler);
-				
-				//new SaveConfiguration(configurationControler);
+
+				// new SaveConfiguration(configurationControler);
 				if (configurationControler.isExcelCreated()) {
-					JOptionPane.showMessageDialog(null, "Fichier excel enregistré", "Information", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Fichier excel enregistré", "Information",
+							JOptionPane.INFORMATION_MESSAGE);
 				} else {
-					JOptionPane.showMessageDialog(null, "Aucun fichier enregistré", "Erreur", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(null, "Aucun fichier enregistré", "Erreur",
+							JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
-		
+
 		menuBar.add(fileMenu);
 		menuBar.add(languageMenu);
 
@@ -232,7 +255,7 @@ public class Main extends JFrame {
 //			}
 //		});
 
-		//menuBar.add(errorMenu);
+		// menuBar.add(errorMenu);
 
 		configurationLibrary.add(configurationLoadLibrary);
 		menuBar.add(configurationLibrary);
@@ -253,7 +276,6 @@ public class Main extends JFrame {
 				}
 			}
 		});
-		createTextLibrary.setEnabled(false);
 		menuBar.add(textLibrary);
 
 		this.setJMenuBar(menuBar);
@@ -262,10 +284,13 @@ public class Main extends JFrame {
 		createLineErrorPanel();
 		createTextErrorPanel();
 		createBlankLineErrorPanel();
+		createMoveFileLibraryPanel();
+		refreshEnabledWithTextsFolderLibrary();
 		panContent.add(panAnalyze);
 		panContent.add(panLineError);
 		panContent.add(panTextError);
 		panContent.add(panBlankLineError);
+		panContent.add(panMoveFileLibrary);
 
 		this.add(panContent);
 	}
@@ -310,8 +335,6 @@ public class Main extends JFrame {
 		JPanel subPanButtonAnalyzeState = new JPanel();
 		subPanButtonAnalyzeState.add(stateAnalyzeButton);
 
-		
-		
 		stateAnalyzeButton.addActionListener(openFolderForAnalyzeAndLaunch());
 		panAnalyze.add(subPanCommonAnalyzeState);
 		panAnalyze.add(subPanConfigurationState);
@@ -351,7 +374,20 @@ public class Main extends JFrame {
 		panTextError.setVisible(false);
 		fixedTextErrorButton.addActionListener(fixedErrorText());
 	}
-	
+
+	/**
+	 * Permet de créer le panel pour transférer les textes vers la bibliotheque de
+	 * texte
+	 */
+	private void createMoveFileLibraryPanel() {
+		panMoveFileLibrary.setLayout(new BoxLayout(panMoveFileLibrary, BoxLayout.Y_AXIS));
+		JPanel subPanButton = new JPanel();
+		subPanButton.add(moveFileLibraryButton);
+		panMoveFileLibrary.add(subPanButton);
+		panMoveFileLibrary.setVisible(false);
+		moveFileLibraryButton.addActionListener(moveFileToLibraryAction());
+	}
+
 	/***
 	 * Permet de créer le panel pour les erreurs de lignes vides
 	 */
@@ -375,49 +411,72 @@ public class Main extends JFrame {
 	}
 
 	private void reloadLanguage() {
-		stateConfigurationLibrayLabel
-				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_CONFIGURATION_LIBRARY_PANEL_STATE_LABEL));
-		stateTextsLibrayLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_TEXTS_LIBRARY_PANEL_STATE_LABEL));
-		panAnalyze.setBorder(
-				BorderFactory.createTitledBorder(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_TITLE)));
-		stateAnalyzeLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LABEL));
-		stateAnalyzeFolderLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_FOLDER_LABEL));
-		stateAnalyzeErrorLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_LABEL));
-		stateNbTextLoadedLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_NB_TEXT_LOADED_LABEL));
-		
-		
-		stateAnalyzeConfigurationLabel
-				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_CONFIGURATION_LABEL));
-		stateAnalyzeButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LOAD_BUTTON));
-		createAnalyze.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE));
+		stateConfigurationLibrayLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_CONFIGURATION_LIBRARY_PANEL_STATE_LABEL));
+		stateTextsLibrayLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_TEXTS_LIBRARY_PANEL_STATE_LABEL));
+		panAnalyze.setBorder(BorderFactory.createTitledBorder(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_TITLE)));
+		stateAnalyzeLabel.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LABEL));
+		stateAnalyzeFolderLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_FOLDER_LABEL));
+		stateAnalyzeErrorLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_LABEL));
+		stateNbTextLoadedLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_NB_TEXT_LOADED_LABEL));
+
+		stateAnalyzeConfigurationLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_CONFIGURATION_LABEL));
+		stateAnalyzeButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LOAD_BUTTON));
+		createAnalyze
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE));
 		saveConfiguration.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE));
-		saveCustomExcel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_CUSTOM_TITLE));
+		saveCustomExcel
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_CUSTOM_TITLE));
 		exit.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_EXIT_TITLE));
 		fileMenu.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_MENU_TITLE));
-		configurationLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
+		configurationLibrary.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
 		textLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
-		textLoadLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE));
-		createTextLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_CREATE_MENU_TITLE));
-		configurationLoadLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
+		textLoadLibrary
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE));
+		createTextLibrary
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_CREATE_MENU_TITLE));
+		configurationLoadLibrary.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
 		this.setTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_TITLE));
-		panLineError.setBorder(
-				BorderFactory.createTitledBorder(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_LINE_ERROR_PANEL_TITLE)));
-		nbLineErrorLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_LINE_ERROR_NB_LABEL));
-		fixedLineErrorButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_LINE_ERROR_FIXED_BUTTON_LABEL));
-		panTextError.setBorder(
-				BorderFactory.createTitledBorder(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_TEXT_ERROR_PANEL_TITLE)));
-		nbTextErrorLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_TEXT_ERROR_NB_LABEL));
-		fixedTextErrorButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_TEXT_ERROR_FIXED_BUTTON_LABEL));
+		panLineError.setBorder(BorderFactory.createTitledBorder(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_LINE_ERROR_PANEL_TITLE)));
+		nbLineErrorLabel
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_LINE_ERROR_NB_LABEL));
+		fixedLineErrorButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_LINE_ERROR_FIXED_BUTTON_LABEL));
+		panTextError.setBorder(BorderFactory.createTitledBorder(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_TEXT_ERROR_PANEL_TITLE)));
+		nbTextErrorLabel
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_TEXT_ERROR_NB_LABEL));
+		fixedTextErrorButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_TEXT_ERROR_FIXED_BUTTON_LABEL));
 
-		panBlankLineError.setBorder(
-				BorderFactory.createTitledBorder(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_BLANK_LINE_ERROR_PANEL_TITLE)));
-		nbBlankLineErrorLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_BLANK_LINE_ERROR_NB_LABEL));
-		fixedBlankLineErrorButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_BLANK_LINE_ERROR_FIXED_BUTTON_LABEL));
-		
-		haveMetaBlankLineErrorLabel.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_META_BLANK_LINE_ERROR_LABEL));
-		fixedMetaBlankLineErrorButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_META_BLANK_LINE_ERROR_FIXED_BUTTON_LABEL));
-		
-		
+		panBlankLineError.setBorder(BorderFactory.createTitledBorder(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_BLANK_LINE_ERROR_PANEL_TITLE)));
+		nbBlankLineErrorLabel.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_BLANK_LINE_ERROR_NB_LABEL));
+		fixedBlankLineErrorButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_BLANK_LINE_ERROR_FIXED_BUTTON_LABEL));
+
+		haveMetaBlankLineErrorLabel.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_META_BLANK_LINE_ERROR_LABEL));
+		fixedMetaBlankLineErrorButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_META_BLANK_LINE_ERROR_FIXED_BUTTON_LABEL));
+
+		panMoveFileLibrary.setBorder(BorderFactory.createTitledBorder(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_PANEL_LABEL)));
+		moveFileLibraryButton.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_BUTTON_LABEL));
+
 		try {
 			refreshDisplay();
 		} catch (HeadlessException | IOException e) {
@@ -427,21 +486,21 @@ public class Main extends JFrame {
 	}
 
 	private void refreshDisplay() throws HeadlessException, IOException {
-		if (configurationControler.getNbTextsError() == 0
-				&& configurationControler.getNbBlankLinesError() == 0
-						&& configurationControler.getListOfStructuredFile().isEmpty()) {
+		if (configurationControler.getNbTextsError() == 0 && configurationControler.getNbBlankLinesError() == 0
+				&& configurationControler.getListOfStructuredFile().isEmpty()) {
 			panLineError.setVisible(false);
 			panTextError.setVisible(false);
 
 			subPanAnalyzeState.setVisible(false);
-			//errorMenu.setVisible(false);
+			// errorMenu.setVisible(false);
 			saveConfiguration.setEnabled(false);
 			saveCustomExcel.setEnabled(false);
-			stateAnalyzeValue.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_NONE));
+			stateAnalyzeValue.setText(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_NONE));
 		} else {
 
 			stateNbTextLoadedValue.setText(configurationControler.getNbTextLoaded().toString());
-			
+
 			if (configurationControler.getNbLinesError() > 0) {
 				fixedLineErrorButton.setEnabled(true);
 				saveConfiguration.setEnabled(false);
@@ -460,38 +519,42 @@ public class Main extends JFrame {
 					fixedTextErrorButton.setEnabled(false);
 					fixedBlankLineErrorButton.setEnabled(false);
 					fixedMetaBlankLineErrorButton.setEnabled(false);
-					haveMetaBlankLineErrorValue.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_NO_LABEL));
+					haveMetaBlankLineErrorValue
+							.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_NO_LABEL));
 					if (configurationControler.getNbBlankLinesError() > 0) {
 						fixedBlankLineErrorButton.setEnabled(true);
 					}
 					if (configurationControler.haveMetaBlankLineError()) {
 						fixedMetaBlankLineErrorButton.setEnabled(true);
-						haveMetaBlankLineErrorValue.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_YES_LABEL));
+						haveMetaBlankLineErrorValue.setText(
+								ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_YES_LABEL));
 					}
 					nbBlankLineErrorValue.setText(configurationControler.getNbBlankLinesError().toString());
 					panBlankLineError.setVisible(true);
+					panMoveFileLibrary.setVisible(true);
+					if (null != configurationControler.getTextsFolder()) {
+						moveFileLibraryButton.setEnabled(true);
+					}
 				}
 				nbTextErrorValue.setText(configurationControler.getNbTextsError().toString());
 				panTextError.setVisible(true);
-				
+
 			}
 			nbLineErrorValue.setText(configurationControler.getNbLinesError().toString());
 			panLineError.setVisible(true);
 
-			
-			
-
-			stateAnalyzeValue.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_SUCCESS));
+			stateAnalyzeValue.setText(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_SUCCESS));
 			stateAnalyzeFolderValue.setText(configurationControler.getAnalyzeFolder().toString());
 			stateAnalyzeConfigurationValue.setText(configurationControler.getConfigurationName());
 			int error = 0;
 			if (configurationControler.getListOfStructuredFile() != null) {
 				error = this.configurationControler.getStructuringErrorList().size();
 			}
-			stateAnalyzeErrorValue.setText(
-					String.format(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_VALUE), error));
+			stateAnalyzeErrorValue.setText(String.format(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_VALUE), error));
 			subPanAnalyzeState.setVisible(true);
-			//errorMenu.setVisible(false);
+			// errorMenu.setVisible(false);
 			// saveConfiguration.setEnabled(false);
 //			if (configurationControler.errorProcessing()) {
 ////				JOptionPane.showMessageDialog(null,
@@ -507,6 +570,79 @@ public class Main extends JFrame {
 //				// saveConfiguration.setEnabled(true);
 //			}
 		}
+	}
+
+	private ActionListener moveFileToLibraryAction() {
+		return new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					Map<Path, Path> moveAllFilesFromTextAnalyzeToLibraryResultMap = configurationControler
+							.moveAllFilesFromTextAnalyzeToLibrary();
+					String message = constructInformationFileMessage(moveAllFilesFromTextAnalyzeToLibraryResultMap);
+					new UserInformation(
+							ConfigurationUtils.getInstance()
+									.getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
+							configurationControler, PictureTypeEnum.INFORMATION, message);
+					//TODO close les éléments d'analyse
+					
+				} catch (IOException e1) {
+					logger.error(e1.getMessage(), e1);
+					new UserInformation(
+							ConfigurationUtils.getInstance()
+									.getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
+							configurationControler, PictureTypeEnum.WARNING, String.format(
+									ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_UNKNOW_ERROR),
+									e1.getMessage()));
+				} catch (MoveFileException e1) {
+					logger.error(e1.getMessage(), e1);
+					String message = constructErrorFileMessage(Arrays.asList(StringUtils.split(e1.getMessage(), ",")));
+					new UserInformation(
+							ConfigurationUtils.getInstance()
+									.getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
+							configurationControler, PictureTypeEnum.WARNING, message);
+				}
+			}
+		};
+	}
+
+	/**
+	 * Permet de construire le message d'information
+	 * 
+	 * @param listErreur liste des fichiers en erreur
+	 * @return le message d'erreur
+	 */
+	private String constructInformationFileMessage(Map<Path, Path> fileResultMap) {
+		StringBuilder sb = new StringBuilder("<ul>");
+		String messageFrom = ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_FROM);
+		String messageTo = ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_TO);
+		fileResultMap.entrySet().stream().forEach((entry) -> {
+			String fileName = entry.getKey().getFileName().toString();
+			sb.append("<li>").append(fileName).append("</li>").append("<ul>");
+			sb.append("<li>").append(messageFrom).append(entry.getKey().toString()).append("</li>");
+			sb.append("<li>").append(messageTo).append(entry.getValue().toString()).append("</li>");
+			sb.append("</ul>");
+		});
+		sb.append("</ul>");
+		return String.format(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_RESULT_MOVE_FILE),
+				sb.toString());
+	}
+
+	/**
+	 * Permet de construire l'erreur pour les fichiers déjà existant
+	 * 
+	 * @param listErreur liste des fichiers en erreur
+	 * @return le message d'erreur
+	 */
+	private String constructErrorFileMessage(List<String> listErreur) {
+		StringBuilder sb = new StringBuilder("<ul>");
+		listErreur.stream().forEach(file -> sb.append("<li>").append(file).append("</li>"));
+		sb.append("</ul>");
+		return String.format(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_ERROR_MOVE_FILE_EXISTS),
+				sb.toString());
 	}
 
 	private ActionListener fixedErrorLine() {
@@ -534,7 +670,7 @@ public class Main extends JFrame {
 			}
 		};
 	}
-	
+
 	private ActionListener fixedBlankLineError() {
 		return new ActionListener() {
 
@@ -545,7 +681,7 @@ public class Main extends JFrame {
 			}
 		};
 	}
-	
+
 	private ActionListener fixedMetaBlankLineError() {
 		return new ActionListener() {
 
@@ -576,7 +712,8 @@ public class Main extends JFrame {
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setAnalyzeFolder(chooser.getSelectedFile());
 					try {
-						configurationControler.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+						configurationControler
+								.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
 					} catch (IOException e1) {
 						logger.error(e1.getMessage(), e1);
 					}
@@ -600,6 +737,19 @@ public class Main extends JFrame {
 	}
 
 	/**
+	 * Permet de rafraichir pour les activations suite à la présence du chemin de la librairie des textes
+	 */
+	private void refreshEnabledWithTextsFolderLibrary() {
+		if (null != configurationControler.getTextsFolder()) {
+			createTextLibrary.setEnabled(true);
+			moveFileLibraryButton.setEnabled(true);
+		} else {
+			createTextLibrary.setEnabled(false);
+			moveFileLibraryButton.setEnabled(false);
+		}
+	}
+	
+	/**
 	 * Permet de créer la fenêtre de sélection du dossier et la définir en tant que
 	 * bibliothéque de textes
 	 * 
@@ -612,13 +762,13 @@ public class Main extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser chooser = new JFileChooser();
 				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle(ConfigurationUtils.getInstance()
-						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_LIBRARY_BUTTON_FOLDER_CHOOSE_TITLE));
+				chooser.setDialogTitle(ConfigurationUtils.getInstance().getDisplayMessage(
+						Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_LIBRARY_BUTTON_FOLDER_CHOOSE_TITLE));
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.setAcceptAllFileFilterUsed(false);
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setTextsFolder(chooser.getSelectedFile());
-					createTextLibrary.setEnabled(true);
+					refreshEnabledWithTextsFolderLibrary();
 				}
 			}
 		};

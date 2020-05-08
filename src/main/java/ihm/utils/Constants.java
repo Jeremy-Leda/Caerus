@@ -29,7 +29,7 @@ public final class Constants {
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_ERROR_LOADING_TITLE = "window.load.texts.start.error.loading.title";
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_SUCCESS_LOADING_LABEL = "window.load.texts.start.success.loading.label";
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_SUCCESS_LOADING_TITLE = "window.load.texts.start.success.loading.title";
-	
+
 	public static final String WINDOW_ERROR_STRUCTURE_TITLE = "window.error.structure.title";
 	public static final String WINDOW_ERROR_STRUCTURE_CONTEXT_PANEL_TITLE = "window.error.structure.context.panel.title";
 	public static final String WINDOW_ERROR_STRUCTURE_CONTEXT_PANEL_FILE_LABEL = "window.error.structure.context.panel.file.label";
@@ -39,80 +39,78 @@ public final class Constants {
 	public static final String WINDOW_ERROR_STRUCTURE_ACTION_PANEL_TITLE = "window.error.structure.action.panel.title";
 	public static final String WINDOW_ERROR_STRUCTURE_ACTION_PANEL_BUTTON_PREVIOUS_LABEL = "window.error.structure.action.panel.button.previous.label";
 	public static final String WINDOW_ERROR_STRUCTURE_ACTION_PANEL_BUTTON_NEXT_LABEL = "window.error.structure.action.panel.button.next.label";
-	
+
 	public static final String ERROR_MENU_TITLE = "window.menu.nivel4.title";
 	public static final String ERROR_DISPLAY_TITLE = "window.menu.nivel4.subnivel1.title";
-	
+
 	public static final String TEXT_LIBRARY_MENU_TITLE = "window.menu.nivel5.title";
 	public static final String TEXT_LIBRARY_LOAD_MENU_TITLE = "window.menu.nivel5.subnivel1.title";
 	public static final String TEXT_LIBRARY_CREATE_MENU_TITLE = "window.menu.nivel5.subnivel2.title";
 	public static final String CONFIGURATION_LIBRARY_MENU_TITLE = "window.menu.nivel3.title";
 	public static final String CONFIGURATION_LIBRARY_LOAD_MENU_TITLE = "window.menu.nivel3.subnivel1.title";
-	
+
 	public static final String WINDOW_MAIN_CONFIGURATION_LIBRARY_PANEL_STATE_LABEL = "window.main.configuration.library.panel.state.label";
 	public static final String WINDOW_MAIN_TEXTS_LIBRARY_PANEL_STATE_LABEL = "window.main.texts.library.panel.state.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_TITLE = "window.main.analyze.panel.title";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_LABEL = "window.main.analyze.panel.state.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_NONE = "window.main.analyze.panel.state.value.none";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_SUCCESS = "window.main.analyze.panel.state.value.success";
-	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_LABEL = "window.main.analyze.panel.state.error.label"; 
+	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_LABEL = "window.main.analyze.panel.state.error.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_VALUE = "window.main.analyze.panel.state.error.value";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_FOLDER_LABEL = "window.main.analyze.panel.state.folder.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_NB_TEXT_LOADED_LABEL = "window.main.analyze.panel.state.nb.text.loaded.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_LOAD_BUTTON = "window.main.analyze.panel.state.load.button";
 	public static final String WINDOW_MAIN_LINE_ERROR_PANEL_TITLE = "window.main.line.error.panel.title";
 	public static final String WINDOW_MAIN_LINE_ERROR_NB_LABEL = "window.main.line.error.nb.label";
-	public static final String WINDOW_MAIN_LINE_ERROR_FIXED_BUTTON_LABEL = "window.main.line.error.fixed.button.label";	
+	public static final String WINDOW_MAIN_LINE_ERROR_FIXED_BUTTON_LABEL = "window.main.line.error.fixed.button.label";
 	public static final String WINDOW_MAIN_TEXT_ERROR_PANEL_TITLE = "window.main.text.error.panel.title";
 	public static final String WINDOW_MAIN_TEXT_ERROR_NB_LABEL = "window.main.text.error.nb.label";
 	public static final String WINDOW_MAIN_TEXT_ERROR_FIXED_BUTTON_LABEL = "window.main.text.error.fixed.button.label";
 	public static final String WINDOW_MAIN_BLANK_LINE_ERROR_PANEL_TITLE = "window.main.blank.line.error.panel.title";
 	public static final String WINDOW_MAIN_BLANK_LINE_ERROR_NB_LABEL = "window.main.blank.line.error.nb.label";
 	public static final String WINDOW_MAIN_BLANK_LINE_ERROR_FIXED_BUTTON_LABEL = "window.main.blank.line.error.fixed.button.label";
-	
+
 	public static final String WINDOW_MAIN_META_BLANK_LINE_ERROR_LABEL = "window.main.meta.blank.line.error.label";
 	public static final String WINDOW_MAIN_META_BLANK_LINE_ERROR_FIXED_BUTTON_LABEL = "window.main.meta.blank.line.error.fixed.button.label";
 	public static final String WINDOW_YES_LABEL = "window.yes.label";
 	public static final String WINDOW_NO_LABEL = "window.no.label";
-	
-	
+
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_CONFIGURATION_LABEL = "window.main.analyze.panel.state.configuration.label";
-	
+
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_LIBRARY_BUTTON_FOLDER_CHOOSE_TITLE = "window.load.texts.folder.library.button.folder.choose.title";
-	
+
 	public static final String WINDOW_CREATE_CORPUS_TITLE = "window.create.corpus.title";
-	public static final String WINDOW_CREATE_CORPUS_FILE_PANEL_TITLE ="window.create.corpus.file.panel.title";
-	public static final String WINDOW_CREATE_CORPUS_NAME_LABEL ="window.create.corpus.name.label";
+	public static final String WINDOW_CREATE_CORPUS_FILE_PANEL_TITLE = "window.create.corpus.file.panel.title";
+	public static final String WINDOW_CREATE_CORPUS_NAME_LABEL = "window.create.corpus.name.label";
 	public static final String WINDOW_CREATE_CORPUS_CONTENT_PANEL_TITLE = "window.create.corpus.content.panel.title";
-	public static final String WINDOW_CREATE_CORPUS_ACTION_PANEL_TITLE ="window.create.corpus.action.panel.title";
-	public static final String WINDOW_CREATE_CORPUS_ACTION_CREATE_TEXT_BUTTON_TITLE ="window.create.corpus.action.create.text.button.title";
-	
-	
+	public static final String WINDOW_CREATE_CORPUS_ACTION_PANEL_TITLE = "window.create.corpus.action.panel.title";
+	public static final String WINDOW_CREATE_CORPUS_ACTION_CREATE_TEXT_BUTTON_TITLE = "window.create.corpus.action.create.text.button.title";
+
 	public static final String WINDOW_CREATE_TEXT_TITLE = "window.create.text.title";
-	public static final String WINDOW_CREATE_TEXT_FILE_PANEL_TITLE ="window.create.text.file.panel.title";
-	public static final String WINDOW_CREATE_TEXT_NAME_LABEL ="window.create.text.name.label";
+	public static final String WINDOW_CREATE_TEXT_FILE_PANEL_TITLE = "window.create.text.file.panel.title";
+	public static final String WINDOW_CREATE_TEXT_NAME_LABEL = "window.create.text.name.label";
 	public static final String WINDOW_CREATE_TEXT_CONTENT_PANEL_TITLE = "window.create.text.content.panel.title";
-	public static final String WINDOW_CREATE_TEXT_ACTION_PANEL_TITLE ="window.create.text.action.panel.title";
-	public static final String WINDOW_CREATE_TEXT_ACTION_CREATE_TEXT_AND_QUIT_BUTTON_TITLE ="window.create.text.action.create.and.quit.text.button.title";
-	public static final String WINDOW_CREATE_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE ="window.create.text.action.fill.specific.button.title";
-	public static final String WINDOW_CREATE_TEXT_ACTION_CREATE_TEXT_AND_ADD_TEXT_BUTTON_TITLE ="window.create.text.action.create.text.and.add.text.button.title";
-	
-	
+	public static final String WINDOW_CREATE_TEXT_ACTION_PANEL_TITLE = "window.create.text.action.panel.title";
+	public static final String WINDOW_CREATE_TEXT_ACTION_CREATE_TEXT_AND_QUIT_BUTTON_TITLE = "window.create.text.action.create.and.quit.text.button.title";
+	public static final String WINDOW_CREATE_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE = "window.create.text.action.fill.specific.button.title";
+	public static final String WINDOW_CREATE_TEXT_ACTION_CREATE_TEXT_AND_ADD_TEXT_BUTTON_TITLE = "window.create.text.action.create.text.and.add.text.button.title";
+
 	public static final String WINDOW_FIXED_TEXT_TITLE = "window.fixed.text.title";
-	public static final String WINDOW_FIXED_TEXT_ACTION_PANEL_TITLE ="window.fixed.text.action.panel.title";
-	public static final String WINDOW_FIXED_TEXT_ACTION_NEXT_BUTTON_TITLE ="window.fixed.text.action.next.button.title";
-	public static final String WINDOW_FIXED_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE ="window.fixed.text.action.fill.specific.button.title";
-	public static final String WINDOW_FIXED_TEXT_ACTION_NEXT_AND_SAVE_BUTTON_TITLE ="window.fixed.text.action.next.and.save.button.title";
-	
+	public static final String WINDOW_FIXED_TEXT_ACTION_PANEL_TITLE = "window.fixed.text.action.panel.title";
+	public static final String WINDOW_FIXED_TEXT_ACTION_NEXT_BUTTON_TITLE = "window.fixed.text.action.next.button.title";
+	public static final String WINDOW_FIXED_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE = "window.fixed.text.action.fill.specific.button.title";
+	public static final String WINDOW_FIXED_TEXT_ACTION_NEXT_AND_SAVE_BUTTON_TITLE = "window.fixed.text.action.next.and.save.button.title";
+
 	public static final String WINDOW_FIXED_SPECIFIC_TITLE = "window.fixed.specific.title";
-	
+
 	public static final String WINDOW_CREATE_SPECIFIC_TITLE = "window.create.specific.title";
 	public static final String WINDOW_CREATE_SPECIFIC_CONTEXT_PANEL_TITLE = "window.create.specific.context.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_CONTEXT_PANEL_FILE_LABEL = "window.create.specific.context.panel.file.label";
 	public static final String WINDOW_CREATE_SPECIFIC_HEADER_PANEL_TITLE = "window.create.specific.header.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_DETAILS_PANEL_TITLE = "window.create.specific.details.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_DETAILS_PANEL_CONTENT_LABEL = "window.create.specific.details.panel.content.label";
-	//public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_TITLE = "window.create.specific.action.panel.title";
+	// public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_TITLE =
+	// "window.create.specific.action.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_BUTTON_PREVIOUS_LABEL = "window.create.specific.action.panel.button.previous.label";
 	public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_BUTTON_NEXT_LABEL = "window.create.specific.action.panel.button.next.label";
 	public static final String WINDOW_CREATE_SPECIFIC_CREATE_PANEL_TITLE = "window.create.specific.create.panel.title";
@@ -120,11 +118,7 @@ public final class Constants {
 	public static final String WINDOW_CREATE_SPECIFIC_CREATE_ACTION_ADD_LABEL = "window.create.specific.create.panel.action.add.label";
 	public static final String WINDOW_CREATE_SPECIFIC_CREATE_ACTION_DELETE_LABEL = "window.create.specific.create.panel.action.delete.label";
 	public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_BUTTON_FINISH_LABEL = "window.create.specific.action.panel.button.finish.label";
-	
-	
-	
-	
-	
+
 	public static final String WINDOW_FIXED_ERROR_LINE_TITLE = "window.fixed.error.line.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_TITLE = "window.fixed.error.line.content.panel.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_CONTENT_PANEL_LINE_FILE_LABEL = "window.fixed.error.line.content.panel.line.file.label";
@@ -134,57 +128,70 @@ public final class Constants {
 	public static final String WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_TITLE = "window.fixed.error.line.action.panel.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_SAVE_NEXT_BUTTON_LABEL = "window.fixed.error.line.action.panel.save.next.button.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_ACTION_PANEL_SAVE_QUIT_BUTTON_LABEL = "window.fixed.error.line.action.panel.save.quit.button.label";
-	
+
 	public static final String WINDOW_RECOVERY_ERROR_STATE_ANSWER = "window.recovery.error.state.answer";
 	public static final String WINDOW_RECOVERY_ERROR_STATE_TITLE = "window.recovery.error.state.title";
-	
+
 	public static final String WINDOW_SPECIFIC_INFORMATION_PANEL_TITLE = "window.specific.information.panel.title";
 	public static final String WINDOW_SPECIFIC_INFORMATION_PANEL_TEXT = "window.specific.information.panel.text";
-	
+
 	public static final String WINDOW_SPECIFIC_WARNING_PANEL_TITLE = "window.specific.warning.panel.title";
 	public static final String WINDOW_SPECIFIC_WARNING_PANEL_TEXT = "window.specific.warning.panel.text";
-	
+
 	public static final String WINDOW_FILE_PICKER_CLASSICAL_PANEL_TITLE = "window.file.picker.classical.panel.title";
 	public static final String WINDOW_FILE_PICKER_SPECIFIC_PANEL_TITLE = "window.file.picker.specific.panel.title";
 	public static final String WINDOW_FILE_PICKER_PANEL_LABEL = "window.file.picker.panel.label";
 	public static final String WINDOW_FILE_PICKER_PANEL_BUTTON = "window.file.picker.panel.button";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_OPTIONS_TITLE_PANEL = "window.save.excel.options.title.panel";
 	public static final String WINDOW_SAVE_EXCEL_OPTIONS_HEADER_LABEL = "window.save.excel.options.header.label";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_CHECK_LABEL = "window.save.excel.specific.check.label";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_CLASSICAL_PANEL_TITLE = "window.save.excel.classical.panel.title";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TITLE = "window.save.excel.classical.information.panel.title";
 	public static final String WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TEXT_NOTHING = "window.save.excel.classical.information.panel.text.nothing";
 	public static final String WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TEXT = "window.save.excel.classical.information.panel.text";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_PANEL_TITLE = "window.save.excel.specific.panel.title";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TITLE = "window.save.excel.specific.information.panel.title";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TEXT_NOTHING = "window.save.excel.specific.information.panel.text.nothing";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TEXT = "window.save.excel.specific.information.panel.text";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_LIST_SPECIFIC_PANEL_TITLE = "window.save.excel.specific.list.specific.panel.title";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_LIST_SPECIFIC_LABEL = "window.save.excel.specific.list.specific.label";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_LIST_SPECIFIC_LABEL_NOTHING = "window.save.excel.specific.list.specific.label.nothing";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_REFERENCE_FILE_LABEL = "window.save.excel.reference.file.label";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_FILE_LABEL = "window.save.excel.specific.file.label";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_ACTION_TITLE_PANEL = "window.save.excel.action.title.panel";
 	public static final String WINDOW_SAVE_EXCEL_ACTION_BUTTON_LABEL = "window.save.excel.action.button.label";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_LIST_FIELDS_TITLE_PANEL = "window.save.excel.specific.list.fields.title.panel";
-	
+
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_ACTION_TITLE_PANEL = "window.save.excel.specific.action.title.panel";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_ACTION_SELECT_ALL = "window.save.excel.specific.action.select.all";
 	public static final String WINDOW_SAVE_EXCEL_SPECIFIC_ACTION_DESELECT_ALL = "window.save.excel.specific.action.deselect.all";
 
-	
 	public static final String WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_TITLE = "window.fixed.error.meta.blank.line.panel.title";
 	public static final String WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_NEXT_BUTTON_LABEL = "window.fixed.error.meta.blank.line.panel.save.next.button.label";
 	public static final String WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_SAVE_QUIT_BUTTON_LABEL = "window.fixed.error.meta.blank.line.panel.save.quit.button.label";
+
+	public static final String WINDOW_MOVE_FILE_LIBRARY_BUTTON_LABEL = "window.move.file.library.button.label";
+	public static final String WINDOW_MOVE_FILE_LIBRARY_PANEL_LABEL = "window.move.file.library.panel.label";
+
+	public static final String WINDOW_INFORMATION_PANEL_LABEL = "window.information.panel.label";
+	public static final String WINDOW_INFORMATION_MESSAGE_PANEL_LABEL = "window.information.message.panel.label";
+	public static final String WINDOW_INFORMATION_ACTION_PANEL_LABEL = "window.information.action.panel.label";
+	public static final String WINDOW_INFORMATION_ACTION_BUTTON_LABEL = "window.information.action.button.label";
+
+	public static final String WINDOW_MESSAGE_ERROR_MOVE_FILE_EXISTS = "window.message.error.move.file.exists";
+	public static final String WINDOW_MESSAGE_RESULT_MOVE_FILE = "window.message.result.move.file";
+	public static final String WINDOW_MESSAGE_UNKNOW_ERROR = "window.message.unknow.error";
 	
+	public static final String WINDOW_MESSAGE_FROM = "window.message.from";
+	public static final String WINDOW_MESSAGE_TO = "window.message.to";
 }

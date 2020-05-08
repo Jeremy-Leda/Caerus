@@ -2,6 +2,7 @@ package ihm.controler;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import analyze.beans.Configuration;
 import analyze.beans.StructuredFile;
 import analyze.beans.StructuringError;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import exceptions.MoveFileException;
 import ihm.beans.ErrorStructuredLine;
 
 public interface IConfigurationControler {
@@ -21,6 +23,8 @@ public interface IConfigurationControler {
 	void setCurrentConfiguration(Configuration configuration);
 	
 	List<StructuredFile> getListOfStructuredFile();
+	
+	Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException;
 	
 	void createExcel(File path);
 	

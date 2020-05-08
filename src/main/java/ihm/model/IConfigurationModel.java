@@ -2,6 +2,7 @@ package ihm.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -13,10 +14,13 @@ import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
 import analyze.beans.StructuringError;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import exceptions.MoveFileException;
 
 public interface IConfigurationModel {
 
 	void launchAnalyze();
+	
+	Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException;
 	
 	void setCurrentConfiguration(Configuration configuration);
 	

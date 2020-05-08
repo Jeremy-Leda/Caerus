@@ -28,6 +28,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import analyze.beans.Configuration;
+import analyze.beans.CurrentUserConfiguration;
 import analyze.beans.LineError;
 import analyze.beans.MemoryFile;
 import analyze.beans.SaveCurrentFixedText;
@@ -273,7 +274,10 @@ public class UserSettings {
 	 * @return le dossier
 	 */
 	public File getFolder(FolderSettingsEnum setting) {
-		return FOLDER_SETTINGS.get(setting);
+		if (FOLDER_SETTINGS.containsKey(setting)) {
+			return FOLDER_SETTINGS.get(setting);
+		}
+		return null;
 	}
 
 	/**
@@ -740,6 +744,30 @@ public class UserSettings {
 		logger.debug("[FIN] getSaveCurrentFixedText");
 		return save;
 	}
+	
+	/**
+	 * Permet de se procurer la configuration de l'utilisateur
+	 * 
+	 * @return la configuration de l'utilisateur
+	 */
+	public CurrentUserConfiguration getUserConfiguration() {
+		logger.debug("[DEBUT] getUserConfiguration");
+		CurrentUserConfiguration save = new CurrentUserConfiguration();
+		save.setLibraryPath(getFolder(FolderSettingsEnum.FOLDER_TEXTS).toPath());
+		logger.debug("[FIN] getUserConfiguration");
+		return save;
+	}
+	
+	/**
+	 * Permet de restaurer l'environnement de la configuration de l'utilisateur
+	 * 
+	 * @param save la configuration de l'utilisateur a restaurer
+	 */
+	public void restoreUserConfiguration(CurrentUserConfiguration save) {
+		logger.debug("[DEBUT] restoreUserConfiguration");
+		setFolder(FolderSettingsEnum.FOLDER_TEXTS, save.getLibraryPath().toFile());
+		logger.debug("[FIN] restoreUserConfiguration");
+	}
 
 	/**
 	 * Permet de restaurer l'environnement en cours de correction
@@ -877,6 +905,22 @@ public class UserSettings {
 		clearUserStructuredTextList();
 		clearBlankLineErrorList();
 		clearMetaBlankLineErrorList();
+	}
+	
+	/**
+	 * Permet de se procurer le nouveau repertoire incluant la configuration dans le chemin
+	 * @return le repertoire complet pour sauvegarder les textes
+	 */
+	public File getDirectoryForSaveTextsInLibrary() {
+		File folderTexts = getFolder(FolderSettingsEnum.FOLDER_TEXTS);
+		if (null != folderTexts && null != this.currentConfiguration) {
+			File newDirectory = new File(folderTexts.getAbsolutePath(), this.currentConfiguration.getName());
+			if (!newDirectory.exists()) {
+				newDirectory.mkdirs();
+			}
+			return newDirectory;
+		}
+		return null;
 	}
 
 }

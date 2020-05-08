@@ -2,6 +2,7 @@ package ihm.controler;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +20,7 @@ import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
 import analyze.beans.StructuringError;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import exceptions.MoveFileException;
 import ihm.beans.ErrorStructuredLine;
 import ihm.model.ConfigurationModel;
 import ihm.model.IConfigurationModel;
@@ -369,6 +371,11 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public Integer getNbMetaBlankLineToFixed() {
 		return this.configurationModel.getNbMetaBlankLineToFixed();
+	}
+
+	@Override
+	public Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException {
+		return this.configurationModel.moveAllFilesFromTextAnalyzeToLibrary();
 	}
 
 }

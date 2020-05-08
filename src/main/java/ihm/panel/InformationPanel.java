@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import ihm.beans.ImageTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.interfaces.IInformationPanel;
 import utils.RessourcesUtils;
 
@@ -20,7 +20,7 @@ import utils.RessourcesUtils;
  */
 public class InformationPanel implements IInformationPanel {
 
-	private final ImageTypeEnum typeImage;
+	private final PictureTypeEnum typeImage;
 	private final String title;
 	private final JPanel content;
 	private final JLabel textPanel;
@@ -33,7 +33,7 @@ public class InformationPanel implements IInformationPanel {
 	 * @param title titre
 	 * @param text texte à afficher
 	 */
-	public InformationPanel(ImageTypeEnum typeImage, String title, String text, Boolean enableScrollPane) {
+	public InformationPanel(PictureTypeEnum typeImage, String title, String text, Boolean enableScrollPane) {
 		this.enableScrollPane = enableScrollPane;
 		this.typeImage = typeImage;
 		this.title = title;

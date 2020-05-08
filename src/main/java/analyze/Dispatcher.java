@@ -12,12 +12,14 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import analyze.beans.Configuration;
+import analyze.beans.CurrentUserConfiguration;
 import analyze.beans.LineError;
 import analyze.beans.MemoryFile;
 import analyze.beans.SaveCurrentFixedText;
@@ -37,6 +40,7 @@ import analyze.constants.ErrorTypeEnum;
 import analyze.constants.FolderSettingsEnum;
 import excel.CreateExcel;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import exceptions.MoveFileException;
 import utils.JSonFactoryUtils;
 import utils.PathUtils;
 
@@ -56,45 +60,62 @@ public class Dispatcher {
 	private List<ConfigurationStructuredText> configurationStructuredTextListe = new ArrayList<>();
 	private static final String FOLDER_CONTEXT = "context";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
+	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
 
 	/**
+	 * Constructeur
+	 */
+	public Dispatcher() {
+		try {
+			loadContextFromUserConfiguration();
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
 	 * Permet de lancer l'analyse des textes dans le dossier d'analyse
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public void launchAnalyze() throws IOException {
 		processAndLoadTexts(FolderSettingsEnum.FOLDER_ANALYZE);
 	}
-	
+
 	/**
 	 * Permet de charger les textes dans le folder des textes
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	public void loadTexts() throws IOException {
 		processAndLoadTexts(FolderSettingsEnum.FOLDER_TEXTS);
 	}
-	
+
 	/**
 	 * Permet de définir la configuration courante
+	 * 
 	 * @param configuration configuration
 	 */
 	public void setCurrentConfiguration(Configuration configuration) {
 		UserSettings.getInstance().setCurrentConfiguration(configuration);
 	}
-	
+
 	private void processAndLoadTexts(FolderSettingsEnum folderType) throws IOException {
-		//UserSettings.getInstance().setCurrentConfiguration(configuration);
-		//this.setAnalyzeFolder(UserSettings.getInstance().getFolder(folderType));
+		// UserSettings.getInstance().setCurrentConfiguration(configuration);
+		// this.setAnalyzeFolder(UserSettings.getInstance().getFolder(folderType));
 		logger.debug("Analyze : " + UserSettings.getInstance().getFolder(folderType));
 		List<MemoryFile> memoryFiles = getMemoryFiles(UserSettings.getInstance().getFolder(folderType).toString());
 		UserSettings.getInstance().clearAllSession();
 		UserSettings.getInstance().addMemoryFilesList(memoryFiles);
-		structuredFiles = memoryFiles.parallelStream().map(f -> new Structuring(f, folderType).getStructuredFile()).collect(Collectors.toList());
+		structuredFiles = memoryFiles.parallelStream().map(f -> new Structuring(f, folderType).getStructuredFile())
+				.collect(Collectors.toList());
 		if (UserSettings.getInstance().getNbLineError() > 0) {
 			return;
 		}
 		UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
 				.forEach(sc -> configurationStructuredTextListe.add(new ConfigurationStructuredText(sc)));
-		configurationStructuredTextListe.stream().forEach(st -> structuredTextSpecificProcess(memoryFiles, folderType, st));
+		configurationStructuredTextListe.stream()
+				.forEach(st -> structuredTextSpecificProcess(memoryFiles, folderType, st));
 
 	}
 
@@ -146,6 +167,7 @@ public class Dispatcher {
 	 */
 	public void setTextsFolder(File textsFolder) {
 		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
+		saveUserConfiguration();
 	}
 
 	/**
@@ -265,13 +287,15 @@ public class Dispatcher {
 
 	/**
 	 * permet de générer de l'excel classique
+	 * 
 	 * @param cmd cmd
 	 * @throws IOException
 	 */
 	private void generateClassicalExcel(ExcelGenerateConfigurationCmd cmd) throws IOException {
 		excelCreated = Boolean.FALSE;
 		ExcelStructuring es = new ExcelStructuring();
-		List<List<String>> rows = es.getStructuringRows(this.structuredFiles, UserSettings.getInstance().getCurrentConfiguration(), cmd);
+		List<List<String>> rows = es.getStructuringRows(this.structuredFiles,
+				UserSettings.getInstance().getCurrentConfiguration(), cmd);
 		CreateExcel ce = new CreateExcel(new File(cmd.getFileName()));
 		rows.forEach(r -> ce.createRow(r));
 		ce.generateExcel();
@@ -280,8 +304,9 @@ public class Dispatcher {
 			Optional<ConfigurationStructuredText> findFirstCst = configurationStructuredTextListe.stream()
 					.filter(s -> s.getSpecificConfiguration().getLabel().equals(key)).findFirst();
 			if (findFirstCst.isPresent()) {
-				List<StructuredField> listSf = UserSettings.getInstance().getCurrentConfiguration().getStructuredFieldList().stream()
-						.filter(field -> !findFirstCst.get().getSpecificConfiguration().getIgnoredFieldList().contains(field.getFieldName()))
+				List<StructuredField> listSf = UserSettings.getInstance().getCurrentConfiguration()
+						.getStructuredFieldList().stream().filter(field -> !findFirstCst.get()
+								.getSpecificConfiguration().getIgnoredFieldList().contains(field.getFieldName()))
 						.collect(Collectors.toList());
 				cmd.clearFieldListGenerate();
 				listSf.forEach(sf -> cmd.addFieldToGenerate(sf.getFieldName()));
@@ -295,9 +320,10 @@ public class Dispatcher {
 		/* -- SPECIFIC CONFIGURATION EXCEL PROCESSING -- */
 		excelCreated = Boolean.TRUE;
 	}
-	
+
 	/**
 	 * permet de générer un excel custom
+	 * 
 	 * @param cmd command
 	 * @throws IOException
 	 */
@@ -305,13 +331,15 @@ public class Dispatcher {
 		excelCreated = Boolean.FALSE;
 		if (!cmd.getIsSpecificGeneration()) {
 			ExcelStructuring es = new ExcelStructuring();
-			List<List<String>> rows = es.getStructuringRows(this.structuredFiles, UserSettings.getInstance().getCurrentConfiguration(), cmd);
+			List<List<String>> rows = es.getStructuringRows(this.structuredFiles,
+					UserSettings.getInstance().getCurrentConfiguration(), cmd);
 			CreateExcel ce = new CreateExcel(new File(cmd.getFileName()));
 			rows.forEach(r -> ce.createRow(r));
 			ce.generateExcel();
 		} else {
 			Optional<ConfigurationStructuredText> findFirstCst = configurationStructuredTextListe.stream()
-					.filter(s -> s.getSpecificConfiguration().getLabel().equals(cmd.getLabelSpecificChoose())).findFirst();
+					.filter(s -> s.getSpecificConfiguration().getLabel().equals(cmd.getLabelSpecificChoose()))
+					.findFirst();
 			if (findFirstCst.isPresent()) {
 				try {
 					createExcelSpecific(new File(cmd.getFileName()), findFirstCst.get(), cmd);
@@ -339,7 +367,8 @@ public class Dispatcher {
 	private void structuredTextSpecificProcess(List<MemoryFile> memoryFiles, FolderSettingsEnum folderType,
 			ConfigurationStructuredText configurationSpecific) {
 		List<StructuredFile> structuredFileList = memoryFiles.stream() // TODO passer en parallel
-				.map(f -> new Structuring(f, folderType, configurationSpecific).getStructuredFile()).collect(Collectors.toList());
+				.map(f -> new Structuring(f, folderType, configurationSpecific).getStructuredFile())
+				.collect(Collectors.toList());
 		configurationSpecific.getStructuredFileList().addAll(structuredFileList);
 	}
 
@@ -352,8 +381,8 @@ public class Dispatcher {
 	 * @param configurationSpecific configuration spécifique
 	 * @throws IOException io exception
 	 */
-	private void createExcelSpecific(File path, ConfigurationStructuredText configurationSpecific, ExcelGenerateConfigurationCmd cmd)
-			throws IOException {
+	private void createExcelSpecific(File path, ConfigurationStructuredText configurationSpecific,
+			ExcelGenerateConfigurationCmd cmd) throws IOException {
 		ExcelStructuring es = new ExcelStructuring();
 		List<List<String>> rows = es.getStructuringRows(configurationSpecific.getStructuredFileList(),
 				UserSettings.getInstance().getCurrentConfiguration(), cmd);
@@ -365,14 +394,14 @@ public class Dispatcher {
 	public List<StructuringError> getStructuringErrorList() {
 		List<StructuringError> structuringErrorList = new ArrayList<>();
 		structuringErrorList.addAll(getStructuringErrorListNotEmpty(structuredFiles));
-		configurationStructuredTextListe.stream()
-				.forEach(st -> structuringErrorList.addAll(getStructuringErrorListNotEmpty(st.getStructuredFileList())));
+		configurationStructuredTextListe.stream().forEach(
+				st -> structuringErrorList.addAll(getStructuringErrorListNotEmpty(st.getStructuredFileList())));
 		return structuringErrorList;
 	}
 
 	private List<StructuringError> getStructuringErrorListNotEmpty(List<StructuredFile> structuredFileList) {
-		return structuredFileList.stream().filter(sf -> !sf.getListStructuringError().isEmpty()).flatMap(sf -> sf.getListStructuringError().stream())
-				.collect(Collectors.toList());
+		return structuredFileList.stream().filter(sf -> !sf.getListStructuringError().isEmpty())
+				.flatMap(sf -> sf.getListStructuringError().stream()).collect(Collectors.toList());
 	}
 
 	/**
@@ -401,8 +430,8 @@ public class Dispatcher {
 	private String errorProcessing(List<StructuredFile> listStructuredFile) {
 		final StringBuilder sb = new StringBuilder();
 		if (listStructuredFile != null) {
-			listStructuredFile.stream().filter(s -> !s.getListStructuringError().isEmpty()).flatMap(s -> s.getListStructuringError().stream())
-					.forEach(s -> {
+			listStructuredFile.stream().filter(s -> !s.getListStructuringError().isEmpty())
+					.flatMap(s -> s.getListStructuringError().stream()).forEach(s -> {
 						sb.append(errorProcessing(s)).append("\n\n");
 					});
 		}
@@ -416,13 +445,15 @@ public class Dispatcher {
 	 * @return l'erreur traité
 	 */
 	private String errorProcessing(StructuringError structuringError) {
-		final StringBuilder sb = new StringBuilder("/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\\n");
+		final StringBuilder sb = new StringBuilder(
+				"/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\/*\\\n");
 		sb.append("Erreur de structure à l'emplacement suivant : \n");
 		sb.append("Fichier : ").append(structuringError.getKeyFile()).append("\n");
 		sb.append("Emplacement concerné : \n").append(structuringError.getKeyText()).append("\n");
 		sb.append("Détail : \n");
 		structuringError.getDetails().forEach(s -> {
-			sb.append("=> Clé concerné ").append(s.getKeyStructure()).append(" avec ").append(s.getListElements().size()).append(" élément(s) : \n");
+			sb.append("=> Clé concerné ").append(s.getKeyStructure()).append(" avec ")
+					.append(s.getListElements().size()).append(" élément(s) : \n");
 			s.getListElements().forEach(e -> {
 				sb.append("=> => ").append(e).append("\n");
 			});
@@ -523,7 +554,8 @@ public class Dispatcher {
 		StringBuilder fileName = new StringBuilder();
 		fileName.append(UserSettings.getInstance().getEditingCorpusNameFile());
 		fileName.append(".txt");
-		try (Writer writer = new Writer(UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS), fileName.toString())) {
+		try (Writer writer = new Writer(UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS),
+				fileName.toString())) {
 			UserSettings.getInstance().writeCorpus(writer);
 		}
 	}
@@ -585,7 +617,8 @@ public class Dispatcher {
 	 */
 	public void loadNextErrorText() {
 		logger.debug("[DEBUT] loadErrorText");
-		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysStructuredTextErrorList().get(0), ErrorTypeEnum.STRUCTURED_TEXT);
+		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysStructuredTextErrorList().get(0),
+				ErrorTypeEnum.STRUCTURED_TEXT);
 		logger.debug("[FIN] loadErrorText");
 	}
 
@@ -620,8 +653,8 @@ public class Dispatcher {
 	 */
 	public void writeFixedText() throws IOException {
 		logger.debug("[DEBUT] writeFixedText");
-		List<String> filesList = UserSettings.getInstance().getUserStructuredTextList().stream().map(ust -> ust.getFileName()).distinct()
-				.collect(Collectors.toList());
+		List<String> filesList = UserSettings.getInstance().getUserStructuredTextList().stream()
+				.map(ust -> ust.getFileName()).distinct().collect(Collectors.toList());
 		for (String file : filesList) {
 			try (Writer writer = new Writer(getAnalyzeFolder(), file)) {
 				UserSettings.getInstance().writeFixedText(writer, file);
@@ -650,7 +683,8 @@ public class Dispatcher {
 	 */
 	public void restoreCurrentState() throws JsonParseException, JsonMappingException, IOException {
 		InputStream is = new FileInputStream(getCurrentStateFile());
-		SaveCurrentFixedText saveCurrentFixedText = JSonFactoryUtils.createObjectFromJsonFile(is, SaveCurrentFixedText.class);
+		SaveCurrentFixedText saveCurrentFixedText = JSonFactoryUtils.createObjectFromJsonFile(is,
+				SaveCurrentFixedText.class);
 		UserSettings.getInstance().restoreCurrentFixedTest(saveCurrentFixedText);
 	}
 
@@ -678,6 +712,50 @@ public class Dispatcher {
 	}
 
 	/**
+	 * Permet de se procurer le fichier de configuration utililisateur Si le
+	 * repertoire n'existe pas, il sera créé lors du passage dans cette méthode. Le
+	 * fichier quand à lui ne sera pas créé
+	 * 
+	 * @return
+	 */
+	private File getUserConfigurationFile() {
+		String rootPath = PathUtils.getRootPath();
+		File parentFile = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONTEXT);
+		return new File(parentFile, FILE_CURRENT_USER_CONFIGURATION);
+	}
+
+	/**
+	 * Permet de charger le context à partir de la configuration utilisateur
+	 * 
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	private void loadContextFromUserConfiguration() throws JsonParseException, JsonMappingException, IOException {
+		File userConfigurationFile = getUserConfigurationFile();
+		if (userConfigurationFile.exists()) {
+			InputStream is = new FileInputStream(userConfigurationFile);
+			CurrentUserConfiguration currentUserConfiguration = JSonFactoryUtils.createObjectFromJsonFile(is,
+					CurrentUserConfiguration.class);
+			UserSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
+		}
+	}
+	
+	/**
+	 * Permet de sauvegarder temporairement l'état
+	 */
+	private void saveUserConfiguration() {
+		logger.debug("[DEBUT] saveUserConfiguration");
+		CurrentUserConfiguration save = UserSettings.getInstance().getUserConfiguration();
+		try {
+			JSonFactoryUtils.createJsonInFile(save, getUserConfigurationFile());
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		logger.debug("[FIN] saveUserConfiguration");
+	}
+
+	/**
 	 * Permet de se procurer le nombre de ligne vide en erreur
 	 * 
 	 * @return le nombre de ligne vide en erreur
@@ -692,7 +770,8 @@ public class Dispatcher {
 	 */
 	public void loadNextErrorBlankLine() {
 		logger.debug("[DEBUT] loadNextErrorBlankLine");
-		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysBlankLineErrorList().get(0), ErrorTypeEnum.BLANK_LINE);
+		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysBlankLineErrorList().get(0),
+				ErrorTypeEnum.BLANK_LINE);
 		logger.debug("[FIN] loadNextErrorBlankLine");
 	}
 
@@ -713,17 +792,19 @@ public class Dispatcher {
 	public Boolean haveBlankLinesInErrorRemaining() {
 		return UserSettings.getInstance().haveBlankLineInErrorRemaining();
 	}
-	
+
 	/**
 	 * Permet de savoir si il y a des erreurs de ligne vide dans les balises méta
+	 * 
 	 * @return Vrai si c'est le cas
 	 */
 	public Boolean haveMetaBlankLineError() {
 		return UserSettings.getInstance().haveMetaBlankLineError();
 	}
-	
+
 	/**
 	 * Permet de savoir s'il reste des meta vides dans les textes
+	 * 
 	 * @return Vrai si oui
 	 */
 	public Boolean haveMetaBlankLineInErrorRemaining() {
@@ -736,10 +817,11 @@ public class Dispatcher {
 	 */
 	public void loadNextErrorMetaBlankLine() {
 		logger.debug("[DEBUT] loadNextErrorMetaBlankLine");
-		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysMetaBlankLineErrorList().get(0), ErrorTypeEnum.META_BLANK_LINE);
+		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysMetaBlankLineErrorList().get(0),
+				ErrorTypeEnum.META_BLANK_LINE);
 		logger.debug("[FIN] loadNextErrorMetaBlankLine");
 	}
-	
+
 	/**
 	 * Permet de se procurer la map des configuration specifique (label, suffix du
 	 * fichier)
@@ -759,8 +841,8 @@ public class Dispatcher {
 	 */
 	public Map<String, String> getFieldConfigurationNameLabelMap() {
 		Map<String, String> map = new LinkedHashMap<String, String>();
-		UserSettings.getInstance().getCurrentConfiguration().getStructuredFieldList().stream().sorted(Comparator.comparing(StructuredField::getOrder))
-				.forEach(sf -> {
+		UserSettings.getInstance().getCurrentConfiguration().getStructuredFieldList().stream()
+				.sorted(Comparator.comparing(StructuredField::getOrder)).forEach(sf -> {
 					map.put(sf.getFieldName(), sf.getLabel());
 				});
 		return map;
@@ -774,8 +856,9 @@ public class Dispatcher {
 	 * @return la liste
 	 */
 	public List<String> getFieldListToProcess(String labelSpecificConfiguration) {
-		Optional<SpecificConfiguration> findFirstSpecific = UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList()
-				.stream().filter(sc -> sc.getLabel().equals(labelSpecificConfiguration)).findFirst();
+		Optional<SpecificConfiguration> findFirstSpecific = UserSettings.getInstance().getCurrentConfiguration()
+				.getSpecificConfigurationList().stream().filter(sc -> sc.getLabel().equals(labelSpecificConfiguration))
+				.findFirst();
 		if (findFirstSpecific.isPresent()) {
 			return findFirstSpecific.get().getTreatmentFieldList();
 		}
@@ -791,17 +874,87 @@ public class Dispatcher {
 	 * @return la liste
 	 */
 	public List<String> getFieldListForbiddenToDisplay(String labelSpecificConfiguration) {
-		List<SpecificConfiguration> forbiddenSpecificConfigurationList = UserSettings.getInstance().getCurrentConfiguration()
-				.getSpecificConfigurationList().stream().filter(sc -> !sc.getLabel().equals(labelSpecificConfiguration)).collect(Collectors.toList());
-		return forbiddenSpecificConfigurationList.stream().flatMap(sc -> sc.getTreatmentFieldList().stream()).distinct().collect(Collectors.toList());
+		List<SpecificConfiguration> forbiddenSpecificConfigurationList = UserSettings.getInstance()
+				.getCurrentConfiguration().getSpecificConfigurationList().stream()
+				.filter(sc -> !sc.getLabel().equals(labelSpecificConfiguration)).collect(Collectors.toList());
+		return forbiddenSpecificConfigurationList.stream().flatMap(sc -> sc.getTreatmentFieldList().stream()).distinct()
+				.collect(Collectors.toList());
 	}
-	
+
 	/**
-	 * Permet de savoir le nombre de corpus contenant des lignes vide meta à corriger.
+	 * Permet de savoir le nombre de corpus contenant des lignes vide meta à
+	 * corriger.
+	 * 
 	 * @return Le nombre de corpus contenant des lignes vide meta à corriger.
 	 */
 	public Integer getNbMetaBlankLineToFixed() {
 		return UserSettings.getInstance().getNbMetaBlankLineToFixed();
+	}
+
+	/**
+	 * Permet de déplacer les fichiers de l'analyze vers la librairie
+	 * 
+	 * @return La map des fichiers déplacés (key = ancien fichier, value = nouveau
+	 *         fichier)
+	 * @throws IOException       exception d'écriture
+	 * @throws MoveFileException
+	 */
+	public Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException {
+		logger.debug("[DEBUT] moveAllFilesFromTextAnalyzeToLibrary");
+		List<String> filesList = UserSettings.getInstance().getUserStructuredTextList().stream()
+				.map(ust -> ust.getFileName()).distinct().collect(Collectors.toList());
+		List<String> filesExistList = new ArrayList<>();
+		Map<Path, Path> resultMapForMoveFiles = new HashMap<>();
+		for (String file : filesList) {
+			File oldFile = new File(getAnalyzeFolder(), file);
+			if (oldFile.exists()) {
+				if (checkIfFileExistInFolderText(oldFile)) {
+					filesExistList.add(oldFile.toPath().toString());
+				}
+			}
+		}
+		if (!filesExistList.isEmpty()) {
+			throw new MoveFileException(StringUtils.join(filesExistList, ","));
+		}
+		for (String file : filesList) {
+			File oldFile = new File(getAnalyzeFolder(), file);
+			Path newFile = moveFileInFolderText(oldFile);
+			resultMapForMoveFiles.put(oldFile.toPath(), newFile);
+		}
+		logger.debug("[FIN] moveAllFilesFromTextAnalyzeToLibrary");
+		return resultMapForMoveFiles;
+
+	}
+
+	/**
+	 * Permet de savoir si le fichier existe dans la bibliotheque de textes (chemin
+	 * avec la configuration)
+	 * 
+	 * @param file fichier a déplacer
+	 * @return Vrai si il existe, Faux sinon
+	 */
+	private Boolean checkIfFileExistInFolderText(File file) {
+		File textsFolder = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+		if (null != textsFolder) {
+			File newFile = new File(textsFolder.getAbsolutePath(), file.getName());
+			return newFile.exists();
+		}
+		return Boolean.FALSE;
+	}
+
+	/**
+	 * Permet de déplacer le fichier dans le dossier des textes
+	 * 
+	 * @param file fichier à déplacer
+	 * @return le path du fichier déplacé (nouveau fichier)
+	 * @throws IOException
+	 */
+	private Path moveFileInFolderText(File file) throws IOException {
+		File textsFolder = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+		if (null != textsFolder) {
+			return PathUtils.moveFile(file, textsFolder);
+		}
+		return null;
 	}
 
 }

@@ -11,7 +11,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 import ihm.abstracts.ModalJFrameAbstract;
-import ihm.beans.ImageTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IAccessPanel;
 import ihm.interfaces.IActionPanel;
@@ -51,10 +51,10 @@ public class FillSpecificText extends ModalJFrameAbstract {
 		this.specificTextModel = new SpecificTextModel(configurationControler, this);
 		this.filePanel = new FilePanel();
 		this.actionPanel = new ActionPanel(3);
-		this.textInformationPanel = new InformationPanel(ImageTypeEnum.INFORMATION, 
+		this.textInformationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_INFORMATION_PANEL_TEXT), false);
-		this.textWarningPanel = new InformationPanel(ImageTypeEnum.WARNING, 
+		this.textWarningPanel = new InformationPanel(PictureTypeEnum.WARNING, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_WARNING_PANEL_TITLE),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_WARNING_PANEL_TEXT), false);
 		this.specificTextModel.addSpecificTextRefresh(this.actionPanel);

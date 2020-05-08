@@ -1,6 +1,10 @@
 package utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 import ihm.Main;
 
@@ -44,6 +48,17 @@ public class PathUtils {
 		if (fileToDelete.exists()) {
 			fileToDelete.delete();
 		}
+	}
+	
+	/**
+	 * Permet de déplacer un fichier dans un nouveau repertoire
+	 * @param fileToMove fichier à déplacer
+	 * @param newDirectory nouveau repertoire
+	 * @throws IOException
+	 */
+	public static Path moveFile(File fileToMove, File newDirectory) throws IOException {
+		File newFile = new File(newDirectory.getAbsolutePath(), fileToMove.getName());
+		return Files.move(fileToMove.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 }

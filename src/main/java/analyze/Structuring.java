@@ -16,6 +16,7 @@ import analyze.beans.StructuredFile;
 import analyze.beans.StructuredText;
 import analyze.beans.UserStructuredText;
 import analyze.beans.specific.ConfigurationStructuredText;
+import analyze.constants.ErrorTypeEnum;
 import analyze.constants.FolderSettingsEnum;
 import exceptions.StructuringException;
 import utils.KeyGenerator;
@@ -70,10 +71,10 @@ public class Structuring {
 					structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
 					String keyStructuredText = KeyGenerator.generateKey(structuredText);
 					if (null != structuredText && structuredText.getHaveBlankLine()) {
-						UserSettings.getInstance().addKeyBlankLineError(keyStructuredText);
+						UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE, keyStructuredText);
 					}
 					if (null != structuredText && structuredText.getHaveMetaBlankLine()) {
-						UserSettings.getInstance().addKeyMetaBlankLineError(keyStructuredText);
+						UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE, keyStructuredText);
 					}
 					listLines.clear();
 					if (null != beanConfiguration && null != structuredText) {
@@ -82,13 +83,13 @@ public class Structuring {
 									beanConfiguration, memoryFile, sf));
 							
 						} catch (IndexOutOfBoundsException e) {
-							UserSettings.getInstance().addKeyStructuredTextError(keyStructuredText);
+							UserSettings.getInstance().addKeyError(ErrorTypeEnum.STRUCTURED_TEXT,keyStructuredText);
 						}
 						
 					} else if (null != structuredText) {
 						UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
 								structuredText);
-						UserSettings.getInstance().addUserStructuredText(userStructuredText);
+						UserSettings.getInstance().addUserStructuredText(folderType, userStructuredText);
 						number++;
 						sf.getListStructuredText().add(structuredText);
 					}

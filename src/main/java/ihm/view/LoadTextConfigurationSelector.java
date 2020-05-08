@@ -7,7 +7,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,11 +18,14 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import exceptions.LoadTextException;
 import ihm.beans.ConfigurationType;
 import ihm.controler.IConfigurationControler;
 import ihm.utils.ConfigurationUtils;
@@ -43,6 +45,7 @@ public class LoadTextConfigurationSelector extends JFrame {
 	 * 
 	 */
 	private static final long serialVersionUID = 3348054080637849772L;
+	private static Logger logger = LoggerFactory.getLogger(LoadTextConfigurationSelector.class);
 	private final Map<String, ConfigurationType> mapDisplayToConfiguration = new HashMap<>();
 	private File folderFile;
 	private final JTextField folderPath = new JTextField();
@@ -64,7 +67,7 @@ public class LoadTextConfigurationSelector extends JFrame {
 			mapDisplayToConfiguration.put(displayMessage, configurationType);
 		}
 		this.controler = configurationControler;
-		this.controler.clear();
+		this.controler.clearAnalyze();
 		createWindow();
 	}
 
@@ -172,17 +175,7 @@ public class LoadTextConfigurationSelector extends JFrame {
 	}
 
 	public Boolean isLoaded() {
-		return !this.controler.getListOfStructuredFile().isEmpty();
-	}
-	
-	public Boolean errorProcessing() {
-		try {
-			return this.controler.errorProcessing();
-		} catch (IOException e) {
-			System.err.println(e);
-			JOptionPane.showMessageDialog(null, "Une erreur s'est produite pendant le traitement des erreurs", "Erreur", JOptionPane.ERROR_MESSAGE);
-			return true;
-		}
+		return !this.controler.getListOfStructuredFileForAnalyze().isEmpty();
 	}
 	
 	/**
@@ -226,12 +219,15 @@ public class LoadTextConfigurationSelector extends JFrame {
 					try {
 						controler.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
 					} catch (Exception e1) {
-						System.err.println(e1.getMessage());
-						System.err.println("Erreur");
+						logger.error(e1.getMessage(), e1);
 					}
 				}
 				controler.setAnalyzeFolder(folderFile);
-				controler.launchAnalyze();
+				try {
+					controler.launchAnalyze();
+				} catch (LoadTextException e1) {
+					logger.error(e1.getMessage(), e1);
+				}
 				close();
 			}
 		};

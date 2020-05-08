@@ -18,8 +18,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import analyze.beans.Configuration;
 import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
-import analyze.beans.StructuringError;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import exceptions.LoadTextException;
 import exceptions.MoveFileException;
 import ihm.beans.ErrorStructuredLine;
 import ihm.model.ConfigurationModel;
@@ -30,10 +30,9 @@ public class ConfigurationControler implements IConfigurationControler {
 	private Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
 	private IConfigurationModel configurationModel = new ConfigurationModel();
 
-
 	@Override
-	public void launchAnalyze() {
-		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName()) 
+	public void launchAnalyze() throws LoadTextException {
+		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())
 				&& null != this.configurationModel.getAnalyzeFolder()
 				&& this.configurationModel.getAnalyzeFolder().isDirectory()) {
 			configurationModel.launchAnalyze();
@@ -47,38 +46,6 @@ public class ConfigurationControler implements IConfigurationControler {
 		if (null != configuration) {
 			this.configurationModel.setCurrentConfiguration(configuration);
 		}
-	}
-
-	@Override
-	public List<StructuredFile> getListOfStructuredFile() {
-		return this.configurationModel.getListOfStructuredFile();
-	}
-
-	@Override
-	public void createExcel(File path) {
-		if (null != path) {
-			configurationModel.createExcel(path);
-		}
-	}
-
-	@Override
-	public Boolean isExcelCreated() {
-		return configurationModel.isExcelCreated();
-	}
-
-	@Override
-	public Boolean errorProcessing() throws IOException {
-		return configurationModel.errorProcessing();
-	}
-
-	@Override
-	public void clear() {
-		this.configurationModel.clear();
-	}
-
-	@Override
-	public List<StructuringError> getStructuringErrorList() {
-		return this.configurationModel.getStructuringErrorList();
 	}
 
 	@Override
@@ -103,17 +70,19 @@ public class ConfigurationControler implements IConfigurationControler {
 		}
 	}
 
-
 	@Override
 	public void setAnalyzeFolder(File analyzeFolder) {
 		if (null != analyzeFolder && analyzeFolder.isDirectory()) {
 			this.configurationModel.setAnalyzeFolder(analyzeFolder);
 		}
 	}
-	
+
 	@Override
 	public Map<String, String> getConfigurationFieldMetaFile() {
-		return this.configurationModel.getConfigurationFieldMetaFile();
+		if (StringUtils.isNotEmpty(getConfigurationName())) {
+			return this.configurationModel.getConfigurationFieldMetaFile();
+		}
+		return new HashMap<>();
 	}
 
 	@Override
@@ -136,7 +105,10 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public Map<String, String> getConfigurationFieldCommonFile() {
-		return this.configurationModel.getConfigurationFieldCommonFile();
+		if (StringUtils.isNotEmpty(getConfigurationName())) {
+			return this.configurationModel.getConfigurationFieldCommonFile();
+		}
+		return new HashMap<>();
 	}
 
 	@Override
@@ -168,7 +140,10 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public Integer getNbSpecificConfiguration() {
-		return this.configurationModel.getNbSpecificConfiguration();
+		if (StringUtils.isNotEmpty(getConfigurationName())) {
+			return this.configurationModel.getNbSpecificConfiguration();
+		}
+		return 0;
 	}
 
 	@Override
@@ -227,7 +202,8 @@ public class ConfigurationControler implements IConfigurationControler {
 	public ErrorStructuredLine getErrorLine(Integer index) {
 		if (null != index && index < getNbLinesError()) {
 			LineError errorLine = this.configurationModel.getErrorLine(index);
-			return new ErrorStructuredLine(errorLine.getPath().toString(), errorLine.getLineWithError(), errorLine.getIndex() + 1);
+			return new ErrorStructuredLine(errorLine.getPath().toString(), errorLine.getLineWithError(),
+					errorLine.getIndex() + 1);
 		}
 		return null;
 	}
@@ -255,32 +231,24 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public void loadNextErrorText() {
-		logger.debug("[DEBUT] loadNextErrorText");
 		if (haveTextsInErrorRemaining()) {
 			this.configurationModel.loadNextErrorText();
 		}
-		logger.debug("[FIN] loadNextErrorText");
 	}
 
 	@Override
 	public void saveCurrentStateOfFixedText() {
-		//if (getNbTextsError() > 0) {
-			this.configurationModel.saveCurrentStateOfFixedText();
-		//}
+		this.configurationModel.saveCurrentStateOfFixedText();
 	}
 
 	@Override
 	public void writeFixedText() throws IOException {
-		//if (getNbTextsError() > 0) {
-			this.configurationModel.writeFixedText();
-		//}
+		this.configurationModel.writeFixedText();
 	}
 
 	@Override
 	public void applyFixedErrorText() {
-		//if (getNbTextsError() > 0) {
-			this.configurationModel.applyFixedErrorText();
-		//}
+		this.configurationModel.applyFixedErrorText();
 	}
 
 	@Override
@@ -311,28 +279,24 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public Integer getNbTextLoaded() {
-		return this.configurationModel.getNbTextLoaded();
-	}
-
-	@Override
 	public Boolean haveBlankLinesInErrorRemaining() {
 		return this.configurationModel.haveBlankLinesInErrorRemaining();
 	}
-	
-	@Override
-	public Map<String, String> getConfigurationSpecificLabelNameFileMap() {
-		return this.configurationModel.getConfigurationSpecificLabelNameFileMap();
-	}
 
 	@Override
-	public void generateExcel(ExcelGenerateConfigurationCmd cmd) throws IOException {
-		this.configurationModel.generateExcel(cmd);
+	public Map<String, String> getConfigurationSpecificLabelNameFileMap() {
+		if (StringUtils.isNotEmpty(getConfigurationName())) {
+			return this.configurationModel.getConfigurationSpecificLabelNameFileMap();
+		}
+		return new HashMap<>();
 	}
 
 	@Override
 	public Map<String, String> getFieldConfigurationNameLabelMap() {
-		return this.configurationModel.getFieldConfigurationNameLabelMap();
+		if (StringUtils.isNotEmpty(getConfigurationName())) {
+			return this.configurationModel.getFieldConfigurationNameLabelMap();
+		}
+		return new HashMap<>();
 	}
 
 	@Override
@@ -352,13 +316,8 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public Boolean haveMetaBlankLineError() {
-		return this.configurationModel.haveMetaBlankLineError();
-	}
-
-	@Override
 	public void loadNextErrorMetaBlankLine() {
-		if (haveMetaBlankLineError()) {
+		if (haveMetaBlankLineInErrorRemaining()) {
 			this.configurationModel.loadNextErrorMetaBlankLine();
 		}
 	}
@@ -376,6 +335,50 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException {
 		return this.configurationModel.moveAllFilesFromTextAnalyzeToLibrary();
+	}
+
+	@Override
+	public List<StructuredFile> getListOfStructuredFileForAnalyze() {
+		return this.configurationModel.getListOfStructuredFileForAnalyze();
+	}
+
+	@Override
+	public List<StructuredFile> getListOfStructuredFileForTexts() {
+		return this.configurationModel.getListOfStructuredFileForTexts();
+	}
+
+	@Override
+	public void clearAnalyze() {
+		this.configurationModel.clearAnalyze();
+	}
+
+	@Override
+	public void clearTexts() {
+		this.configurationModel.clearTexts();
+	}
+
+	@Override
+	public Integer getNbTextLoadedForAnalyze() {
+		return this.configurationModel.getNbTextLoadedForAnalyze();
+	}
+
+	@Override
+	public Integer getNbTextLoadedForTexts() {
+		return this.configurationModel.getNbTextLoadedForTexts();
+	}
+
+	@Override
+	public void generateExcelFromAnalyze(ExcelGenerateConfigurationCmd cmd) throws IOException {
+		if (null != cmd) {
+			this.configurationModel.generateExcelFromAnalyze(cmd);
+		}
+	}
+
+	@Override
+	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException {
+		if (null != cmd) {
+			this.configurationModel.generateExcelFromTexts(cmd);
+		}
 	}
 
 }

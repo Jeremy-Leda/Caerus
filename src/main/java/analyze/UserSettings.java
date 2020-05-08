@@ -29,13 +29,16 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import analyze.beans.Configuration;
 import analyze.beans.CurrentUserConfiguration;
+import analyze.beans.CurrentUserTexts;
 import analyze.beans.LineError;
 import analyze.beans.MemoryFile;
 import analyze.beans.SaveCurrentFixedText;
 import analyze.beans.SpecificConfiguration;
 import analyze.beans.StructuredField;
+import analyze.beans.StructuredFile;
 import analyze.beans.StructuredText;
 import analyze.beans.UserStructuredText;
+import analyze.beans.specific.ConfigurationStructuredText;
 import analyze.constants.ErrorTypeEnum;
 import analyze.constants.FolderSettingsEnum;
 import analyze.interfaces.IWriteText;
@@ -56,13 +59,10 @@ public class UserSettings {
 	private final List<LinkedHashMap<String, String>> EDITING_CORPUS_TEXTS_LIST = new LinkedList<LinkedHashMap<String, String>>();
 	private final Map<String, String> EDITING_METAFIELD_MAP = new HashMap<String, String>();
 	private final Map<String, String> EDITING_FIELD_MAP = new HashMap<String, String>();
-	private final List<MemoryFile> MEMORY_FILES_LIST = new ArrayList<>();
-	private final List<UserStructuredText> USER_STRUCTURED_TEXT_LIST = new ArrayList<>();
+	private final Map<FolderSettingsEnum, CurrentUserTexts> CURRENT_FOLDER_USER_TEXTS_MAP = new HashMap<FolderSettingsEnum, CurrentUserTexts>();
 	// ERROR MAP
 	private final List<LineError> LINES_ERROR_LIST = new LinkedList<LineError>();
-	private final Set<String> KEYS_STRUCTURED_TEXT_ERROR_LIST = new HashSet<>();
-	private final Set<String> KEYS_BLANK_LINE_ERROR_LIST = new HashSet<>();
-	private final Set<String> KEYS_META_BLANK_LINE_ERROR_LIST = new HashSet<>();
+	private final Map<ErrorTypeEnum, Set<String>> MAP_TYPE_ERROR_KEYS_LIST = new HashMap<>();
 	private String currentErrorKey;
 	private Integer totalKeysStructuredTextError = null;
 	private Integer totalBlankLineError = null;
@@ -70,6 +70,12 @@ public class UserSettings {
 
 	private Configuration currentConfiguration;
 	private String editingCorpusNameFile;
+
+	public UserSettings() {
+		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.BLANK_LINE, new HashSet<>());
+		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.META_BLANK_LINE, new HashSet<>());
+		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.STRUCTURED_TEXT, new HashSet<>());
+	}
 
 	/**
 	 * Permet de se procurer l'instance statique
@@ -102,28 +108,69 @@ public class UserSettings {
 	 */
 	public Integer getNbTextsError() {
 		if (null == totalKeysStructuredTextError) {
-			totalKeysStructuredTextError = this.KEYS_STRUCTURED_TEXT_ERROR_LIST.size();
+			totalKeysStructuredTextError = this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.STRUCTURED_TEXT).size();
 		}
 		return totalKeysStructuredTextError;
 	}
 
 	/**
-	 * Permet de savoir s'il y a des textes en erreurs a corrigé
+	 * Permet de savoir si il reste des erreurs
 	 * 
-	 * @return Vrai si il y a des textes a corrigé
+	 * @param typeError type d'erreurs
+	 * @return Vrai s'il reste des erreurs
 	 */
-	public Boolean haveTextsInErrorRemaining() {
-		return !getKeysStructuredTextErrorList().isEmpty();
+	public Boolean haveErrorRemaining(ErrorTypeEnum typeError) {
+		return !this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).isEmpty();
 	}
 
 	/**
-	 * Permet d'ajouter une clé à la liste des clés en erreur pour les structures
-	 * des textes
+	 * Permet d'ajouter une clé en erreur
 	 * 
-	 * @param key clé à ajouter
+	 * @param typeError type d'erreur
+	 * @param key       clé en erreur à ajouter
 	 */
-	public void addKeyStructuredTextError(String key) {
-		this.KEYS_STRUCTURED_TEXT_ERROR_LIST.add(key);
+	public void addKeyError(ErrorTypeEnum typeError, String key) {
+		this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).add(key);
+	}
+
+	/**
+	 * 
+	 * Permet de se procurer la liste des clés en erreurs
+	 * 
+	 * @param typeError type de l'erreur
+	 * @return la liste des clés en erreur
+	 */
+	public List<String> getKeysInError(ErrorTypeEnum typeError) {
+		return Collections.unmodifiableList(new ArrayList<>(this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError)));
+	}
+
+	/**
+	 * Permet de connaitre le nb de clés en erreur
+	 * 
+	 * @param typeError type d'erreurs
+	 * @return Le nombre de clé en erreur
+	 */
+	public Integer getNbKeysInError(ErrorTypeEnum typeError) {
+		return this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).size();
+	}
+
+	/**
+	 * Permet de nettoyer une liste de clés en erreur
+	 * 
+	 * @param typeError type de l'erreur
+	 */
+	public void clearKeysInError(ErrorTypeEnum typeError) {
+		this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).clear();
+	}
+
+	/**
+	 * Permet de supprimer la clé courante en erreur de la liste et de remettre à
+	 * l'état initial le type et la clé en cours de correction
+	 */
+	public void deleteCurrentErrorKey() {
+		this.MAP_TYPE_ERROR_KEYS_LIST.get(currentErrorTypeFixed).remove(currentErrorKey);
+		currentErrorKey = StringUtils.EMPTY;
+		currentErrorTypeFixed = null;
 	}
 
 	/**
@@ -131,17 +178,9 @@ public class UserSettings {
 	 */
 	public void clearKeysStructuredTextErrorList() {
 		totalKeysStructuredTextError = null;
-		this.KEYS_STRUCTURED_TEXT_ERROR_LIST.clear();
+		clearKeysInError(ErrorTypeEnum.STRUCTURED_TEXT);
 	}
 
-	/**
-	 * Permet de se procurer la liste des clés des textes utilisateurs en erreur
-	 * 
-	 * @return la liste des clés des textes utilisateurs en erreur immutable
-	 */
-	public List<String> getKeysStructuredTextErrorList() {
-		return Collections.unmodifiableList(new ArrayList<>(this.KEYS_STRUCTURED_TEXT_ERROR_LIST));
-	}
 
 	/**
 	 * Permet de se procurer le nombre de ligne vide en erreur
@@ -150,53 +189,9 @@ public class UserSettings {
 	 */
 	public Integer getNbBlankLineError() {
 		if (null == totalBlankLineError) {
-			totalBlankLineError = this.KEYS_BLANK_LINE_ERROR_LIST.size();
+			totalBlankLineError = getNbKeysInError(ErrorTypeEnum.BLANK_LINE);
 		}
 		return totalBlankLineError;
-	}
-	
-	/**
-	 * Permet de savoir si il y a des lignes vide dans les balises meta d'un texte
-	 * 
-	 * @return Vrai si présence de ligne meta vide
-	 */
-	public Boolean haveMetaBlankLineError() {
-		return !this.KEYS_META_BLANK_LINE_ERROR_LIST.isEmpty();
-	}
-	
-	/**
-	 * Permet de savoir si il reste des ligne vides dans les balises meta
-	 * 
-	 * @return Vrai si il y a des ligne vides dans les balises meta
-	 */
-	public Boolean haveMetaBlankLineInErrorRemaining() {
-		return !getKeysMetaBlankLineErrorList().isEmpty();
-	}
-	
-	/**
-	 * Permet de savoir le nombre de corpus contenant des lignes vide meta à corriger.
-	 * @return Le nombre de corpus contenant des lignes vide meta à corriger.
-	 */
-	public Integer getNbMetaBlankLineToFixed() {
-		return getKeysMetaBlankLineErrorList().size();
-	}
-
-	/**
-	 * Permet de savoir s'il y a des lignes vides en erreurs a corrigé
-	 * 
-	 * @return Vrai si il y a des lignes vide en erreur a corrigé
-	 */
-	public Boolean haveBlankLineInErrorRemaining() {
-		return !getKeysBlankLineErrorList().isEmpty();
-	}
-
-	/**
-	 * Permet d'ajouter une clé à la liste des clés en erreur pour les lignes vides
-	 * 
-	 * @param key clé à ajouter
-	 */
-	public void addKeyBlankLineError(String key) {
-		this.KEYS_BLANK_LINE_ERROR_LIST.add(key);
 	}
 
 	/**
@@ -204,67 +199,37 @@ public class UserSettings {
 	 */
 	public void clearBlankLineErrorList() {
 		totalBlankLineError = null;
-		this.KEYS_BLANK_LINE_ERROR_LIST.clear();
-	}
-	
-	/**
-	 * Permet d'ajouter une clé à la liste des clés en erreur pour les lignes meta vides
-	 * 
-	 * @param key clé à ajouter
-	 */
-	public void addKeyMetaBlankLineError(String key) {
-		this.KEYS_META_BLANK_LINE_ERROR_LIST.add(key);
-	}
-
-	/**
-	 * Permet de vider la liste des clés en erreur pour les lignes meta vides
-	 */
-	public void clearMetaBlankLineErrorList() {
-		this.KEYS_META_BLANK_LINE_ERROR_LIST.clear();
-	}
-
-	/**
-	 * Permet de se procurer la liste des clés des lignes vide
-	 * 
-	 * @return la liste des clés des lignes vide immutable
-	 */
-	public List<String> getKeysBlankLineErrorList() {
-		return Collections.unmodifiableList(new ArrayList<>(this.KEYS_BLANK_LINE_ERROR_LIST));
-	}
-	
-	/**
-	 * Permet de se procurer la liste des clés des meta lignes vide
-	 * 
-	 * @return la liste des clés des meta lignes vide immutable
-	 */
-	public List<String> getKeysMetaBlankLineErrorList() {
-		return Collections.unmodifiableList(new ArrayList<>(this.KEYS_META_BLANK_LINE_ERROR_LIST));
+		clearKeysInError(ErrorTypeEnum.BLANK_LINE);
 	}
 
 	/**
 	 * Permet d'ajouter un texte structuré utilisateur
 	 * 
+	 * @param folder             dossier à modifier
 	 * @param userStructuredText texte structuré utilisateur
 	 */
-	public void addUserStructuredText(UserStructuredText userStructuredText) {
-		this.USER_STRUCTURED_TEXT_LIST.add(userStructuredText);
+	public void addUserStructuredText(FolderSettingsEnum folder, UserStructuredText userStructuredText) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addUserStructuredText(userStructuredText);
 	}
 
 	/**
 	 * Permet de vider la liste des textes structurés utilisateur
+	 * 
+	 * @param folder dossier à modifier
 	 */
-	public void clearUserStructuredTextList() {
-		this.USER_STRUCTURED_TEXT_LIST.clear();
+	public void clearUserStructuredTextList(FolderSettingsEnum folder) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearUserStructuredTextList();
 	}
 
 	/**
 	 * Permet de se procurer la liste des textes structuré utilisateur Une liste
 	 * immutable est retourné, cette liste ne peut donc pas être modifier
 	 * 
+	 * @param folder dossier à modifier
 	 * @return la liste des textes structuré utilisateurs immutable
 	 */
-	public List<UserStructuredText> getUserStructuredTextList() {
-		return Collections.unmodifiableList(this.USER_STRUCTURED_TEXT_LIST);
+	public List<UserStructuredText> getUserStructuredTextList(FolderSettingsEnum folder) {
+		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getUserStructuredTextList();
 	}
 
 	/**
@@ -379,21 +344,18 @@ public class UserSettings {
 	 * @param metaFieldMap map des champs méta
 	 */
 	public void addMetaFieldsToEditingCorpus(Map<String, String> metaFieldMap) {
-		logger.debug("[DEBUT] addMetaFieldsToEditingCorpus");
 		getListFieldMetaFile().keySet().stream().forEach(key -> {
 			if (metaFieldMap.containsKey(key)) {
 				logger.debug(key + ":" + metaFieldMap.get(key));
 				EDITING_METAFIELD_MAP.put(key, metaFieldMap.get(key));
 			}
 		});
-		logger.debug("[FIN] addMetaFieldsToEditingCorpus");
 	}
 
 	/**
 	 * Permet d'ajouter le texte en cours d'édition au corpus en cours
 	 */
 	public void addEditingTextToCurrentCorpus() {
-		logger.debug("[DEBUT] addEditingTextToCurrentCorpus");
 		LinkedHashMap<String, String> orderedFieldMap = new LinkedHashMap<String, String>();
 		getListField(false, true, true, true).keySet().stream().forEach(key -> {
 			if (EDITING_FIELD_MAP.containsKey(key)) {
@@ -403,7 +365,6 @@ public class UserSettings {
 		});
 		EDITING_CORPUS_TEXTS_LIST.add(orderedFieldMap);
 		EDITING_FIELD_MAP.clear();
-		logger.debug("[FIN] addEditingTextToCurrentCorpus");
 	}
 
 	/**
@@ -434,7 +395,8 @@ public class UserSettings {
 	 */
 	public Map<String, String> getListFieldHeaderSpecific(Integer index) {
 		return getListField(getCurrentConfiguration().getSpecificConfigurationList().stream()
-				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index).getHeaderFieldList());
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
+				.getHeaderFieldList());
 	}
 
 	/**
@@ -445,7 +407,8 @@ public class UserSettings {
 	 */
 	public Map<String, String> getListFieldSpecific(Integer index) {
 		return getListField(getCurrentConfiguration().getSpecificConfigurationList().stream()
-				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index).getTreatmentFieldList());
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
+				.getTreatmentFieldList());
 	}
 
 	/**
@@ -492,7 +455,8 @@ public class UserSettings {
 	private Map<String, String> getListField(List<String> fieldsList) {
 		HashMap<String, String> finalMap = new LinkedHashMap<String, String>();
 		if (null != getCurrentConfiguration()) {
-			getCurrentConfiguration().getStructuredFieldList().stream().sorted(Comparator.comparing(StructuredField::getOrder))
+			getCurrentConfiguration().getStructuredFieldList().stream()
+					.sorted(Comparator.comparing(StructuredField::getOrder))
 					.filter(s -> fieldsList.contains(s.getFieldName())).forEach(s -> {
 						finalMap.put(s.getFieldName(), s.getFieldName() + " (" + s.getLabel() + ")");
 					});
@@ -548,10 +512,7 @@ public class UserSettings {
 	 * @param value Valeur
 	 */
 	public void updateFieldInEditingCorpus(String key, String value) {
-		logger.debug("[DEBUT] updateFieldInEditingCorpus");
-		logger.debug(key + ":" + value);
 		EDITING_FIELD_MAP.put(key, value);
-		logger.debug("[FIN] updateFieldInEditingCorpus");
 	}
 
 	/**
@@ -562,13 +523,12 @@ public class UserSettings {
 	 * @param specificFieldMap champ à mettre à jour
 	 */
 	public void updateSpecificFieldInEditingCorpus(Integer index, Map<String, List<String>> specificFieldMap) {
-		logger.debug("[DEBUT] updateSpecificFieldInEditingCorpus");
-		String delimiter = currentConfiguration.getSpecificConfigurationList().stream().sorted(Comparator.comparing(SpecificConfiguration::getOrder))
-				.collect(Collectors.toList()).get(index).getDelimiter();
+		String delimiter = currentConfiguration.getSpecificConfigurationList().stream()
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
+				.getDelimiter();
 		Map<String, String> transformedMap = specificFieldMap.entrySet().stream()
 				.collect(Collectors.toMap(Map.Entry::getKey, v -> StringUtils.join(v.getValue(), delimiter)));
 		EDITING_FIELD_MAP.putAll(transformedMap);
-		logger.debug("[FIN] updateSpecificFieldInEditingCorpus");
 	}
 
 	/**
@@ -578,19 +538,21 @@ public class UserSettings {
 	 * @return la map des champs spécifique
 	 */
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
-		logger.debug("[DEBUT] getSpecificFieldInEditingCorpus");
-		String delimiter = currentConfiguration.getSpecificConfigurationList().stream().sorted(Comparator.comparing(SpecificConfiguration::getOrder))
-				.collect(Collectors.toList()).get(index).getDelimiter();
+		String delimiter = currentConfiguration.getSpecificConfigurationList().stream()
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
+				.getDelimiter();
 		List<String> treatmentFieldList = currentConfiguration.getSpecificConfigurationList().stream()
-				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index).getTreatmentFieldList();
-		Map<String, String> filteredMap = EDITING_FIELD_MAP.entrySet().stream().filter(k -> treatmentFieldList.contains(k.getKey()))
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
+				.getTreatmentFieldList();
+		Map<String, String> filteredMap = EDITING_FIELD_MAP.entrySet().stream()
+				.filter(k -> treatmentFieldList.contains(k.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		Map<String, List<String>> mapFinal = filteredMap.entrySet().stream()
-				.collect(Collectors.toMap(Map.Entry::getKey, v -> new ArrayList<String>(Arrays.asList(v.getValue().split(delimiter)))));
+		Map<String, List<String>> mapFinal = filteredMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,
+				v -> new ArrayList<String>(Arrays.asList(v.getValue().split(delimiter)))));
 		Map<String, List<String>> mapFinalOrdered = new LinkedHashMap<>();
 		List<StructuredField> listStructuredField = currentConfiguration.getStructuredFieldList().stream()
-				.filter(sf -> treatmentFieldList.contains(sf.getFieldName())).sorted(Comparator.comparing(StructuredField::getOrder))
-				.collect(Collectors.toList());
+				.filter(sf -> treatmentFieldList.contains(sf.getFieldName()))
+				.sorted(Comparator.comparing(StructuredField::getOrder)).collect(Collectors.toList());
 		for (StructuredField structuredField : listStructuredField) {
 			List<String> listValues = mapFinal.get(structuredField.getFieldName());
 			if (null == listValues) {
@@ -598,13 +560,13 @@ public class UserSettings {
 			}
 			mapFinalOrdered.put(structuredField.getFieldName(), listValues);
 		}
-		Integer nbMaxElement = mapFinalOrdered.values().stream().map(values -> values.size()).max(Comparator.comparing(Integer::valueOf)).get();
+		Integer nbMaxElement = mapFinalOrdered.values().stream().map(values -> values.size())
+				.max(Comparator.comparing(Integer::valueOf)).get();
 		mapFinalOrdered.entrySet().stream().filter(entry -> entry.getValue().size() < nbMaxElement).forEach(entry -> {
 			while (entry.getValue().size() < nbMaxElement) {
 				entry.getValue().add(StringUtils.SPACE);
 			}
 		});
-		logger.debug("[FIN] getSpecificFieldInEditingCorpus");
 		return mapFinalOrdered;
 	}
 
@@ -615,7 +577,6 @@ public class UserSettings {
 	 * @throws IOException erreur d'entrée sortie
 	 */
 	public void writeCorpus(IWriteText writer) throws IOException {
-		logger.debug("[DEBUT] writeCorpus");
 		// On écrit les champ meta
 		writeLines(writer, EDITING_METAFIELD_MAP);
 		// On écrit les textes
@@ -623,7 +584,6 @@ public class UserSettings {
 			writeLines(writer, text);
 			writer.addBreakLine();
 		}
-		logger.debug("[FIN] writeCorpus");
 	}
 
 	/**
@@ -660,17 +620,20 @@ public class UserSettings {
 	/**
 	 * Permet d'ajouter les memory files
 	 * 
+	 * @param folder          dossier à modifier
 	 * @param memoryFilesList liste des memory files à ajouter
 	 */
-	public void addMemoryFilesList(List<MemoryFile> memoryFilesList) {
-		MEMORY_FILES_LIST.addAll(memoryFilesList);
+	public void addMemoryFilesList(FolderSettingsEnum folder, List<MemoryFile> memoryFilesList) {
+		memoryFilesList.stream().forEach(mf -> this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addMemoryFile(mf));
 	}
 
 	/**
 	 * Permet de vider la liste des memoryfiles
+	 * 
+	 * @param folder dossier à modifier
 	 */
-	public void clearMemoryFilesList() {
-		MEMORY_FILES_LIST.clear();
+	public void clearMemoryFilesList(FolderSettingsEnum folder) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearMemoryFileList();
 	}
 
 	/**
@@ -680,17 +643,18 @@ public class UserSettings {
 	 * @throws IOException
 	 */
 	public void fixedErrorLinesInAllMemoryFiles() throws IOException {
-		logger.debug("[DEBUT] fixedErrorLinesInAllMemoryFiles");
-		List<Path> pathList = LINES_ERROR_LIST.stream().map(lineError -> lineError.getPath()).distinct().collect(Collectors.toList());
+		List<Path> pathList = LINES_ERROR_LIST.stream().map(lineError -> lineError.getPath()).distinct()
+				.collect(Collectors.toList());
 		for (Path path : pathList) {
-			Optional<MemoryFile> findFirstMemoryFile = MEMORY_FILES_LIST.stream().filter(memoryFile -> path.equals(memoryFile.getPath())).findFirst();
+			Optional<MemoryFile> findFirstMemoryFile = this.CURRENT_FOLDER_USER_TEXTS_MAP
+					.get(FolderSettingsEnum.FOLDER_ANALYZE).getMemoryFileList().stream()
+					.filter(memoryFile -> path.equals(memoryFile.getPath())).findFirst();
 			if (!findFirstMemoryFile.isPresent()) {
 				continue;
 			}
 			MemoryFile memoryFile = findFirstMemoryFile.get();
 			fixedErrorLinesInOneMemoryFile(memoryFile);
 		}
-		logger.debug("[FIN] fixedErrorLinesInAllMemoryFiles");
 	}
 
 	/**
@@ -700,27 +664,27 @@ public class UserSettings {
 	 * @throws IOException
 	 */
 	private void fixedErrorLinesInOneMemoryFile(MemoryFile memoryFile) throws IOException {
-		logger.debug("[DEBUT] fixedErrorLinesInOneMemoryFile");
-		List<LineError> errorLines = LINES_ERROR_LIST.stream().filter(errorLine -> memoryFile.getPath().equals(errorLine.getPath()))
-				.collect(Collectors.toList());
+		List<LineError> errorLines = LINES_ERROR_LIST.stream()
+				.filter(errorLine -> memoryFile.getPath().equals(errorLine.getPath())).collect(Collectors.toList());
 		errorLines.forEach(lineError -> memoryFile.updateLine(lineError.getIndex(), lineError.getLineFixed()));
 		try (Writer writer = new Writer(memoryFile.getPath())) {
 			memoryFile.writeLines(writer);
 		}
-		logger.debug("[FIN] fixedErrorLinesInOneMemoryFile");
 	}
 
 	/**
 	 * Permet de charger un texte en erreur pour la correction
 	 * 
-	 * @param key Clé du texte
+	 * @param key       Clé du texte
+	 * @param errorType Type d'erreur
 	 */
 	public void loadErrorText(String key, ErrorTypeEnum errorType) {
 		this.clearEditingCorpus();
 		this.currentErrorKey = key;
 		this.currentErrorTypeFixed = errorType;
-		Optional<UserStructuredText> optionalUserStructuredText = this.USER_STRUCTURED_TEXT_LIST.stream().filter(text -> key.equals(text.getKey()))
-				.findFirst();
+		Optional<UserStructuredText> optionalUserStructuredText = this.CURRENT_FOLDER_USER_TEXTS_MAP
+				.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList().stream()
+				.filter(text -> key.equals(text.getKey())).findFirst();
 		if (optionalUserStructuredText.isPresent()) {
 			setEditingCorpusNameFile(FilenameUtils.removeExtension(optionalUserStructuredText.get().getFileName()));
 			optionalUserStructuredText.get().getStructuredText().getListContent()
@@ -734,39 +698,37 @@ public class UserSettings {
 	 * @return les modifications en cours
 	 */
 	public SaveCurrentFixedText getSaveCurrentFixedText() {
-		logger.debug("[DEBUT] getSaveCurrentFixedText");
 		SaveCurrentFixedText save = new SaveCurrentFixedText();
 		save.setPath(getFolder(FolderSettingsEnum.FOLDER_ANALYZE));
-		save.setKeysStructuredTextErrorSet(Collections.unmodifiableSet(KEYS_STRUCTURED_TEXT_ERROR_LIST));
-		save.setUserStructuredTextList(getUserStructuredTextList());
-		save.setKeysBlankLineErrorSet(Collections.unmodifiableSet(KEYS_BLANK_LINE_ERROR_LIST));
-		save.setKeysMetaBlankLineErrorSet(Collections.unmodifiableSet(KEYS_META_BLANK_LINE_ERROR_LIST));
-		logger.debug("[FIN] getSaveCurrentFixedText");
+		save.setKeysStructuredTextErrorSet(
+				Collections.unmodifiableSet(this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.STRUCTURED_TEXT)));
+		save.setUserStructuredTextList(
+				this.CURRENT_FOLDER_USER_TEXTS_MAP.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList());
+		save.setKeysBlankLineErrorSet(Collections.unmodifiableSet(
+				Collections.unmodifiableSet(this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.BLANK_LINE))));
+		save.setKeysMetaBlankLineErrorSet(Collections.unmodifiableSet(
+				Collections.unmodifiableSet(this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.META_BLANK_LINE))));
 		return save;
 	}
-	
+
 	/**
 	 * Permet de se procurer la configuration de l'utilisateur
 	 * 
 	 * @return la configuration de l'utilisateur
 	 */
 	public CurrentUserConfiguration getUserConfiguration() {
-		logger.debug("[DEBUT] getUserConfiguration");
 		CurrentUserConfiguration save = new CurrentUserConfiguration();
 		save.setLibraryPath(getFolder(FolderSettingsEnum.FOLDER_TEXTS).toPath());
-		logger.debug("[FIN] getUserConfiguration");
 		return save;
 	}
-	
+
 	/**
 	 * Permet de restaurer l'environnement de la configuration de l'utilisateur
 	 * 
 	 * @param save la configuration de l'utilisateur a restaurer
 	 */
 	public void restoreUserConfiguration(CurrentUserConfiguration save) {
-		logger.debug("[DEBUT] restoreUserConfiguration");
 		setFolder(FolderSettingsEnum.FOLDER_TEXTS, save.getLibraryPath().toFile());
-		logger.debug("[FIN] restoreUserConfiguration");
 	}
 
 	/**
@@ -775,73 +737,29 @@ public class UserSettings {
 	 * @param save sauvegarde a restaurer
 	 */
 	public void restoreCurrentFixedTest(SaveCurrentFixedText save) {
-		logger.debug("[DEBUT] restoreCurrentFixedTest");
 		setFolder(FolderSettingsEnum.FOLDER_ANALYZE, save.getPath());
-		KEYS_STRUCTURED_TEXT_ERROR_LIST.addAll(save.getKeysStructuredTextErrorSet());
-		USER_STRUCTURED_TEXT_LIST.addAll(save.getUserStructuredTextList());
-		KEYS_BLANK_LINE_ERROR_LIST.addAll(save.getKeysBlankLineErrorSet());
-		KEYS_META_BLANK_LINE_ERROR_LIST.addAll(save.getKeysMetaBlankLineErrorSet());
-		logger.debug("[FIN] restoreCurrentFixedTest");
+		this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.STRUCTURED_TEXT).addAll(save.getKeysStructuredTextErrorSet());
+		save.getUserStructuredTextList().stream().forEach(ust -> this.CURRENT_FOLDER_USER_TEXTS_MAP
+				.get(FolderSettingsEnum.FOLDER_ANALYZE).addUserStructuredText(ust));
+		this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.BLANK_LINE).addAll(save.getKeysBlankLineErrorSet());
+		this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.META_BLANK_LINE).addAll(save.getKeysMetaBlankLineErrorSet());
 	}
 
 	/**
 	 * Permet d'appliquer les modifications au texte structuré
 	 */
 	public void applyCurrentTextToStructuredText() {
-		logger.debug("[DEBUT] applyCurrentTextToStructuredText");
-		Optional<UserStructuredText> optionalUserStructuredText = this.USER_STRUCTURED_TEXT_LIST.stream()
+		Optional<UserStructuredText> optionalUserStructuredText = this.CURRENT_FOLDER_USER_TEXTS_MAP
+				.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList().stream()
 				.filter(text -> this.currentErrorKey.equals(text.getKey())).findFirst();
 		if (optionalUserStructuredText.isPresent()) {
 			StructuredText structuredText = optionalUserStructuredText.get().getStructuredText();
-			EDITING_FIELD_MAP.entrySet().stream().forEach(entry -> structuredText.modifyContent(entry.getKey(), entry.getValue()));
-			switch (currentErrorTypeFixed) {
-			case BLANK_LINE:
-				deleteBlankLineCurrentErrorKey();
-				break;
-			case STRUCTURED_TEXT:
-				deleteStructuredCurrentErrorKey();
-				break;
-			case META_BLANK_LINE:
-				deleteMetaBlankLineCurrentErrorKey();
-				break;
-			}
+			EDITING_FIELD_MAP.entrySet().stream()
+					.forEach(entry -> structuredText.modifyContent(entry.getKey(), entry.getValue()));
+			deleteCurrentErrorKey();
 		}
-		logger.debug("[FIN] applyCurrentTextToStructuredText");
-	}
-
-	/**
-	 * Permet de supprimer la clé en erreur pour les structures en erreur
-	 */
-	public void deleteStructuredCurrentErrorKey() {
-		logger.debug("[DEBUT] deleteCurrentErrorKey");
-		KEYS_STRUCTURED_TEXT_ERROR_LIST.remove(currentErrorKey);
-		currentErrorKey = StringUtils.EMPTY;
-		currentErrorTypeFixed = null;
-		logger.debug("[FIN] deleteCurrentErrorKey");
-	}
-
-	/**
-	 * Permet de supprimer la clé en erreur pour les lignes blanches en erreur
-	 */
-	public void deleteBlankLineCurrentErrorKey() {
-		logger.debug("[DEBUT] deleteBlankLineCurrentErrorKey");
-		KEYS_BLANK_LINE_ERROR_LIST.remove(currentErrorKey);
-		currentErrorKey = StringUtils.EMPTY;
-		currentErrorTypeFixed = null;
-		logger.debug("[FIN] deleteBlankLineCurrentErrorKey");
 	}
 	
-	/**
-	 * Permet de supprimer la clé en erreur pour les meta lignes blanches en erreur
-	 */
-	public void deleteMetaBlankLineCurrentErrorKey() {
-		logger.debug("[DEBUT] deleteMetaBlankLineCurrentErrorKey");
-		KEYS_META_BLANK_LINE_ERROR_LIST.remove(currentErrorKey);
-		currentErrorKey = StringUtils.EMPTY;
-		currentErrorTypeFixed = null;
-		logger.debug("[FIN] deleteMetaBlankLineCurrentErrorKey");
-	}
-
 	/**
 	 * Permet d'écrire les textes qui ont été corrigé
 	 * 
@@ -850,8 +768,9 @@ public class UserSettings {
 	 */
 	public void writeFixedText(IWriteText writer, String file) throws IOException {
 		logger.debug(String.format("[DEBUT] writeFixedText : %s", file));
-		List<UserStructuredText> userStructuredTextList = getUserStructuredTextList().stream().filter(ust -> ust.getFileName().equals(file))
-				.collect(Collectors.toList());
+		List<UserStructuredText> userStructuredTextList = this.CURRENT_FOLDER_USER_TEXTS_MAP
+				.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList().stream()
+				.filter(ust -> ust.getFileName().equals(file)).collect(Collectors.toList());
 		Map<String, String> listFieldMetaFile = getListFieldMetaFile();
 		StructuredText structuredText = userStructuredTextList.get(0).getStructuredText();
 		Map<String, String> mapFieldMetaFileToWrite = getMapToWrite(structuredText, listFieldMetaFile.keySet());
@@ -860,18 +779,19 @@ public class UserSettings {
 		List<UserStructuredText> orderedUserStructuredText = userStructuredTextList.stream()
 				.sorted(Comparator.comparing(UserStructuredText::getNumber)).collect(Collectors.toList());
 		for (UserStructuredText userStructuredText : orderedUserStructuredText) {
-			Map<String, String> mapFieldCommonFileToWrite = getMapToWrite(userStructuredText.getStructuredText(), listFieldCommonFile.keySet());
+			Map<String, String> mapFieldCommonFileToWrite = getMapToWrite(userStructuredText.getStructuredText(),
+					listFieldCommonFile.keySet());
 			writeLines(writer, mapFieldCommonFileToWrite);
 			writer.addBreakLine();
 		}
 		logger.debug(String.format("[FIN] writeFixedText : %s", file));
 	}
-	
+
 	/**
 	 * Permet de nettoyer les informations après l'enregistrement des fichiers
 	 */
 	public void clearAfterWriteFixedText() {
-		this.clearUserStructuredTextList();
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(FolderSettingsEnum.FOLDER_ANALYZE).clearUserStructuredTextList();
 		this.clearEditingCorpus();
 		this.clearKeysStructuredTextErrorList();
 		this.editingCorpusNameFile = StringUtils.EMPTY;
@@ -897,18 +817,19 @@ public class UserSettings {
 	/**
 	 * Permet de nettoyer les informations stockés suite à une précédente analyse
 	 */
-	public void clearAllSession() {
+	public void clearAllSession(FolderSettingsEnum folder) {
 		clearLineErrorList();
-		clearMemoryFilesList();
+		clearCurrentFolderUserTexts(folder);
 		clearEditingCorpus();
 		clearKeysStructuredTextErrorList();
-		clearUserStructuredTextList();
 		clearBlankLineErrorList();
-		clearMetaBlankLineErrorList();
+		clearKeysInError(ErrorTypeEnum.META_BLANK_LINE);
 	}
-	
+
 	/**
-	 * Permet de se procurer le nouveau repertoire incluant la configuration dans le chemin
+	 * Permet de se procurer le nouveau repertoire incluant la configuration dans le
+	 * chemin
+	 * 
 	 * @return le repertoire complet pour sauvegarder les textes
 	 */
 	public File getDirectoryForSaveTextsInLibrary() {
@@ -921,6 +842,85 @@ public class UserSettings {
 			return newDirectory;
 		}
 		return null;
+	}
+
+	/**
+	 * Permet de clear la map de la liste des textes
+	 */
+	public void clearCurrentFolderUserTextsMap() {
+		CURRENT_FOLDER_USER_TEXTS_MAP.clear();
+		clearCurrentFolderUserTexts(FolderSettingsEnum.FOLDER_ANALYZE);
+		clearCurrentFolderUserTexts(FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	/**
+	 * Permet de nettoyer la liste des textes du dossier courant.
+	 * 
+	 * @param folder Dossier courant
+	 */
+	public void clearCurrentFolderUserTexts(FolderSettingsEnum folder) {
+		CURRENT_FOLDER_USER_TEXTS_MAP.put(folder, new CurrentUserTexts());
+	}
+
+	/**
+	 * Permet d'ajouter un fichier structuré
+	 * 
+	 * @param folder         dossier à modifier
+	 * @param structuredFile fichier structuré
+	 */
+	public void addStructuredFile(FolderSettingsEnum folder, StructuredFile structuredFile) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addStructuredFile(structuredFile);
+	}
+
+	/**
+	 * Permet de vider la liste des fichier structuré utilisateur
+	 * 
+	 * @param folder dossier à modifier
+	 */
+	public void clearStructuredFileList(FolderSettingsEnum folder) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearStructuredFileList();
+	}
+
+	/**
+	 * Permet de se procurer la liste des fichiers structuré Une liste immutable est
+	 * retourné, cette liste ne peut donc pas être modifier
+	 * 
+	 * @param folder dossier à modifier
+	 * @return la liste des fichier structuré utilisateurs immutable
+	 */
+	public List<StructuredFile> getStructuredFileList(FolderSettingsEnum folder) {
+		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getStructuredFileList();
+	}
+
+	/**
+	 * Permet d'ajouter un texte structuré spécifique
+	 * 
+	 * @param folder                      dossier à modifier
+	 * @param configurationStructuredText un texte structuré spécifique
+	 */
+	public void addConfigurationStructuredText(FolderSettingsEnum folder,
+			ConfigurationStructuredText configurationStructuredText) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addConfigurationStructuredText(configurationStructuredText);
+	}
+
+	/**
+	 * Permet de vider la liste des textes structurés spécifique
+	 * 
+	 * @param folder dossier à modifier
+	 */
+	public void clearConfigurationStructuredTextList(FolderSettingsEnum folder) {
+		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearConfigurationStructuredTextList();
+	}
+
+	/**
+	 * Permet de se procurer la liste des textes structurés spécifique Une liste
+	 * immutable est retourné, cette liste ne peut donc pas être modifier
+	 * 
+	 * @param folder dossier à modifier
+	 * @return la liste des textes structurés spécifique utilisateurs immutable
+	 */
+	public List<ConfigurationStructuredText> getConfigurationStructuredTextList(FolderSettingsEnum folder) {
+		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getConfigurationStructuredTextList();
 	}
 
 }

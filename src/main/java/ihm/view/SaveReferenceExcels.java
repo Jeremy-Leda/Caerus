@@ -183,7 +183,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					getControler().generateExcel(createExcelCmd());
+					getControler().generateExcelFromAnalyze(createExcelCmd());
 					closeFrame();
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);

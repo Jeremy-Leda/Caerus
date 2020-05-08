@@ -3,9 +3,12 @@ package ihm.model;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,20 +16,34 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import analyze.Dispatcher;
+import analyze.UserSettings;
 import analyze.beans.Configuration;
 import analyze.beans.LineError;
+import analyze.beans.SpecificConfiguration;
+import analyze.beans.StructuredField;
 import analyze.beans.StructuredFile;
-import analyze.beans.StructuringError;
+import analyze.constants.ErrorTypeEnum;
+import analyze.constants.FolderSettingsEnum;
 import excel.beans.ExcelGenerateConfigurationCmd;
+import exceptions.LoadTextException;
 import exceptions.MoveFileException;
 
+/**
+ * 
+ * Cette classe permet d'intéragir avec les informations stockés et effectuer des actions
+ * Il fait des appels au dispatcher et à la configuration utilisateur
+ * 
+ * @author jerem
+ *
+ */
 public class ConfigurationModel implements IConfigurationModel {
 
 	private Logger logger = LoggerFactory.getLogger(ConfigurationModel.class);
 	private Dispatcher dispatcher = new Dispatcher();
 
 	@Override
-	public void launchAnalyze() {
+	public void launchAnalyze() throws LoadTextException {
+		logger.debug("CALL launchAnalyze");
 		try {
 			this.dispatcher.launchAnalyze();
 		} catch (IOException e) {
@@ -36,272 +53,326 @@ public class ConfigurationModel implements IConfigurationModel {
 
 	@Override
 	public void setCurrentConfiguration(Configuration configuration) {
-		this.dispatcher.setCurrentConfiguration(configuration);
+		logger.debug(String.format("CALL setCurrentConfiguration : Name %s", configuration.getName()));
+		UserSettings.getInstance().setCurrentConfiguration(configuration);
 	}
 
 	@Override
-	public List<StructuredFile> getListOfStructuredFile() {
-			return this.dispatcher.getStructuredFiles();
+	public List<StructuredFile> getListOfStructuredFileForAnalyze() {
+		logger.debug("CALL getListOfStructuredFileForAnalyze");
+		return UserSettings.getInstance().getStructuredFileList(FolderSettingsEnum.FOLDER_ANALYZE);
 	}
 
 	@Override
-	public void createExcel(File path) {
-		try {
-			this.dispatcher.createExcel(path);
-		} catch (IOException e) {
-			logger.error(e.getMessage(), e);
-		}
+	public List<StructuredFile> getListOfStructuredFileForTexts() {
+		logger.debug("CALL getListOfStructuredFileForTexts");
+		return UserSettings.getInstance().getStructuredFileList(FolderSettingsEnum.FOLDER_TEXTS);
 	}
 
 	@Override
-	public Boolean isExcelCreated() {
-		return this.dispatcher.getExcelCreated();
+	public void clearAnalyze() {
+		logger.debug("CALL clearAnalyze");
+		UserSettings.getInstance().clearAllSession(FolderSettingsEnum.FOLDER_ANALYZE);
 	}
 
 	@Override
-	public Boolean errorProcessing() throws IOException {
-		return this.dispatcher.errorProcessing();
-	}
-
-	@Override
-	public void clear() {
-		this.dispatcher.getStructuredFiles().clear();
-		this.dispatcher.getStructuringErrorList().clear();
-	}
-
-	@Override
-	public List<StructuringError> getStructuringErrorList() {
-		return this.dispatcher.getStructuringErrorList();
+	public void clearTexts() {
+		logger.debug("CALL clearText");
+		UserSettings.getInstance().clearAllSession(FolderSettingsEnum.FOLDER_TEXTS);
 	}
 
 	@Override
 	public File getTextsFolder() {
-		return this.dispatcher.getTextsFolder();
+		logger.debug("CALL getTextsFolder");
+		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS);
 	}
 
 	@Override
 	public File getAnalyzeFolder() {
-		return this.dispatcher.getAnalyzeFolder();
+		logger.debug("CALL getAnalyzeFolder");
+		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE);
 	}
 
 	@Override
 	public String getConfigurationName() {
-		return this.dispatcher.getConfigurationName();
+		logger.debug("CALL getConfigurationName");
+		if (null != UserSettings.getInstance().getCurrentConfiguration()) {
+			return UserSettings.getInstance().getCurrentConfiguration().getName();
+		}
+		return StringUtils.EMPTY;
 	}
 
 	@Override
 	public void setTextsFolder(File textsFolder) {
-		this.dispatcher.setTextsFolder(textsFolder);
+		logger.debug(String.format("CALL setTextsFolder : Folder %s", textsFolder));
+		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
 	}
 
 	@Override
 	public void setAnalyzeFolder(File folderAnalyze) {
-		this.dispatcher.setAnalyzeFolder(folderAnalyze);
+		logger.debug(String.format("CALL setAnalyzeFolder : Folder %s", folderAnalyze));
+		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_ANALYZE, folderAnalyze);
 	}
 
 	@Override
 	public Map<String, String> getConfigurationFieldMetaFile() {
-		return this.dispatcher.getListFieldMetaFile();
+		logger.debug("CALL getConfigurationFieldMetaFile");
+		return UserSettings.getInstance().getListFieldMetaFile();
 	}
 
 	@Override
 	public void createNewCorpus(String nameFile, Map<String, String> metaFileFieldMap) {
-		this.dispatcher.createNewCorpus(nameFile, metaFileFieldMap);
+		logger.debug(String.format("CALL createNewCorpus : Nom du fichier %s", nameFile));
+		UserSettings.getInstance().createNewCorpus(nameFile, metaFileFieldMap);
 	}
 
 	@Override
 	public Boolean haveEditingCorpus() {
-		return this.dispatcher.haveEditingCorpus();
+		logger.debug("CALL haveEditingCorpus");
+		return UserSettings.getInstance().haveEditingCorpus();
 	}
 
 	@Override
 	public void clearEditingCorpus() {
-		this.dispatcher.clearEditingCorpus();
+		logger.debug("CALL clearEditingCorpus");
+		UserSettings.getInstance().clearEditingCorpus();
 	}
 
 	@Override
 	public Map<String, String> getConfigurationFieldCommonFile() {
-		return this.dispatcher.getListFieldCommonFile();
+		logger.debug("CALL getConfigurationFieldCommonFile");
+		return UserSettings.getInstance().getListFieldCommonFile();
 	}
 
 	@Override
 	public String getEditingCorpusName() {
-		return this.dispatcher.getEditingCorpusName();
+		logger.debug("CALL getEditingCorpusName");
+		return UserSettings.getInstance().getEditingCorpusNameFile();
 	}
 
 	@Override
 	public Map<String, String> getListFieldSpecific(Integer index) {
-		return this.dispatcher.getListFieldSpecific(index);
+		logger.debug(String.format("CALL getListFieldSpecific : index %d", index));
+		return UserSettings.getInstance().getListFieldSpecific(index);
 	}
 
 	@Override
 	public Map<String, String> getListFieldHeaderSpecific(Integer index) {
-		return this.dispatcher.getListFieldHeaderSpecific(index);
+		logger.debug(String.format("CALL getListFieldHeaderSpecific : index %d", index));
+		return UserSettings.getInstance().getListFieldHeaderSpecific(index);
 	}
 
 	@Override
 	public Integer getNbSpecificConfiguration() {
-		return this.dispatcher.getNbSpecificConfiguration();
+		logger.debug("CALL getNbSpecificConfiguration");
+		return UserSettings.getInstance().getNbSpecificConfiguration();
 	}
 
 	@Override
 	public void updateSpecificFieldInEditingCorpus(Integer index, Map<String, List<String>> specificFieldMap) {
-		this.dispatcher.updateSpecificFieldInEditingCorpus(index, specificFieldMap);
+		logger.debug(String.format("CALL updateSpecificFieldInEditingCorpus : index %d", index));
+		UserSettings.getInstance().updateSpecificFieldInEditingCorpus(index, specificFieldMap);
 	}
 
 	@Override
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
-		return this.dispatcher.getSpecificFieldInEditingCorpus(index);
+		logger.debug(String.format("CALL getSpecificFieldInEditingCorpus : index %d", index));
+		return UserSettings.getInstance().getSpecificFieldInEditingCorpus(index);
 	}
 
 	@Override
 	public String getFieldInEditingCorpus(String key) {
-		return this.dispatcher.getFieldInEditingCorpus(key);
+		logger.debug(String.format("CALL getFieldInEditingCorpus : key %s", key));
+		return UserSettings.getInstance().getFieldInEditingCorpus(key);
 	}
 
 	@Override
 	public void updateFieldInEditingCorpus(String key, String value) {
-		this.dispatcher.updateFieldInEditingCorpus(key, value);
+		logger.debug(String.format("CALL updateFieldInEditingCorpus : key %s - value %s", key, value));
+		UserSettings.getInstance().updateFieldInEditingCorpus(key, value);
 	}
 
 	@Override
 	public void writeCorpus() throws IOException {
+		logger.debug("CALL writeCorpus");
 		this.dispatcher.writeCorpus();
 	}
 
 	@Override
 	public void addEditingTextToCurrentCorpus() {
-		this.dispatcher.addEditingTextToCurrentCorpus();
+		logger.debug("CALL addEditingTextToCurrentCorpus");
+		UserSettings.getInstance().addEditingTextToCurrentCorpus();
 	}
 
 	@Override
 	public Integer getNbLinesError() {
-		return this.dispatcher.getNbLinesError();
+		logger.debug("CALL getNbLinesError");
+		return UserSettings.getInstance().getNbLineError();
 	}
 
 	@Override
 	public LineError getErrorLine(Integer index) {
-		return this.dispatcher.getErrorLine(index);
+		logger.debug(String.format("CALL getErrorLine : index %d", index));
+		return UserSettings.getInstance().getLineError(index);
 	}
 
 	@Override
 	public void updateLineError(Integer index, LineError lineError) {
-		this.dispatcher.updateLineError(index, lineError);
+		logger.debug(String.format("CALL updateLineError : index %d", index));
+		UserSettings.getInstance().updateLineError(index, lineError);
 	}
 
 	@Override
 	public void saveFileAfteFixedErrorLine() throws IOException {
-		this.dispatcher.saveFileAfteFixedErrorLine();
+		logger.debug("CALL saveFileAfteFixedErrorLine");
+		UserSettings.getInstance().fixedErrorLinesInAllMemoryFiles();
 	}
 
 	@Override
 	public Integer getNbTextsError() {
-		return this.dispatcher.getNbTextsError();
+		logger.debug("CALL getNbTextsError");
+		return UserSettings.getInstance().getNbTextsError();
 	}
 
 	@Override
 	public void loadNextErrorText() {
-		this.dispatcher.loadNextErrorText();
+		logger.debug("CALL loadNextErrorText");
+		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysInError(ErrorTypeEnum.STRUCTURED_TEXT).get(0),
+				ErrorTypeEnum.STRUCTURED_TEXT);
 	}
 
 	@Override
 	public void saveCurrentStateOfFixedText() {
+		logger.debug("CALL saveCurrentStateOfFixedText");
 		this.dispatcher.saveCurrentStateOfFixedText();
 	}
 
 	@Override
 	public void writeFixedText() throws IOException {
+		logger.debug("CALL writeFixedText");
 		this.dispatcher.writeFixedText();
 	}
 
 	@Override
 	public void applyFixedErrorText() {
-		this.dispatcher.applyFixedErrorText();
+		logger.debug("CALL applyFixedErrorText");
+		UserSettings.getInstance().applyCurrentTextToStructuredText();
 	}
 
 	@Override
 	public Boolean haveCurrentStateFile() {
+		logger.debug("CALL haveCurrentStateFile");
 		return this.dispatcher.haveCurrentStateFile();
 	}
 
 	@Override
 	public void restoreCurrentState() throws JsonParseException, JsonMappingException, IOException {
+		logger.debug("CALL restoreCurrentState");
 		this.dispatcher.restoreCurrentState();
 	}
 
 	@Override
 	public Boolean haveTextsInErrorRemaining() {
-		return this.dispatcher.haveTextsInErrorRemaining();
+		logger.debug("CALL haveTextsInErrorRemaining");
+		return UserSettings.getInstance().haveErrorRemaining(ErrorTypeEnum.STRUCTURED_TEXT);
 	}
 
 	@Override
 	public Integer getNbBlankLinesError() {
-		return this.dispatcher.getNbBlankLinesError();
+		logger.debug("CALL getNbBlankLinesError");
+		return UserSettings.getInstance().getNbBlankLineError();
 	}
 
 	@Override
 	public void loadNextErrorBlankLine() {
-		this.dispatcher.loadNextErrorBlankLine();
+		logger.debug("CALL loadNextErrorBlankLine");
+		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysInError(ErrorTypeEnum.BLANK_LINE).get(0),
+				ErrorTypeEnum.BLANK_LINE);
 	}
 
 	@Override
-	public Integer getNbTextLoaded() {
-		return this.dispatcher.getNbTextLoaded();
+	public Integer getNbTextLoadedForAnalyze() {
+		logger.debug("CALL getNbTextLoadedForAnalyze");
+		return UserSettings.getInstance().getUserStructuredTextList(FolderSettingsEnum.FOLDER_ANALYZE).size();
 	}
 
+	@Override
+	public Integer getNbTextLoadedForTexts() {
+		logger.debug("CALL getNbTextLoadedForTexts");
+		return UserSettings.getInstance().getUserStructuredTextList(FolderSettingsEnum.FOLDER_TEXTS).size();
+	}
+	
 	@Override
 	public Boolean haveBlankLinesInErrorRemaining() {
-		return this.dispatcher.haveBlankLinesInErrorRemaining();
+		logger.debug("CALL haveBlankLinesInErrorRemaining");
+		return UserSettings.getInstance().haveErrorRemaining(ErrorTypeEnum.BLANK_LINE);
 	}
 
 	@Override
 	public Map<String, String> getConfigurationSpecificLabelNameFileMap() {
-		return this.dispatcher.getConfigurationSpecificLabelNameFileMap();
+		logger.debug("CALL getConfigurationSpecificLabelNameFileMap");
+		return UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
+				.collect(Collectors.toMap(SpecificConfiguration::getLabel, SpecificConfiguration::getNameFileSuffix));
 	}
 
 	@Override
-	public void generateExcel(ExcelGenerateConfigurationCmd cmd) throws IOException {
-		this.dispatcher.generateExcel(cmd);
+	public void generateExcelFromAnalyze(ExcelGenerateConfigurationCmd cmd) throws IOException {
+		logger.debug("CALL generateExcelFromAnalyze");
+		this.dispatcher.generateExcel(FolderSettingsEnum.FOLDER_ANALYZE, cmd);
 	}
 
+	@Override
+	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException {
+		logger.debug("CALL generateExcelFromTexts");
+		this.dispatcher.generateExcel(FolderSettingsEnum.FOLDER_TEXTS, cmd);
+	}
+	
 	@Override
 	public Map<String, String> getFieldConfigurationNameLabelMap() {
-		return this.dispatcher.getFieldConfigurationNameLabelMap();
+		logger.debug("CALL getFieldConfigurationNameLabelMap");
+		return UserSettings.getInstance().getCurrentConfiguration().getStructuredFieldList().stream()
+				.sorted(Comparator.comparing(StructuredField::getOrder))
+				.collect(Collectors.toMap(StructuredField::getFieldName, StructuredField::getLabel));
 	}
 
 	@Override
 	public List<String> getFieldListToProcess(String labelSpecificConfiguration) {
+		logger.debug(String.format("CALL getFieldListToProcess : label %s", labelSpecificConfiguration));
 		return this.dispatcher.getFieldListToProcess(labelSpecificConfiguration);
 	}
 
 	@Override
 	public List<String> getFieldListForbiddenToDisplay(String labelSpecificConfiguration) {
+		logger.debug(String.format("CALL getFieldListForbiddenToDisplay : label %s", labelSpecificConfiguration));
 		return this.dispatcher.getFieldListForbiddenToDisplay(labelSpecificConfiguration);
 	}
 
 	@Override
-	public Boolean haveMetaBlankLineError() {
-		return this.dispatcher.haveMetaBlankLineError();
-	}
-
-	@Override
 	public void loadNextErrorMetaBlankLine() {
-		this.dispatcher.loadNextErrorMetaBlankLine();
+		logger.debug("CALL loadNextErrorMetaBlankLine");
+		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysInError(ErrorTypeEnum.META_BLANK_LINE).get(0),
+				ErrorTypeEnum.META_BLANK_LINE);
 	}
 
 	@Override
 	public Boolean haveMetaBlankLineInErrorRemaining() {
-		return this.dispatcher.haveMetaBlankLineInErrorRemaining();
+		logger.debug("CALL haveMetaBlankLineInErrorRemaining");
+		return UserSettings.getInstance().haveErrorRemaining(ErrorTypeEnum.META_BLANK_LINE);
 	}
 
 	@Override
 	public Integer getNbMetaBlankLineToFixed() {
-		return this.dispatcher.getNbMetaBlankLineToFixed();
+		logger.debug("CALL getNbMetaBlankLineToFixed");
+		return UserSettings.getInstance().getNbKeysInError(ErrorTypeEnum.META_BLANK_LINE);
 	}
 
 	@Override
 	public Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException {
+		logger.debug("CALL moveAllFilesFromTextAnalyzeToLibrary");
 		return this.dispatcher.moveAllFilesFromTextAnalyzeToLibrary();
 	}
+
+
+
 
 }

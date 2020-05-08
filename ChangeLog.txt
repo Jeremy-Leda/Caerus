@@ -12,3 +12,6 @@ Caerus 0.0.1-SNAPSHOT - 03/05/2020
 
 Caerus 0.0.1-SNAPSHOT - 04/05/2020
 - Modification de la génération des fichiers excel pour générer des "xlsx" (version 2010 et +) 
+
+Caerus 0.0.1-SNAPSHOT - 08/05/2020
+- Ajout de la possibilité de migrer les textes vers la bibliothéque une fois l'analyse terminé

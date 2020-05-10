@@ -46,6 +46,7 @@ public final class Constants {
 	public static final String TEXT_LIBRARY_MENU_TITLE = "window.menu.nivel5.title";
 	public static final String TEXT_LIBRARY_LOAD_MENU_TITLE = "window.menu.nivel5.subnivel1.title";
 	public static final String TEXT_LIBRARY_CREATE_MENU_TITLE = "window.menu.nivel5.subnivel2.title";
+	public static final String TEXT_LIBRARY_MANAGE_MENU_TITLE = "window.menu.nivel5.subnivel3.title";
 	public static final String CONFIGURATION_LIBRARY_MENU_TITLE = "window.menu.nivel3.title";
 	public static final String CONFIGURATION_LIBRARY_LOAD_MENU_TITLE = "window.menu.nivel3.subnivel1.title";
 
@@ -194,4 +195,19 @@ public final class Constants {
 	
 	public static final String WINDOW_MESSAGE_FROM = "window.message.from";
 	public static final String WINDOW_MESSAGE_TO = "window.message.to";
+	
+	public static final String WINDOW_DISPLAY_TEXTS_PANEL_LABEL = "window.display.texts.panel.label";
+	public static final String WINDOW_DISPLAY_TEXTS_EDIT_BUTTON_LABEL = "window.display.texts.edit.button.label";
+	public static final String WINDOW_DISPLAY_TEXTS_DELETE_BUTTON_LABEL = "window.display.texts.delete.button.label";
+	
+	public static final String WINDOW_DISPLAY_TEXTS_PREVIOUS_BUTTON_LABEL = "window.display.texts.previous.button.label";
+	public static final String WINDOW_DISPLAY_TEXTS_NEXT_BUTTON_LABEL = "window.display.texts.next.button.label";
+	public static final String WINDOW_DISPLAY_TEXTS_CURRENT_POSITION_LABEL = "window.display.texts.current.position.label";
+	public static final String WINDOW_DISPLAY_TEXTS_NB_TEXTS_BY_PAGE_LABEL = "window.display.texts.nb.texts.by.page.label";
+	public static final String WINDOW_DISPLAY_TEXTS_CORPUS_LABEL = "window.display.texts.corpus.label";
+	
+	public static final String WINDOW_MANAGE_TEXTS_TITLE = "window.manage.texts.title";
+	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_PANEL_TITLE = "window.manage.texts.generate.excel.panel.title";
+	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_CLASSICAL_BUTTON_LABEL = "window.manage.texts.generate.excel.classical.button.label";
+	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_SPECIFIC_BUTTON_LABEL = "window.manage.texts.generate.excel.specific.button.label";
 }

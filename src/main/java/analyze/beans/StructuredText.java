@@ -101,16 +101,6 @@ public class StructuredText {
 		return result;
 	}
 
-	/*
-	 * 
-	 */
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		listContent.forEach(c -> sb.append(c.toString()));
-		return sb.toString();
-	}
-
 	public Boolean getHaveBlankLine() {
 		return haveBlankLine;
 	}
@@ -133,6 +123,11 @@ public class StructuredText {
 
 	public void setUniqueKey(String uniqueKey) {
 		this.uniqueKey = uniqueKey;
+	}
+	
+	@Override
+	public String toString() {
+		return this.uniqueKey;
 	}
 
 }

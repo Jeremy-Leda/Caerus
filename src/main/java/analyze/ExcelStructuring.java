@@ -17,14 +17,6 @@ public class ExcelStructuring {
 
 	private final List<List<String>> rows = new ArrayList<List<String>>();
 
-	public List<List<String>> getStructuringRows(List<StructuredFile> files, Configuration configuration) {
-		this.listStructuredFieldOrdered = configuration.getStructuredFieldList().stream().sorted(Comparator.comparingInt(StructuredField::getOrder))
-				.collect(Collectors.toList());
-		rows.add(excelHeader(configuration));
-		files.stream().forEach(sf -> excelValues(sf).stream().forEach(st -> this.rows.add(st)));
-		return this.rows;
-	}
-
 	public List<List<String>> getStructuringRows(List<StructuredFile> files, Configuration configuration, ExcelGenerateConfigurationCmd cmd) {
 		if (null != cmd.getFieldToGenerateList() && !cmd.getFieldToGenerateList().isEmpty()) {
 			this.listStructuredFieldOrdered = configuration.getStructuredFieldList().stream()
@@ -37,7 +29,7 @@ public class ExcelStructuring {
 		if (cmd.getWithHeader()) {
 			rows.add(excelHeader(configuration));
 		}
-		files.stream().forEach(sf -> excelValues(sf).stream().forEach(st -> this.rows.add(st)));
+		files.stream().forEach(sf -> excelValues(sf, cmd.getUniqueKeyList()).stream().forEach(st -> this.rows.add(st)));
 		return this.rows;
 	}
 
@@ -50,7 +42,11 @@ public class ExcelStructuring {
 		return collect.stream().map(fieldName -> st.getContent(fieldName)).collect(Collectors.toList());
 	}
 
-	private List<List<String>> excelValues(StructuredFile sf) {
-		return sf.getListStructuredText().stream().map(st -> excelValues(st)).collect(Collectors.toList());
+	private List<List<String>> excelValues(StructuredFile sf, List<String> uniqueKeyList) {
+		if (uniqueKeyList.isEmpty()) {
+			return sf.getListStructuredText().stream().map(st -> excelValues(st)).collect(Collectors.toList());
+		} else {
+			return sf.getListStructuredText().stream().filter(st -> uniqueKeyList.contains(st.getUniqueKey())).map(st -> excelValues(st)).collect(Collectors.toList());
+		}
 	}
 }

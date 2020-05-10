@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import analyze.beans.Configuration;
 import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
+import analyze.beans.UserStructuredText;
 import excel.beans.ExcelGenerateConfigurationCmd;
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
@@ -267,6 +268,12 @@ public interface IConfigurationModel {
 	void applyFixedErrorText();
 	
 	/**
+	 * Permet d'appliquer l'édition sur les textes structurés utilisateur à
+	 * partir du texte en cours
+	 */
+	void applyEditText();
+	
+	/**
 	 * Permet d'écrire le corpus
 	 * 
 	 * @throws IOException Erreur d'entrée sortie
@@ -397,4 +404,34 @@ public interface IConfigurationModel {
 	 * @return Le nombre de corpus contenant des lignes vide meta à corriger.
 	 */
 	Integer getNbMetaBlankLineToFixed();
+	
+	/**
+	 * Permet de se procurer la liste des clés filtrés pour l'affichage des textes
+	 * @return
+	 */
+	List<String> getKeyFilteredList();
+	
+	/**
+	 * Permet de charger un texte à partir d'une clé du texte structuré
+	 * @param key Clé à charger
+	 */
+	void loadKeyFiltered(String key);
+	
+	/**
+	 * Permet de charger les textes de la bibliothéque de textes
+	 * @throws LoadTextException exception lors du chargement des textes
+	 */
+	void loadTexts() throws LoadTextException;
+	
+	/**
+	 * Permet de se procurer les textes structurés utilisateurs de la bibliothéque de textes
+	 * @return les textes structurés utilisateurs
+	 */
+	List<UserStructuredText> getTextsLoadedForTextsList();
+	
+	/**
+	 * Permet d'écrire le fichier qui vient d'être éditer
+	 * @throws IOException
+	 */
+	void writeEditText() throws IOException;
 }

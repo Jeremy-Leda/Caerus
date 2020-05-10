@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +25,7 @@ import analyze.beans.LineError;
 import analyze.beans.SpecificConfiguration;
 import analyze.beans.StructuredField;
 import analyze.beans.StructuredFile;
+import analyze.beans.UserStructuredText;
 import analyze.constants.ErrorTypeEnum;
 import analyze.constants.FolderSettingsEnum;
 import excel.beans.ExcelGenerateConfigurationCmd;
@@ -44,11 +48,15 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void launchAnalyze() throws LoadTextException {
 		logger.debug("CALL launchAnalyze");
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		try {
 			this.dispatcher.launchAnalyze();
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
+		stopWatch.stop();
+		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 	}
 
 	@Override
@@ -256,7 +264,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void applyFixedErrorText() {
 		logger.debug("CALL applyFixedErrorText");
-		UserSettings.getInstance().applyCurrentTextToStructuredText();
+		UserSettings.getInstance().applyCurrentTextToStructuredText(FolderSettingsEnum.FOLDER_ANALYZE);
 	}
 
 	@Override
@@ -330,9 +338,11 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public Map<String, String> getFieldConfigurationNameLabelMap() {
 		logger.debug("CALL getFieldConfigurationNameLabelMap");
-		return UserSettings.getInstance().getCurrentConfiguration().getStructuredFieldList().stream()
+		Map<String, String> mapField = new LinkedHashMap<String, String>();
+		UserSettings.getInstance().getCurrentConfiguration().getStructuredFieldList().stream()
 				.sorted(Comparator.comparing(StructuredField::getOrder))
-				.collect(Collectors.toMap(StructuredField::getFieldName, StructuredField::getLabel));
+				.forEach(sf -> mapField.put(sf.getFieldName(), sf.getLabel()));
+		return mapField;
 	}
 
 	@Override
@@ -372,6 +382,49 @@ public class ConfigurationModel implements IConfigurationModel {
 		return this.dispatcher.moveAllFilesFromTextAnalyzeToLibrary();
 	}
 
+	@Override
+	public List<String> getKeyFilteredList() {
+		logger.debug("CALL getKeyFilteredList");
+		return UserSettings.getInstance().getKeysFilteredList();
+	}
+
+	@Override
+	public void loadKeyFiltered(String key) {
+		logger.debug(String.format("CALL getFieldListToProcess : key %s", key));
+		UserSettings.getInstance().loadFilteredText(key);
+	}
+
+	@Override
+	public void loadTexts() throws LoadTextException {
+		logger.warn("CALL loadTexts");
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		try {
+			this.dispatcher.loadTexts();
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+		stopWatch.stop();
+		logger.warn(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
+	}
+
+	@Override
+	public List<UserStructuredText> getTextsLoadedForTextsList() {
+		logger.debug("CALL getTextsLoadedForTextsList");
+		return UserSettings.getInstance().getUserStructuredTextList(FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	@Override
+	public void writeEditText() throws IOException {
+		logger.debug("CALL writeEditText");
+		this.dispatcher.writeEditText();
+	}
+
+	@Override
+	public void applyEditText() {
+		logger.debug("CALL applyEditText");
+		UserSettings.getInstance().applyCurrentTextToStructuredText(FolderSettingsEnum.FOLDER_TEXTS);
+	}
 
 
 

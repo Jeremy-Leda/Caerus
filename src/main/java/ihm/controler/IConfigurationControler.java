@@ -14,6 +14,7 @@ import analyze.beans.StructuredFile;
 import excel.beans.ExcelGenerateConfigurationCmd;
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
+import ihm.beans.DisplayText;
 import ihm.beans.ErrorStructuredLine;
 
 public interface IConfigurationControler {
@@ -262,6 +263,12 @@ public interface IConfigurationControler {
 	void applyFixedErrorText();
 	
 	/**
+	 * Permet d'appliquer l'édition sur les textes structurés utilisateur à
+	 * partir du texte en cours
+	 */
+	void applyEditText();
+	
+	/**
 	 * Permet de sauvegarder temporairement l'état (permet la reprise en cas de fermeture de l'application)
 	 */
 	void saveCurrentStateOfFixedText();
@@ -390,4 +397,37 @@ public interface IConfigurationControler {
 	 * @return Le nombre de corpus contenant des lignes vide meta à corriger.
 	 */
 	Integer getNbMetaBlankLineToFixed();
+	
+	/**
+	 * Permet de connaitre le nombre total de textes filtrés
+	 * @return Le nombre total de textes filtrés
+	 */
+	Integer getNbDisplayTextListFromFilteredText();
+	
+	/**
+	 * Permet de fournir la liste des textes à afficher en fonction des clés filtrés
+	 * 
+	 * @param start Index de début (commence à 0)
+	 * @param nbTextToLoad Nombre de texte à charger par page
+	 * @return la liste des textes à afficher
+	 */
+	List<DisplayText> getDisplayTextListFromFilteredText(Integer start, Integer nbTextToLoad);
+	
+	/**
+	 * Permet de charger les textes de la bibliothéque de textes
+	 * @throws LoadTextException exception lors du chargement des textes
+	 */
+	void loadTexts() throws LoadTextException;
+	
+	/**
+	 * Permet de charger un texte filtré pour consultation/edition
+	 * @param key Clé du texte à charger
+	 */
+	void loadFilteredText(String key);
+	
+	/**
+	 * Permet d'écrire le fichier qui vient d'être éditer
+	 * @throws IOException
+	 */
+	void writeEditText() throws IOException;
 }

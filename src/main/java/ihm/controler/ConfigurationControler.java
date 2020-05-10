@@ -4,11 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +27,7 @@ import analyze.beans.StructuredFile;
 import excel.beans.ExcelGenerateConfigurationCmd;
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
+import ihm.beans.DisplayText;
 import ihm.beans.ErrorStructuredLine;
 import ihm.model.ConfigurationModel;
 import ihm.model.IConfigurationModel;
@@ -377,8 +384,77 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException {
 		if (null != cmd) {
+			StopWatch stopWatch = new StopWatch();
+			stopWatch.start();
+			this.configurationModel.getTextsLoadedForTextsList().parallelStream()
+					.filter(ust -> this.configurationModel.getKeyFilteredList().contains(ust.getKey()))
+					.forEach(ust -> cmd.addUniqueKey(ust.getStructuredText().getUniqueKey()));
 			this.configurationModel.generateExcelFromTexts(cmd);
+			stopWatch.stop();
+			logger.warn(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 		}
+	}
+
+	@Override
+	public List<DisplayText> getDisplayTextListFromFilteredText(Integer start, Integer nbTextToLoad) {
+		Set<DisplayText> setTextList = new HashSet<>();
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
+		// SI configuration existe
+		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())) {
+			Map<String, String> configurationFieldCommonFile = this.configurationModel
+					.getConfigurationFieldCommonFile();
+			Integer end = start + nbTextToLoad;
+			if (end > this.configurationModel.getKeyFilteredList().size()) {
+				end = this.configurationModel.getKeyFilteredList().size();
+			}
+			// PARCOURS La liste des clés filtrés
+			for (int i = start; i < end; i++) {
+				String key = this.configurationModel.getKeyFilteredList().get(i);
+				this.configurationModel.loadKeyFiltered(key);
+				Map<String, String> mapKeyValue = new LinkedHashMap<>();
+				// PARCOURS La liste des champs commun pour se procurer le label et sa valeur
+				configurationFieldCommonFile.entrySet().stream().forEach((entry) -> {
+					String value = this.configurationModel.getFieldInEditingCorpus(entry.getKey());
+					mapKeyValue.put(entry.getValue(), value);
+				});
+				setTextList.add(new DisplayText(this.configurationModel.getEditingCorpusName(), i, mapKeyValue, key));
+			}
+		}
+		stopWatch.stop();
+		logger.warn(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
+		return Collections.unmodifiableList(new ArrayList<>(setTextList));
+	}
+
+	@Override
+	public void loadTexts() throws LoadTextException {
+		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())
+				&& null != this.configurationModel.getTextsFolder()
+				&& this.configurationModel.getTextsFolder().isDirectory()) {
+			configurationModel.loadTexts();
+		} else {
+			logger.error("Configuration or path is not compatible");
+		}
+	}
+
+	@Override
+	public Integer getNbDisplayTextListFromFilteredText() {
+		return this.configurationModel.getKeyFilteredList().size();
+	}
+
+	@Override
+	public void loadFilteredText(String key) {
+		this.configurationModel.loadKeyFiltered(key);
+	}
+
+	@Override
+	public void writeEditText() throws IOException {
+		this.configurationModel.writeEditText();
+	}
+
+	@Override
+	public void applyEditText() {
+		this.configurationModel.applyEditText();
 	}
 
 }

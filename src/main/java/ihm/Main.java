@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
+import ihm.beans.ActionUserTypeEnum;
+import ihm.beans.ExcelTypeGenerationEnum;
 import ihm.beans.PictureTypeEnum;
 import ihm.controler.ConfigurationControler;
 import ihm.controler.IConfigurationControler;
@@ -42,6 +44,7 @@ import ihm.view.FixedErrorLine;
 import ihm.view.FixedMetaBlankLine;
 import ihm.view.FixedText;
 import ihm.view.LoadTextConfigurationSelector;
+import ihm.view.ManageText;
 import ihm.view.SaveCustomExcel;
 import ihm.view.SaveReferenceExcels;
 import ihm.view.UserInformation;
@@ -72,6 +75,8 @@ public class Main extends JFrame {
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE)),
 			createTextLibrary = new JMenuItem(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_CREATE_MENU_TITLE)),
+			manageTextLibrary = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MANAGE_MENU_TITLE)),
 			configurationLoadLibrary = new JMenuItem(ConfigurationUtils.getInstance()
 					.getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
 	private List<JMenuItem> languages = new ArrayList<JMenuItem>();
@@ -209,14 +214,14 @@ public class Main extends JFrame {
 		saveConfiguration.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new SaveReferenceExcels(configurationControler);
+				new SaveReferenceExcels(configurationControler, ExcelTypeGenerationEnum.ANALYZE_TEXTS);
 			}
 		});
 
 		saveCustomExcel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new SaveCustomExcel(configurationControler);
+				new SaveCustomExcel(configurationControler, ExcelTypeGenerationEnum.ANALYZE_TEXTS);
 			}
 		});
 
@@ -230,6 +235,7 @@ public class Main extends JFrame {
 		textLoadLibrary.addActionListener(openFolderForSetTextsFolderLibrary());
 		textLibrary.addSeparator();
 		textLibrary.add(createTextLibrary);
+		textLibrary.add(manageTextLibrary);
 		createTextLibrary.addActionListener(new ActionListener() {
 
 			@Override
@@ -242,6 +248,24 @@ public class Main extends JFrame {
 				}
 			}
 		});
+		manageTextLibrary.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					configurationControler.loadTexts();
+					ManageText manageText = new ManageText(configurationControler);
+					manageText.addActionOnClose((v) -> {
+						setEnabled(true);
+					});
+					setEnabled(false);
+				} catch (LoadTextException e1) {
+					// TODO gérer les exceptions
+					e1.printStackTrace();
+				}
+			}
+		});
+		
 		menuBar.add(textLibrary);
 
 		this.setJMenuBar(menuBar);
@@ -535,11 +559,11 @@ public class Main extends JFrame {
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);
 					new UserInformation(
-							ConfigurationUtils.getInstance()
-									.getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
-							configurationControler, PictureTypeEnum.WARNING, String.format(
-									ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_UNKNOW_ERROR),
-									e1.getMessage()));
+							ConfigurationUtils.getInstance().getDisplayMessage(
+									Constants.WINDOW_INFORMATION_PANEL_LABEL),
+							configurationControler, PictureTypeEnum.WARNING,
+							String.format(ConfigurationUtils.getInstance()
+									.getDisplayMessage(Constants.WINDOW_MESSAGE_UNKNOW_ERROR), e1.getMessage()));
 				} catch (MoveFileException e1) {
 					logger.error(e1.getMessage(), e1);
 					String message = constructErrorFileMessage(Arrays.asList(StringUtils.split(e1.getMessage(), ",")));
@@ -606,7 +630,7 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				IActionOnClose fixedText = new FixedText(configurationControler);
+				IActionOnClose fixedText = new FixedText(configurationControler, ActionUserTypeEnum.FOLDER_ANALYZE);
 				fixedText.addActionOnClose((v) -> {
 					setEnabled(true);
 					launchAnalyze();
@@ -684,7 +708,8 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de rafraichir pour les activations suite à la présence du chemin de la librairie des textes
+	 * Permet de rafraichir pour les activations suite à la présence du chemin de la
+	 * librairie des textes
 	 */
 	private void refreshEnabledWithTextsFolderLibrary() {
 		if (null != configurationControler.getTextsFolder()) {
@@ -695,7 +720,7 @@ public class Main extends JFrame {
 			moveFileLibraryButton.setEnabled(false);
 		}
 	}
-	
+
 	/**
 	 * Permet de créer la fenêtre de sélection du dossier et la définir en tant que
 	 * bibliothéque de textes

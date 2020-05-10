@@ -60,6 +60,7 @@ public class UserSettings {
 	private final Map<String, String> EDITING_METAFIELD_MAP = new HashMap<String, String>();
 	private final Map<String, String> EDITING_FIELD_MAP = new HashMap<String, String>();
 	private final Map<FolderSettingsEnum, CurrentUserTexts> CURRENT_FOLDER_USER_TEXTS_MAP = new HashMap<FolderSettingsEnum, CurrentUserTexts>();
+	private final Set<String> MAP_FILTER_KEY_LIST = Collections.synchronizedSet(new HashSet<>());
 	// ERROR MAP
 	private final List<LineError> LINES_ERROR_LIST = new LinkedList<LineError>();
 	private final Map<ErrorTypeEnum, Set<String>> MAP_TYPE_ERROR_KEYS_LIST = new HashMap<>();
@@ -72,9 +73,9 @@ public class UserSettings {
 	private String editingCorpusNameFile;
 
 	public UserSettings() {
-		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.BLANK_LINE, new HashSet<>());
-		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.META_BLANK_LINE, new HashSet<>());
-		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.STRUCTURED_TEXT, new HashSet<>());
+		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.BLANK_LINE, Collections.synchronizedSet(new HashSet<>()));
+		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.META_BLANK_LINE, Collections.synchronizedSet(new HashSet<>()));
+		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.STRUCTURED_TEXT, Collections.synchronizedSet(new HashSet<>()));
 	}
 
 	/**
@@ -679,17 +680,9 @@ public class UserSettings {
 	 * @param errorType Type d'erreur
 	 */
 	public void loadErrorText(String key, ErrorTypeEnum errorType) {
-		this.clearEditingCorpus();
 		this.currentErrorKey = key;
 		this.currentErrorTypeFixed = errorType;
-		Optional<UserStructuredText> optionalUserStructuredText = this.CURRENT_FOLDER_USER_TEXTS_MAP
-				.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList().stream()
-				.filter(text -> key.equals(text.getKey())).findFirst();
-		if (optionalUserStructuredText.isPresent()) {
-			setEditingCorpusNameFile(FilenameUtils.removeExtension(optionalUserStructuredText.get().getFileName()));
-			optionalUserStructuredText.get().getStructuredText().getListContent()
-					.forEach(content -> this.updateFieldInEditingCorpus(content.getKey(), content.getValue()));
-		}
+		loadText(key, FolderSettingsEnum.FOLDER_ANALYZE);
 	}
 
 	/**
@@ -748,9 +741,9 @@ public class UserSettings {
 	/**
 	 * Permet d'appliquer les modifications au texte structuré
 	 */
-	public void applyCurrentTextToStructuredText() {
+	public void applyCurrentTextToStructuredText(FolderSettingsEnum folderType) {
 		Optional<UserStructuredText> optionalUserStructuredText = this.CURRENT_FOLDER_USER_TEXTS_MAP
-				.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList().stream()
+				.get(folderType).getUserStructuredTextList().stream()
 				.filter(text -> this.currentErrorKey.equals(text.getKey())).findFirst();
 		if (optionalUserStructuredText.isPresent()) {
 			StructuredText structuredText = optionalUserStructuredText.get().getStructuredText();
@@ -766,10 +759,10 @@ public class UserSettings {
 	 * @param writer writer
 	 * @throws IOException
 	 */
-	public void writeFixedText(IWriteText writer, String file) throws IOException {
-		logger.debug(String.format("[DEBUT] writeFixedText : %s", file));
+	public void writeText(FolderSettingsEnum folderType, IWriteText writer, String file) throws IOException {
+		logger.debug(String.format("[DEBUT] writeText : %s", file));
 		List<UserStructuredText> userStructuredTextList = this.CURRENT_FOLDER_USER_TEXTS_MAP
-				.get(FolderSettingsEnum.FOLDER_ANALYZE).getUserStructuredTextList().stream()
+				.get(folderType).getUserStructuredTextList().stream()
 				.filter(ust -> ust.getFileName().equals(file)).collect(Collectors.toList());
 		Map<String, String> listFieldMetaFile = getListFieldMetaFile();
 		StructuredText structuredText = userStructuredTextList.get(0).getStructuredText();
@@ -784,7 +777,7 @@ public class UserSettings {
 			writeLines(writer, mapFieldCommonFileToWrite);
 			writer.addBreakLine();
 		}
-		logger.debug(String.format("[FIN] writeFixedText : %s", file));
+		logger.debug(String.format("[FIN] writeText : %s", file));
 	}
 
 	/**
@@ -815,15 +808,20 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de nettoyer les informations stockés suite à une précédente analyse
+	 * Permet de nettoyer les informations stockés suite à une précédente analyse ou chargement de textes
 	 */
 	public void clearAllSession(FolderSettingsEnum folder) {
-		clearLineErrorList();
 		clearCurrentFolderUserTexts(folder);
 		clearEditingCorpus();
-		clearKeysStructuredTextErrorList();
-		clearBlankLineErrorList();
-		clearKeysInError(ErrorTypeEnum.META_BLANK_LINE);
+		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folder)) {
+			clearKeyFilteredList();
+		}
+		if (FolderSettingsEnum.FOLDER_ANALYZE.equals(folder)) {
+			clearLineErrorList();
+			clearKeysStructuredTextErrorList();
+			clearBlankLineErrorList();
+			clearKeysInError(ErrorTypeEnum.META_BLANK_LINE);
+		}
 	}
 
 	/**
@@ -922,5 +920,56 @@ public class UserSettings {
 	public List<ConfigurationStructuredText> getConfigurationStructuredTextList(FolderSettingsEnum folder) {
 		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getConfigurationStructuredTextList();
 	}
+	
+	/**
+	 * Permet de se procurer la liste des clés filtrés pour l'affichage des résultats
+	 * @return la liste de clés filtrés
+	 */
+	public List<String> getKeysFilteredList() {
+		return Collections.unmodifiableList(new ArrayList<>(this.MAP_FILTER_KEY_LIST));
+	}
+	
+	/**
+	 * Permet d'ajouter une clé à la liste des clés filtrés
+	 * @param key Clé à ajouter
+	 */
+	public synchronized void addKeyToFilteredList(String key) {
+		this.MAP_FILTER_KEY_LIST.add(key);
+	}
+	
+	/**
+	 * Permet de vider la liste des clés filtrés
+	 */
+	public void clearKeyFilteredList() {
+		this.MAP_FILTER_KEY_LIST.clear();
+	}
+	
+	/**
+	 * Permet de charger un texte en cours d'édition
+	 * @param key clé du texte
+	 */
+	public void loadFilteredText(String key) {
+		loadText(key, FolderSettingsEnum.FOLDER_TEXTS);
+	}
+	
+	/**
+	 * Permet de charger un texte
+	 * @param key clé du texte
+	 * @param folderType Type du dossier
+	 */
+	private void loadText(String key, FolderSettingsEnum folderType) {
+		this.clearEditingCorpus();
+		Optional<UserStructuredText> optionalUserStructuredText = this.CURRENT_FOLDER_USER_TEXTS_MAP
+				.get(folderType).getUserStructuredTextList().stream()
+				.filter(text -> key.equals(text.getKey())).findFirst();
+		if (optionalUserStructuredText.isPresent()) {
+			setEditingCorpusNameFile(FilenameUtils.removeExtension(optionalUserStructuredText.get().getFileName()));
+			optionalUserStructuredText.get().getStructuredText().getListContent()
+					.forEach(content -> this.updateFieldInEditingCorpus(content.getKey(), content.getValue()));
+		} else {
+			logger.error(String.format("Clé %s non trouvé", key));
+		}
+	}
+	
 
 }

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ihm.abstracts.ModalJFrameAbstract;
+import ihm.beans.ActionUserTypeEnum;
 import ihm.beans.ConsumerTextTypeEnum;
 import ihm.beans.FunctionTextTypeEnum;
 import ihm.beans.TextIhmTypeEnum;
@@ -50,12 +51,15 @@ public class FixedText extends ModalJFrameAbstract {
 	private Integer currentIndex;
 	private final JPanel content;
 	private IActionOnClose fillSpecificTextFrame;
+	private final ActionUserTypeEnum actionUserType;
 
-	public FixedText(IConfigurationControler configurationControler) {
-		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE), configurationControler, false);
+	public FixedText(IConfigurationControler configurationControler, ActionUserTypeEnum actionUserType) {
+		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE),
+				configurationControler, false);
+		this.actionUserType = actionUserType;
 		this.filePanel = new FilePanel();
-		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, ConsumerTextTypeEnum.CORPUS,
-				FunctionTextTypeEnum.CORPUS);
+		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE,
+				ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
 		this.actionPanel = new ActionPanel(2);
 		this.content = new JPanel();
 		this.currentIndex = 0;
@@ -77,7 +81,8 @@ public class FixedText extends ModalJFrameAbstract {
 
 	@Override
 	public void initComponents() {
-		this.informationsTextPanel.refresh(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_CONTENT_PANEL_TITLE));
+		this.informationsTextPanel.refresh(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_CONTENT_PANEL_TITLE));
 		refreshFilePanel();
 		addActionPanelMessage();
 		displayMessageForAction();
@@ -93,8 +98,10 @@ public class FixedText extends ModalJFrameAbstract {
 	 * Permet de rafraichir le file panel
 	 */
 	private void refreshFilePanel() {
-		this.filePanel.refresh(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_FILE_PANEL_TITLE),
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_NAME_LABEL), getControler().getEditingCorpusName());
+		this.filePanel.refresh(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_FILE_PANEL_TITLE),
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_NAME_LABEL),
+				getControler().getEditingCorpusName());
 	}
 
 	/**
@@ -114,26 +121,29 @@ public class FixedText extends ModalJFrameAbstract {
 		this.actionPanel.addAction(0, openFixedSpecificText());
 		this.actionPanel.addAction(1, saveAndGoToNextIndexOrQuit());
 	}
-	
+
 	/**
 	 * Consumer pour récativer les boutons
+	 * 
 	 * @return consumer pour réactiver les boutons
 	 */
 	private Consumer<Void> enableAllButton() {
 		return (v) -> setEnabledForAllButton(true);
 	}
-	
+
 	/**
 	 * Permet de gérer l'activation des boutons
+	 * 
 	 * @param isEnabled Vrai si actif, faux sinon
 	 */
 	private void setEnabledForAllButton(Boolean isEnabled) {
 		actionPanel.setEnabled(0, isEnabled);
 		actionPanel.setEnabled(1, isEnabled);
 	}
-	
+
 	/**
 	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * 
 	 * @return
 	 */
 	private Consumer<Void> closeAutomaticallySpecificText() {
@@ -149,17 +159,20 @@ public class FixedText extends ModalJFrameAbstract {
 	 */
 	private void displayMessageForAction() {
 		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
-		messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE));
+		messageButtonMap.put(0, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE));
 		Integer nbTextsError = getControler().getNbTextsError();
 		if (currentIndex + 1 == nbTextsError) {
-			messageButtonMap.put(1,
-					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_NEXT_AND_SAVE_BUTTON_TITLE));
+			messageButtonMap.put(1, ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_NEXT_AND_SAVE_BUTTON_TITLE));
 		} else {
-			messageButtonMap.put(1, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_NEXT_BUTTON_TITLE));
+			messageButtonMap.put(1, ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_NEXT_BUTTON_TITLE));
 		}
-		this.actionPanel
-				.setStaticLabel(String.format(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_PANEL_TITLE),
-						currentIndex + 1, nbTextsError), messageButtonMap);
+		this.actionPanel.setStaticLabel(
+				String.format(ConfigurationUtils.getInstance().getDisplayMessage(
+						Constants.WINDOW_FIXED_TEXT_ACTION_PANEL_TITLE), currentIndex + 1, nbTextsError),
+				messageButtonMap);
 	}
 
 	/**
@@ -180,11 +193,20 @@ public class FixedText extends ModalJFrameAbstract {
 					updateContentInformationsTextPanel();
 					repack();
 				} else {
-					getControler().applyFixedErrorText();
-					try {
-						getControler().writeFixedText();
-					} catch (IOException e1) {
-						logger.error(e1.getMessage(), e1);
+					if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
+						getControler().applyFixedErrorText();
+						try {
+							getControler().writeFixedText();
+						} catch (IOException e1) {
+							logger.error(e1.getMessage(), e1);
+						}
+					} else if (ActionUserTypeEnum.FOLDER_TEXTS.equals(actionUserType)) {
+						getControler().applyEditText();
+						try {
+							getControler().writeEditText();
+						} catch (IOException e1) {
+							logger.error(e1.getMessage(), e1);
+						}
 					}
 					closeFrame();
 				}
@@ -206,7 +228,9 @@ public class FixedText extends ModalJFrameAbstract {
 				// on désactive les bouton
 				setEnabledForAllButton(false);
 				// on ouvre la fenêtre
-				fillSpecificTextFrame = new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_SPECIFIC_TITLE), getControler());
+				fillSpecificTextFrame = new FillSpecificText(
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_SPECIFIC_TITLE),
+						getControler());
 				fillSpecificTextFrame.addActionOnClose(enableAllButton());
 			}
 		};

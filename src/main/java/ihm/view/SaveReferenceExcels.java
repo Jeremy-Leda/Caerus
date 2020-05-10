@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import excel.beans.ExcelGenerateConfigurationCmd;
 import ihm.abstracts.ModalJFrameAbstract;
+import ihm.beans.ExcelTypeGenerationEnum;
 import ihm.beans.PictureTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionPanel;
@@ -55,7 +56,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 	private final IActionPanel actionPanel;
 	private final JPanel content;
 
-	public SaveReferenceExcels(IConfigurationControler configurationControler) {
+	public SaveReferenceExcels(IConfigurationControler configurationControler, ExcelTypeGenerationEnum excelGenerationType) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_PANEL_TITLE), configurationControler);
 		this.filePickerPanel = new FilePickerPanel(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FILE_PICKER_CLASSICAL_PANEL_TITLE));
@@ -67,7 +68,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TEXT_NOTHING), true);
 		this.actionPanel = new ActionPanel(1);
 		this.actionPanel.setEnabled(0, false);
-		this.actionPanel.addAction(0, getGenerateExcelAction());
+		this.actionPanel.addAction(0, getGenerateExcelAction(excelGenerationType));
 		this.content = new JPanel();
 		createWindow();
 	}
@@ -177,13 +178,17 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 		return "window save excel reference";
 	}
 	
-	private ActionListener getGenerateExcelAction() {
+	private ActionListener getGenerateExcelAction(ExcelTypeGenerationEnum excelGenerationType) {
 		return new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					getControler().generateExcelFromAnalyze(createExcelCmd());
+					if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
+						getControler().generateExcelFromAnalyze(createExcelCmd());
+					} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
+						getControler().generateExcelFromTexts(createExcelCmd());
+					}
 					closeFrame();
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);

@@ -90,6 +90,9 @@ public class Structuring {
 						UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
 								structuredText);
 						UserSettings.getInstance().addUserStructuredText(folderType, userStructuredText);
+						if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
+							UserSettings.getInstance().addKeyToFilteredList(userStructuredText.getKey());
+						}
 						number++;
 						sf.getListStructuredText().add(structuredText);
 					}

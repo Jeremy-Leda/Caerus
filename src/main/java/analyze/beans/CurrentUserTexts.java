@@ -24,17 +24,17 @@ public class CurrentUserTexts {
 	 * Constructeur
 	 */
 	public CurrentUserTexts() {
-		this.structuredFileList = new ArrayList<>();
-		this.configurationStructuredTextList = new ArrayList<>();
-		this.memoryFileList = new ArrayList<>();
-		this.userStructuredTextList = new ArrayList<>();
+		this.structuredFileList = Collections.synchronizedList(new ArrayList<>());
+		this.configurationStructuredTextList = Collections.synchronizedList(new ArrayList<>());
+		this.memoryFileList = Collections.synchronizedList(new ArrayList<>());
+		this.userStructuredTextList = Collections.synchronizedList(new ArrayList<>());
 	}
 	
 	/**
 	 * Permet d'ajouter un structured file
 	 * @param structuredFile structured file à ajouter
 	 */
-	public void addStructuredFile(StructuredFile structuredFile) {
+	public synchronized void addStructuredFile(StructuredFile structuredFile) {
 		this.structuredFileList.add(structuredFile);
 	}
 	

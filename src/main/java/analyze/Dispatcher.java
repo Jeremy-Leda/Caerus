@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -297,14 +298,33 @@ public class Dispatcher {
 	public void writeFixedText() throws IOException {
 		List<String> filesList = UserSettings.getInstance().getUserStructuredTextList(FolderSettingsEnum.FOLDER_ANALYZE)
 				.stream().map(ust -> ust.getFileName()).distinct().collect(Collectors.toList());
-		for (String file : filesList) {
-			try (Writer writer = new Writer(UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE),
-					file)) {
-				UserSettings.getInstance().writeFixedText(writer, file);
-			}
-		}
+		writeText(FolderSettingsEnum.FOLDER_ANALYZE, filesList);
 		UserSettings.getInstance().clearAfterWriteFixedText();
 		PathUtils.deleteFile(getCurrentStateFile());
+	}
+	
+	/**
+	 * Permet d'écrire le texte en cours d'édition
+	 * @throws IOException
+	 */
+	public void writeEditText() throws IOException {
+		writeText(FolderSettingsEnum.FOLDER_TEXTS, Arrays.asList(UserSettings.getInstance().getEditingCorpusNameFile()));
+		UserSettings.getInstance().clearEditingCorpus();
+	}
+	
+	/**
+	 * Permet d'écrire le fichier
+	 * @param folderType type du dossier
+	 * @param filesList liste des fichiers à écrire
+	 * @throws IOException
+	 */
+	private void writeText(FolderSettingsEnum folderType, List<String> filesList) throws IOException {
+		for (String file : filesList) {
+			try (Writer writer = new Writer(UserSettings.getInstance().getFolder(folderType),
+					file)) {
+				UserSettings.getInstance().writeText(folderType, writer, file);
+			}
+		}
 	}
 
 	/**

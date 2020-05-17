@@ -242,6 +242,7 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				configurationControler.clearEditingCorpus();
 				new CreateCorpus(configurationControler);
 				if (configurationControler.haveEditingCorpus()) {
 					IActionOnClose createText = new CreateText(configurationControler);

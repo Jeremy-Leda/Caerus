@@ -717,11 +717,13 @@ public class Main extends JFrame {
 		if (null != configurationControler.getTextsFolder()) {
 			subPanConfigurationState.setVisible(true);
 			createTextLibrary.setEnabled(true);
+			manageTextLibrary.setEnabled(true);
 			moveFileLibraryButton.setEnabled(true);
 			stateConfigurationLibrayValue.setText(this.configurationControler.getTextsFolder().toString());
 		} else {
 			subPanConfigurationState.setVisible(false);
 			createTextLibrary.setEnabled(false);
+			manageTextLibrary.setEnabled(false);
 			moveFileLibraryButton.setEnabled(false);
 			stateConfigurationLibrayValue.setText(StringUtils.EMPTY);
 		}

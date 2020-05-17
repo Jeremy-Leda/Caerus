@@ -134,7 +134,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de sauvegarder un corpus et de quitter (édition)
+	 * Permet d'ouvrir pour ajouter un texte
 	 * 
 	 * @return
 	 */

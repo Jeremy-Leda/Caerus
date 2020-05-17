@@ -177,6 +177,12 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	private void setEnabledForAllButton(Boolean isEnabled) {
 		actionFixedTextPanel.setEnabled(0, isEnabled);
 		actionFixedTextPanel.setEnabled(1, isEnabled);
+		actionAddTextPanel.setEnabled(0, isEnabled);
+		actionAddTextPanel.setEnabled(1, isEnabled);
+		actionAddTextPanel.setEnabled(2, isEnabled);
+		actionManageTextPanel.setEnabled(0, isEnabled);
+		actionManageTextPanel.setEnabled(1, isEnabled);
+		actionManageTextPanel.setEnabled(2, isEnabled);
 	}
 
 	/**

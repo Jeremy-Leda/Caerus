@@ -150,6 +150,7 @@ public class ManageText extends ModalJFrameAbstract {
 			if (null != manageTextFilter) {
 				manageTextFilter.closeFrame();
 			}
+			this.displayTextsList.close();
 		};
 	}
 

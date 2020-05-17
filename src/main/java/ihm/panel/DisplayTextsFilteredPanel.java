@@ -70,8 +70,12 @@ public class DisplayTextsFilteredPanel implements IRefreshTextDisplayPanel {
 	/**
 	 * Permet de rafraichir la liste avec les nouvelles informations
 	 */
-	private void refresh() {
+	@Override
+	public void refresh() {
 		if (null != this.nbTextsByPage) {
+			if (this.currentPage == 0) {
+				this.currentPage = 1;
+			}
 			computePageInformation();
 			this.displayTextsList.removeAll();
 			this.displayTextsList.setModel(getDisplayTextModel());
@@ -87,6 +91,9 @@ public class DisplayTextsFilteredPanel implements IRefreshTextDisplayPanel {
 		} else {
 			this.maxPage = nbPageMax.intValue() + 1;
 		}
+		if (this.maxPage == 0) {
+			this.currentPage = 0;
+		}
 	}
 	
 	/**
@@ -95,8 +102,10 @@ public class DisplayTextsFilteredPanel implements IRefreshTextDisplayPanel {
 	 */
 	private DefaultListModel<DisplayText> getDisplayTextModel() {
 		DefaultListModel<DisplayText> dlm = new DefaultListModel<>();
-		Integer start = (this.currentPage - 1) * this.nbTextsByPage;
-		this.controler.getDisplayTextListFromFilteredText(start, this.nbTextsByPage).forEach(text -> dlm.addElement(text));
+		if (this.currentPage > 0) {
+			Integer start = (this.currentPage - 1) * this.nbTextsByPage;
+			this.controler.getDisplayTextListFromFilteredText(start, this.nbTextsByPage).forEach(text -> dlm.addElement(text));
+		}
 		return dlm;
 	}
 

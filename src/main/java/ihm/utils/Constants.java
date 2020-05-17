@@ -9,12 +9,12 @@ package ihm.utils;
  */
 public final class Constants {
 	public static final String WINDOW_TITLE = "window.principal.title";
-	public static final String FILE_MENU_TITLE = "window.menu.nivel1.title";
-	public static final String FILE_OPEN_TEXT_FOLDER_TITLE = "window.menu.nivel1.subnivel1.title";
-	public static final String FILE_WRITE_EXCEL_TITLE = "window.menu.nivel1.subnivel2.title";
-	public static final String FILE_WRITE_EXCEL_CUSTOM_TITLE = "window.menu.nivel1.subnivel3.title";
-	public static final String FILE_EXIT_TITLE = "window.menu.nivel1.subnivel4.title";
-	public static final String LANGUAGE_MENU_TITLE = "window.menu.nivel2.title";
+	public static final String FILE_MENU_TITLE = "window.menu.level1.title";
+	public static final String FILE_OPEN_TEXT_FOLDER_TITLE = "window.menu.level1.sublevel1.title";
+	public static final String FILE_WRITE_EXCEL_TITLE = "window.menu.level1.sublevel2.title";
+	public static final String FILE_WRITE_EXCEL_CUSTOM_TITLE = "window.menu.level1.sublevel3.title";
+	public static final String FILE_EXIT_TITLE = "window.menu.level1.sublevel4.title";
+	public static final String LANGUAGE_MENU_TITLE = "window.menu.level2.title";
 	public static final String TYPE_CONFIGURATION_PREFIX = "window.type.configuration.";
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_TITLE = "window.load.texts.title";
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_PANEL_TITLE = "window.load.texts.type.configuration.panel.title";
@@ -25,33 +25,18 @@ public final class Constants {
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_FOLDER_CHOOSE_TITLE = "window.load.texts.folder.button.folder.choose.title";
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_EXPERT_LABEL = "window.load.texts.type.configuration.expert.label";
 	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_BUTTON_LABEL = "window.load.texts.start.button.label";
-	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_ERROR_LOADING_LABEL = "window.load.texts.start.error.loading.label";
-	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_ERROR_LOADING_TITLE = "window.load.texts.start.error.loading.title";
-	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_SUCCESS_LOADING_LABEL = "window.load.texts.start.success.loading.label";
-	public static final String WINDOW_LOAD_TEXT_CONFIGURATION_START_SUCCESS_LOADING_TITLE = "window.load.texts.start.success.loading.title";
 
-	public static final String WINDOW_ERROR_STRUCTURE_TITLE = "window.error.structure.title";
-	public static final String WINDOW_ERROR_STRUCTURE_CONTEXT_PANEL_TITLE = "window.error.structure.context.panel.title";
-	public static final String WINDOW_ERROR_STRUCTURE_CONTEXT_PANEL_FILE_LABEL = "window.error.structure.context.panel.file.label";
-	public static final String WINDOW_ERROR_STRUCTURE_CONTEXT_PANEL_CONTENT_LABEL = "window.error.structure.context.panel.content.label";
-	public static final String WINDOW_ERROR_STRUCTURE_DETAILS_PANEL_TITLE = "window.error.structure.details.panel.title";
-	public static final String WINDOW_ERROR_STRUCTURE_DETAILS_PANEL_CONTENT_LABEL = "window.error.structure.details.panel.content.label";
-	public static final String WINDOW_ERROR_STRUCTURE_ACTION_PANEL_TITLE = "window.error.structure.action.panel.title";
-	public static final String WINDOW_ERROR_STRUCTURE_ACTION_PANEL_BUTTON_PREVIOUS_LABEL = "window.error.structure.action.panel.button.previous.label";
-	public static final String WINDOW_ERROR_STRUCTURE_ACTION_PANEL_BUTTON_NEXT_LABEL = "window.error.structure.action.panel.button.next.label";
+	public static final String ERROR_MENU_TITLE = "window.menu.level4.title";
+	public static final String ERROR_DISPLAY_TITLE = "window.menu.level4.sublevel1.title";
 
-	public static final String ERROR_MENU_TITLE = "window.menu.nivel4.title";
-	public static final String ERROR_DISPLAY_TITLE = "window.menu.nivel4.subnivel1.title";
-
-	public static final String TEXT_LIBRARY_MENU_TITLE = "window.menu.nivel5.title";
-	public static final String TEXT_LIBRARY_LOAD_MENU_TITLE = "window.menu.nivel5.subnivel1.title";
-	public static final String TEXT_LIBRARY_CREATE_MENU_TITLE = "window.menu.nivel5.subnivel2.title";
-	public static final String TEXT_LIBRARY_MANAGE_MENU_TITLE = "window.menu.nivel5.subnivel3.title";
-	public static final String CONFIGURATION_LIBRARY_MENU_TITLE = "window.menu.nivel3.title";
-	public static final String CONFIGURATION_LIBRARY_LOAD_MENU_TITLE = "window.menu.nivel3.subnivel1.title";
+	public static final String TEXT_LIBRARY_MENU_TITLE = "window.menu.level5.title";
+	public static final String TEXT_LIBRARY_LOAD_MENU_TITLE = "window.menu.level5.sublevel1.title";
+	public static final String TEXT_LIBRARY_CREATE_MENU_TITLE = "window.menu.level5.sublevel2.title";
+	public static final String TEXT_LIBRARY_MANAGE_MENU_TITLE = "window.menu.level5.sublevel3.title";
+	public static final String CONFIGURATION_LIBRARY_MENU_TITLE = "window.menu.level3.title";
+	public static final String CONFIGURATION_LIBRARY_LOAD_MENU_TITLE = "window.menu.level3.sublevel1.title";
 
 	public static final String WINDOW_MAIN_CONFIGURATION_LIBRARY_PANEL_STATE_LABEL = "window.main.configuration.library.panel.state.label";
-	public static final String WINDOW_MAIN_TEXTS_LIBRARY_PANEL_STATE_LABEL = "window.main.texts.library.panel.state.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_TITLE = "window.main.analyze.panel.title";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_LABEL = "window.main.analyze.panel.state.label";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_NONE = "window.main.analyze.panel.state.value.none";
@@ -103,13 +88,12 @@ public final class Constants {
 	public static final String WINDOW_FIXED_TEXT_ACTION_NEXT_AND_SAVE_BUTTON_TITLE = "window.fixed.text.action.next.and.save.button.title";
 
 	public static final String WINDOW_FIXED_SPECIFIC_TITLE = "window.fixed.specific.title";
+	public static final String WINDOW_EDIT_SPECIFIC_TITLE = "window.edit.specific.title";
 
 	public static final String WINDOW_CREATE_SPECIFIC_TITLE = "window.create.specific.title";
 	public static final String WINDOW_CREATE_SPECIFIC_CONTEXT_PANEL_TITLE = "window.create.specific.context.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_CONTEXT_PANEL_FILE_LABEL = "window.create.specific.context.panel.file.label";
-	public static final String WINDOW_CREATE_SPECIFIC_HEADER_PANEL_TITLE = "window.create.specific.header.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_DETAILS_PANEL_TITLE = "window.create.specific.details.panel.title";
-	public static final String WINDOW_CREATE_SPECIFIC_DETAILS_PANEL_CONTENT_LABEL = "window.create.specific.details.panel.content.label";
 	// public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_TITLE =
 	// "window.create.specific.action.panel.title";
 	public static final String WINDOW_CREATE_SPECIFIC_ACTION_PANEL_BUTTON_PREVIOUS_LABEL = "window.create.specific.action.panel.button.previous.label";
@@ -197,6 +181,7 @@ public final class Constants {
 	public static final String WINDOW_MESSAGE_TO = "window.message.to";
 	
 	public static final String WINDOW_DISPLAY_TEXTS_PANEL_LABEL = "window.display.texts.panel.label";
+	public static final String WINDOW_DISPLAY_CORPUS_EDIT_BUTTON_LABEL = "window.display.corpus.edit.button.label";
 	public static final String WINDOW_DISPLAY_TEXTS_EDIT_BUTTON_LABEL = "window.display.texts.edit.button.label";
 	public static final String WINDOW_DISPLAY_TEXTS_DELETE_BUTTON_LABEL = "window.display.texts.delete.button.label";
 	
@@ -210,4 +195,35 @@ public final class Constants {
 	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_PANEL_TITLE = "window.manage.texts.generate.excel.panel.title";
 	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_CLASSICAL_BUTTON_LABEL = "window.manage.texts.generate.excel.classical.button.label";
 	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_SPECIFIC_BUTTON_LABEL = "window.manage.texts.generate.excel.specific.button.label";
+	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_PANEL_TITLE = "window.manage.texts.edit.text.panel.title";
+	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_PANEL_TITLE = "window.manage.texts.edit.text.action.panel.title";
+	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_SAVE_AND_QUIT_LABEL = "window.manage.texts.edit.text.action.button.save.and.quit.label";
+	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_QUIT_LABEL = "window.manage.texts.edit.text.action.button.quit.label";
+	public static final String WINDOW_MANAGE_TEXTS_FILTERS_BUTTON_LABEL = "window.manage.texts.filters.button.label";
+	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_FILL_SPECIFIC_BUTTON_TITLE = "window.manage.texts.edit.text.action.fill.specific.button.title";
+	public static final String WINDOW_MANAGE_TEXTS_ADD_TEXT_ACTION_BUTTON_SAVE_AND_QUIT_LABEL = "window.manage.texts.add.text.action.button.save.and.quit.label";
+	
+	
+	
+	public static final String WINDOW_MANAGE_TEXTS_DELETE_TEXT_ACTION_MESSAGE_TITLE ="window.manage.texts.delete.text.action.message.title";
+	public static final String WINDOW_MANAGE_TEXTS_DELETE_TEXT_ACTION_MESSAGE_CONTENT ="window.manage.texts.delete.text.action.message.content";
+
+	public static final String WINDOW_FILTER_TYPE_PREFIX = "window.filter.type.";
+	
+	public static final String WINDOW_MANAGE_FILTERS_GLOBAL_PANEL_TITLE = "window.manage.filters.global.panel.title";
+	public static final String WINDOW_MANAGE_FILTERS_PANEL_TITLE = "window.manage.filters.panel.title";
+	public static final String WINDOW_MANAGE_FILTERS_TYPE_FILTER_LABEL = "window.manage.filters.type.filter.label";
+	public static final String WINDOW_MANAGE_FILTERS_VALUE_FILTER_LABEL = "window.manage.filters.value.filter.label";
+	public static final String WINDOW_MANAGE_FILTERS_ADD_FILTER_BUTTON_LABEL = "window.manage.filters.add.filter.button.label";
+	public static final String WINDOW_MANAGE_FILTERS_DELETE_FILTER_BUTTON_LABEL = "window.manage.filters.delete.filter.button.label";
+	public static final String WINDOW_MANAGE_FILTERS_CORPUS_PANEL_TITLE = "window.manage.filters.corpus.panel.title";
+	public static final String WINDOW_MANAGE_FILTERS_CORPUS_VALUE_LABEL = "window.manage.filters.corpus.value.label";
+	public static final String WINDOW_MANAGE_FILTERS_ACTION_PANEL_TITLE = "window.manage.filters.action.panel.title";
+	public static final String WINDOW_MANAGE_FILTERS_ACTION_APPLY_BUTTON_LABEL = "window.manage.filters.action.apply.button.label";
+	public static final String WINDOW_MANAGE_FILTERS_CORPUS_ALL_LABEL ="window.manage.filters.corpus.all.label";
+	
+	public static final String WINDOW_MANAGE_CORPUS_TITLE ="window.manage.corpus.title";
+	
+	public static final String WINDOW_MANAGE_TEXTS_INFORMATION_TITLE = "window.manage.texts.information.title";
+	public static final String WINDOW_MANAGE_TEXTS_INFORMATION_LABEL = "window.manage.texts.information.label";
 }

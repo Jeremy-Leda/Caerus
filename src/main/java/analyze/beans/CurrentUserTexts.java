@@ -116,6 +116,14 @@ public class CurrentUserTexts {
 	}
 	
 	/**
+	 * Permet de supprimer un texte de la liste des textes
+	 * @param userStructuredText texte à supprimer
+	 */
+	public void deleteTextOfUserStructuredTextList(UserStructuredText userStructuredText) {
+		this.userStructuredTextList.remove(userStructuredText);
+	}
+	
+	/**
 	 * Permet de vider la liste des textes structurés utilisateurs
 	 */
 	public void clearUserStructuredTextList() {

@@ -66,7 +66,7 @@ public class CreateText extends ModalJFrameAbstract {
 	
 	@Override
 	public void initComponents() {
-		this.informationsTextPanel.refresh(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_ACTION_PANEL_TITLE));
+		this.informationsTextPanel.refresh(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_CONTENT_PANEL_TITLE));
 		refreshFilePanel();
 		updateContentInformationsTextPanel();
 		refreshActionPanelMessage();

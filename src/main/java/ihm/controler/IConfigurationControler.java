@@ -16,7 +16,15 @@ import exceptions.LoadTextException;
 import exceptions.MoveFileException;
 import ihm.beans.DisplayText;
 import ihm.beans.ErrorStructuredLine;
+import ihm.beans.Filter;
 
+/**
+ * 
+ * Interface du controller pour la jonction au modèle
+ * 
+ * @author jerem
+ *
+ */
 public interface IConfigurationControler {
 
 	/**
@@ -430,4 +438,34 @@ public interface IConfigurationControler {
 	 * @throws IOException
 	 */
 	void writeEditText() throws IOException;
+	
+	/**
+	 * Permet de supprimer un texte d'un corpus depuis la bibliothéque de texte
+	 * @param key Clé du texte à supprimer
+	 * @throws IOException
+	 */
+	void deleteTextAndWriteCorpusFromFolderText(String key) throws IOException;
+	
+	/**
+	 * Permet de se procurer la liste des corpus pour le filtrage des textes
+	 * @return la liste des corpus
+	 */
+	List<String> getAllCorpusNameForFilteredText();
+	
+	/**
+	 * Permet d'appliquer tous les filtres sur les corpus de la bibliothéque
+	 * @param corpusName Nom du corpus sur lequel on souhaite filtrer, empty si on souhaite balayer tous les corpus
+	 * @param filtersList Liste des filtres à appliquer
+	 */
+	void applyAllFiltersOnCorpusForFolderText(String corpusName, List<Filter> filtersList);
+	
+	/**
+	 * Permet d'ajouter un texte au corpus en cours d'édition
+	 */
+	void addTextToCurrentCorpusFromFolderText();
+	
+	/**
+	 * Permet de préparer pour l'ajout d'un texte
+	 */
+	void cleanCurrentEditingCorpusForAddText();
 }

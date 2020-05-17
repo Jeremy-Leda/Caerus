@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import analyze.Dispatcher;
 import analyze.UserSettings;
 import analyze.beans.Configuration;
+import analyze.beans.FilterCorpus;
 import analyze.beans.LineError;
 import analyze.beans.SpecificConfiguration;
 import analyze.beans.StructuredField;
@@ -396,7 +397,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
 	@Override
 	public void loadTexts() throws LoadTextException {
-		logger.warn("CALL loadTexts");
+		logger.debug("CALL loadTexts");
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		try {
@@ -405,7 +406,7 @@ public class ConfigurationModel implements IConfigurationModel {
 			logger.error(e.getMessage(), e);
 		}
 		stopWatch.stop();
-		logger.warn(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
+		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 	}
 
 	@Override
@@ -424,6 +425,42 @@ public class ConfigurationModel implements IConfigurationModel {
 	public void applyEditText() {
 		logger.debug("CALL applyEditText");
 		UserSettings.getInstance().applyCurrentTextToStructuredText(FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	@Override
+	public void deleteTextAndWriteCorpusFromFolderText(String key) throws IOException {
+		logger.debug("CALL deleteTextAndWriteCorpusFromFolderText");
+		this.dispatcher.deleteTextAndWriteCorpus(key, FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	@Override
+	public List<String> getAllCorpusName(FolderSettingsEnum folderType) {
+		logger.debug("CALL getAllCorpusName");
+		return UserSettings.getInstance().getAllCorpusName(folderType);
+	}
+
+	@Override
+	public void applyAllFiltersOnCorpusForFolderText(FilterCorpus filterCorpus) {
+		logger.debug("CALL applyAllFiltersOnCorpusForFolderText");
+		if (null != filterCorpus) {
+			if (StringUtils.isBlank(filterCorpus.getCorpusName()) && filterCorpus.getFiterTextList().isEmpty()) {
+				UserSettings.getInstance().addAllUserStructuredTextToKeyFilterList(FolderSettingsEnum.FOLDER_TEXTS);
+			} else {
+				UserSettings.getInstance().applyFilterOnCorpusForFolderText(filterCorpus, FolderSettingsEnum.FOLDER_TEXTS);
+			}
+		}
+	}
+
+	@Override
+	public void addTextToCurrentCorpus(FolderSettingsEnum folderType) {
+		logger.debug("CALL addTextToCurrentCorpus");
+		UserSettings.getInstance().addTextToCurrentCorpus(folderType);
+	}
+
+	@Override
+	public void cleanCurrentEditingCorpusForAddText() {
+		logger.debug("CALL cleanCurrentEditingCorpusForAddText");
+		UserSettings.getInstance().cleanCurrentEditingCorpusForAddText();
 	}
 
 

@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ import ihm.beans.ConsumerTextTypeEnum;
 import ihm.beans.FunctionTextTypeEnum;
 import ihm.beans.TextIhmTypeEnum;
 import ihm.controler.IConfigurationControler;
+import ihm.interfaces.IActionOnClose;
 import ihm.interfaces.IActionPanel;
 import ihm.interfaces.IContentTextGenericPanel;
 import ihm.interfaces.IFilePanel;
@@ -41,14 +43,16 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	private final IActionPanel actionPanel;
 	private final IContentTextGenericPanel contentPanel;
 	private final JPanel content;
+	private IActionOnClose fillSpecificText;
 
 	public FixedBlankLine(IConfigurationControler configurationControler) {
-		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE), configurationControler);
+		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE), configurationControler, false);
 		this.currentIndex = 0;
 		this.filePanel = new FilePanel();
 		this.actionPanel = new ActionPanel(2);
 		this.contentPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
 		this.content = new JPanel();
+		super.addActionOnClose(closeAutomaticallySpecificText());
 		updateContentWithNextError();
 		addActionListenerToActionPanel();
 		createWindow();
@@ -135,10 +139,26 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_SPECIFIC_TITLE), getControler());
+				fillSpecificText = new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_SPECIFIC_TITLE), getControler());
+				actionPanel.setEnabled(0, Boolean.FALSE);
+				fillSpecificText.addActionOnClose(v -> {
+					actionPanel.setEnabled(0, Boolean.TRUE);
+				});
 			}
 		});
 		this.actionPanel.addAction(1, saveAndGoToNextIndexOrQuit());
+	}
+	
+	/**
+	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * @return
+	 */
+	private Consumer<Void> closeAutomaticallySpecificText() {
+		return (v) -> {
+			if (null != fillSpecificText) {
+				fillSpecificText.closeFrame();
+			}
+		};
 	}
 
 	/**

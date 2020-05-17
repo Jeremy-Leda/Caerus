@@ -90,8 +90,9 @@ public class Dispatcher {
 
 	/**
 	 * Permet traiter et de charger les textes
+	 * 
 	 * @param folderType type du dossier à prendre en charge
-	 * @throws IOException erreur d'éntrée sortie
+	 * @throws IOException       erreur d'éntrée sortie
 	 * @throws LoadTextException Exception dû au chargement des textes
 	 */
 	private void processAndLoadTexts(FolderSettingsEnum folderType) throws IOException, LoadTextException {
@@ -272,7 +273,7 @@ public class Dispatcher {
 		StringBuilder fileName = new StringBuilder();
 		fileName.append(UserSettings.getInstance().getEditingCorpusNameFile());
 		fileName.append(".txt");
-		try (Writer writer = new Writer(UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS),
+		try (Writer writer = new Writer(UserSettings.getInstance().getDirectoryForSaveTextsInLibrary(),
 				fileName.toString())) {
 			UserSettings.getInstance().writeCorpus(writer);
 		}
@@ -302,29 +303,53 @@ public class Dispatcher {
 		UserSettings.getInstance().clearAfterWriteFixedText();
 		PathUtils.deleteFile(getCurrentStateFile());
 	}
-	
+
 	/**
 	 * Permet d'écrire le texte en cours d'édition
+	 * 
 	 * @throws IOException
 	 */
 	public void writeEditText() throws IOException {
-		writeText(FolderSettingsEnum.FOLDER_TEXTS, Arrays.asList(UserSettings.getInstance().getEditingCorpusNameFile()));
+		StringBuilder corpusNameFile = new StringBuilder(UserSettings.getInstance().getEditingCorpusNameFile());
+		corpusNameFile.append(".txt");
+		writeText(FolderSettingsEnum.FOLDER_TEXTS, Arrays.asList(corpusNameFile.toString()));
 		UserSettings.getInstance().clearEditingCorpus();
 	}
-	
+
 	/**
 	 * Permet d'écrire le fichier
+	 * 
 	 * @param folderType type du dossier
-	 * @param filesList liste des fichiers à écrire
+	 * @param filesList  liste des fichiers à écrire
 	 * @throws IOException
 	 */
 	private void writeText(FolderSettingsEnum folderType, List<String> filesList) throws IOException {
+		File directory = UserSettings.getInstance().getFolder(folderType);
+		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
+			directory = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+		}
 		for (String file : filesList) {
-			try (Writer writer = new Writer(UserSettings.getInstance().getFolder(folderType),
-					file)) {
-				UserSettings.getInstance().writeText(folderType, writer, file);
+			Boolean haveText = null;
+			try (Writer writer = new Writer(directory, file)) {
+				haveText = UserSettings.getInstance().writeText(folderType, writer, file);
+			}
+			if (null != haveText && !haveText) {
+				PathUtils.deleteFile(new File(directory, file));
 			}
 		}
+	}
+	
+	/**
+	 * Permet de supprimer définitivement un texte
+	 * Suppression logique et physique
+	 * @param key Clé du texte
+	 * @param folderType type du dossier
+	 * @throws IOException 
+	 */
+	public void deleteTextAndWriteCorpus(String key, FolderSettingsEnum folderType) throws IOException {
+		String fileName = UserSettings.getInstance().getCorpusNameOfText(key, folderType);
+		UserSettings.getInstance().deleteText(key, folderType);
+		writeText(folderType, Arrays.asList(fileName.toString()));
 	}
 
 	/**
@@ -339,9 +364,9 @@ public class Dispatcher {
 	/**
 	 * Permet de restaurer l'état courant
 	 * 
-	 * @throws IOException Erreur d'entrée sorties
+	 * @throws IOException          Erreur d'entrée sorties
 	 * @throws JsonMappingException Erreur de mapping
-	 * @throws JsonParseException Erreur de parsing
+	 * @throws JsonParseException   Erreur de parsing
 	 */
 	public void restoreCurrentState() throws JsonParseException, JsonMappingException, IOException {
 		InputStream is = new FileInputStream(getCurrentStateFile());

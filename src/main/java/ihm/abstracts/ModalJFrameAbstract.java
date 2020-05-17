@@ -107,9 +107,16 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	 */
 	@Override
 	public void repack() {
+		repack(isModal);
+	}
+	
+	@Override
+	public void repack(Boolean changeLocation) {
 		frame.pack();
 		checkLimitSize();
-		frame.setLocationRelativeTo(null);
+		if (changeLocation) {
+			frame.setLocationRelativeTo(null);
+		}
 	}
 	
 	/**

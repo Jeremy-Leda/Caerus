@@ -48,4 +48,9 @@ public interface IRefreshTextDisplayPanel extends IAccessPanel {
 	 * @return le texte selectionné
 	 */
 	DisplayText getDisplayTextSelected();
+	
+	/**
+	 * Permet de rafraichir l'affichage
+	 */
+	void refresh();
 }

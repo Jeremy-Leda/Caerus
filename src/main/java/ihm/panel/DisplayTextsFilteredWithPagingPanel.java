@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
@@ -14,17 +15,23 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ihm.beans.ActionOperationTypeEnum;
 import ihm.beans.ActionUserTypeEnum;
 import ihm.beans.DirectionTypeEnum;
 import ihm.controler.IConfigurationControler;
-import ihm.interfaces.IAccessPanel;
 import ihm.interfaces.IActionOnClose;
+import ihm.interfaces.IManageTextDisplayPanel;
 import ihm.interfaces.IRefreshTextDisplayPanel;
 import ihm.utils.ConfigurationUtils;
 import ihm.utils.Constants;
-import ihm.view.FixedText;
+import ihm.view.FixedOrEditCorpus;
+import ihm.view.FixedOrEditText;
 
 /**
  * 
@@ -33,18 +40,25 @@ import ihm.view.FixedText;
  * @author jerem
  *
  */
-public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
+public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPanel {
 
+	private static Logger logger = LoggerFactory.getLogger(DisplayTextsFilteredWithPagingPanel.class);
 	private final JPanel content;
 	private final JLabel currentPositionLabel;
 	private final JComboBox<Integer> nbTextsByPageCombo;
 	private final IRefreshTextDisplayPanel textDisplayPanel;
 	private final JButton previousButton;
 	private final JButton nextButton;
-	private final JButton editButton;
+	private final JButton editButtonCorpus;
+	private final JButton editButtonText;
 	private final JButton deleteButton;
 	private final List<Integer> listNbTextsByPage;
 	private final IConfigurationControler controler;
+	private IActionOnClose fixedOrEditTextPanel;
+	private IActionOnClose fixedOrEditCorpusPanel;
+	private Boolean forcedDisabledButton;
+	private Consumer<Void> consumerOnOpenEditText;
+	private Consumer<Void> consumerOnCloseEditText;
 
 	public DisplayTextsFilteredWithPagingPanel(IConfigurationControler controler) {
 		this.controler = controler;
@@ -56,8 +70,10 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 		this.textDisplayPanel = new DisplayTextsFilteredPanel(controler, null, getConsumerToChangeItem());
 		this.previousButton = new JButton();
 		this.nextButton = new JButton();
-		this.editButton = new JButton();
+		this.editButtonCorpus = new JButton();
+		this.editButtonText = new JButton();
 		this.deleteButton = new JButton();
+		this.forcedDisabledButton = Boolean.FALSE;
 		this.listNbTextsByPage = Arrays.asList(10, 20, 50);
 		initComponentsAndCreateContent();
 	}
@@ -67,7 +83,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 	 */
 	private void initComponentsAndCreateContent() {
 		fillAndConfigureNbTextsByPageCombo();
-		textDisplayPanel.setNbTextByPage((Integer)this.nbTextsByPageCombo.getSelectedItem());
+		textDisplayPanel.setNbTextByPage((Integer) this.nbTextsByPageCombo.getSelectedItem());
 		configureActionButtons();
 		changeEnabledStateOfDirectionButton();
 		refreshCurrentPosition();
@@ -97,13 +113,16 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 		JPanel panel = new JPanel();
 		JLabel label = new JLabel(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_NB_TEXTS_BY_PAGE_LABEL));
-		this.editButton.setText(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_EDIT_BUTTON_LABEL));
-		this.deleteButton.setText(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_DELETE_BUTTON_LABEL));
+		this.editButtonCorpus.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_DISPLAY_CORPUS_EDIT_BUTTON_LABEL));
+		this.editButtonText.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_EDIT_BUTTON_LABEL));
+		this.deleteButton.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_DELETE_BUTTON_LABEL));
 		panel.add(label);
 		panel.add(this.nbTextsByPageCombo);
-		panel.add(this.editButton);
+		panel.add(this.editButtonCorpus);
+		panel.add(this.editButtonText);
 		panel.add(this.deleteButton);
 		return panel;
 	}
@@ -117,8 +136,8 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 		JPanel panel = new JPanel();
 		this.previousButton.setText(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_PREVIOUS_BUTTON_LABEL));
-		this.nextButton.setText(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_NEXT_BUTTON_LABEL));
+		this.nextButton.setText(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_NEXT_BUTTON_LABEL));
 		panel.add(this.previousButton);
 		panel.add(this.nextButton);
 		return panel;
@@ -128,10 +147,17 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 	 * Permet de rafraichir la position courante
 	 */
 	private void refreshCurrentPosition() {
-		this.currentPositionLabel.setText(
-				String.format(ConfigurationUtils.getInstance()
+		this.currentPositionLabel.setText(String.format(
+				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_CURRENT_POSITION_LABEL),
 				textDisplayPanel.getCurrentPage(), textDisplayPanel.getMaxPage()));
+	}
+
+	@Override
+	public void refresh() {
+		this.textDisplayPanel.refresh();
+		refreshCurrentPosition();
+		changeEnabledStateOfDirectionButton();
 	}
 
 	/**
@@ -159,16 +185,24 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 		this.previousButton.setEnabled(this.textDisplayPanel.isEnabled(DirectionTypeEnum.PREVIOUS));
 		this.nextButton.setEnabled(this.textDisplayPanel.isEnabled(DirectionTypeEnum.NEXT));
 	}
-	
+
 	/**
 	 * Permet de se procurer le consumer pour le changement des textes selectionné
+	 * 
 	 * @return le consumer
 	 */
 	private Consumer<Void> getConsumerToChangeItem() {
 		return v -> {
-			Boolean haveTextSelected = null != textDisplayPanel.getDisplayTextSelected();
-			editButton.setEnabled(haveTextSelected);
-			deleteButton.setEnabled(haveTextSelected);
+			if (forcedDisabledButton) {
+				editButtonText.setEnabled(Boolean.FALSE);
+				deleteButton.setEnabled(Boolean.FALSE);
+				editButtonCorpus.setEnabled(Boolean.FALSE);
+			} else {
+				Boolean haveTextSelected = null != textDisplayPanel.getDisplayTextSelected();
+				editButtonText.setEnabled(haveTextSelected);
+				deleteButton.setEnabled(haveTextSelected);
+				editButtonCorpus.setEnabled(haveTextSelected);
+			}
 		};
 	}
 
@@ -176,8 +210,9 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 	 * Permet de configurer les boutons
 	 */
 	private void configureActionButtons() {
-		this.editButton.setEnabled(false);
-		this.deleteButton.setEnabled(false);
+		this.editButtonText.setEnabled(Boolean.FALSE);
+		this.deleteButton.setEnabled(Boolean.FALSE);
+		this.editButtonCorpus.setEnabled(Boolean.FALSE);
 		this.previousButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -196,12 +231,74 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 				refreshCurrentPosition();
 			}
 		});
-		this.editButton.addActionListener(new ActionListener() {
-			
+		this.editButtonText.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				controler.loadFilteredText(textDisplayPanel.getDisplayTextSelected().getStructuredKey());
-				new FixedText(controler, ActionUserTypeEnum.FOLDER_TEXTS);
+				fixedOrEditTextPanel = new FixedOrEditText(
+						ConfigurationUtils.getInstance()
+								.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_PANEL_TITLE),
+						controler, ActionUserTypeEnum.FOLDER_TEXTS, ActionOperationTypeEnum.EDIT);
+				setEnabledAllButton(false);
+				if (null != consumerOnOpenEditText) {
+					consumerOnOpenEditText.accept(null);
+				}
+				fixedOrEditTextPanel.addActionOnClose(v -> {
+					fixedOrEditTextPanel = null;
+					setEnabledAllButton(true);
+					if (null != consumerOnCloseEditText) {
+						consumerOnCloseEditText.accept(null);
+					}
+					textDisplayPanel.refresh();
+				});
+			}
+		});
+
+		this.editButtonCorpus.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				controler.loadFilteredText(textDisplayPanel.getDisplayTextSelected().getStructuredKey());
+				fixedOrEditCorpusPanel = new FixedOrEditCorpus(
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_CORPUS_TITLE),
+						controler, false, ActionUserTypeEnum.FOLDER_TEXTS);
+				setEnabledAllButton(false);
+				if (null != consumerOnOpenEditText) {
+					consumerOnOpenEditText.accept(null);
+				}
+				fixedOrEditCorpusPanel.addActionOnClose(v -> {
+					fixedOrEditCorpusPanel = null;
+					setEnabledAllButton(true);
+					if (null != consumerOnCloseEditText) {
+						consumerOnCloseEditText.accept(null);
+					}
+					textDisplayPanel.refresh();
+				});
+			}
+		});
+
+		this.deleteButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// on demande confirmation avant la suppression
+				Integer result = JOptionPane.showConfirmDialog(null,
+						ConfigurationUtils.getInstance()
+								.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_DELETE_TEXT_ACTION_MESSAGE_CONTENT),
+						ConfigurationUtils.getInstance()
+								.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_DELETE_TEXT_ACTION_MESSAGE_TITLE),
+						0);
+				if (JOptionPane.YES_OPTION == result && null != textDisplayPanel.getDisplayTextSelected()) {
+					// suppression
+					try {
+						controler.deleteTextAndWriteCorpusFromFolderText(
+								textDisplayPanel.getDisplayTextSelected().getStructuredKey());
+						textDisplayPanel.refresh();
+					} catch (IOException e1) {
+						logger.error(e1.getMessage(), e1);
+					}
+				}
 			}
 		});
 	}
@@ -209,6 +306,38 @@ public class DisplayTextsFilteredWithPagingPanel implements IAccessPanel {
 	@Override
 	public JComponent getJPanel() {
 		return this.content;
+	}
+
+	@Override
+	public void close() {
+		if (null != fixedOrEditTextPanel) {
+			fixedOrEditTextPanel.closeFrame();
+		}
+		if (null != fixedOrEditCorpusPanel) {
+			fixedOrEditCorpusPanel.closeFrame();
+		}
+	}
+
+	@Override
+	public void setEnabledAllButton(Boolean enable) {
+		this.forcedDisabledButton = !enable;
+		if (this.forcedDisabledButton) {
+			deleteButton.setEnabled(Boolean.FALSE);
+			editButtonText.setEnabled(Boolean.FALSE);
+			editButtonCorpus.setEnabled(Boolean.FALSE);
+		} else {
+			textDisplayPanel.refresh();
+		}
+	}
+
+	@Override
+	public void addConsumerOnOpenEditText(Consumer<Void> consumer) {
+		this.consumerOnOpenEditText = consumer;
+	}
+
+	@Override
+	public void addConsumerOnCloseEditText(Consumer<Void> consumer) {
+		this.consumerOnCloseEditText = consumer;
 	}
 
 }

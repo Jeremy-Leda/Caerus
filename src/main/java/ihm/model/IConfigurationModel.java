@@ -10,9 +10,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import analyze.beans.Configuration;
+import analyze.beans.FilterCorpus;
 import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
 import analyze.beans.UserStructuredText;
+import analyze.constants.FolderSettingsEnum;
 import excel.beans.ExcelGenerateConfigurationCmd;
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
@@ -434,4 +436,35 @@ public interface IConfigurationModel {
 	 * @throws IOException
 	 */
 	void writeEditText() throws IOException;
+	
+	/**
+	 * Permet de supprimer un texte d'un corpus depuis la bibliothéque de texte
+	 * @param key Clé du texte à supprimer
+	 * @throws IOException
+	 */
+	void deleteTextAndWriteCorpusFromFolderText(String key) throws IOException;
+	
+	/**
+	 * Permet de se procurer la liste des corpus
+	 * @param folderType type de dossier
+	 * @return la liste des corpus
+	 */
+	List<String> getAllCorpusName(FolderSettingsEnum folderType);
+	
+	/**
+	 * Permet d'appliquer tous les filtres sur les corpus de la bibliothéque
+	 * @param filterCorpus filtre à appliquer sur le corpus
+	 */
+	void applyAllFiltersOnCorpusForFolderText(FilterCorpus filterCorpus);
+	
+	/**
+	 * Permet d'ajouter un texte au corpus en cours d'édition
+	 * @param folderType type de dossier
+	 */
+	void addTextToCurrentCorpus(FolderSettingsEnum folderType);
+	
+	/**
+	 * Permet de préparer pour l'ajout d'un texte
+	 */
+	void cleanCurrentEditingCorpusForAddText();
 }

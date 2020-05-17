@@ -93,9 +93,9 @@ public class Structuring {
 						if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
 							UserSettings.getInstance().addKeyToFilteredList(userStructuredText.getKey());
 						}
-						number++;
 						sf.getListStructuredText().add(structuredText);
 					}
+					number++;
 				} catch (StructuringException e) {
 					throw new RuntimeException(e.getMessage(), e);
 				}

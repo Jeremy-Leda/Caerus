@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
+import ihm.beans.ActionOperationTypeEnum;
 import ihm.beans.ActionUserTypeEnum;
 import ihm.beans.ExcelTypeGenerationEnum;
 import ihm.beans.PictureTypeEnum;
@@ -41,8 +42,8 @@ import ihm.view.CreateCorpus;
 import ihm.view.CreateText;
 import ihm.view.FixedBlankLine;
 import ihm.view.FixedErrorLine;
-import ihm.view.FixedMetaBlankLine;
-import ihm.view.FixedText;
+import ihm.view.FixedOrEditCorpus;
+import ihm.view.FixedOrEditText;
 import ihm.view.LoadTextConfigurationSelector;
 import ihm.view.ManageText;
 import ihm.view.SaveCustomExcel;
@@ -97,15 +98,10 @@ public class Main extends JFrame {
 	private final JPanel panBlankLineError = new JPanel();
 	private final JLabel stateConfigurationLibrayLabel = new JLabel();
 	private final JLabel stateConfigurationLibrayValue = new JLabel();
-	private final JLabel stateTextsLibrayLabel = new JLabel();
-	private final JLabel stateTextsLibrayValue = new JLabel();
 	private final JPanel subPanConfigurationState = new JPanel();
-	private final JPanel subPanTextsState = new JPanel();
 	private final JPanel subPanAnalyzeState = new JPanel();
 	private final JLabel stateAnalyzeLabel = new JLabel();
 	private final JLabel stateAnalyzeValue = new JLabel();
-	private final JLabel stateAnalyzeErrorLabel = new JLabel();
-	private final JLabel stateAnalyzeErrorValue = new JLabel();
 	private final JLabel stateAnalyzeFolderLabel = new JLabel();
 	private final JLabel stateAnalyzeFolderValue = new JLabel();
 	private final JLabel stateAnalyzeConfigurationLabel = new JLabel();
@@ -144,6 +140,12 @@ public class Main extends JFrame {
 			if (JOptionPane.YES_OPTION == result) {
 				this.configurationControler.restoreCurrentState();
 			}
+		}
+		try {
+			configurationControler
+					.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+		} catch (IOException e1) {
+			logger.error(e1.getMessage(), e1);
 		}
 
 		createWindow();
@@ -249,7 +251,7 @@ public class Main extends JFrame {
 			}
 		});
 		manageTextLibrary.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -265,7 +267,7 @@ public class Main extends JFrame {
 				}
 			}
 		});
-		
+
 		menuBar.add(textLibrary);
 
 		this.setJMenuBar(menuBar);
@@ -275,7 +277,7 @@ public class Main extends JFrame {
 		createTextErrorPanel();
 		createBlankLineErrorPanel();
 		createMoveFileLibraryPanel();
-		refreshEnabledWithTextsFolderLibrary();
+		refreshEnabledAndValueWithTextsFolderLibrary();
 		panContent.add(panAnalyze);
 		panContent.add(panLineError);
 		panContent.add(panTextError);
@@ -300,9 +302,6 @@ public class Main extends JFrame {
 		subPanConfigurationState.add(stateConfigurationLibrayLabel);
 		subPanConfigurationState.add(stateConfigurationLibrayValue);
 		subPanConfigurationState.setVisible(false);
-		subPanTextsState.add(stateTextsLibrayLabel);
-		subPanTextsState.add(stateTextsLibrayValue);
-		subPanTextsState.setVisible(false);
 		panAnalyze.setLayout(new BoxLayout(panAnalyze, BoxLayout.Y_AXIS));
 		subPanAnalyzeState.setLayout(new BoxLayout(subPanAnalyzeState, BoxLayout.Y_AXIS));
 		JPanel subPanFolderAnalyzeState = new JPanel();
@@ -311,9 +310,6 @@ public class Main extends JFrame {
 		JPanel subPanConfigurationAnalyzeState = new JPanel();
 		subPanConfigurationAnalyzeState.add(stateAnalyzeConfigurationLabel);
 		subPanConfigurationAnalyzeState.add(stateAnalyzeConfigurationValue);
-		JPanel subPanErrorAnalyzeState = new JPanel();
-		subPanErrorAnalyzeState.add(stateAnalyzeErrorLabel);
-		subPanErrorAnalyzeState.add(stateAnalyzeErrorValue);
 		JPanel subPanCommonNbTextLoaded = new JPanel();
 		subPanCommonNbTextLoaded.add(stateNbTextLoadedLabel);
 		subPanCommonNbTextLoaded.add(stateNbTextLoadedValue);
@@ -326,7 +322,6 @@ public class Main extends JFrame {
 		stateAnalyzeButton.addActionListener(openFolderForAnalyzeAndLaunch());
 		panAnalyze.add(subPanCommonAnalyzeState);
 		panAnalyze.add(subPanConfigurationState);
-		panAnalyze.add(subPanTextsState);
 		panAnalyze.add(subPanAnalyzeState);
 		panAnalyze.add(subPanButtonAnalyzeState);
 	}
@@ -401,16 +396,12 @@ public class Main extends JFrame {
 	private void reloadLanguage() {
 		stateConfigurationLibrayLabel.setText(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MAIN_CONFIGURATION_LIBRARY_PANEL_STATE_LABEL));
-		stateTextsLibrayLabel.setText(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_MAIN_TEXTS_LIBRARY_PANEL_STATE_LABEL));
 		panAnalyze.setBorder(BorderFactory.createTitledBorder(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_TITLE)));
 		stateAnalyzeLabel.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LABEL));
 		stateAnalyzeFolderLabel.setText(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_FOLDER_LABEL));
-		stateAnalyzeErrorLabel.setText(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_ERROR_LABEL));
 		stateNbTextLoadedLabel.setText(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_NB_TEXT_LOADED_LABEL));
 
@@ -630,7 +621,9 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				IActionOnClose fixedText = new FixedText(configurationControler, ActionUserTypeEnum.FOLDER_ANALYZE);
+				IActionOnClose fixedText = new FixedOrEditText(
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE),
+						configurationControler, ActionUserTypeEnum.FOLDER_ANALYZE, ActionOperationTypeEnum.EDIT);
 				fixedText.addActionOnClose((v) -> {
 					setEnabled(true);
 					launchAnalyze();
@@ -645,8 +638,12 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new FixedBlankLine(configurationControler);
-				launchAnalyze();
+				IActionOnClose fixedBlankLine = new FixedBlankLine(configurationControler);
+				fixedBlankLine.addActionOnClose((v) -> {
+					setEnabled(true);
+					launchAnalyze();
+				});
+				setEnabled(false);
 			}
 		};
 	}
@@ -656,7 +653,10 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new FixedMetaBlankLine(configurationControler);
+				new FixedOrEditCorpus(
+						ConfigurationUtils.getInstance()
+								.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_TITLE),
+						configurationControler, true, ActionUserTypeEnum.FOLDER_ANALYZE);
 				launchAnalyze();
 			}
 		};
@@ -697,6 +697,8 @@ public class Main extends JFrame {
 	 */
 	private void launchAnalyze() {
 		try {
+			configurationControler.clearAnalyze();
+			refreshDisplay();
 			configurationControler.launchAnalyze();
 			refreshDisplay();
 		} catch (IOException e) {
@@ -708,16 +710,20 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de rafraichir pour les activations suite à la présence du chemin de la
-	 * librairie des textes
+	 * Permet de rafraichir pour les activations et les valeurs suite à la présence
+	 * du chemin de la librairie des textes
 	 */
-	private void refreshEnabledWithTextsFolderLibrary() {
+	private void refreshEnabledAndValueWithTextsFolderLibrary() {
 		if (null != configurationControler.getTextsFolder()) {
+			subPanConfigurationState.setVisible(true);
 			createTextLibrary.setEnabled(true);
 			moveFileLibraryButton.setEnabled(true);
+			stateConfigurationLibrayValue.setText(this.configurationControler.getTextsFolder().toString());
 		} else {
+			subPanConfigurationState.setVisible(false);
 			createTextLibrary.setEnabled(false);
 			moveFileLibraryButton.setEnabled(false);
+			stateConfigurationLibrayValue.setText(StringUtils.EMPTY);
 		}
 	}
 
@@ -740,7 +746,7 @@ public class Main extends JFrame {
 				chooser.setAcceptAllFileFilterUsed(false);
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setTextsFolder(chooser.getSelectedFile());
-					refreshEnabledWithTextsFolderLibrary();
+					refreshEnabledAndValueWithTextsFolderLibrary();
 				}
 			}
 		};

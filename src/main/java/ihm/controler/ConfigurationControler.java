@@ -6,12 +6,14 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
@@ -22,16 +24,29 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import analyze.beans.Configuration;
+import analyze.beans.FilterCorpus;
+import analyze.beans.FilterText;
 import analyze.beans.LineError;
 import analyze.beans.StructuredFile;
+import analyze.constants.FolderSettingsEnum;
+import analyze.constants.TypeFilterTextEnum;
 import excel.beans.ExcelGenerateConfigurationCmd;
 import exceptions.LoadTextException;
 import exceptions.MoveFileException;
 import ihm.beans.DisplayText;
 import ihm.beans.ErrorStructuredLine;
+import ihm.beans.Filter;
+import ihm.beans.FilterTypeEnum;
 import ihm.model.ConfigurationModel;
 import ihm.model.IConfigurationModel;
 
+/**
+ * 
+ * Controller pour la jonction au modèle
+ * 
+ * @author jerem
+ *
+ */
 public class ConfigurationControler implements IConfigurationControler {
 
 	private Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
@@ -391,13 +406,13 @@ public class ConfigurationControler implements IConfigurationControler {
 					.forEach(ust -> cmd.addUniqueKey(ust.getStructuredText().getUniqueKey()));
 			this.configurationModel.generateExcelFromTexts(cmd);
 			stopWatch.stop();
-			logger.warn(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
+			logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 		}
 	}
 
 	@Override
 	public List<DisplayText> getDisplayTextListFromFilteredText(Integer start, Integer nbTextToLoad) {
-		Set<DisplayText> setTextList = new HashSet<>();
+		Set<DisplayText> setTextList = new LinkedHashSet<>();
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		// SI configuration existe
@@ -422,8 +437,8 @@ public class ConfigurationControler implements IConfigurationControler {
 			}
 		}
 		stopWatch.stop();
-		logger.warn(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
-		return Collections.unmodifiableList(new ArrayList<>(setTextList));
+		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
+		return Collections.unmodifiableList(new LinkedList<>(setTextList));
 	}
 
 	@Override
@@ -444,7 +459,9 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public void loadFilteredText(String key) {
-		this.configurationModel.loadKeyFiltered(key);
+		if (null != key) {
+			this.configurationModel.loadKeyFiltered(key);
+		}
 	}
 
 	@Override
@@ -455,6 +472,44 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public void applyEditText() {
 		this.configurationModel.applyEditText();
+	}
+
+	@Override
+	public void deleteTextAndWriteCorpusFromFolderText(String key) throws IOException {
+		if (null != key) {
+			this.configurationModel.deleteTextAndWriteCorpusFromFolderText(key);
+		}
+	}
+
+	@Override
+	public List<String> getAllCorpusNameForFilteredText() {
+		return this.configurationModel.getAllCorpusName(FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	@Override
+	public void applyAllFiltersOnCorpusForFolderText(String corpusName, List<Filter> filtersList) {
+		if (null != filtersList) {
+			List<FilterText> filtersTextList = filtersList.stream().map(f -> {
+				if (FilterTypeEnum.CONTAINS.equals(f.getType())) {
+					return new FilterText(f.getField(), TypeFilterTextEnum.CONTAINS, StringUtils.trim(f.getValue()));
+				} else if (FilterTypeEnum.EQUAL.equals(f.getType())) {
+					return new FilterText(f.getField(), TypeFilterTextEnum.EQUAL, StringUtils.trim(f.getValue()));
+				}
+				return null;
+			}).collect(Collectors.toList());
+			FilterCorpus filterCorpus = new FilterCorpus(corpusName, filtersTextList);
+			this.configurationModel.applyAllFiltersOnCorpusForFolderText(filterCorpus);
+		}
+	}
+
+	@Override
+	public void addTextToCurrentCorpusFromFolderText() {
+		this.configurationModel.addTextToCurrentCorpus(FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	@Override
+	public void cleanCurrentEditingCorpusForAddText() {
+		this.configurationModel.cleanCurrentEditingCorpusForAddText();
 	}
 
 }

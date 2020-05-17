@@ -10,6 +10,7 @@ package ihm.beans;
 public enum PictureTypeEnum {
 	INFORMATION("icons/icons_information.png"),
 	TEXT("icons/icons_text.png"),
+	FILTER("icons/icons_filter.png"),
 	WARNING("icons/icons_warning.png");
 
 	/**

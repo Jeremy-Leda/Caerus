@@ -114,7 +114,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void setTextsFolder(File textsFolder) {
 		logger.debug(String.format("CALL setTextsFolder : Folder %s", textsFolder));
-		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
+		this.dispatcher.setTextsFolder(textsFolder);
 	}
 
 	@Override

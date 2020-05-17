@@ -749,6 +749,7 @@ public class Main extends JFrame {
 				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setTextsFolder(chooser.getSelectedFile());
 					refreshEnabledAndValueWithTextsFolderLibrary();
+					repack();
 				}
 			}
 		};

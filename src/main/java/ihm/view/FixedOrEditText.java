@@ -21,6 +21,7 @@ import ihm.beans.ActionOperationTypeEnum;
 import ihm.beans.ActionUserTypeEnum;
 import ihm.beans.ConsumerTextTypeEnum;
 import ihm.beans.FunctionTextTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.beans.TextIhmTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
@@ -158,6 +159,9 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				closeFrame();
 			}
 		});
+		this.actionFixedTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
+		this.actionManageTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
+		this.actionAddTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
 	}
 
 	/**

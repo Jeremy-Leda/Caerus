@@ -4,6 +4,8 @@ import java.awt.event.ActionListener;
 import java.util.Map;
 import java.util.function.Function;
 
+import ihm.beans.PictureTypeEnum;
+
 /**
  * Interface permettant de controler l'action panel
  * @author jerem
@@ -37,5 +39,12 @@ public interface IActionPanel extends ISpecificTextRefreshPanel {
 	 * @param titleJpanelFunction fonction pour se procurer le titre du Jpanel
 	 */
 	void setFunctionRefreshLabelTitleDynamically(Function<Void, String> titleJpanelFunction);
+	
+	/**
+	 * Permet de définir une icone sur le bouton
+	 * @param number numéro du bouton
+	 * @param pictureType type d'image
+	 */
+	void setIconButton(Integer number, PictureTypeEnum pictureType);
 	
 }

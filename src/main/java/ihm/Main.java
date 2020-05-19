@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -49,6 +50,7 @@ import ihm.view.ManageText;
 import ihm.view.SaveCustomExcel;
 import ihm.view.SaveReferenceExcels;
 import ihm.view.UserInformation;
+import utils.RessourcesUtils;
 
 /**
  * 
@@ -369,7 +371,8 @@ public class Main extends JFrame {
 		subPanButton.add(moveFileLibraryButton);
 		panMoveFileLibrary.add(subPanButton);
 		panMoveFileLibrary.setVisible(false);
-		moveFileLibraryButton.addActionListener(moveFileToLibraryAction());
+		moveFileLibraryButton.addActionListener(moveFileToLibraryAction());		
+		this.moveFileLibraryButton.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.SAVE)));
 	}
 
 	/***

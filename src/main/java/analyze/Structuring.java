@@ -63,47 +63,67 @@ public class Structuring {
 			String l = memoryFile.getNextLine();
 			checkLineAndAddErrorIfNecessary(l, memoryFile);
 			if (StringUtils.isEmpty(l)) {
-				try {
-					StructuredText structuredText = prepareStructuredText(listLines);
-					StringBuilder keyTextBuilder = new StringBuilder();
-					keyTextBuilder.append(memoryFile.nameFile());
-					keyTextBuilder.append(number.toString());
-					structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
-					String keyStructuredText = KeyGenerator.generateKey(structuredText);
-					if (null != structuredText && structuredText.getHaveBlankLine()) {
-						UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE, keyStructuredText);
-					}
-					if (null != structuredText && structuredText.getHaveMetaBlankLine()) {
-						UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE, keyStructuredText);
-					}
-					listLines.clear();
-					if (null != beanConfiguration && null != structuredText) {
-						try {
-							sf.getListStructuredText().addAll(processingStructuredTextWithConfigurationBean(structuredText,
-									beanConfiguration, memoryFile, sf));
-							
-						} catch (IndexOutOfBoundsException e) {
-							UserSettings.getInstance().addKeyError(ErrorTypeEnum.STRUCTURED_TEXT,keyStructuredText);
-						}
-						
-					} else if (null != structuredText) {
-						UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
-								structuredText);
-						UserSettings.getInstance().addUserStructuredText(folderType, userStructuredText);
-						if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
-							UserSettings.getInstance().addKeyToFilteredList(userStructuredText.getKey());
-						}
-						sf.getListStructuredText().add(structuredText);
-					}
-					number++;
-				} catch (StructuringException e) {
-					throw new RuntimeException(e.getMessage(), e);
-				}
+				number = processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
 			} else {
 				listLines.add(l);
 			}
 		}
+		if (!listLines.isEmpty()) {
+			processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
+		}
 		return sf;
+	}
+
+	/**
+	 * Permet de lancer l'analyse
+	 * @param memoryFile fichier mémoire
+	 * @param folderType type de dossier
+	 * @param beanConfiguration bean de configurat
+	 * @param sf fichier structurel
+	 * @param listLines liste des lignes
+	 * @param number numéro
+	 * @return le numéro
+	 */
+	private Integer processStructuring(MemoryFile memoryFile, FolderSettingsEnum folderType,
+			ConfigurationStructuredText beanConfiguration, final StructuredFile sf, final List<String> listLines,
+			Integer number) {
+		try {
+			StructuredText structuredText = prepareStructuredText(listLines);
+			StringBuilder keyTextBuilder = new StringBuilder();
+			keyTextBuilder.append(memoryFile.nameFile());
+			keyTextBuilder.append(number.toString());
+			structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
+			String keyStructuredText = KeyGenerator.generateKey(structuredText);
+			if (null != structuredText && structuredText.getHaveBlankLine()) {
+				UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE, keyStructuredText);
+			}
+			if (null != structuredText && structuredText.getHaveMetaBlankLine()) {
+				UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE, keyStructuredText);
+			}
+			listLines.clear();
+			if (null != beanConfiguration && null != structuredText) {
+				try {
+					sf.getListStructuredText().addAll(processingStructuredTextWithConfigurationBean(structuredText,
+							beanConfiguration, memoryFile, sf));
+					
+				} catch (IndexOutOfBoundsException e) {
+					UserSettings.getInstance().addKeyError(ErrorTypeEnum.STRUCTURED_TEXT,keyStructuredText);
+				}
+				
+			} else if (null != structuredText) {
+				UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
+						structuredText);
+				UserSettings.getInstance().addUserStructuredText(folderType, userStructuredText);
+				if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
+					UserSettings.getInstance().addKeyToFilteredList(userStructuredText.getKey());
+				}
+				sf.getListStructuredText().add(structuredText);
+			}
+			number++;
+		} catch (StructuringException e) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+		return number;
 	}
 
 	/**

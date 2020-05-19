@@ -2,6 +2,8 @@ package ihm.view;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.function.Consumer;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import ihm.abstracts.ModalJFrameAbstract;
 import ihm.beans.ConsumerTextTypeEnum;
 import ihm.beans.FunctionTextTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.beans.TextIhmTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
@@ -29,6 +33,13 @@ import ihm.panel.FilePanel;
 import ihm.utils.ConfigurationUtils;
 import ihm.utils.Constants;
 
+/**
+ * 
+ * Vue permettant de modifier les balises vides sur les textes
+ * 
+ * @author jerem
+ *
+ */
 public class FixedBlankLine extends ModalJFrameAbstract {
 
 	/**
@@ -128,6 +139,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	private void updateContentWithNextError() {
 		getControler().loadNextErrorBlankLine();
 		this.contentPanel.refreshComponents(getControler().getConfigurationFieldCommonFile());
+		this.contentPanel.addKeyListenerOnAllField(getKeyListenerForIncreaseRow());
 		refreshFilePanel();
 	}
 
@@ -177,8 +189,37 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 		String title = String.format(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_ACTION_PANEL_TITLE),
 				currentIndex + 1, nbTextsError);
 		this.actionPanel.setStaticLabel(title, messageButtonMap);
+		this.actionPanel.setIconButton(1, PictureTypeEnum.SAVE);
 	}
 
+	/**
+	 * Permet d'ajouter un listener pour augmenter dynamiquement la zone de saisie.
+	 * @return
+	 */
+	public KeyListener getKeyListenerForIncreaseRow() {
+		return new KeyListener() {
+			
+			@Override
+			public void keyTyped(KeyEvent e) {
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					JTextArea source = (JTextArea)e.getSource();
+					if (source.getRows() < 5) {
+						source.setRows(source.getRows()+1);
+						repack();
+					}					
+				}
+			}
+		};
+	}
+	
 	@Override
 	public String getWindowName() {
 		return "Window for fixed blank line";

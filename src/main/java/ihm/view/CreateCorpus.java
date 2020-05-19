@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import ihm.abstracts.ModalJFrameAbstract;
 import ihm.beans.ConsumerTextTypeEnum;
 import ihm.beans.FunctionTextTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.beans.TextIhmTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionPanel;
@@ -114,6 +115,7 @@ public class CreateCorpus extends ModalJFrameAbstract {
 		messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_CORPUS_ACTION_CREATE_TEXT_BUTTON_TITLE));		
 		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_CORPUS_ACTION_PANEL_TITLE), messageButtonMap);
 		this.actionPanel.setEnabled(0, false);
+		this.actionPanel.setIconButton(0, PictureTypeEnum.SAVE);
 		this.actionPanel.addAction(0, addText());
 	}
 	

@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import ihm.abstracts.ModalJFrameAbstract;
 import ihm.beans.ConsumerTextTypeEnum;
 import ihm.beans.FunctionTextTypeEnum;
+import ihm.beans.PictureTypeEnum;
 import ihm.beans.TextIhmTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
@@ -117,6 +118,8 @@ public class CreateText extends ModalJFrameAbstract {
 		this.actionPanel.addAction(0, openFillSpecificText());
 		this.actionPanel.addAction(1, addTextAndCreateAnother());
 		this.actionPanel.addAction(2, addTextSaveCorpusAndQuit());
+		this.actionPanel.setIconButton(1, PictureTypeEnum.SAVE);
+		this.actionPanel.setIconButton(2, PictureTypeEnum.SAVE);
 	}
 	
 	/**

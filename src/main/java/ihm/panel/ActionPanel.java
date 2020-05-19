@@ -6,13 +6,16 @@ import java.util.Map;
 import java.util.function.Function;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang3.StringUtils;
 
+import ihm.beans.PictureTypeEnum;
 import ihm.interfaces.IActionPanel;
+import utils.RessourcesUtils;
 
 /**
  * Permet de créer un panel action
@@ -97,6 +100,13 @@ public class ActionPanel implements IActionPanel {
 	@Override
 	public void setFunctionRefreshLabelTitleDynamically(Function<Void, String> titleJpanelFunction) {
 		this.titleJpanelFunction = titleJpanelFunction;
+	}
+
+	@Override
+	public void setIconButton(Integer number, PictureTypeEnum pictureType) {
+		if (buttonMap.containsKey(number)) {
+			buttonMap.get(number).setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(pictureType)));
+		}
 	}
 	
 }

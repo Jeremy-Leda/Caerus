@@ -166,6 +166,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 		messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_ACTION_BUTTON_LABEL));
 		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_ACTION_TITLE_PANEL),
 				messageButtonMap);
+		this.actionPanel.setIconButton(0, PictureTypeEnum.SAVE);
 	}
 
 	@Override

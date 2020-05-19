@@ -11,6 +11,7 @@ public enum PictureTypeEnum {
 	INFORMATION("icons/icons_information.png"),
 	TEXT("icons/icons_text.png"),
 	FILTER("icons/icons_filter.png"),
+	SAVE("icons/icons_save.png"),
 	WARNING("icons/icons_warning.png");
 
 	/**

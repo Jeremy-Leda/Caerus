@@ -371,7 +371,7 @@ public class Main extends JFrame {
 		subPanButton.add(moveFileLibraryButton);
 		panMoveFileLibrary.add(subPanButton);
 		panMoveFileLibrary.setVisible(false);
-		moveFileLibraryButton.addActionListener(moveFileToLibraryAction());		
+		moveFileLibraryButton.addActionListener(moveFileToLibraryAction());
 		this.moveFileLibraryButton.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.SAVE)));
 	}
 
@@ -427,6 +427,8 @@ public class Main extends JFrame {
 				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE));
 		createTextLibrary
 				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_CREATE_MENU_TITLE));
+		manageTextLibrary
+				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MANAGE_MENU_TITLE));
 		configurationLoadLibrary.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
 		this.setTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_TITLE));

@@ -6,14 +6,14 @@
 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n" />
 		</Console>
  
-		<RollingFile name="RollingFile" filename="log/caerus.log"
-			filepattern="${logPath}/%d{yyyyMMddHHmmss}-caerus.log">
-			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n" />
-			<Policies>
-				<SizeBasedTriggeringPolicy size="100 MB" />
-			</Policies>
-			<DefaultRolloverStrategy max="20" />
-		</RollingFile>
+<!-- 		<RollingFile name="RollingFile" filename="log/caerus.log" -->
+<!-- 			filepattern="${logPath}/%d{yyyyMMddHHmmss}-caerus.log"> -->
+<!-- 			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} [%t] %-5p %c{1}:%L - %msg%n" /> -->
+<!-- 			<Policies> -->
+<!-- 				<SizeBasedTriggeringPolicy size="100 MB" /> -->
+<!-- 			</Policies> -->
+<!-- 			<DefaultRolloverStrategy max="20" /> -->
+<!-- 		</RollingFile> -->
  
 	</Appenders>
 	
@@ -21,7 +21,7 @@
 	<Loggers>
 		<Root level="info">
 			<AppenderRef ref="Console" />
-			<AppenderRef ref="RollingFile" />
+<!-- 			<AppenderRef ref="RollingFile" /> -->
 		</Root>
 	</Loggers>
 </Configuration>

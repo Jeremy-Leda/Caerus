@@ -16,9 +16,11 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ihm.beans.PictureTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
 import ihm.interfaces.IModalFrameRepack;
+import utils.RessourcesUtils;
 
 /**
  * 
@@ -79,6 +81,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 		initComponents();
 		this.frame.add(getContent());
 		this.frame.setModal(isModal);
+		this.frame.setIconImage(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO));
 		this.frame.getContentPane().add(getContent(), BorderLayout.CENTER);
 		this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.frame.addWindowListener(new WindowAdapter() {

@@ -23,7 +23,7 @@ public class PathUtils {
 	 */
 	public static String getRootPath() {
 		File currentJavaJarFile = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());   
-		String currentJavaJarFilePath = currentJavaJarFile.getAbsolutePath();
+		String currentJavaJarFilePath = currentJavaJarFile.getAbsolutePath().replaceAll("%20", " ");		
 		String currentRootDirectoryPath = currentJavaJarFilePath.replace(currentJavaJarFile.getName(), "");
 		return currentRootDirectoryPath;
 	}

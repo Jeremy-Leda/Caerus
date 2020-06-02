@@ -163,6 +163,7 @@ public class Main extends JFrame {
 		this.setTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_TITLE));
 		this.setSize(400, 100);
 		this.setLocationRelativeTo(null);
+		this.setIconImage(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO));
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initMenu();
 		reloadLanguage();

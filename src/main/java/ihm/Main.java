@@ -237,7 +237,7 @@ public class Main extends JFrame {
 		menuBar.add(configurationLibrary);
 
 		textLibrary.add(textLoadLibrary);
-		textLoadLibrary.addActionListener(openFolderForSetTextsFolderLibrary());
+		textLoadLibrary.addActionListener(openFolderForSetTextsFolderLibrary(this));
 		textLibrary.addSeparator();
 		textLibrary.add(createTextLibrary);
 		textLibrary.add(manageTextLibrary);
@@ -323,7 +323,7 @@ public class Main extends JFrame {
 		subPanAnalyzeState.setVisible(false);
 		JPanel subPanButtonAnalyzeState = new JPanel();
 		subPanButtonAnalyzeState.add(stateAnalyzeButton);
-		stateAnalyzeButton.addActionListener(openFolderForAnalyzeAndLaunch());
+		stateAnalyzeButton.addActionListener(openFolderForAnalyzeAndLaunch(this));
 		panAnalyze.add(subPanCommonAnalyzeState);
 		panAnalyze.add(subPanConfigurationState);
 		panAnalyze.add(subPanAnalyzeState);
@@ -672,9 +672,10 @@ public class Main extends JFrame {
 	/**
 	 * permet de créer la fenêtre de sélection du dossier et de lancer l'analyse
 	 * 
+	 * @param parent JFrame parente
 	 * @return
 	 */
-	private ActionListener openFolderForAnalyzeAndLaunch() {
+	private ActionListener openFolderForAnalyzeAndLaunch(JFrame parent) {
 		return new ActionListener() {
 
 			@Override
@@ -685,7 +686,7 @@ public class Main extends JFrame {
 						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_FOLDER_CHOOSE_TITLE));
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.setAcceptAllFileFilterUsed(false);
-				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+				if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setAnalyzeFolder(chooser.getSelectedFile());
 					try {
 						configurationControler
@@ -740,9 +741,10 @@ public class Main extends JFrame {
 	 * Permet de créer la fenêtre de sélection du dossier et la définir en tant que
 	 * bibliothéque de textes
 	 * 
+	 * @param parent JFrame parent
 	 * @return
 	 */
-	private ActionListener openFolderForSetTextsFolderLibrary() {
+	private ActionListener openFolderForSetTextsFolderLibrary(JFrame parent) {
 		return new ActionListener() {
 
 			@Override
@@ -753,7 +755,7 @@ public class Main extends JFrame {
 						Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_LIBRARY_BUTTON_FOLDER_CHOOSE_TITLE));
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.setAcceptAllFileFilterUsed(false);
-				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+				if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
 					configurationControler.setTextsFolder(chooser.getSelectedFile());
 					refreshEnabledAndValueWithTextsFolderLibrary();
 					repack();

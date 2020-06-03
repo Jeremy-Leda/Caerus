@@ -27,9 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import exceptions.LoadTextException;
 import ihm.beans.ConfigurationType;
+import ihm.beans.PictureTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.utils.ConfigurationUtils;
 import ihm.utils.Constants;
+import utils.RessourcesUtils;
 
 /**
  * 
@@ -136,6 +138,7 @@ public class LoadTextConfigurationSelector extends JFrame {
 		content.add(panStart);
 
 		frame.setModal(true);
+		this.frame.setIconImage(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO));
 		frame.getContentPane().add(content, BorderLayout.CENTER);
 		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		

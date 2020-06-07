@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import model.analyze.beans.Configuration;
 import model.analyze.beans.CurrentUserConfiguration;
 import model.analyze.beans.MemoryFile;
 import model.analyze.beans.SaveCurrentFixedText;
@@ -39,6 +40,7 @@ import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import utils.JSonFactoryUtils;
 import utils.PathUtils;
+import utils.RessourcesUtils;
 
 /**
  * 
@@ -64,6 +66,7 @@ public class Dispatcher {
 	 */
 	public Dispatcher() {
 		try {
+			createDefaultConfigurationIfFolderIsEmpty();
 			loadContextFromUserConfiguration();
 			UserSettings.getInstance().clearCurrentFolderUserTextsMap();
 		} catch (IOException e) {
@@ -393,7 +396,7 @@ public class Dispatcher {
 	 * @return
 	 */
 	private File getCurrentStateFile() {
-		String rootPath = PathUtils.getRootPath();
+		String rootPath = PathUtils.getCaerusFolder();
 		File parentFile = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONTEXT);
 		return new File(parentFile, FILE_CURRENT_STATE);
 	}
@@ -406,7 +409,7 @@ public class Dispatcher {
 	 * @return
 	 */
 	private File getUserConfigurationFile() {
-		String rootPath = PathUtils.getRootPath();
+		String rootPath = PathUtils.getCaerusFolder();
 		File parentFile = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONTEXT);
 		return new File(parentFile, FILE_CURRENT_USER_CONFIGURATION);
 	}
@@ -427,7 +430,7 @@ public class Dispatcher {
 					CurrentUserConfiguration.class);
 		} else {
 			currentUserConfiguration = new CurrentUserConfiguration();
-			String rootPath = PathUtils.getRootPath();
+			String rootPath = PathUtils.getCaerusFolder();
 			File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONFIGURATIONS);
 			File textsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_TEXTS);
 			currentUserConfiguration.setConfigurationPath(configurationsPath.toPath());
@@ -547,4 +550,19 @@ public class Dispatcher {
 		return null;
 	}
 
+	/**
+	 * Permet d'ajouter la configuration par défaut si le dossier des configurations est vide
+	 * @throws IOException Exception d'entrée sortie
+	 * @throws JsonMappingException Json mapping exception
+	 * @throws JsonParseException Json parse exception
+	 */
+	private void createDefaultConfigurationIfFolderIsEmpty() throws JsonParseException, JsonMappingException, IOException {
+		String rootPath = PathUtils.getCaerusFolder();
+		File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONFIGURATIONS);
+		if (configurationsPath.isDirectory() && configurationsPath.list().length == 0) {
+			Configuration basicalConfiguration = RessourcesUtils.getInstance().getBasicalConfiguration();
+			JSonFactoryUtils.createJsonInFile(basicalConfiguration, new File(configurationsPath, CONFIGURATION_CLASSIC_NAME + ".json"));
+		}
+	}
+	
 }

@@ -181,7 +181,7 @@ public class LoadTextConfigurationSelector extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (typeConfigurationComboList.getItemCount() == 0) {
 					try {
-						controler.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+						controler.setCurrentConfiguration(RessourcesUtils.getInstance().getBasicalConfiguration());
 					} catch (Exception e1) {
 						logger.error(e1.getMessage(), e1);
 					}

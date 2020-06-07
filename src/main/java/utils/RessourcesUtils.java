@@ -9,6 +9,10 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import model.analyze.beans.Configuration;
 import view.beans.PictureTypeEnum;
 
 /**
@@ -19,6 +23,7 @@ import view.beans.PictureTypeEnum;
 public class RessourcesUtils {
 	
 	private static RessourcesUtils _instance;
+	private static final String DEFAULT_CONFIGURATION = "ConfiguraciónBásica.json";
 	private static Logger logger = LoggerFactory.getLogger(RessourcesUtils.class);
 	
 	/**
@@ -60,5 +65,18 @@ public class RessourcesUtils {
 			return null;
 		}
     }
+    
+	/**
+	 * Permet de se procurer la configuration classique
+	 * 
+	 * @return la configuration classique
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public Configuration getBasicalConfiguration() throws JsonParseException, JsonMappingException, IOException {
+		return JSonFactoryUtils.createConfigurationFromJsonFile(getFileFromResources(DEFAULT_CONFIGURATION));
+	}
+
 
 }

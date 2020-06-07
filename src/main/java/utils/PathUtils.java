@@ -17,6 +17,8 @@ import view.Main;
  */
 public class PathUtils {
 
+	private static final String GLOBAL_FOLDER = "Caerus";
+	
 	/**
 	 * Permet de se procurer le chemin root
 	 * @return le chemin root
@@ -61,4 +63,11 @@ public class PathUtils {
 		return Files.move(fileToMove.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
+	/**
+	 * Permet de se procurer le chemin du dossier Caerus dans les documents de l'utilisateur
+	 * @return le dossier Caerus dans les Documents
+	 */
+	public static String getCaerusFolder() {
+		return System.getProperty("user.home") + File.separator + "Documents" + File.separator + GLOBAL_FOLDER;
+	}
 }

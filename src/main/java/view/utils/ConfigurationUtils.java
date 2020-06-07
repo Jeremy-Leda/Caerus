@@ -32,7 +32,6 @@ public final class ConfigurationUtils {
 	private static final ConfigurationUtils CONFIGURATION_INSTANCE = new ConfigurationUtils();
 	private final Map<String, String> mapLanguages;
 	private static Logger logger = LoggerFactory.getLogger(ConfigurationUtils.class);
-	private static final String DEFAULT_CONFIGURATION = "ConfiguraciónBásica.json";
 
 	/**
 	 * Constructeur
@@ -92,17 +91,4 @@ public final class ConfigurationUtils {
 	public Map<String, String> getMapLanguages() {
 		return mapLanguages;
 	}
-
-	/**
-	 * Permet de se procurer la configuration classique
-	 * 
-	 * @return la configuration classique
-	 * @throws JsonParseException
-	 * @throws JsonMappingException
-	 * @throws IOException
-	 */
-	public Configuration getClassicalConfiguration() throws JsonParseException, JsonMappingException, IOException {
-		return JSonFactoryUtils.createConfigurationFromJsonFile(RessourcesUtils.getInstance().getFileFromResources(DEFAULT_CONFIGURATION));
-	}
-
 }

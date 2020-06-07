@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import model.analyze.beans.Configuration;
 
@@ -45,6 +46,10 @@ public final class JSonFactoryUtils {
 	 */
 	public static <T> Boolean createJsonInFile(T objet, File file) throws JsonGenerationException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
+		// Code temporaire pour indenter le temps de créer les interfaces graphiques
+		// Plus simple pour comprendre la structure
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		//
 		mapper.writeValue(file, objet);		
 		return file.exists();
 	}

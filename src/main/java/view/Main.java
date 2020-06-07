@@ -82,7 +82,8 @@ public class Main extends JFrame {
 			manageTextLibrary = new JMenuItem(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MANAGE_MENU_TITLE)),
 			configurationLoadLibrary = new JMenuItem(ConfigurationUtils.getInstance()
-					.getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE));
+					.getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE)),
+			openAbout = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT_OPEN));
 	private List<JMenuItem> languages = new ArrayList<JMenuItem>();
 	private JMenu fileMenu = new JMenu(
 			ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
@@ -92,6 +93,7 @@ public class Main extends JFrame {
 			ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
 	private JMenu configurationLibrary = new JMenu(
 			ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
+	private JMenu about = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT));
 	private JMenuBar menuBar = new JMenuBar();
 	private final JPanel panContent = new JPanel();
 	private final JPanel panAnalyze = new JPanel();
@@ -126,7 +128,7 @@ public class Main extends JFrame {
 	private final JButton fixedTextErrorButton = new JButton();
 	private final JButton fixedBlankLineErrorButton = new JButton();
 	private final JButton fixedMetaBlankLineErrorButton = new JButton();
-	//private final JButton stateAnalyzeButton = new JButton();
+	// private final JButton stateAnalyzeButton = new JButton();
 	private final JButton moveFileLibraryButton = new JButton();
 	private final IConfigurationControler configurationControler = new ConfigurationControler();
 
@@ -149,8 +151,7 @@ public class Main extends JFrame {
 		}
 		try {
 			if (StringUtils.isBlank(configurationControler.getConfigurationName())) {
-				configurationControler
-						.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+				configurationControler.setCurrentConfiguration(RessourcesUtils.getInstance().getBasicalConfiguration());
 			}
 		} catch (IOException e1) {
 			logger.error(e1.getMessage(), e1);
@@ -222,9 +223,9 @@ public class Main extends JFrame {
 
 			}
 		});
-		
+
 		configurationLoadLibrary.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new ChooseConfiguration(configurationControler);
@@ -245,7 +246,17 @@ public class Main extends JFrame {
 				new SaveCustomExcel(configurationControler, ExcelTypeGenerationEnum.ANALYZE_TEXTS);
 			}
 		});
-		
+
+		about.add(openAbout);
+		openAbout.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ABOUT_TITLE),
+						configurationControler, PictureTypeEnum.INFORMATION,
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ABOUT_MESSAGE_CONTENT));
+			}
+		});
 
 		menuBar.add(fileMenu);
 		menuBar.add(languageMenu);
@@ -290,6 +301,7 @@ public class Main extends JFrame {
 		});
 
 		menuBar.add(textLibrary);
+		menuBar.add(about);
 
 		this.setJMenuBar(menuBar);
 
@@ -319,7 +331,7 @@ public class Main extends JFrame {
 	private void createAnalyzePanel() {
 		JPanel subPanCommonAnalyzeState = new JPanel();
 		subPanCommonAnalyzeState.add(stateAnalyzeLabel);
-		subPanCommonAnalyzeState.add(stateAnalyzeValue);		
+		subPanCommonAnalyzeState.add(stateAnalyzeValue);
 		subPanConfigurationState.add(stateConfigurationLibrayLabel);
 		subPanConfigurationState.add(stateConfigurationLibrayValue);
 		subPanConfigurationState.setVisible(false);
@@ -442,6 +454,8 @@ public class Main extends JFrame {
 				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_CUSTOM_TITLE));
 		exit.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_EXIT_TITLE));
 		fileMenu.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_MENU_TITLE));
+		about.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT));
+		openAbout.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT_OPEN));
 		configurationLibrary.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
 		textLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));

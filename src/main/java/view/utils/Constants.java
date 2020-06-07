@@ -238,10 +238,13 @@ public final class Constants {
 	public static final String WINDOW_CHANGE_CONFIGURATION_BUTTONS_PANEL_TITLE="window.change.configuration.buttons.panel.title";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_CURRENT_CONFIGURATION_LABEL="window.main.analyze.panel.state.current.configuration.label";
 	
+	public static final String MENU_ABOUT="menu.about";
+	public static final String MENU_ABOUT_OPEN="menu.about.open";
+
+	
 	public static final String WINDOW_ABOUT_TITLE="window.about.title";
-	public static final String WINDOW_ABOUT_MESSAGE_PANEL_TITLE="window.about.message.panel.title";
 	public static final String WINDOW_ABOUT_MESSAGE_CONTENT="window.about.message.content";
-	public static final String WINDOW_ABOUT_BUTTON_CLOSE="window.about.button.close";
+
 
 
 	

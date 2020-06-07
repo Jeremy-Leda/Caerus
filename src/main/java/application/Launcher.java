@@ -3,8 +3,15 @@ package application;
 import java.awt.HeadlessException;
 import java.io.IOException;
 
-import ihm.Main;
+import view.Main;
 
+/**
+ * 
+ * Launcher pour lancer l'application
+ * 
+ * @author jerem
+ *
+ */
 public class Launcher {
 
 	public static void main(String[] args) {

@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ihm.beans.PictureTypeEnum;
+import view.beans.PictureTypeEnum;
 
 /**
  * Permet de fournir des méthodes pour ce procurer des ressources simplement

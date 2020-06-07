@@ -52,6 +52,9 @@ public class Dispatcher {
 
 	private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
 	private static final String FOLDER_CONTEXT = "context";
+	private static final String FOLDER_TEXTS = "library";
+	private static final String FOLDER_CONFIGURATIONS = "configurations";
+	private static final String CONFIGURATION_CLASSIC_NAME = "Configuración básica";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
 	private static final String ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT = "ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT";
@@ -97,7 +100,13 @@ public class Dispatcher {
 	 */
 	private void processAndLoadTexts(FolderSettingsEnum folderType) throws IOException, LoadTextException {
 		logger.debug(String.format("CALL processAndLoadTexts => type %s", folderType));
-		List<MemoryFile> memoryFiles = getMemoryFiles(UserSettings.getInstance().getFolder(folderType).toString());
+		File pathToProcess;
+		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
+			pathToProcess = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+		} else {
+			pathToProcess = UserSettings.getInstance().getFolder(folderType);
+		}
+		List<MemoryFile> memoryFiles = getMemoryFiles(pathToProcess.toString());
 		UserSettings.getInstance().clearAllSession(folderType);
 		UserSettings.getInstance().addMemoryFilesList(folderType, memoryFiles);
 		memoryFiles.parallelStream().map(f -> new Structuring(f, folderType).getStructuredFile())
@@ -109,6 +118,7 @@ public class Dispatcher {
 				throw new LoadTextException(ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT);
 			}
 		}
+		if (null != UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList())
 		UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
 				.forEach(sc -> UserSettings.getInstance().addConfigurationStructuredText(folderType,
 						new ConfigurationStructuredText(sc)));
@@ -410,12 +420,22 @@ public class Dispatcher {
 	 */
 	private void loadContextFromUserConfiguration() throws JsonParseException, JsonMappingException, IOException {
 		File userConfigurationFile = getUserConfigurationFile();
+		CurrentUserConfiguration currentUserConfiguration;
 		if (userConfigurationFile.exists()) {
 			InputStream is = new FileInputStream(userConfigurationFile);
-			CurrentUserConfiguration currentUserConfiguration = JSonFactoryUtils.createObjectFromJsonFile(is,
+			currentUserConfiguration = JSonFactoryUtils.createObjectFromJsonFile(is,
 					CurrentUserConfiguration.class);
-			UserSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
+		} else {
+			currentUserConfiguration = new CurrentUserConfiguration();
+			String rootPath = PathUtils.getRootPath();
+			File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONFIGURATIONS);
+			File textsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_TEXTS);
+			currentUserConfiguration.setConfigurationPath(configurationsPath.toPath());
+			currentUserConfiguration.setLibraryPath(textsPath.toPath());
+			currentUserConfiguration.setDefaultConfiguration(CONFIGURATION_CLASSIC_NAME);
 		}
+		UserSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
+		saveUserConfiguration();
 	}
 
 	/**

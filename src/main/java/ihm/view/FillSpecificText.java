@@ -71,6 +71,7 @@ public class FillSpecificText extends ModalJFrameAbstract {
 		initLabelActionPanel();
 		this.specificTextModel.loadAllField(0);
 		this.actionPanel.setEnabled(0, specificTextModel.havePreviousSpecificConfiguration());
+		this.actionPanel.setEnabled(1, specificTextModel.haveNextSpecificConfiguration());
 		this.actionPanel.setEnabled(2, !specificTextModel.haveNextSpecificConfiguration());
 		createContent();
 	}

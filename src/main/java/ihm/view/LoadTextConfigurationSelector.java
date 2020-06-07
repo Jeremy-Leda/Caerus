@@ -3,12 +3,8 @@ package ihm.view;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -26,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import exceptions.LoadTextException;
-import ihm.beans.ConfigurationType;
 import ihm.beans.PictureTypeEnum;
 import ihm.controler.IConfigurationControler;
 import ihm.utils.ConfigurationUtils;
@@ -48,10 +43,8 @@ public class LoadTextConfigurationSelector extends JFrame {
 	 */
 	private static final long serialVersionUID = 3348054080637849772L;
 	private static Logger logger = LoggerFactory.getLogger(LoadTextConfigurationSelector.class);
-	private final Map<String, ConfigurationType> mapDisplayToConfiguration = new HashMap<>();
 	private File folderFile;
 	private final JTextField folderPath = new JTextField();
-	private final JPanel subPanExpertConfiguration = new JPanel();
 	private final JComboBox<String> typeConfigurationComboList = new JComboBox<String>();
 	private final JButton startButton = new JButton(ConfigurationUtils.getInstance()
 			.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_START_BUTTON_LABEL));
@@ -62,12 +55,6 @@ public class LoadTextConfigurationSelector extends JFrame {
 	 * Constructeur
 	 */
 	public LoadTextConfigurationSelector(IConfigurationControler configurationControler) {
-		for (ConfigurationType configurationType : ConfigurationType.values()) {
-			StringBuilder sb = new StringBuilder(Constants.TYPE_CONFIGURATION_PREFIX);
-			sb.append(configurationType.name());
-			String displayMessage = ConfigurationUtils.getInstance().getDisplayMessage(sb.toString());
-			mapDisplayToConfiguration.put(displayMessage, configurationType);
-		}
 		this.controler = configurationControler;
 		this.controler.clearAnalyze();
 		createWindow();
@@ -97,19 +84,11 @@ public class LoadTextConfigurationSelector extends JFrame {
 		JLabel configurationLabel = new JLabel(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_LABEL));
 		subPanConfiguration.add(configurationLabel);		 
-		typeConfigurationComboList.addItemListener(new ItemConfigurationChangeListener());
-		fillConfigurationDisplayList(typeConfigurationComboList);
+		fillConfigurationDisplayList();
 		subPanConfiguration.add(typeConfigurationComboList);
 
-		JLabel configurationExpertLabel = new JLabel(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_EXPERT_LABEL));
-		JComboBox<String> typeConfigurationExpertComboList = new JComboBox<String>();
-		subPanExpertConfiguration.add(configurationExpertLabel);
-		subPanExpertConfiguration.add(typeConfigurationExpertComboList);
-
 		panConfigurations.add(subPanConfiguration);
-		panConfigurations.add(subPanExpertConfiguration);
-		subPanExpertConfiguration.setVisible(false);
+
 
 		JPanel panFolder = new JPanel();
 		panFolder.setBorder(BorderFactory.createTitledBorder(ConfigurationUtils.getInstance()
@@ -147,8 +126,9 @@ public class LoadTextConfigurationSelector extends JFrame {
 	/**
 	 * Permet de remplir la liste pour la configuration
 	 */
-	private void fillConfigurationDisplayList(JComboBox<String> typeConfigurationComboList) {
-		mapDisplayToConfiguration.keySet().stream().forEach(s -> typeConfigurationComboList.addItem(s));
+	private void fillConfigurationDisplayList() {
+		controler.getConfigurationNameList().forEach(name -> typeConfigurationComboList.addItem(name));
+		this.typeConfigurationComboList.setSelectedItem(controler.getConfigurationName());
 	}
 
 	/**
@@ -189,25 +169,6 @@ public class LoadTextConfigurationSelector extends JFrame {
 		frame.setLocationRelativeTo(null);
 	}
 
-	/**
-	 * Classe permettant de gérer le change de configuration
-	 * 
-	 * @author jerem
-	 *
-	 */
-	private class ItemConfigurationChangeListener implements ItemListener {
-		@Override
-		public void itemStateChanged(ItemEvent event) {
-			if (event.getStateChange() == ItemEvent.SELECTED) {
-				if (ConfigurationType.DIDACTIC.equals(mapDisplayToConfiguration.get(event.getItem()))) {
-					subPanExpertConfiguration.setVisible(false);
-				} else if (ConfigurationType.DIDACTIC_EXPERT.equals(mapDisplayToConfiguration.get(event.getItem()))) {
-					subPanExpertConfiguration.setVisible(true);
-				}
-				repack();
-			}
-		}
-	}
 	
 	private void close() {
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
@@ -218,12 +179,14 @@ public class LoadTextConfigurationSelector extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (ConfigurationType.DIDACTIC.equals(mapDisplayToConfiguration.get(typeConfigurationComboList.getSelectedItem()))) {
+				if (typeConfigurationComboList.getItemCount() == 0) {
 					try {
 						controler.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
 					} catch (Exception e1) {
 						logger.error(e1.getMessage(), e1);
 					}
+				} else {
+					controler.setCurrentConfiguration(typeConfigurationComboList.getSelectedItem().toString());
 				}
 				controler.setAnalyzeFolder(folderFile);
 				try {

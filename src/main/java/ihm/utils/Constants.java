@@ -226,4 +226,17 @@ public final class Constants {
 	
 	public static final String WINDOW_MANAGE_TEXTS_INFORMATION_TITLE = "window.manage.texts.information.title";
 	public static final String WINDOW_MANAGE_TEXTS_INFORMATION_LABEL = "window.manage.texts.information.label";
+	
+
+	public static final String WINDOW_CHANGE_CONFIGURATION_TITLE="window.change.configuration.title";
+	public static final String WINDOW_CHANGE_CONFIGURATION_LIST_LABEL="window.change.configuration.list.label";
+	public static final String WINDOW_CHANGE_CONFIGURATION_PANEL_TITLE="window.change.configuration.panel.title";
+	public static final String WINDOW_CHANGE_CONFIGURATION_MESSAGE_PANEL_TITLE="window.change.configuration.message.panel.title";
+	public static final String WINDOW_CHANGE_CONFIGURATION_MESSAGE_CONTENT="window.change.configuration.message.content";
+	public static final String WINDOW_CHANGE_CONFIGURATION_BUTTON_APPLY_AND_CLOSE="window.change.configuration.button.apply.and.close";
+	public static final String WINDOW_CHANGE_CONFIGURATION_BUTTON_CLOSE="window.change.configuration.button.close";
+	public static final String WINDOW_CHANGE_CONFIGURATION_BUTTONS_PANEL_TITLE="window.change.configuration.buttons.panel.title";
+	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_CURRENT_CONFIGURATION_LABEL="window.main.analyze.panel.state.current.configuration.label";
+
+	
 }

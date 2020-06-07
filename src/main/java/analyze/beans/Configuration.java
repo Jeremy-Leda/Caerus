@@ -80,7 +80,10 @@ public class Configuration {
 	 * @return la liste des configurations spécifique
 	 */
 	public List<SpecificConfiguration> getSpecificConfigurationList() {
-		return specificConfigurationList;
+		if (null != specificConfigurationList) {
+			return specificConfigurationList;
+		}
+		return new ArrayList<>();
 	}
 
 	/**
@@ -121,7 +124,7 @@ public class Configuration {
 	 * @return la liste des champ spécific
 	 */
 	public List<String> getSpecificFieldList() {
-		return this.specificConfigurationList.stream().flatMap(sc -> sc.getTreatmentFieldList().stream()).distinct()
+		return getSpecificConfigurationList().stream().flatMap(sc -> sc.getTreatmentFieldList().stream()).distinct()
 				.collect(Collectors.toList());
 	}
 	
@@ -130,7 +133,7 @@ public class Configuration {
 	 * @return la liste des champ en tête spécific
 	 */
 	public List<String> getSpecificHeaderFieldList() {
-		return this.specificConfigurationList.stream().flatMap(sc -> sc.getHeaderFieldList().stream()).distinct()
+		return getSpecificConfigurationList().stream().flatMap(sc -> sc.getHeaderFieldList().stream()).distinct()
 				.collect(Collectors.toList());
 	}
 	

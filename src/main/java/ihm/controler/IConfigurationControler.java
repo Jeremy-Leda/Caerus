@@ -38,6 +38,7 @@ public interface IConfigurationControler {
 	 * 
 	 * @param configuration configuration
 	 */
+	@Deprecated
 	void setCurrentConfiguration(Configuration configuration);
 	
 	/**
@@ -83,6 +84,13 @@ public interface IConfigurationControler {
 	 * @return le dossier d'analyse des textes
 	 */
 	File getAnalyzeFolder();
+	
+	/**
+	 * Permet de se procurer le dossier contenant les configuration
+	 * 
+	 * @return le dossier contenants les configurations
+	 */
+	File getConfigurationFolder();
 	
 	/**
 	 * Permet de se procurer le nom de la configuration
@@ -468,4 +476,16 @@ public interface IConfigurationControler {
 	 * Permet de préparer pour l'ajout d'un texte
 	 */
 	void cleanCurrentEditingCorpusForAddText();
+	
+	/**
+	 * Permet de se procurer la liste des configurations possibles
+	 * @return la liste des configurations possibles
+	 */
+	List<String> getConfigurationNameList();
+	
+	/**
+	 * Permet de définir la configuration par son nom
+	 * @param name nom de la configuration
+	 */
+	void setCurrentConfiguration(String name);
 }

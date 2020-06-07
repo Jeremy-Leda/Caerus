@@ -512,4 +512,21 @@ public class ConfigurationControler implements IConfigurationControler {
 		this.configurationModel.cleanCurrentEditingCorpusForAddText();
 	}
 
+	@Override
+	public List<String> getConfigurationNameList() {
+		return this.configurationModel.getConfigurationNameList();
+	}
+
+	@Override
+	public void setCurrentConfiguration(String name) {
+		if (StringUtils.isNotBlank(name)) {
+			this.configurationModel.setCurrentConfiguration(name);
+		}
+	}
+
+	@Override
+	public File getConfigurationFolder() {
+		return this.configurationModel.getConfigurationFolder();
+	}
+
 }

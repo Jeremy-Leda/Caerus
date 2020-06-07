@@ -9,5 +9,6 @@ package analyze.constants;
  */
 public enum FolderSettingsEnum {
 	FOLDER_TEXTS,
-	FOLDER_ANALYZE
+	FOLDER_ANALYZE,
+	FOLDER_CONFIGURATIONS
 }

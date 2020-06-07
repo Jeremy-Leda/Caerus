@@ -39,6 +39,7 @@ import ihm.controler.IConfigurationControler;
 import ihm.interfaces.IActionOnClose;
 import ihm.utils.ConfigurationUtils;
 import ihm.utils.Constants;
+import ihm.view.ChooseConfiguration;
 import ihm.view.CreateCorpus;
 import ihm.view.CreateText;
 import ihm.view.FixedBlankLine;
@@ -100,7 +101,10 @@ public class Main extends JFrame {
 	private final JPanel panBlankLineError = new JPanel();
 	private final JLabel stateConfigurationLibrayLabel = new JLabel();
 	private final JLabel stateConfigurationLibrayValue = new JLabel();
+	private final JLabel stateCurrentConfigurationLabel = new JLabel();
+	private final JLabel stateCurrentConfigurationValue = new JLabel();
 	private final JPanel subPanConfigurationState = new JPanel();
+	private final JPanel subPanCurrentConfiguration = new JPanel();
 	private final JPanel subPanAnalyzeState = new JPanel();
 	private final JLabel stateAnalyzeLabel = new JLabel();
 	private final JLabel stateAnalyzeValue = new JLabel();
@@ -122,7 +126,7 @@ public class Main extends JFrame {
 	private final JButton fixedTextErrorButton = new JButton();
 	private final JButton fixedBlankLineErrorButton = new JButton();
 	private final JButton fixedMetaBlankLineErrorButton = new JButton();
-	private final JButton stateAnalyzeButton = new JButton();
+	//private final JButton stateAnalyzeButton = new JButton();
 	private final JButton moveFileLibraryButton = new JButton();
 	private final IConfigurationControler configurationControler = new ConfigurationControler();
 
@@ -144,8 +148,10 @@ public class Main extends JFrame {
 			}
 		}
 		try {
-			configurationControler
-					.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+			if (StringUtils.isBlank(configurationControler.getConfigurationName())) {
+				configurationControler
+						.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+			}
 		} catch (IOException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
@@ -180,6 +186,7 @@ public class Main extends JFrame {
 		fileMenu.addSeparator();
 		fileMenu.add(exit);
 
+		stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
 		panContent.setLayout(new BoxLayout(panContent, BoxLayout.Y_AXIS));
 
 		languages.addAll(ConfigurationUtils.getInstance().getMapLanguages().keySet().stream().map(s -> {
@@ -215,6 +222,15 @@ public class Main extends JFrame {
 
 			}
 		});
+		
+		configurationLoadLibrary.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new ChooseConfiguration(configurationControler);
+				stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
+			}
+		});
 
 		saveConfiguration.addActionListener(new ActionListener() {
 			@Override
@@ -229,6 +245,7 @@ public class Main extends JFrame {
 				new SaveCustomExcel(configurationControler, ExcelTypeGenerationEnum.ANALYZE_TEXTS);
 			}
 		});
+		
 
 		menuBar.add(fileMenu);
 		menuBar.add(languageMenu);
@@ -302,10 +319,12 @@ public class Main extends JFrame {
 	private void createAnalyzePanel() {
 		JPanel subPanCommonAnalyzeState = new JPanel();
 		subPanCommonAnalyzeState.add(stateAnalyzeLabel);
-		subPanCommonAnalyzeState.add(stateAnalyzeValue);
+		subPanCommonAnalyzeState.add(stateAnalyzeValue);		
 		subPanConfigurationState.add(stateConfigurationLibrayLabel);
 		subPanConfigurationState.add(stateConfigurationLibrayValue);
 		subPanConfigurationState.setVisible(false);
+		subPanCurrentConfiguration.add(stateCurrentConfigurationLabel);
+		subPanCurrentConfiguration.add(stateCurrentConfigurationValue);
 		panAnalyze.setLayout(new BoxLayout(panAnalyze, BoxLayout.Y_AXIS));
 		subPanAnalyzeState.setLayout(new BoxLayout(subPanAnalyzeState, BoxLayout.Y_AXIS));
 		JPanel subPanFolderAnalyzeState = new JPanel();
@@ -321,13 +340,14 @@ public class Main extends JFrame {
 		subPanAnalyzeState.add(subPanConfigurationAnalyzeState);
 		subPanAnalyzeState.add(subPanCommonNbTextLoaded);
 		subPanAnalyzeState.setVisible(false);
-		JPanel subPanButtonAnalyzeState = new JPanel();
-		subPanButtonAnalyzeState.add(stateAnalyzeButton);
-		stateAnalyzeButton.addActionListener(openFolderForAnalyzeAndLaunch(this));
+//		JPanel subPanButtonAnalyzeState = new JPanel();
+//		subPanButtonAnalyzeState.add(stateAnalyzeButton);
+//		stateAnalyzeButton.addActionListener(openFolderForAnalyzeAndLaunch(this));
 		panAnalyze.add(subPanCommonAnalyzeState);
 		panAnalyze.add(subPanConfigurationState);
+		panAnalyze.add(subPanCurrentConfiguration);
 		panAnalyze.add(subPanAnalyzeState);
-		panAnalyze.add(subPanButtonAnalyzeState);
+//		panAnalyze.add(subPanButtonAnalyzeState);
 	}
 
 	/***
@@ -409,11 +429,12 @@ public class Main extends JFrame {
 				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_FOLDER_LABEL));
 		stateNbTextLoadedLabel.setText(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_NB_TEXT_LOADED_LABEL));
-
+		stateCurrentConfigurationLabel.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_CURRENT_CONFIGURATION_LABEL));
 		stateAnalyzeConfigurationLabel.setText(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_CONFIGURATION_LABEL));
-		stateAnalyzeButton.setText(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LOAD_BUTTON));
+//		stateAnalyzeButton.setText(ConfigurationUtils.getInstance()
+//				.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_LOAD_BUTTON));
 		createAnalyze
 				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE));
 		saveConfiguration.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE));
@@ -462,7 +483,6 @@ public class Main extends JFrame {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_PANEL_LABEL)));
 		moveFileLibraryButton.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_BUTTON_LABEL));
-
 		try {
 			refreshDisplay();
 		} catch (HeadlessException | IOException e) {
@@ -472,6 +492,7 @@ public class Main extends JFrame {
 	}
 
 	private void refreshDisplay() throws HeadlessException, IOException {
+		stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
 		if (configurationControler.getNbTextsError() == 0 && configurationControler.getNbBlankLinesError() == 0
 				&& configurationControler.getListOfStructuredFileForAnalyze().isEmpty()) {
 			panLineError.setVisible(false);
@@ -669,36 +690,36 @@ public class Main extends JFrame {
 		};
 	}
 
-	/**
-	 * permet de créer la fenêtre de sélection du dossier et de lancer l'analyse
-	 * 
-	 * @param parent JFrame parente
-	 * @return
-	 */
-	private ActionListener openFolderForAnalyzeAndLaunch(JFrame parent) {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle(ConfigurationUtils.getInstance()
-						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_FOLDER_CHOOSE_TITLE));
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				chooser.setAcceptAllFileFilterUsed(false);
-				if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-					configurationControler.setAnalyzeFolder(chooser.getSelectedFile());
-					try {
-						configurationControler
-								.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
-					} catch (IOException e1) {
-						logger.error(e1.getMessage(), e1);
-					}
-					launchAnalyze();
-				}
-			}
-		};
-	}
+//	/**
+//	 * permet de créer la fenêtre de sélection du dossier et de lancer l'analyse
+//	 * 
+//	 * @param parent JFrame parente
+//	 * @return
+//	 */
+//	private ActionListener openFolderForAnalyzeAndLaunch(JFrame parent) {
+//		return new ActionListener() {
+//
+//			@Override
+//			public void actionPerformed(ActionEvent e) {
+//				JFileChooser chooser = new JFileChooser();
+//				chooser.setCurrentDirectory(new java.io.File("."));
+//				chooser.setDialogTitle(ConfigurationUtils.getInstance()
+//						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_FOLDER_CHOOSE_TITLE));
+//				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+//				chooser.setAcceptAllFileFilterUsed(false);
+//				if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+//					configurationControler.setAnalyzeFolder(chooser.getSelectedFile());
+//					try {
+//						configurationControler
+//								.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
+//					} catch (IOException e1) {
+//						logger.error(e1.getMessage(), e1);
+//					}
+//					launchAnalyze();
+//				}
+//			}
+//		};
+//	}
 
 	/**
 	 * Permet de lancer l'analyse

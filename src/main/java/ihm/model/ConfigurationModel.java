@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -320,8 +322,11 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public Map<String, String> getConfigurationSpecificLabelNameFileMap() {
 		logger.debug("CALL getConfigurationSpecificLabelNameFileMap");
-		return UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
-				.collect(Collectors.toMap(SpecificConfiguration::getLabel, SpecificConfiguration::getNameFileSuffix));
+		if (null != UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList()) {
+			return UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
+					.collect(Collectors.toMap(SpecificConfiguration::getLabel, SpecificConfiguration::getNameFileSuffix));
+		}
+		return new HashMap<String, String>();
 	}
 
 	@Override
@@ -461,6 +466,27 @@ public class ConfigurationModel implements IConfigurationModel {
 	public void cleanCurrentEditingCorpusForAddText() {
 		logger.debug("CALL cleanCurrentEditingCorpusForAddText");
 		UserSettings.getInstance().cleanCurrentEditingCorpusForAddText();
+	}
+
+	@Override
+	public List<String> getConfigurationNameList() {
+		logger.debug("CALL getConfigurationNameList");
+		return UserSettings.getInstance().getConfigurationList().stream().map(c -> c.getName()).collect(Collectors.toList());
+	}
+
+	@Override
+	public void setCurrentConfiguration(String name) {
+		logger.debug(String.format("CALL setCurrentConfiguration : Nom de la configuration %s", name));
+		Optional<Configuration> findFirstConfiguration = UserSettings.getInstance().getConfigurationList().stream().filter(c -> name.equals(c.getName())).findFirst();
+		if (findFirstConfiguration.isPresent()) {
+			UserSettings.getInstance().setCurrentConfiguration(findFirstConfiguration.get());
+		}
+	}
+
+	@Override
+	public File getConfigurationFolder() {
+		logger.debug("CALL getConfigurationFolder");
+		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
 	}
 
 

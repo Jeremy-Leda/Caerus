@@ -111,10 +111,12 @@ public class CreateText extends ModalJFrameAbstract {
 	 */
 	private void refreshActionPanelMessage() {
 		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
+		Boolean isEnabledSpecific = getControler().getConfigurationSpecificLabelNameFileMap().size() > 0;
 		messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_ACTION_FILL_SPECIFIC_BUTTON_TITLE));
 		messageButtonMap.put(1, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_ACTION_CREATE_TEXT_AND_ADD_TEXT_BUTTON_TITLE));
 		messageButtonMap.put(2, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_ACTION_CREATE_TEXT_AND_QUIT_BUTTON_TITLE));
 		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_ACTION_PANEL_TITLE), messageButtonMap);
+		this.actionPanel.setEnabled(0, isEnabledSpecific);
 		this.actionPanel.addAction(0, openFillSpecificText());
 		this.actionPanel.addAction(1, addTextAndCreateAnother());
 		this.actionPanel.addAction(2, addTextSaveCorpusAndQuit());

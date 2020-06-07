@@ -139,8 +139,11 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	 * Permet d'ajouter les actions au panel
 	 */
 	private void addActionPanelMessage() {
+		Boolean isEnabledSpecific = getControler().getConfigurationSpecificLabelNameFileMap().size() > 0;
+		this.actionFixedTextPanel.setEnabled(0, isEnabledSpecific);
 		this.actionFixedTextPanel.addAction(0, openFixedSpecificText(Constants.WINDOW_FIXED_SPECIFIC_TITLE));
 		this.actionFixedTextPanel.addAction(1, saveAndGoToNextIndexOrQuit());
+		this.actionManageTextPanel.setEnabled(0, isEnabledSpecific);
 		this.actionManageTextPanel.addAction(0, openFixedSpecificText(Constants.WINDOW_EDIT_SPECIFIC_TITLE));
 		this.actionManageTextPanel.addAction(1, saveAndQuit());
 		this.actionManageTextPanel.addAction(2, new ActionListener() {
@@ -150,6 +153,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				closeFrame();
 			}
 		});
+		this.actionAddTextPanel.setEnabled(0, isEnabledSpecific);
 		this.actionAddTextPanel.addAction(0, openFixedSpecificText(Constants.WINDOW_CREATE_SPECIFIC_TITLE));
 		this.actionAddTextPanel.addAction(1, addTextAndQuit());
 		this.actionAddTextPanel.addAction(2, new ActionListener() {

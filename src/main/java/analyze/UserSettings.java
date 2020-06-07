@@ -2,7 +2,12 @@ package analyze;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +25,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -43,6 +49,7 @@ import analyze.constants.ErrorTypeEnum;
 import analyze.constants.FolderSettingsEnum;
 import analyze.constants.TypeFilterTextEnum;
 import analyze.interfaces.IWriteText;
+import utils.JSonFactoryUtils;
 import utils.KeyGenerator;
 
 /**
@@ -70,6 +77,7 @@ public class UserSettings {
 	private Integer totalBlankLineError = null;
 	private ErrorTypeEnum currentErrorTypeFixed = null;
 	private FilterCorpus lastFilterCorpus = null;
+	private List<Configuration> configurationsList = new ArrayList<>();
 
 	private Configuration currentConfiguration;
 	private String editingCorpusNameFile;
@@ -698,7 +706,18 @@ public class UserSettings {
 	 */
 	public CurrentUserConfiguration getUserConfiguration() {
 		CurrentUserConfiguration save = new CurrentUserConfiguration();
-		save.setLibraryPath(getFolder(FolderSettingsEnum.FOLDER_TEXTS).toPath());
+		File folderTexts = getFolder(FolderSettingsEnum.FOLDER_TEXTS);
+		if (null != folderTexts) {
+			save.setLibraryPath(folderTexts.toPath());
+		}
+		File folderConfigurations = getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
+		if (null != folderConfigurations) {
+			save.setConfigurationPath(folderConfigurations.toPath());
+		}
+		Configuration currentConfiguration = getCurrentConfiguration();
+		if (null != currentConfiguration) {
+			save.setDefaultConfiguration(currentConfiguration.getName());
+		}
 		return save;
 	}
 
@@ -708,7 +727,22 @@ public class UserSettings {
 	 * @param save la configuration de l'utilisateur a restaurer
 	 */
 	public void restoreUserConfiguration(CurrentUserConfiguration save) {
-		setFolder(FolderSettingsEnum.FOLDER_TEXTS, save.getLibraryPath().toFile());
+		if (null != save.getLibraryPath()) {
+			setFolder(FolderSettingsEnum.FOLDER_TEXTS, save.getLibraryPath().toFile());
+		}
+		if (null != save.getConfigurationPath()) {
+			setFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS, save.getConfigurationPath().toFile());
+		}
+		try {
+			loadConfigurationsList();
+			Optional<Configuration> findFirstConfiguration = configurationsList.stream()
+					.filter(c -> save.getDefaultConfiguration().equals(c.getName())).findFirst();
+			if (findFirstConfiguration.isPresent()) {
+				this.setCurrentConfiguration(findFirstConfiguration.get());
+			}
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
 	}
 
 	/**
@@ -1088,7 +1122,7 @@ public class UserSettings {
 	/**
 	 * Permet d'ajouter un texte au corpus courant
 	 * 
-	 * @param folderType       type de dossier
+	 * @param folderType type de dossier
 	 */
 	public void addTextToCurrentCorpus(FolderSettingsEnum folderType) {
 		StructuredText structuredText = new StructuredText();
@@ -1102,13 +1136,13 @@ public class UserSettings {
 				structuredText.modifyContent(key, EDITING_FIELD_MAP.get(key));
 			}
 		});
-		Integer number = (int) currentUserTexts.getUserStructuredTextList().stream().filter(ust -> corpusName.equals(ust.getFileName())).count() + 1;
+		Integer number = (int) currentUserTexts.getUserStructuredTextList().stream()
+				.filter(ust -> corpusName.equals(ust.getFileName())).count() + 1;
 		StringBuilder keyTextBuilder = new StringBuilder();
 		keyTextBuilder.append(corpusName);
 		keyTextBuilder.append(number);
 		structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
-		UserStructuredText userStructuredText = new UserStructuredText(corpusName,
-				number, structuredText);
+		UserStructuredText userStructuredText = new UserStructuredText(corpusName, number, structuredText);
 		currentUserTexts.addUserStructuredText(userStructuredText);
 		applyFilterOnCorpusForFolderText(this.lastFilterCorpus, folderType);
 	}
@@ -1122,6 +1156,37 @@ public class UserSettings {
 				EDITING_FIELD_MAP.remove(key);
 			}
 		});
+	}
+
+	/**
+	 * Permet de charger la liste des configurations
+	 * 
+	 * @throws IOException erreur d'entrée sortie
+	 */
+	private void loadConfigurationsList() throws IOException {
+		File configurationFolder = getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
+		if (null != configurationFolder && configurationFolder.exists()) {
+			Files.walkFileTree(Paths.get(configurationFolder.toURI()), new SimpleFileVisitor<Path>() {
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					if (!Files.isDirectory(file)) {
+						logger.debug(String.format("Loading Configuration %s", file.toString()));
+						Configuration configurationFromJsonFile = JSonFactoryUtils
+								.createConfigurationFromJsonFile(FileUtils.openInputStream(file.toFile()));
+						configurationsList.add(configurationFromJsonFile);
+					}
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		}
+	}
+	
+	/**
+	 * Permet de se procurer la liste des configurations possibles
+	 * @return la liste des configurations
+	 */
+	public List<Configuration> getConfigurationList() {
+		return Collections.unmodifiableList(this.configurationsList);
 	}
 
 }

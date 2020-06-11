@@ -45,7 +45,6 @@ public class ConsumerAndFunctionTextModel implements IConsumerAndFunctionText {
 	 */
 	private BiConsumer<String, String> getConsumerCorpusEditValue() {
 		return (key,value) -> {
-			value = value.replaceAll("(?m)^\\s", "");
 			this.controler.updateFieldInEditingCorpus(key, value);
 		};
 	}

@@ -23,7 +23,6 @@ public class ConsumerAndFunctionTextModel implements IConsumerAndFunctionText {
 	private final Map<ConsumerTextTypeEnum, BiConsumer<String, String>> consumerMap = new HashMap<ConsumerTextTypeEnum, BiConsumer<String,String>>();
 	private final Map<FunctionTextTypeEnum, Function<String, String>> functionMap = new HashMap<FunctionTextTypeEnum, Function<String,String>>();
 	
-	
 	public ConsumerAndFunctionTextModel(IConfigurationControler controler) {
 		super();
 		this.controler = controler;
@@ -42,10 +41,11 @@ public class ConsumerAndFunctionTextModel implements IConsumerAndFunctionText {
 
 	/**
 	 * Permet de se procurer le consumer pour l'édition du corpus
-	 * @return le consumer pour l'exition du corpus
+	 * @return le consumer pour l'édition du corpus
 	 */
 	private BiConsumer<String, String> getConsumerCorpusEditValue() {
 		return (key,value) -> {
+			value = value.replaceAll("(?m)^\\s", "");
 			this.controler.updateFieldInEditingCorpus(key, value);
 		};
 	}

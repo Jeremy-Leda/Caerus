@@ -76,12 +76,13 @@ public class Structuring {
 
 	/**
 	 * Permet de lancer l'analyse
-	 * @param memoryFile fichier mémoire
-	 * @param folderType type de dossier
+	 * 
+	 * @param memoryFile        fichier mémoire
+	 * @param folderType        type de dossier
 	 * @param beanConfiguration bean de configurat
-	 * @param sf fichier structurel
-	 * @param listLines liste des lignes
-	 * @param number numéro
+	 * @param sf                fichier structurel
+	 * @param listLines         liste des lignes
+	 * @param number            numéro
 	 * @return le numéro
 	 */
 	private Integer processStructuring(MemoryFile memoryFile, FolderSettingsEnum folderType,
@@ -89,27 +90,30 @@ public class Structuring {
 			Integer number) {
 		try {
 			StructuredText structuredText = prepareStructuredText(listLines);
-			StringBuilder keyTextBuilder = new StringBuilder();
-			keyTextBuilder.append(memoryFile.nameFile());
-			keyTextBuilder.append(number.toString());
-			structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
-			String keyStructuredText = KeyGenerator.generateKey(structuredText);
-			if (null != structuredText && structuredText.getHaveBlankLine()) {
-				UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE, keyStructuredText);
-			}
-			if (null != structuredText && structuredText.getHaveMetaBlankLine()) {
-				UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE, keyStructuredText);
+			String keyStructuredText = StringUtils.EMPTY;
+			if (null != structuredText) {
+				StringBuilder keyTextBuilder = new StringBuilder();
+				keyTextBuilder.append(memoryFile.nameFile());
+				keyTextBuilder.append(number.toString());
+				structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
+				keyStructuredText = KeyGenerator.generateKey(structuredText);
+				if (structuredText.getHaveBlankLine()) {
+					UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE, keyStructuredText);
+				}
+				if (structuredText.getHaveMetaBlankLine()) {
+					UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE, keyStructuredText);
+				}
 			}
 			listLines.clear();
 			if (null != beanConfiguration && null != structuredText) {
 				try {
 					sf.getListStructuredText().addAll(processingStructuredTextWithConfigurationBean(structuredText,
 							beanConfiguration, memoryFile, sf));
-					
+
 				} catch (IndexOutOfBoundsException e) {
-					UserSettings.getInstance().addKeyError(ErrorTypeEnum.STRUCTURED_TEXT,keyStructuredText);
+					UserSettings.getInstance().addKeyError(ErrorTypeEnum.STRUCTURED_TEXT, keyStructuredText);
 				}
-				
+
 			} else if (null != structuredText) {
 				UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
 						structuredText);
@@ -135,7 +139,8 @@ public class Structuring {
 	 * @return la liste des textes structuré
 	 */
 	private List<StructuredText> processingStructuredTextWithConfigurationBean(StructuredText structuredText,
-			ConfigurationStructuredText beanConfiguration, MemoryFile memoryFile, StructuredFile structuredFile) throws IndexOutOfBoundsException {
+			ConfigurationStructuredText beanConfiguration, MemoryFile memoryFile, StructuredFile structuredFile)
+			throws IndexOutOfBoundsException {
 		List<StructuredText> structuredTextProcessedList = new ArrayList<StructuredText>();
 		final Map<String, List<String>> mapTagValuesProcessed = new HashedMap<String, List<String>>();
 		beanConfiguration.getSpecificConfiguration().getTreatmentFieldList()
@@ -158,8 +163,7 @@ public class Structuring {
 	 * @return le texte structuré
 	 * @throws StructuringException
 	 */
-	private StructuredText prepareStructuredText(List<String> textLines)
-			throws StructuringException {
+	private StructuredText prepareStructuredText(List<String> textLines) throws StructuringException {
 		if (textLines.isEmpty()) {
 			return null;
 		}
@@ -171,8 +175,7 @@ public class Structuring {
 		integrateContentToStructuredText(st, textLines);
 		st.setHaveBlankLine(st.getHaveBlankLine() || !checkAllFieldArePresent(st, Boolean.FALSE));
 		if (listMetaToAddIsEmpty) {
-			st.setHaveMetaBlankLine(
-					st.getHaveMetaBlankLine() || !checkAllFieldArePresent(st, Boolean.TRUE));
+			st.setHaveMetaBlankLine(st.getHaveMetaBlankLine() || !checkAllFieldArePresent(st, Boolean.TRUE));
 		}
 		return st;
 	}
@@ -186,8 +189,7 @@ public class Structuring {
 	 *                       meta
 	 * @return
 	 */
-	private Boolean checkAllFieldArePresent(StructuredText structuredText,
-			Boolean onlyMeta) {
+	private Boolean checkAllFieldArePresent(StructuredText structuredText, Boolean onlyMeta) {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (onlyMeta) {
 			return configuration.getStructuredFieldList().stream()
@@ -205,12 +207,11 @@ public class Structuring {
 	/**
 	 * Permet d'intégrer le contenu dans le texte structuré
 	 * 
-	 * @param st          le texte structuré à renseigner
-	 * @param lines       les lignes à traiter
+	 * @param st    le texte structuré à renseigner
+	 * @param lines les lignes à traiter
 	 * @throws StructuringException
 	 */
-	private void integrateContentToStructuredText(StructuredText st, List<String> lines)
-			throws StructuringException {
+	private void integrateContentToStructuredText(StructuredText st, List<String> lines) throws StructuringException {
 		Content lastContent = null;
 		for (String line : lines) {
 			lastContent = prepareAndIntegrateContent(st, line, lastContent);
@@ -226,8 +227,8 @@ public class Structuring {
 	 * @return le contenu traité
 	 * @throws StructuringException
 	 */
-	private Content prepareAndIntegrateContent(StructuredText st, String line,
-			Content lastContent) throws StructuringException {
+	private Content prepareAndIntegrateContent(StructuredText st, String line, Content lastContent)
+			throws StructuringException {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (StringUtils.startsWith(line, configuration.getBaseCode())) {
 			String lineWithoutLedaBalise = StringUtils.remove(line, configuration.getBaseCode());
@@ -266,8 +267,8 @@ public class Structuring {
 	/**
 	 * Permet de vérifier la ligne et d'ajouter les erreurs si nécessaire
 	 * 
-	 * @param line          ligne
-	 * @param memoryFile    memory file
+	 * @param line       ligne
+	 * @param memoryFile memory file
 	 */
 	private void checkLineAndAddErrorIfNecessary(String line, MemoryFile memoryFile) {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
@@ -293,8 +294,9 @@ public class Structuring {
 
 	/**
 	 * Permet de vérifier si la ligne détient des informations de balises
+	 * 
 	 * @param configuration configuration
-	 * @param line ligne à analyser
+	 * @param line          ligne à analyser
 	 * @return Vrai s'il n'y a pas de balise
 	 */
 	private Boolean checkIfHaveFieldsCode(String line) {

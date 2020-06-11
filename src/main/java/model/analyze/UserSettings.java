@@ -487,6 +487,7 @@ public class UserSettings {
 	public void clearEditingCorpus() {
 		setEditingCorpusNameFile(StringUtils.EMPTY);
 		EDITING_FIELD_MAP.clear();
+		EDITING_CORPUS_TEXTS_LIST.clear();
 	}
 
 	/**
@@ -841,7 +842,7 @@ public class UserSettings {
 	 */
 	public void clearAllSession(FolderSettingsEnum folder) {
 		clearCurrentFolderUserTexts(folder);
-		clearEditingCorpus();
+		clearEditingCorpus();		
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folder)) {
 			clearKeyFilteredList();
 		}

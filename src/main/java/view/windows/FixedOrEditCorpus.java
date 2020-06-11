@@ -225,7 +225,9 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	 * Met à jour le contenu avec l'erreur suivante
 	 */
 	private void updateContentWithNextError() {
-		getControler().loadNextErrorMetaBlankLine();
+		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
+			getControler().loadNextErrorMetaBlankLine();
+		}
 		updateContentInformationsCorpusPanel();
 		refreshFilePanel();
 		refreshActionPanelMessage();

@@ -57,16 +57,21 @@ public class Structuring {
 			ConfigurationStructuredText beanConfiguration) {
 		final StructuredFile sf = new StructuredFile(memoryFile);
 		final List<String> listLines = new ArrayList<String>();
+		final List<StructuredField> listStructuredField = new ArrayList<StructuredField>();
 		memoryFile.createIterator();
 		Integer number = 1;
 		while (memoryFile.hasLine()) {
 			String l = memoryFile.getNextLine();
 			checkLineAndAddErrorIfNecessary(l, memoryFile);
-			if (StringUtils.isEmpty(l)) {
-				number = processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
-			} else {
-				listLines.add(l);
+			StructuredField structuredFieldIfPossible = getStructuredFieldIfPossible(l);
+			if (null != structuredFieldIfPossible) {
+				if (listStructuredField.contains(structuredFieldIfPossible)) {					
+					listStructuredField.clear();
+					number = processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
+				}
+				listStructuredField.add(structuredFieldIfPossible);
 			}
+			listLines.add(l);
 		}
 		if (!listLines.isEmpty()) {
 			processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
@@ -213,8 +218,11 @@ public class Structuring {
 	 */
 	private void integrateContentToStructuredText(StructuredText st, List<String> lines) throws StructuringException {
 		Content lastContent = null;
+		boolean lastBlankLine = false;
 		for (String line : lines) {
-			lastContent = prepareAndIntegrateContent(st, line, lastContent);
+			Boolean haveChangeBlankLine = lastBlankLine || st.getHaveBlankLine().booleanValue();
+			lastContent = prepareAndIntegrateContent(st, line, lastContent, haveChangeBlankLine);
+			lastBlankLine = st.getHaveBlankLine().booleanValue();
 		}
 	}
 
@@ -224,10 +232,11 @@ public class Structuring {
 	 * @param st          le texte structuré à renseigner
 	 * @param line        la ligne à traiter
 	 * @param lastContent le dernier contenu traité
+	 * @param lastChangeBlankLine Permet de dire si c'est le dernier passage qui a detecté une ligne vide
 	 * @return le contenu traité
 	 * @throws StructuringException
 	 */
-	private Content prepareAndIntegrateContent(StructuredText st, String line, Content lastContent)
+	private Content prepareAndIntegrateContent(StructuredText st, String line, Content lastContent, Boolean lastChangeBlankLine)
 			throws StructuringException {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (StringUtils.startsWith(line, configuration.getBaseCode())) {
@@ -255,10 +264,19 @@ public class Structuring {
 				}
 				return content;
 			}
-		} else if (null != lastContent && StringUtils.isNotBlank(lastContent.getValue())) {
-			String currentValue = lastContent.getValue();
-			lastContent.setValue(currentValue.concat("\n").concat(line));
+		} else if (null != lastContent) {
+			if (StringUtils.isNotBlank(lastContent.getValue())) {
+				String currentValue = lastContent.getValue();
+				lastContent.setValue(currentValue.concat("\n").concat(line));
+			} else {
+				if (lastChangeBlankLine && StringUtils.isNotBlank(line)) {
+					st.setHaveBlankLine(false);
+				}
+				lastContent.setValue(line);				
+			}
 			return lastContent;
+			
+
 		}
 		// Ne devrait jamais se produire à cause du contrôle CheckLine
 		return lastContent;
@@ -290,6 +308,24 @@ public class Structuring {
 			}
 		}
 		UserSettings.getInstance().addLineError(memoryFile.getPath(), line, memoryFile.getCurrentLine());
+	}
+	
+	/**
+	 * Permet de se procurer le champ structuré si possible
+	 * @param line ligne à analyser
+	 * @return le champ structuré ou null
+	 */
+	private StructuredField getStructuredFieldIfPossible(String line) {
+		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
+		if (StringUtils.startsWith(line, configuration.getBaseCode())) {
+			String lineWithoutLedaBalise = StringUtils.remove(line, configuration.getBaseCode());
+			Optional<StructuredField> optionalStructuredField = configuration.getStructuredFieldList().stream()
+					.filter(field -> lineWithoutLedaBalise.startsWith(field.getFieldName())).findFirst();
+			if (optionalStructuredField.isPresent()) {
+				return optionalStructuredField.get();
+			}
+		}
+		return null;
 	}
 
 	/**

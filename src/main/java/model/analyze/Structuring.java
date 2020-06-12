@@ -218,12 +218,11 @@ public class Structuring {
 	 */
 	private void integrateContentToStructuredText(StructuredText st, List<String> lines) throws StructuringException {
 		Content lastContent = null;
-		boolean lastBlankLine = false;
+		List<StructuredField> listStructuredFields = new ArrayList<>();
 		for (String line : lines) {
-			Boolean haveChangeBlankLine = lastBlankLine || st.getHaveBlankLine().booleanValue();
-			lastContent = prepareAndIntegrateContent(st, line, lastContent, haveChangeBlankLine);
-			lastBlankLine = st.getHaveBlankLine().booleanValue();
+			lastContent = prepareAndIntegrateContent(st, line, lastContent, listStructuredFields);
 		}
+		setHaveBlankLine(st, lastContent, listStructuredFields.get(0));
 	}
 
 	/**
@@ -232,11 +231,11 @@ public class Structuring {
 	 * @param st          le texte structuré à renseigner
 	 * @param line        la ligne à traiter
 	 * @param lastContent le dernier contenu traité
-	 * @param lastChangeBlankLine Permet de dire si c'est le dernier passage qui a detecté une ligne vide
+	 * @param listStructuredFields La liste des structured fields qui doit ne contenir que le dernier champ structuré traité
 	 * @return le contenu traité
 	 * @throws StructuringException
 	 */
-	private Content prepareAndIntegrateContent(StructuredText st, String line, Content lastContent, Boolean lastChangeBlankLine)
+	private Content prepareAndIntegrateContent(StructuredText st, String line, Content lastContent, List<StructuredField> listStructuredFields)
 			throws StructuringException {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (StringUtils.startsWith(line, configuration.getBaseCode())) {
@@ -246,13 +245,11 @@ public class Structuring {
 			if (optionalStructuredField.isPresent()) {
 				String tagName = optionalStructuredField.get().getFieldName();
 				String value = StringUtils.remove(lineWithoutLedaBalise, tagName);
-				if (StringUtils.isBlank(value)) {
-					if (optionalStructuredField.get().getIsMetaFile()) {
-						st.setHaveMetaBlankLine(true);
-					} else {
-						st.setHaveBlankLine(true);
-					}
+				if (!listStructuredFields.isEmpty()) {
+					setHaveBlankLine(st, lastContent, listStructuredFields.get(0));
 				}
+				listStructuredFields.clear();
+				listStructuredFields.add(optionalStructuredField.get());
 				Content content = new Content(tagName, value);
 				if (null != lastContent && tagName.equals(lastContent.getKey())) {
 					content = lastContent;
@@ -269,9 +266,6 @@ public class Structuring {
 				String currentValue = lastContent.getValue();
 				lastContent.setValue(currentValue.concat("\n").concat(line));
 			} else {
-				if (lastChangeBlankLine && StringUtils.isNotBlank(line)) {
-					st.setHaveBlankLine(false);
-				}
 				lastContent.setValue(line);				
 			}
 			return lastContent;
@@ -280,6 +274,24 @@ public class Structuring {
 		}
 		// Ne devrait jamais se produire à cause du contrôle CheckLine
 		return lastContent;
+	}
+
+	/**
+	 * Permet de définir si il y a des lignes vides ou non
+	 * @param st le texte structuré à renseigner
+	 * @param lastContent le dernier contenu traité
+	 * @param lastStructuredField Le dernier champ structuré traité
+	 */
+	private void setHaveBlankLine(StructuredText st, Content lastContent, StructuredField lastStructuredField) {
+		if (null != lastStructuredField) {
+			if (StringUtils.isBlank(lastContent.getValue())) {
+				if (lastStructuredField.getIsMetaFile()) {
+					st.setHaveMetaBlankLine(true);
+				} else {
+					st.setHaveBlankLine(true);
+				}
+			}
+		}
 	}
 
 	/**

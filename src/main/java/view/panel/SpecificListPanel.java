@@ -15,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang3.StringUtils;
+
 import view.interfaces.ISpecificTextModel;
 import view.interfaces.ISpecificTextRefreshPanel;
 import view.utils.ConfigurationUtils;
@@ -62,6 +64,10 @@ public class SpecificListPanel implements ISpecificTextRefreshPanel  {
 			contentDetail.add(createListValuePanel(key, valueList));
 			detailsListPanel.add(contentDetail);
 		});
+		boolean allValueOfListIsEmpty = this.specificTextModel.getMapKeyFieldListField().values().stream().allMatch(valueList -> valueList.stream().filter(s -> StringUtils.isNotBlank(s)).count() == 0);
+		if (allValueOfListIsEmpty) {
+			this.mapKeyJList.values().forEach(list -> ((DefaultListModel<String>)list.getModel()).removeAllElements());
+		}
 	}
 
 	/**

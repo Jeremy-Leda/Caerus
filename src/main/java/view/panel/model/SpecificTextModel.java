@@ -193,6 +193,10 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 */
 	@Override
 	public void addSpecificField(Map<String, JTextField> mapKeyFieldTextField) {
+		boolean allValueOfListIsEmpty = this.mapKeyFieldListField.values().stream().allMatch(valueList -> valueList.stream().filter(s -> StringUtils.isNotBlank(s)).count() == 0);
+		if (allValueOfListIsEmpty) {
+			mapKeyFieldListField.values().forEach(list -> list.clear());
+		}
 		mapKeyFieldTextField.forEach((key, textField) -> {
 			this.mapKeyFieldListField.get(key).add(StringUtils.trim(textField.getText()));
 		});

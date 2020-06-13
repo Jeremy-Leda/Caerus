@@ -75,7 +75,8 @@ public class StructuredText {
 	 */
 	public List<String> getContentWithDelimiterProcess(String tag, String delimiter) {
 		String value = getContent(tag);
-		return Arrays.asList(StringUtils.split(value, delimiter));
+		List<String> listValue = Arrays.asList(StringUtils.split(value, delimiter));
+		return listValue.stream().filter(s -> StringUtils.isNotBlank(s)).collect(Collectors.toList());
 	}
 	
 	/**

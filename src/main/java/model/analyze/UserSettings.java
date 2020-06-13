@@ -530,12 +530,45 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer la map des champs spécifique
+	 * Permet de savoir s'il y a des champs spécifiques en erreur
+	 * @return Vrai si c'est le cas, faux sinon
+	 */
+	public Boolean haveErrorInSpecificFieldInEditingCorpus() {
+		int nbConfiguration = currentConfiguration.getSpecificConfigurationList().size();
+		for (int i = 0; i < nbConfiguration; i++) {
+			Map<String, List<String>> mapOfSpecificFieldProcessedInEditingCorpus = getMapOfSpecificFieldProcessedInEditingCorpus(i);
+			long nbListWithDifferentNbValues = mapOfSpecificFieldProcessedInEditingCorpus.values().stream().map(list -> list.size()).distinct().count();
+			if (nbListWithDifferentNbValues > 1) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction pour avoir le même nombre d'élément
 	 * 
 	 * @param index index de la configuration utilisé
 	 * @return la map des champs spécifique
 	 */
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
+		Map<String, List<String>> mapFinalOrdered = getMapOfSpecificFieldProcessedInEditingCorpus(index);
+		Integer nbMaxElement = mapFinalOrdered.values().stream().map(values -> values.size())
+				.max(Comparator.comparing(Integer::valueOf)).get();
+		mapFinalOrdered.entrySet().stream().filter(entry -> entry.getValue().size() < nbMaxElement).forEach(entry -> {
+			while (entry.getValue().size() < nbMaxElement) {
+				entry.getValue().add(StringUtils.SPACE);
+			}
+		});
+		return mapFinalOrdered;
+	}
+	
+	/**
+	 * Permet de se procurer la map des champs spécifiques qui a été traité
+	 * @param index index de la configuration utilisé
+	 * @return la map des champs spécifiques traité
+	 */
+	private Map<String, List<String>> getMapOfSpecificFieldProcessedInEditingCorpus(Integer index) {
 		String delimiter = currentConfiguration.getSpecificConfigurationList().stream()
 				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
 				.getDelimiter();
@@ -558,13 +591,6 @@ public class UserSettings {
 			}
 			mapFinalOrdered.put(structuredField.getFieldName(), listValues);
 		}
-		Integer nbMaxElement = mapFinalOrdered.values().stream().map(values -> values.size())
-				.max(Comparator.comparing(Integer::valueOf)).get();
-		mapFinalOrdered.entrySet().stream().filter(entry -> entry.getValue().size() < nbMaxElement).forEach(entry -> {
-			while (entry.getValue().size() < nbMaxElement) {
-				entry.getValue().add(StringUtils.SPACE);
-			}
-		});
 		return mapFinalOrdered;
 	}
 

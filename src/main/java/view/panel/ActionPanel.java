@@ -105,7 +105,11 @@ public class ActionPanel implements IActionPanel {
 	@Override
 	public void setIconButton(Integer number, PictureTypeEnum pictureType) {
 		if (buttonMap.containsKey(number)) {
-			buttonMap.get(number).setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(pictureType)));
+			if (null != pictureType) {
+				buttonMap.get(number).setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(pictureType)));
+			} else {
+				buttonMap.get(number).setIcon(null);
+			}
 		}
 	}
 	

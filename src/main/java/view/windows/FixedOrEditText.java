@@ -103,6 +103,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		refreshFilePanel();
 		addActionPanelMessage();
 		displayMessageForAction();
+		displayIconIfHaveErrorInSpecific();
 		createContent();
 	}
 
@@ -166,6 +167,19 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		this.actionFixedTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
 		this.actionManageTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
 		this.actionAddTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
+	}
+	
+	/**
+	 * Permet d'afficher une icone de warnin s'il y a une erreur dans les structures spécifiques
+	 */
+	private void displayIconIfHaveErrorInSpecific() {
+		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
+			if (getControler().haveErrorInSpecificFieldInEditingCorpus()) {
+				this.actionFixedTextPanel.setIconButton(0, PictureTypeEnum.WARNING);
+			} else {
+				this.actionFixedTextPanel.setIconButton(0, null);
+			}
+		}
 	}
 
 	/**
@@ -319,6 +333,17 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 
 		};
 	}
+	
+	/**
+	 * Permet d'effectuer les actions nécessaires sur la fermeture de fenêtre des spécifiques
+	 * @return le consumer
+	 */
+	private Consumer<?> actionOnCloseSpecificFrame() {
+		return v -> {
+			setEnabledForAllButton(true);
+			displayIconIfHaveErrorInSpecific();
+		};
+	}
 
 	/**
 	 * Execute l'action d'ajouter un texte
@@ -336,7 +361,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				// on ouvre la fenêtre
 				fillSpecificTextFrame = new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(title),
 						getControler());
-				fillSpecificTextFrame.addActionOnClose(enableAllButton());
+				fillSpecificTextFrame.addActionOnClose(actionOnCloseSpecificFrame());
 			}
 		};
 	}

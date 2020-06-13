@@ -529,4 +529,12 @@ public class ConfigurationControler implements IConfigurationControler {
 		return this.configurationModel.getConfigurationFolder();
 	}
 
+	@Override
+	public Boolean haveErrorInSpecificFieldInEditingCorpus() {
+		if (this.configurationModel.haveEditingCorpus()) {
+			return this.configurationModel.haveErrorInSpecificFieldInEditingCorpus();
+		}
+		return false;
+	}
+
 }

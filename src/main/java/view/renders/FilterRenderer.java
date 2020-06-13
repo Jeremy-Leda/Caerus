@@ -57,11 +57,13 @@ public class FilterRenderer extends JLabel implements ListCellRenderer<Filter> {
 		stringBuilder.append("</font><br/>");
 		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(filterBuilder.toString()));
 		stringBuilder.append("<br/>");
+		stringBuilder.append('"');
 		if (value.getValue().length() > MAX_LENGTH) {
 			stringBuilder.append(value.getValue().substring(0, MAX_LENGTH-3));
 		} else {
 			stringBuilder.append(value.getValue());
 		}
+		stringBuilder.append('"');
 		stringBuilder.append("<br/></p></html>");
 		return stringBuilder.toString();
 	}

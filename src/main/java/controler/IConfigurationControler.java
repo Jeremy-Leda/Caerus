@@ -488,4 +488,10 @@ public interface IConfigurationControler {
 	 * @param name nom de la configuration
 	 */
 	void setCurrentConfiguration(String name);
+	
+	/**
+	 * Permet de définir si il reste des erreurs dans les structures spécifique du corpus en cours d'édition
+	 * @return retourne vrai si c'est le cas, faux sinon
+	 */
+	Boolean haveErrorInSpecificFieldInEditingCorpus();
 }

@@ -489,6 +489,12 @@ public class ConfigurationModel implements IConfigurationModel {
 		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
 	}
 
+	@Override
+	public Boolean haveErrorInSpecificFieldInEditingCorpus() {
+		logger.debug("CALL haveErrorInSpecificFieldInEditingCorpus");
+		return UserSettings.getInstance().haveErrorInSpecificFieldInEditingCorpus();
+	}
+
 
 
 }

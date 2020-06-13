@@ -24,3 +24,8 @@ Caerus 0.0.1-SNAPSHOT - 07/06/2020
 
 Caerus 1.0.0 - 11/06/2020
 - Correction d'anomalies sur les textes
+
+Caerus 1.0.0 - 13/06/2020
+- Ajout de " sur la fenêtre des filtres
+- Revue de la traduction (phase 1)
+- Ajout d'une icone sur la zone des textes losqu'il y a une erreur de structure

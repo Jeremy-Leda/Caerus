@@ -6,16 +6,16 @@
 ```
 Section française
 ```
-## Projet Caerus pour la gestion et création des documents
+## Projet Caerus pour la gestion et création des corpus
 
-Vous trouverez l'ensemble des informations (logiciel Caerus, mode d'emploi, installation) dans le dossier [packages](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)/ <br/>
+Vous trouverez le logiciel Caerus et le mode d'emploi dans le dossier [packages](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)
 
-### A destination du système d'exploitation Windows
+### Pour un système d'exploitation Windows
 Vous trouverez un fichier *installCaerus.exe*, ce dernier vous permettra d'installer facilement Caerus à partir d'un assistant. Cette installateur est tout en un, une fois l'installation terminé, vous pourrez utiliser Caerus.
 
 Cependant, ne disposant pas de certificat, et mettant à disposition l'installateur depuis GitHub, vous serez surement averti par un écran de type **SmartScreen** qui a pour but d'éviter d'installer des logiciels non reconnus sans votre autorisation. Nous vous invitons donc à vous rendre à la section  **SmartScreen** tout en bas de cette page pour connaitre la procédure permettant de poursuivre tout de même l'installation.
 
-### A destination d'un autre système d'exploitation (Linux, Mac)
+### Pour un autre système d'exploitation (Linux, Mac)
 Vous trouverez un fichier *caerusJarForLinuxAndMac.7z*, ce dernier a été compressé à l'aide du logiciel
 [7Zip](https://www.7-zip.org/download.html).
 Une fois 7Zip installé, si vous en avez besoin, vous trouverez un tutoriel sur 7Zip [ici](https://7zip.fr/7zip-tutoriel-aide-installation-utilisation/).
@@ -31,6 +31,9 @@ Un tutoriel pour installer Java est disponible [ici](https://www.java.com/fr/dow
 ```
 Sección Española
 ```
+## Proyecto Caerus para la gestión y creación de corpus
+
+Encontrará el software Caerus y el manual de instrucciones en la carpeta [paquetes](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)
 
 ### Para el sistema operativo Windows. 
 Encontrará un archivo *installCaerus.exe*, que le permitirá instalar fácilmente Caerus desde un asistente. Este instalador es todo en uno, una vez finalizada la instalación podrás utilizar Caerus.

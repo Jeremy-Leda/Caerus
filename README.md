@@ -9,6 +9,7 @@ Section française
 ## Projet Caerus pour la gestion et création des corpus
 
 Vous trouverez le logiciel Caerus et le mode d'emploi dans le dossier [packages](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)
+
 Dans la section GitHub, vous trouverez les explications pour télécharger les archives.
 
 ### Pour un système d'exploitation Windows
@@ -35,6 +36,7 @@ Sección Española
 ## Proyecto Caerus para la gestión y creación de corpus
 
 Encontrará el software Caerus y el manual de instrucciones en la carpeta [paquetes](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)
+
 En la sección Github, encontrarás las explicaciones para descargar los archivos.
 
 ### Para el sistema operativo Windows. 

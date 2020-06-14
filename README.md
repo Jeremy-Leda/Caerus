@@ -1,7 +1,65 @@
-Projet Caerus pour la gestion et création des corpus/ <br/>
-Proyecto Caerus para la gestión y creación de corpus<br/><br/>
+<p align="center">
+  <img width="300" height="300" src="https://github.com/Jeremy-Leda/Caerus/blob/master/logo.png?raw=true">
+</p>
+<center> <h1>Caerus</h1> </center>
+
+```
+Section française
+```
+## Projet Caerus pour la gestion et création des documents
+
 Vous trouverez l'ensemble des informations (logiciel Caerus, mode d'emploi, installation) dans le dossier [packages](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)/ <br/>
-Encontrará el conjunto de informaciones (software Caerus, manual de instrucciones, instalación) en la carpeta [packages](https://github.com/Jeremy-Leda/Caerus/tree/master/packages)<br/><br/>
-Les archives sont faites à l'aide du logiciel 7zip que vous pourrez trouver et télécharger à cette adresse [lien 7Zip](https://www.7-zip.org/download.html)/ <br/>
-Los archivos se hacen utilizando el software 7zip que se puede encontrar y descargar en este [enlace 7Zip](https://www.7-zip.org/download.html)<br/><br/>
-CC BY NC SA
+
+### A destination du système d'exploitation Windows
+Vous trouverez un fichier *installCaerus.exe*, ce dernier vous permettra d'installer facilement Caerus à partir d'un assistant. Cette installateur est tout en un, une fois l'installation terminé, vous pourrez utiliser Caerus.
+
+Cependant, ne disposant pas de certificat, et mettant à disposition l'installateur depuis GitHub, vous serez surement averti par un écran de type **SmartScreen** qui a pour d'éviter d'installer des logiciels non reconnus sans en avoir connaissance. Nous vous invitons donc à vous rendre à la section  **SmartScreen** tout en bas de cette page pour connaitre la procédure permettant de poursuivre tout de même l'installation.
+
+### A destination d'un autre système d'exploitation (Linux, Mac)
+Vous trouverez un fichier *caerusJarForLinuxAndMac.7z*, ce dernier a été compressé à l'aide du logiciel
+[7Zip](https://www.7-zip.org/download.html).
+Une fois 7Zip installé, vous pourrez décompresser l'archive à l'aide d'un clique droit, 7zip et extraire vers. Si besoin, vous trouverez un tutoriel sur 7Zip [ici](https://7zip.fr/7zip-tutoriel-aide-installation-utilisation/).
+L'archive contient les éléments suivants :
+| Élément | Description |
+| --- | --- |
+| licence | Ce dossier contient la licence sous laquelle a été développé Caerus (la licence est disponible sous plusieurs langues)|
+| Caerus.jar | Ce fichier correspond à l'éxécutable de Caerus au format Jar, il est nécessaire d'installer Java (version 1.8) pour pouvoir utiliser Caerus en Double cliquant sur ce fichier |
+
+Vous pourrez télécharger Java [ici](https://www.java.com/fr/download/).
+Un tutoriel pour installer Java est disponible [ici](https://www.java.com/fr/download/help/windows_manual_download.xml)
+
+```
+Sección Española
+```
+
+### Destino del sistema operativo Windows. 
+Encontrará un archivo *installCaerus.exe*, que le permitirá instalar fácilmente Caerus desde un asistente. Este instalador es todo en uno, una vez finalizada la instalación podrás utilizar Caerus.
+
+Sin embargo, al no tener un certificado, y al poner a disposición el instalador desde Github, seguramente te avisará una pantalla de tipo **Smartscreen** que tiene que evitar instalar software no reconocido sin tener conocimiento de ello. Por lo tanto, le invitamos a visitar la sección **Smartscreen** al final de esta página para conocer el procedimiento para continuar con la instalación.
+
+
+### Con destino a otro sistema operativo (Linux, Mac)
+Usted encontrará un archivo *caerusJarForLinuxAndMac.7z*, este último fue comprimido con la ayuda del software [7zip](https://www.7-zip.org/download.html).
+Una vez instalado 7zip, puede descomprimir el archivo con un clic derecho, 7zip y extraer a. Si es necesario, encontrará un tutorial sobre 7zip [aquí](http://www.gofree.com/Espanol/Descarga/7Zip/Tutoriales/instalararchivosZIP.php).
+El archivo contiene los siguientes elementos:
+| Elemento | Descripción |
+| --- | --- | 
+| licencia | Esta carpeta contiene la licencia bajo la cual se desarrolló Caerus (la licencia está disponible en varios idiomas)| 
+| Caerus.jar | Este fichero corresponde a la ejecución de Caerus en formato Jar, es necesario instalar Java (versión 1.8) para poder utilizar Caerus haciendo doble clic en este archivo |
+
+Puede descargar Java [aquí](https://www.java.com/fr/download/).
+Un tutorial para instalar Java está disponible [aquí](https://www.java.com/es/download/help/windows_manual_download.xml)
+
+```
+SmartScreen
+```
+
+<p align="center">
+  <img width="500" height="500" src="https://github.com/Jeremy-Leda/Caerus/blob/master/SmartScreen/smartscreen1.jpg?raw=true">
+    <img width="500" height="500" src="https://github.com/Jeremy-Leda/Caerus/blob/master/SmartScreen/smartscreen2.jpg?raw=true">
+</p>
+
+```
+Licence
+```
+[CC BY NC SA](https://creativecommons.org/licenses/by-nc-sa/4.0/)

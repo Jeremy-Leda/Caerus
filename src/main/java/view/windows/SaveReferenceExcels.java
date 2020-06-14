@@ -209,7 +209,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 		cmd.setIsSpecificGeneration(null);
 		cmd.setLabelSpecificChoose(null);
 		cmd.setWithHeader(this.checkBoxPanel.getCheckBoxIsChecked(0));
-		this.checkBoxTextFieldPanelList.forEach(checkBoxTextField -> {
+		this.checkBoxTextFieldPanelList.stream().filter(cb -> cb.getCheckBoxIsChecked()).forEach(checkBoxTextField -> {
 			cmd.addLabelSpecificFileName(checkBoxTextField.getTitlePanel(), getFileName(checkBoxTextField));
 		});
 		return cmd;

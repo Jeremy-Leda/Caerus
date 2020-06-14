@@ -58,19 +58,19 @@ Puede descargar Java [aquí](https://www.java.com/fr/download/).
 Un tutorial para instalar Java está disponible [aquí](https://www.java.com/es/download/help/windows_manual_download.xml)
 
 ```
-SmartScreen
-```
-
-<p align="center">
-  <img src="https://github.com/Jeremy-Leda/Caerus/blob/master/SmartScreen/smartscreen.jpg?raw=true">
-</p>
-
-```
 GitHub
 ```
 
 <p align="center">
   <img src="https://github.com/Jeremy-Leda/Caerus/blob/master/GitHub/github.jpg?raw=true">
+</p>
+
+```
+SmartScreen
+```
+
+<p align="center">
+  <img src="https://github.com/Jeremy-Leda/Caerus/blob/master/SmartScreen/smartscreen.jpg?raw=true">
 </p>
 
 

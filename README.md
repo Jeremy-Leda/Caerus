@@ -7,12 +7,12 @@
 Sommaire / índice 
 ```
 
-- [Projet Caerus : Logiciel pour la gestion et création des corpus](#projet-caerus---logiciel-pour-la-gestion-et-creation-des-corpus)
-  * [Pour un système d'exploitation Windows](#pour-un-systeme-d-exploitation-windows)
-  * [Pour un autre système d'exploitation (Linux, Mac)](#pour-un-autre-systeme-d-exploitation--linux--mac-)
-- [Proyecto Caerus : Software para la gestión y creación de corpus](#proyecto-caerus---software-para-la-gestion-y-creacion-de-corpus)
+- [Projet Caerus : Logiciel pour la gestion et création des corpus](#projet-caerus--logiciel-pour-la-gestion-et-cr%C3%A9ation-des-corpus)
+  * [Pour un système d'exploitation Windows](#pour-un-syst%C3%A8me-dexploitation-windows)
+  * [Pour un autre système d'exploitation (Linux, Mac)](#pour-un-autre-syst%C3%A8me-dexploitation-linux-mac)
+- [Proyecto Caerus : Software para la gestión y creación de corpus](#proyecto-caerus--software-para-la-gesti%C3%B3n-y-creaci%C3%B3n-de-corpus)
   * [Para el sistema operativo Windows.](#para-el-sistema-operativo-windows)
-  * [Para otro sistema operativo (Linux, Mac)](#para-otro-sistema-operativo--linux--mac-)
+  * [Para otro sistema operativo (Linux, Mac)](#para-otro-sistema-operativo-linux-mac)
 - [GitHub](#GitHub)
 - [SmartScreen](#SmartScreen)
 

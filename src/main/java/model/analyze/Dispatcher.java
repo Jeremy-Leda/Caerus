@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import model.analyze.beans.Configuration;
 import model.analyze.beans.CurrentUserConfiguration;
+import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.MemoryFile;
 import model.analyze.beans.SaveCurrentFixedText;
 import model.analyze.beans.SpecificConfiguration;
@@ -150,6 +152,31 @@ public class Dispatcher {
 			}
 		});
 		return listeSortie;
+	}
+	
+	/**
+	 * Méthode permettant de se procurer la liste des fichiers a traité et la possibilité de pouvoir les traiter
+	 * 
+	 * @param pathFolderToAnalyze Répertoire à analyser
+	 * @return la liste des fichiers a traité et la possibilité de pouvoir les traiter
+	 * @throws IOException
+	 */
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException {
+		final List<String> nameFileList = new ArrayList<String>();
+		final List<Boolean> launchAnalyzeIsOkList = new ArrayList<Boolean>();
+		Files.walkFileTree(pathFolderToAnalyze.toPath(), new SimpleFileVisitor<Path>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				if (!Files.isDirectory(file)) {
+					String fileName = file.getFileName().toString();
+					nameFileList.add(fileName);
+					launchAnalyzeIsOkList.add("txt".equals(FilenameUtils.getExtension(fileName)));
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		});
+		boolean launchAnalyzeIsOk = launchAnalyzeIsOkList.stream().allMatch(b -> Boolean.TRUE.equals(b));
+		return new FilesToAnalyzeInformation(nameFileList, launchAnalyzeIsOk);
 	}
 
 	/**

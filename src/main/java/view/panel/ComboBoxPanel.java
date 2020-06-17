@@ -65,5 +65,15 @@ public class ComboBoxPanel implements IComboBoxPanel{
 		this.comboBox.removeAllItems();
 		labels.forEach(l -> this.comboBox.addItem(l));
 	}
+
+	@Override
+	public void selectItem(String itemToSelect) {
+		this.comboBox.setSelectedItem(itemToSelect);
+	}
+
+	@Override
+	public int getItemCount() {
+		return this.comboBox.getItemCount();
+	}
 	
 }

@@ -1,30 +1,36 @@
 package view.windows;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
+import model.analyze.beans.FilesToAnalyzeInformation;
 import model.exceptions.LoadTextException;
 import utils.RessourcesUtils;
+import view.abstracts.ModalJFrameAbstract;
+import view.beans.FilePickerTypeEnum;
 import view.beans.PictureTypeEnum;
+import view.interfaces.IActionPanel;
+import view.interfaces.IComboBoxPanel;
+import view.interfaces.IFilePickerPanel;
+import view.interfaces.IInformationPanel;
+import view.panel.ActionPanel;
+import view.panel.ComboBoxPanel;
+import view.panel.FilePickerPanel;
+import view.panel.InformationPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
@@ -36,167 +42,169 @@ import view.utils.Constants;
  * @author jerem
  *
  */
-public class LoadTextConfigurationSelector extends JFrame {
+public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 3348054080637849772L;
 	private static Logger logger = LoggerFactory.getLogger(LoadTextConfigurationSelector.class);
-	private File folderFile;
-	private final JTextField folderPath = new JTextField();
-	private final JComboBox<String> typeConfigurationComboList = new JComboBox<String>();
-	private final JButton startButton = new JButton(ConfigurationUtils.getInstance()
-			.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_START_BUTTON_LABEL));
-	private final JDialog frame = new JDialog((JFrame) null, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TITLE), true);
-	private final IConfigurationControler controler;
-	
+
+	private final JPanel content;
+	private final IComboBoxPanel comboBoxPanel;
+	private final IFilePickerPanel filePickerPanel;
+	private final IActionPanel actionPanel;
+	private final IInformationPanel informationsFilesPanel;
+	private final IInformationPanel warningFilesPanel;
+
 	/**
 	 * Constructeur
 	 */
 	public LoadTextConfigurationSelector(IConfigurationControler configurationControler) {
-		this.controler = configurationControler;
-		this.controler.clearAnalyze();
+		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TITLE),
+				configurationControler);
+		getControler().clearAnalyze();
+		this.content = new JPanel();
+		this.comboBoxPanel = new ComboBoxPanel(
+				ConfigurationUtils.getInstance()
+						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_PANEL_TITLE),
+				ConfigurationUtils.getInstance()
+						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_LABEL));
+		this.filePickerPanel = new FilePickerPanel(
+				ConfigurationUtils.getInstance()
+						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_PANEL_TITLE),
+				ConfigurationUtils.getInstance().getDisplayMessage(
+						Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_LABEL),
+				FilePickerTypeEnum.OPEN_FOLDER);
+		this.actionPanel = new ActionPanel(1);
+		this.informationsFilesPanel = new InformationPanel(PictureTypeEnum.INFORMATION, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_INFORMATIONS_PANEL_TITLE), ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT), true);
+		this.warningFilesPanel = new InformationPanel(PictureTypeEnum.WARNING, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_PANEL_TITLE), ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_MESSAGE), false);
+		this.warningFilesPanel.getJPanel().setVisible(false);
 		createWindow();
 	}
 
-	/**
-	 * Permet de créer la fenêtre
-	 */
-	private void createWindow() {
-		init();
-		repack();
-		frame.setVisible(true);
-	}
-
-	/**
-	 * Initialise la fenêtre et ses composants
-	 */
-	private void init() {
-
-		JPanel panConfigurations = new JPanel();
-		panConfigurations.setBorder(BorderFactory.createTitledBorder(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_PANEL_TITLE)));
-		BoxLayout boxLayoutConfiguration = new BoxLayout(panConfigurations, BoxLayout.Y_AXIS);
-		panConfigurations.setLayout(boxLayoutConfiguration);
-		JPanel subPanConfiguration = new JPanel();
-
-		JLabel configurationLabel = new JLabel(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_TYPE_CONFIGURATION_LABEL));
-		subPanConfiguration.add(configurationLabel);		 
+	@Override
+	public void initComponents() {
 		fillConfigurationDisplayList();
-		subPanConfiguration.add(typeConfigurationComboList);
-
-		panConfigurations.add(subPanConfiguration);
-
-
-		JPanel panFolder = new JPanel();
-		panFolder.setBorder(BorderFactory.createTitledBorder(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_PANEL_TITLE)));
-		JLabel folderLabel = new JLabel(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_LABEL));
-		panFolder.add(folderLabel);
-		folderPath.setEnabled(false);
-		folderPath.setSize(100, 20);
-		panFolder.add(folderPath);
-		JButton chooseFolderButton = new JButton(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_LABEL));
-		chooseFolderButton.addActionListener(openFolder());
-		panFolder.add(chooseFolderButton);
-
-		JPanel panStart = new JPanel();
-		startButton.setEnabled(false);
-		startButton.addActionListener(startAnalyse());
-		panStart.add(startButton);
-
-		JPanel content = new JPanel();
+		initActionPanel();
+		this.filePickerPanel.addConsumerOnChooseFileOk(getConsumerAfterSelectFolder());
+		createContent();
+	}
+	
+	@Override
+	public JPanel getContent() {
+		return this.content;
+	}
+	
+	/**
+	 * Permet de créer le contenu
+	 */
+	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
-		content.add(panConfigurations);
-		content.add(panFolder);
-		content.add(panStart);
-
-		frame.setModal(true);
-		this.frame.setIconImage(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO));
-		frame.getContentPane().add(content, BorderLayout.CENTER);
-		frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-		
+		content.add(this.comboBoxPanel.getJPanel());
+		content.add(this.warningFilesPanel.getJPanel());
+		content.add(this.filePickerPanel.getJPanel());
+		content.add(this.informationsFilesPanel.getJPanel());
+		content.add(this.actionPanel.getJPanel());
 	}
 
+	/**
+	 * Permet d'initialiser le panel des actions
+	 */
+	private void initActionPanel() {
+		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
+		messageButtonMap.put(0, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_START_BUTTON_LABEL));
+		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_START_PANEL_TITLE), messageButtonMap);
+		this.actionPanel.setEnabled(0, false);
+		this.actionPanel.addAction(0, startAnalyse());
+	}
+	
 	/**
 	 * Permet de remplir la liste pour la configuration
 	 */
 	private void fillConfigurationDisplayList() {
-		controler.getConfigurationNameList().forEach(name -> typeConfigurationComboList.addItem(name));
-		this.typeConfigurationComboList.setSelectedItem(controler.getConfigurationName());
+		comboBoxPanel.refresh(getControler().getConfigurationNameList());
+		comboBoxPanel.selectItem(getControler().getConfigurationName());
 	}
 
+	
 	/**
-	 * permet de créer la fenêtre de sélection du dossier
-	 * 
-	 * @return
+	 * Permet de se procurer le consumer pour activer le bouton après la selection
+	 * @return le consumer
 	 */
-	private ActionListener openFolder() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser chooser = new JFileChooser();
-				chooser.setCurrentDirectory(new java.io.File("."));
-				chooser.setDialogTitle(ConfigurationUtils.getInstance()
-						.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_FOLDER_CHOOSE_TITLE));
-				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				chooser.setAcceptAllFileFilterUsed(false);
-				if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-					folderFile = chooser.getSelectedFile();
-					folderPath.setText(folderFile.getAbsolutePath());
-					startButton.setEnabled(true);
-					repack();
+	private Consumer<Void> getConsumerAfterSelectFolder() {
+		return (v) -> {
+			if (StringUtils.isNotBlank(filePickerPanel.getFile())) {
+				try {
+					FilesToAnalyzeInformation nameFileToAnalyzeList = getControler().getNameFileToAnalyzeList(new File(filePickerPanel.getFile()));
+					if (null != nameFileToAnalyzeList) {
+						actionPanel.setEnabled(0, nameFileToAnalyzeList.getLaunchAnalyzeIsOk());
+						warningFilesPanel.getJPanel().setVisible(!nameFileToAnalyzeList.getLaunchAnalyzeIsOk());
+					}
+					refreshMessageInformations(nameFileToAnalyzeList.getNameFileList());
+				} catch (Exception e) {
+					warningFilesPanel.getJPanel().setVisible(true);
+					actionPanel.setEnabled(0, false);
+					logger.error(e.getMessage(), e);
 				}
+				repack();
 			}
 		};
 	}
-
-	public Boolean isLoaded() {
-		return !this.controler.getListOfStructuredFileForAnalyze().isEmpty();
-	}
 	
 	/**
-	 * Permet de repack la fenêtre Position centrer
+	 * Permet de rafraichir le message d'informations
+	 * @param nameFileList liste des fichiers à analyser
 	 */
-	private void repack() {
-		frame.pack();
-		frame.setLocationRelativeTo(null);
+	private void refreshMessageInformations(List<String> nameFileList) {
+		List<String> nameFileHtmlList = nameFileList.stream().map(fileName -> "<li>" + fileName + "</li>").collect(Collectors.toList());
+		StringBuilder sb = new StringBuilder();
+		sb.append("<ul>");
+		sb.append(StringUtils.join(nameFileHtmlList.toArray()));
+		sb.append("</ul>");
+		this.informationsFilesPanel.refreshInformations(String.format(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE), sb.toString()));
 	}
 
-	
-	private void close() {
-		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-	}
-	
+	/**
+	 * Permet de lancer l'analyse
+	 * @return
+	 */
 	private ActionListener startAnalyse() {
 		return new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (typeConfigurationComboList.getItemCount() == 0) {
+				if (comboBoxPanel.getItemCount() == 0) {
 					try {
-						controler.setCurrentConfiguration(RessourcesUtils.getInstance().getBasicalConfiguration());
+						getControler().setCurrentConfiguration(RessourcesUtils.getInstance().getBasicalConfiguration());
 					} catch (Exception e1) {
 						logger.error(e1.getMessage(), e1);
 					}
 				} else {
-					controler.setCurrentConfiguration(typeConfigurationComboList.getSelectedItem().toString());
+					getControler().setCurrentConfiguration(comboBoxPanel.getLabelSelected().toString());
 				}
-				controler.setAnalyzeFolder(folderFile);
+				getControler().setAnalyzeFolder(new File(filePickerPanel.getFile()));
 				try {
-					controler.launchAnalyze();
+					getControler().launchAnalyze();
 				} catch (LoadTextException e1) {
 					logger.error(e1.getMessage(), e1);
 				}
-				close();
+				closeFrame();
 			}
 		};
+	}
+
+
+	@Override
+	public String getWindowName() {
+		return "Load Text Configuration Selector";
 	}
 
 }

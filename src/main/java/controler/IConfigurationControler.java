@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import model.analyze.beans.Configuration;
+import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.StructuredFile;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
@@ -494,4 +495,13 @@ public interface IConfigurationControler {
 	 * @return retourne vrai si c'est le cas, faux sinon
 	 */
 	Boolean haveErrorInSpecificFieldInEditingCorpus();
+	
+	/**
+	 * Méthode permettant de se procurer la liste des fichiers a traité et la possibilité de pouvoir les traiter
+	 * 
+	 * @param pathFolderToAnalyze Répertoire à analyser
+	 * @return la liste des fichiers a traité et la possibilité de pouvoir les traiter
+	 * @throws IOException
+	 */
+	FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException;
 }

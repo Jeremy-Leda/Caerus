@@ -246,6 +246,12 @@ public final class Constants {
 	public static final String WINDOW_ABOUT_MESSAGE_CONTENT="window.about.message.content";
 
 
+	public static final String WINDOW_LOAD_TEXTS_START_PANEL_TITLE="window.load.texts.start.panel.title";
+	public static final String WINDOW_LOAD_TEXTS_INFORMATIONS_PANEL_TITLE="window.load.texts.informations.panel.title";
+	public static final String WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE="window.load.texts.informations.message";
+	public static final String WINDOW_LOAD_TEXTS_WARNING_PANEL_TITLE="window.load.texts.warning.panel.title";
+	public static final String WINDOW_LOAD_TEXTS_WARNING_MESSAGE="window.load.texts.warning.message";
+	public static final String WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT="window.load.texts.informations.message.default";
 
 	
 }

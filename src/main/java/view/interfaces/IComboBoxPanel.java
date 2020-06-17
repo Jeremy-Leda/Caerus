@@ -30,4 +30,16 @@ public interface IComboBoxPanel extends IAccessPanel {
 	 */
 	void refresh(List<String> labels);
 	
+	/**
+	 * Permet de de sélectionner un item
+	 * @param itemToSelect item à selectionner
+	 */
+	void selectItem(String itemToSelect);
+	
+	/**
+	 * Permet de se procurer le nombre d'items
+	 * @return
+	 */
+	int getItemCount();
+	
 }

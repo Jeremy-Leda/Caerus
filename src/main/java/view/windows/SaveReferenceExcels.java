@@ -21,6 +21,7 @@ import controler.IConfigurationControler;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.ExcelTypeGenerationEnum;
+import view.beans.FilePickerTypeEnum;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;
 import view.interfaces.ICheckBoxPanel;
@@ -58,8 +59,8 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 
 	public SaveReferenceExcels(IConfigurationControler configurationControler, ExcelTypeGenerationEnum excelGenerationType) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_PANEL_TITLE), configurationControler);
-		this.filePickerPanel = new FilePickerPanel(
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FILE_PICKER_CLASSICAL_PANEL_TITLE));
+		String titlePanelAndFielPicker = ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FILE_PICKER_CLASSICAL_PANEL_TITLE);
+		this.filePickerPanel = new FilePickerPanel(titlePanelAndFielPicker, titlePanelAndFielPicker, FilePickerTypeEnum.SAVE_FILE);
 		this.filePickerPanel.addConsumerOnChooseFileOk(getConsumerUpdateInformation());
 		this.checkBoxPanel = new CheckBoxPanel(1, true);
 		this.checkBoxTextFieldPanelList = new ArrayList<ICheckBoxTextFieldPanel>();

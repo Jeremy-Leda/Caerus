@@ -4,6 +4,19 @@
 <center> <h1>Caerus</h1> </center>
 
 ```
+Sommaire / índice 
+```
+
+- [Projet Caerus : Logiciel pour la gestion et création des corpus](#projet-caerus---logiciel-pour-la-gestion-et-creation-des-corpus)
+  * [Pour un système d'exploitation Windows](#pour-un-systeme-d-exploitation-windows)
+  * [Pour un autre système d'exploitation (Linux, Mac)](#pour-un-autre-systeme-d-exploitation--linux--mac-)
+- [Proyecto Caerus : Software para la gestión y creación de corpus](#proyecto-caerus---software-para-la-gestion-y-creacion-de-corpus)
+  * [Para el sistema operativo Windows.](#para-el-sistema-operativo-windows)
+  * [Para otro sistema operativo (Linux, Mac)](#para-otro-sistema-operativo--linux--mac-)
+- [GitHub](#GitHub)
+- [SmartScreen](#SmartScreen)
+
+```
 Section Française
 ```
 ## Projet Caerus : Logiciel pour la gestion et création des corpus
@@ -61,6 +74,8 @@ Un tutorial para instalar Java está disponible [aquí](https://www.java.com/es/do
 GitHub
 ```
 
+## GitHub
+
 <p align="center">
   <img src="https://github.com/Jeremy-Leda/Caerus/blob/master/GitHub/github.jpg?raw=true">
 </p>
@@ -68,6 +83,8 @@ GitHub
 ```
 SmartScreen
 ```
+
+## SmartScreen
 
 <p align="center">
   <img src="https://github.com/Jeremy-Leda/Caerus/blob/master/SmartScreen/smartscreen.jpg?raw=true">

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import model.analyze.Dispatcher;
 import model.analyze.UserSettings;
 import model.analyze.beans.Configuration;
+import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.FilterCorpus;
 import model.analyze.beans.LineError;
 import model.analyze.beans.SpecificConfiguration;
@@ -493,6 +494,12 @@ public class ConfigurationModel implements IConfigurationModel {
 	public Boolean haveErrorInSpecificFieldInEditingCorpus() {
 		logger.debug("CALL haveErrorInSpecificFieldInEditingCorpus");
 		return UserSettings.getInstance().haveErrorInSpecificFieldInEditingCorpus();
+	}
+
+	@Override
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException {
+		logger.debug("CALL pathFolderToAnalyze");
+		return this.dispatcher.getNameFileToAnalyzeList(pathFolderToAnalyze);
 	}
 
 

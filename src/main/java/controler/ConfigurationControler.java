@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import model.ConfigurationModel;
 import model.IConfigurationModel;
 import model.analyze.beans.Configuration;
+import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.FilterCorpus;
 import model.analyze.beans.FilterText;
 import model.analyze.beans.LineError;
@@ -535,6 +536,14 @@ public class ConfigurationControler implements IConfigurationControler {
 			return this.configurationModel.haveErrorInSpecificFieldInEditingCorpus();
 		}
 		return false;
+	}
+
+	@Override
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException {
+		if (null != pathFolderToAnalyze && pathFolderToAnalyze.isDirectory()) {
+			return this.configurationModel.getNameFileToAnalyzeList(pathFolderToAnalyze);
+		}
+		return null;
 	}
 
 }

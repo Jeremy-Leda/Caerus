@@ -1,6 +1,5 @@
 package view.utils;
 
-import java.io.IOException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -9,13 +8,7 @@ import java.util.ResourceBundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.collect.ImmutableMap;
-
-import model.analyze.beans.Configuration;
-import utils.JSonFactoryUtils;
-import utils.RessourcesUtils;
 
 /**
  * 

@@ -30,9 +30,10 @@ public interface IConfigurationControler {
 
 	/**
 	 * Permet de lancer l'analyse des textes
+	 * @param withSubFolder Permet de déterminer si on recherche dans les sous dossiers
 	 * @throws LoadTextException
 	 */
-	void launchAnalyze() throws LoadTextException;
+	void launchAnalyze(Boolean withSubFolder) throws LoadTextException;
 	
 	/**
 	 * Permet de définir la configuration courante
@@ -500,8 +501,29 @@ public interface IConfigurationControler {
 	 * Méthode permettant de se procurer la liste des fichiers a traité et la possibilité de pouvoir les traiter
 	 * 
 	 * @param pathFolderToAnalyze Répertoire à analyser
+	 * @param withSubFolder Permet de déterminer si on recherche dans les sous dossiers
 	 * @return la liste des fichiers a traité et la possibilité de pouvoir les traiter
 	 * @throws IOException
 	 */
-	FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException;
+	FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Boolean withSubFolder) throws IOException;
+	
+	/**
+	 * Permet de se procurer la totalité des champs de la configuration
+	 * Celle ci sous forme de map (clé, libellé)
+	 * @return la liste de tous les champs
+	 */
+	Map<String, String> getAllField();
+	
+	/**
+	 * Permet de se procurer une ligne structuré avec les éléments en paramétre
+	 * @param field Champ
+	 * @param content Contenu du champ
+	 * @return La ligne structuré
+	 */
+	String getStructuredLine(String field, String content);
+	
+	/**
+	 * Permet de supprimer le fichier d'enregistrement temporaire
+	 */
+	void removeCurrentStateFile();
 }

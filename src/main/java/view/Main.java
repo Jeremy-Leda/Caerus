@@ -38,6 +38,7 @@ import view.beans.ActionUserTypeEnum;
 import view.beans.ExcelTypeGenerationEnum;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionOnClose;
+import view.interfaces.IAnalyzeConfiguration;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 import view.windows.ChooseConfiguration;
@@ -131,6 +132,7 @@ public class Main extends JFrame {
 	// private final JButton stateAnalyzeButton = new JButton();
 	private final JButton moveFileLibraryButton = new JButton();
 	private final IConfigurationControler configurationControler = new ConfigurationControler();
+	private IAnalyzeConfiguration analyzeConfiguration;
 
 	/**
 	 * Constructeur
@@ -147,6 +149,8 @@ public class Main extends JFrame {
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_TITLE), 0);
 			if (JOptionPane.YES_OPTION == result) {
 				this.configurationControler.restoreCurrentState();
+			} else {
+				this.configurationControler.removeCurrentStateFile();
 			}
 		}
 		try {
@@ -156,7 +160,7 @@ public class Main extends JFrame {
 		} catch (IOException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
-
+		analyzeConfiguration = null;
 		createWindow();
 	}
 
@@ -213,7 +217,7 @@ public class Main extends JFrame {
 
 		createAnalyze.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				new LoadTextConfigurationSelector(configurationControler);
+				analyzeConfiguration = new LoadTextConfigurationSelector(configurationControler);
 				try {
 					refreshDisplay();
 					repack();
@@ -742,7 +746,11 @@ public class Main extends JFrame {
 		try {
 			configurationControler.clearAnalyze();
 			refreshDisplay();
-			configurationControler.launchAnalyze();
+			Boolean withSubFolder = Boolean.FALSE;
+			if (null != analyzeConfiguration) {
+				withSubFolder = analyzeConfiguration.getWithSubFolderAnalyze();
+			}
+			configurationControler.launchAnalyze(withSubFolder);
 			refreshDisplay();
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);

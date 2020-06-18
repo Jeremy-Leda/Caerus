@@ -2,6 +2,7 @@ package view.panel;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -9,6 +10,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import view.interfaces.ICheckBoxPanel;
 
@@ -103,6 +106,19 @@ public class CheckBoxPanel implements ICheckBoxPanel {
 			return checkBoxMap.get(number).isEnabled();
 		}
 		return Boolean.FALSE;
+	}
+
+	@Override
+	public void addConsumerOnChange(Integer number, Consumer<?> consumer) {
+		if (checkBoxMap.containsKey(number) && null != consumer) {
+			 checkBoxMap.get(number).addChangeListener(new ChangeListener() {
+				
+				@Override
+				public void stateChanged(ChangeEvent e) {
+					consumer.accept(null);
+				}
+			});
+		}
 	}
 
 }

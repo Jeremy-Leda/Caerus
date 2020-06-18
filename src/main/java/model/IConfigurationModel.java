@@ -31,9 +31,10 @@ public interface IConfigurationModel {
 
 	/**
 	 * Permet de lancer l'analyse des textes
+	 * @param depth Profondeur de recherche dans le dossier
 	 * @throws LoadTextException
 	 */
-	void launchAnalyze() throws LoadTextException ;
+	void launchAnalyze(Integer depth) throws LoadTextException ;
 	
 	/**
 	 * Permet de déplacer tous les fichiers de l'analyse vers la library
@@ -499,8 +500,27 @@ public interface IConfigurationModel {
 	 * Méthode permettant de se procurer la liste des fichiers a traité et la possibilité de pouvoir les traiter
 	 * 
 	 * @param pathFolderToAnalyze Répertoire à analyser
+	 * @param depth Profondeur pour la recherche
 	 * @return la liste des fichiers a traité et la possibilité de pouvoir les traiter
 	 * @throws IOException
 	 */
-	FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException;
+	FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth) throws IOException;
+	
+	/**
+	 * Permet de se procurer la totalité des champs de la configuration
+	 * Celle ci sous forme de map (clé, libellé)
+	 * @return la liste de tous les champs
+	 */
+	Map<String, String> getAllField();
+	
+	/**
+	 * Permet de se procurer le base code de la configuration en cours
+	 * @return le base code
+	 */
+	String getBaseCode();
+	
+	/**
+	 * Permet de supprimer le fichier d'enregistrement temporaire
+	 */
+	void removeCurrentStateFile();
 }

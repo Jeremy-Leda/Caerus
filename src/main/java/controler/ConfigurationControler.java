@@ -54,11 +54,11 @@ public class ConfigurationControler implements IConfigurationControler {
 	private IConfigurationModel configurationModel = new ConfigurationModel();
 
 	@Override
-	public void launchAnalyze() throws LoadTextException {
+	public void launchAnalyze(Boolean withSubFolder) throws LoadTextException {
 		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())
 				&& null != this.configurationModel.getAnalyzeFolder()
 				&& this.configurationModel.getAnalyzeFolder().isDirectory()) {
-			configurationModel.launchAnalyze();
+			configurationModel.launchAnalyze(withSubFolder ? Integer.MAX_VALUE : 1);
 		} else {
 			logger.error("Configuration or path is not compatible");
 		}
@@ -539,11 +539,33 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException {
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Boolean withSubFolder) throws IOException {
 		if (null != pathFolderToAnalyze && pathFolderToAnalyze.isDirectory()) {
-			return this.configurationModel.getNameFileToAnalyzeList(pathFolderToAnalyze);
+			Integer depth = withSubFolder ? Integer.MAX_VALUE : 1;
+			return this.configurationModel.getNameFileToAnalyzeList(pathFolderToAnalyze, depth);
 		}
 		return null;
+	}
+
+	@Override
+	public Map<String, String> getAllField() {
+		return this.configurationModel.getAllField();
+	}
+
+	@Override
+	public String getStructuredLine(String field, String content) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.configurationModel.getBaseCode());
+		sb.append(field);
+		sb.append(content.trim());
+		return sb.toString();
+	}
+
+	@Override
+	public void removeCurrentStateFile() {
+		if (this.configurationModel.haveCurrentStateFile()) {
+			this.configurationModel.removeCurrentStateFile();
+		}
 	}
 
 }

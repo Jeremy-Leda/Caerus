@@ -183,15 +183,6 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Consumer pour récativer les boutons
-	 * 
-	 * @return consumer pour réactiver les boutons
-	 */
-	private Consumer<Void> enableAllButton() {
-		return (v) -> setEnabledForAllButton(true);
-	}
-
-	/**
 	 * Permet de gérer l'activation des boutons
 	 * 
 	 * @param isEnabled Vrai si actif, faux sinon

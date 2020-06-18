@@ -24,10 +24,13 @@ import view.abstracts.ModalJFrameAbstract;
 import view.beans.FilePickerTypeEnum;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;
+import view.interfaces.IAnalyzeConfiguration;
+import view.interfaces.ICheckBoxPanel;
 import view.interfaces.IComboBoxPanel;
 import view.interfaces.IFilePickerPanel;
 import view.interfaces.IInformationPanel;
 import view.panel.ActionPanel;
+import view.panel.CheckBoxPanel;
 import view.panel.ComboBoxPanel;
 import view.panel.FilePickerPanel;
 import view.panel.InformationPanel;
@@ -42,7 +45,7 @@ import view.utils.Constants;
  * @author jerem
  *
  */
-public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
+public class LoadTextConfigurationSelector extends ModalJFrameAbstract implements IAnalyzeConfiguration {
 
 	/**
 	 * 
@@ -56,6 +59,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 	private final IActionPanel actionPanel;
 	private final IInformationPanel informationsFilesPanel;
 	private final IInformationPanel warningFilesPanel;
+	private final ICheckBoxPanel checkBoxPanel;
 
 	/**
 	 * Constructeur
@@ -84,6 +88,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_PANEL_TITLE), ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_MESSAGE), false);
 		this.warningFilesPanel.getJPanel().setVisible(false);
+		this.checkBoxPanel = new CheckBoxPanel(1, false);
 		createWindow();
 	}
 
@@ -91,6 +96,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 	public void initComponents() {
 		fillConfigurationDisplayList();
 		initActionPanel();
+		initCheckBoxPanel();
 		this.filePickerPanel.addConsumerOnChooseFileOk(getConsumerAfterSelectFolder());
 		createContent();
 	}
@@ -108,9 +114,22 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 		content.setLayout(boxlayout);
 		content.add(this.comboBoxPanel.getJPanel());
 		content.add(this.warningFilesPanel.getJPanel());
+		content.add(this.checkBoxPanel.getJPanel());
 		content.add(this.filePickerPanel.getJPanel());
 		content.add(this.informationsFilesPanel.getJPanel());
 		content.add(this.actionPanel.getJPanel());
+	}
+	
+	/**
+	 * Permet d'initialiser le panel de la checkbox
+	 */
+	private void initCheckBoxPanel() {
+		Map<Integer, String> labelMap = new HashMap<>();
+		labelMap.put(0, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_LABEL));
+		this.checkBoxPanel.setStaticLabel(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_PANEL_TITLE), labelMap);
+		this.checkBoxPanel.addConsumerOnChange(0, getConsumerAfterSelectFolder());
 	}
 
 	/**
@@ -142,7 +161,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 		return (v) -> {
 			if (StringUtils.isNotBlank(filePickerPanel.getFile())) {
 				try {
-					FilesToAnalyzeInformation nameFileToAnalyzeList = getControler().getNameFileToAnalyzeList(new File(filePickerPanel.getFile()));
+					FilesToAnalyzeInformation nameFileToAnalyzeList = getControler().getNameFileToAnalyzeList(new File(filePickerPanel.getFile()), this.checkBoxPanel.getCheckBoxIsChecked(0));
 					if (null != nameFileToAnalyzeList) {
 						actionPanel.setEnabled(0, nameFileToAnalyzeList.getLaunchAnalyzeIsOk());
 						warningFilesPanel.getJPanel().setVisible(!nameFileToAnalyzeList.getLaunchAnalyzeIsOk());
@@ -192,7 +211,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 				}
 				getControler().setAnalyzeFolder(new File(filePickerPanel.getFile()));
 				try {
-					getControler().launchAnalyze();
+					getControler().launchAnalyze(checkBoxPanel.getCheckBoxIsChecked(0));
 				} catch (LoadTextException e1) {
 					logger.error(e1.getMessage(), e1);
 				}
@@ -205,6 +224,11 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract {
 	@Override
 	public String getWindowName() {
 		return "Load Text Configuration Selector";
+	}
+
+	@Override
+	public Boolean getWithSubFolderAnalyze() {
+		return this.checkBoxPanel.getCheckBoxIsChecked(0);
 	}
 
 }

@@ -416,6 +416,13 @@ public class UserSettings {
 	public Integer getNbSpecificConfiguration() {
 		return getCurrentConfiguration().getSpecificConfigurationList().size();
 	}
+	
+	/**
+	 * Permet de se procurer la totalité des champs
+	 */
+	public Map<String, String> getAllListField() {
+		return getListField(true, true, true, true);
+	}
 
 	/**
 	 * Permet de se procurer la liste des champs souhaité

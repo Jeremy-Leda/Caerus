@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,6 +13,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,11 +81,12 @@ public class Dispatcher {
 	/**
 	 * Permet de lancer l'analyse des textes dans le dossier d'analyse
 	 * 
+	 * @param depth Profondeur de recherche dans le dossier
 	 * @throws IOException
 	 * @throws LoadTextException
 	 */
-	public void launchAnalyze() throws IOException, LoadTextException {
-		processAndLoadTexts(FolderSettingsEnum.FOLDER_ANALYZE);
+	public void launchAnalyze(Integer depth) throws IOException, LoadTextException {
+		processAndLoadTexts(FolderSettingsEnum.FOLDER_ANALYZE, depth);
 	}
 
 	/**
@@ -93,17 +96,18 @@ public class Dispatcher {
 	 * @throws LoadTextException
 	 */
 	public void loadTexts() throws IOException, LoadTextException {
-		processAndLoadTexts(FolderSettingsEnum.FOLDER_TEXTS);
+		processAndLoadTexts(FolderSettingsEnum.FOLDER_TEXTS, 1);
 	}
 
 	/**
 	 * Permet traiter et de charger les textes
 	 * 
 	 * @param folderType type du dossier à prendre en charge
+	 * @param depth Profondeur de recherche dans le dossier
 	 * @throws IOException       erreur d'éntrée sortie
 	 * @throws LoadTextException Exception dû au chargement des textes
 	 */
-	private void processAndLoadTexts(FolderSettingsEnum folderType) throws IOException, LoadTextException {
+	private void processAndLoadTexts(FolderSettingsEnum folderType, Integer depth) throws IOException, LoadTextException {
 		logger.debug(String.format("CALL processAndLoadTexts => type %s", folderType));
 		File pathToProcess;
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
@@ -111,7 +115,7 @@ public class Dispatcher {
 		} else {
 			pathToProcess = UserSettings.getInstance().getFolder(folderType);
 		}
-		List<MemoryFile> memoryFiles = getMemoryFiles(pathToProcess.toString());
+		List<MemoryFile> memoryFiles = getMemoryFiles(pathToProcess.toString(), depth);
 		UserSettings.getInstance().clearAllSession(folderType);
 		UserSettings.getInstance().addMemoryFilesList(folderType, memoryFiles);
 		memoryFiles.parallelStream().map(f -> new Structuring(f, folderType).getStructuredFile())
@@ -136,12 +140,13 @@ public class Dispatcher {
 	 * à traiter
 	 * 
 	 * @param pathFolderToAnalyze Répertoire à analyser
+	 * @param depth Profondeur de la recherche des fichiers
 	 * @return la liste des fichiers en mémoire
 	 * @throws IOException
 	 */
-	private List<MemoryFile> getMemoryFiles(String pathFolderToAnalyze) throws IOException {
+	private List<MemoryFile> getMemoryFiles(String pathFolderToAnalyze, Integer depth) throws IOException {
 		final List<MemoryFile> listeSortie = new ArrayList<MemoryFile>();
-		Files.walkFileTree(Paths.get(pathFolderToAnalyze), new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(Paths.get(pathFolderToAnalyze), EnumSet.noneOf(FileVisitOption.class), depth, new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				if (!Files.isDirectory(file)) {
@@ -158,13 +163,14 @@ public class Dispatcher {
 	 * Méthode permettant de se procurer la liste des fichiers a traité et la possibilité de pouvoir les traiter
 	 * 
 	 * @param pathFolderToAnalyze Répertoire à analyser
+	 * @param depth profondeur pour la recherche
 	 * @return la liste des fichiers a traité et la possibilité de pouvoir les traiter
 	 * @throws IOException
 	 */
-	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException {
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth) throws IOException {
 		final List<String> nameFileList = new ArrayList<String>();
 		final List<Boolean> launchAnalyzeIsOkList = new ArrayList<Boolean>();
-		Files.walkFileTree(pathFolderToAnalyze.toPath(), new SimpleFileVisitor<Path>() {
+		Files.walkFileTree(pathFolderToAnalyze.toPath(), EnumSet.noneOf(FileVisitOption.class), depth,  new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 				if (!Files.isDirectory(file)) {
@@ -329,6 +335,13 @@ public class Dispatcher {
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
+	}
+	
+	/**
+	 * Permet de supprimer le fichier d'enregistrement temporaire
+	 */
+	public void removeCurrentStateFile() {
+		PathUtils.deleteFile(getCurrentStateFile());
 	}
 
 	/**

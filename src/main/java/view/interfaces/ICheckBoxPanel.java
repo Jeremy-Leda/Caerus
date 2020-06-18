@@ -1,6 +1,7 @@
 package view.interfaces;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * Interface permettant de controler le checkbox panel
@@ -43,6 +44,13 @@ public interface ICheckBoxPanel extends IAccessPanel {
 	 * @return Vrai si c'est le cas
 	 */
 	Boolean getCheckBoxIsEnabled(Integer number);
+	
+	/**
+	 * Permet d'ajouter un consumer sur le changement de la valeur
+	 * @param number numero de la case à cocher
+	 * @param consumer consumer
+	 */
+	void addConsumerOnChange(Integer number, Consumer<?> consumer);
 	
 	
 }

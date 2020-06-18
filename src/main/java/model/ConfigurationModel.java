@@ -50,12 +50,12 @@ public class ConfigurationModel implements IConfigurationModel {
 	private Dispatcher dispatcher = new Dispatcher();
 
 	@Override
-	public void launchAnalyze() throws LoadTextException {
+	public void launchAnalyze(Integer depth) throws LoadTextException {
 		logger.debug("CALL launchAnalyze");
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		try {
-			this.dispatcher.launchAnalyze();
+			this.dispatcher.launchAnalyze(depth);
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -497,9 +497,27 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze) throws IOException {
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth) throws IOException {
 		logger.debug("CALL pathFolderToAnalyze");
-		return this.dispatcher.getNameFileToAnalyzeList(pathFolderToAnalyze);
+		return this.dispatcher.getNameFileToAnalyzeList(pathFolderToAnalyze, depth);
+	}
+
+	@Override
+	public Map<String, String> getAllField() {
+		logger.debug("CALL getAllField");
+		return UserSettings.getInstance().getAllListField();
+	}
+
+	@Override
+	public String getBaseCode() {
+		logger.debug("CALL getBaseCode");
+		return UserSettings.getInstance().getCurrentConfiguration().getBaseCode();
+	}
+
+	@Override
+	public void removeCurrentStateFile() {
+		logger.debug("CALL removeCurrentStateFile");
+		this.dispatcher.removeCurrentStateFile();
 	}
 
 

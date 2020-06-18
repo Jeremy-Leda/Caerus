@@ -253,5 +253,13 @@ public final class Constants {
 	public static final String WINDOW_LOAD_TEXTS_WARNING_MESSAGE="window.load.texts.warning.message";
 	public static final String WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT="window.load.texts.informations.message.default";
 
-	
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE="window.fixed.error.line.information.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE="window.fixed.error.line.information.message";
+	public static final String WINDOW_FIXED_ERROR_LINE_LIST_FIELD_LABEL="window.fixed.error.line.list.field.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_LIST_FIELD_PANEL_TITLE="window.fixed.error.line.list.field.panel.title";
+
+	public static final String WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_PANEL_TITLE="window.load.texts.choose.search.panel.title";
+	public static final String WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_LABEL="window.load.texts.choose.search.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_FIXED_USER_DEFAULT_LABEL="window.fixed.error.line.fixed.user.default.label";
+
 }

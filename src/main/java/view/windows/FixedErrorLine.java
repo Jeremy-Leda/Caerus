@@ -278,15 +278,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE4),
 				false);
-		IGenericAccessPanel genericPanel = new GenericAccessPanel(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_FIXED_PANEL_TITLE));
-		JPanel panelSelectedText = new JPanel();
-		JLabel libelleSelectedText = new JLabel(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_FIXED_EDIT_TEXT_LABEL));
-		panelSelectedText.add(libelleSelectedText);
-		panelSelectedText.add(this.dataTextArea);
-		genericPanel.addComponent(panelSelectedText);
-		this.wizardPanel.addStep(Arrays.asList(informationStep, genericPanel));
+		this.wizardPanel.addStep(Arrays.asList(informationStep));
 	}
 
 	/**

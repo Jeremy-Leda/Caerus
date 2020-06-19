@@ -265,8 +265,6 @@ public final class Constants {
 	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_SELECT_TEXT_LABEL="window.fixed.error.line.selected.data.select.text.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_SELECTED_TEXT_LABEL="window.fixed.error.line.selected.data.selected.text.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_SELECT_TEXT_BUTTON_LABEL="window.fixed.error.line.selected.data.select.text.button.label";
-	public static final String WINDOW_FIXED_ERROR_LINE_FIXED_EDIT_TEXT_LABEL="window.fixed.error.line.fixed.edit.text.label";
-	public static final String WINDOW_FIXED_ERROR_LINE_FIXED_PANEL_TITLE="window.fixed.error.line.fixed.panel.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_WIZARD_PANEL_TITLE="window.fixed.error.line.wizard.panel.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_MODE_PANEL_TITLE="window.fixed.error.line.mode.panel.title";
 	public static final String WINDOW_FIXED_ERROR_LINE_MODE_WIZARD_LABEL="window.fixed.error.line.mode.wizard.label";

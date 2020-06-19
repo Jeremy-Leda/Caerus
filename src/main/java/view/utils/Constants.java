@@ -254,12 +254,33 @@ public final class Constants {
 	public static final String WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT="window.load.texts.informations.message.default";
 
 	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE="window.fixed.error.line.information.panel.title";
-	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE="window.fixed.error.line.information.message";
+	
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE1="window.fixed.error.line.information.message.etape1";
 	public static final String WINDOW_FIXED_ERROR_LINE_LIST_FIELD_LABEL="window.fixed.error.line.list.field.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_LIST_FIELD_PANEL_TITLE="window.fixed.error.line.list.field.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE2="window.fixed.error.line.information.message.etape2";
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE3="window.fixed.error.line.information.message.etape3";
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE4="window.fixed.error.line.information.message.etape4";
+	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_PANEL_TITLE="window.fixed.error.line.selected.data.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_SELECT_TEXT_LABEL="window.fixed.error.line.selected.data.select.text.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_SELECTED_TEXT_LABEL="window.fixed.error.line.selected.data.selected.text.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_SELECT_TEXT_BUTTON_LABEL="window.fixed.error.line.selected.data.select.text.button.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_FIXED_EDIT_TEXT_LABEL="window.fixed.error.line.fixed.edit.text.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_FIXED_PANEL_TITLE="window.fixed.error.line.fixed.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_WIZARD_PANEL_TITLE="window.fixed.error.line.wizard.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_MODE_PANEL_TITLE="window.fixed.error.line.mode.panel.title";
+	public static final String WINDOW_FIXED_ERROR_LINE_MODE_WIZARD_LABEL="window.fixed.error.line.mode.wizard.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_MODE_EXPERT_LABEL="window.fixed.error.line.mode.expert.label";
+	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_EXPERT="window.fixed.error.line.information.message.expert";
+
+	
 
 	public static final String WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_PANEL_TITLE="window.load.texts.choose.search.panel.title";
 	public static final String WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_LABEL="window.load.texts.choose.search.label";
-	public static final String WINDOW_FIXED_ERROR_LINE_FIXED_USER_DEFAULT_LABEL="window.fixed.error.line.fixed.user.default.label";
+
+	
+	public static final String WINDOW_WIZARD_NAVIGATION_PANEL_TITLE="window.wizard.navigation.panel.title";
+	public static final String WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL="window.wizard.navigation.previous.button.label";
+	public static final String WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL="window.wizard.navigation.next.button.label";
 
 }

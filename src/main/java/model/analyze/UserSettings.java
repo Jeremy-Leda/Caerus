@@ -593,9 +593,7 @@ public class UserSettings {
 				.sorted(Comparator.comparing(StructuredField::getOrder)).collect(Collectors.toList());
 		for (StructuredField structuredField : listStructuredField) {
 			List<String> listValues = mapFinal.get(structuredField.getFieldName());
-			if (null == listValues) {
-				listValues = new ArrayList<>();
-			}
+			listValues.removeIf(v -> StringUtils.isBlank(v));
 			mapFinalOrdered.put(structuredField.getFieldName(), listValues);
 		}
 		return mapFinalOrdered;

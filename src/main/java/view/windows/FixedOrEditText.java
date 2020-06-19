@@ -133,6 +133,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		}
 		this.informationsTextPanel.refreshComponents(getControler().getConfigurationFieldCommonFile());
 		this.informationsTextPanel.addKeyListenerOnAllField(getKeyListenerForIncreaseRow());
+		displayIconIfHaveErrorInSpecific();
 		refreshFilePanel();
 	}
 
@@ -170,7 +171,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet d'afficher une icone de warnin s'il y a une erreur dans les structures spécifiques
+	 * Permet d'afficher une icone de warning s'il y a une erreur dans les structures spécifiques
 	 */
 	private void displayIconIfHaveErrorInSpecific() {
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {

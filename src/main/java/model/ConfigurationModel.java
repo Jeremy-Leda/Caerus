@@ -35,11 +35,13 @@ import model.analyze.constants.FolderSettingsEnum;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.beans.ExportTypeEnum;
 
 /**
  * 
- * Cette classe permet d'intéragir avec les informations stockés et effectuer des actions
- * Il fait des appels au dispatcher et à la configuration utilisateur
+ * Cette classe permet d'intéragir avec les informations stockés et effectuer
+ * des actions Il fait des appels au dispatcher et à la configuration
+ * utilisateur
  * 
  * @author jerem
  *
@@ -249,7 +251,8 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void loadNextErrorText() {
 		logger.debug("CALL loadNextErrorText");
-		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysInError(ErrorTypeEnum.STRUCTURED_TEXT).get(0),
+		UserSettings.getInstance().loadErrorText(
+				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.STRUCTURED_TEXT).get(0),
 				ErrorTypeEnum.STRUCTURED_TEXT);
 	}
 
@@ -298,8 +301,8 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void loadNextErrorBlankLine() {
 		logger.debug("CALL loadNextErrorBlankLine");
-		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysInError(ErrorTypeEnum.BLANK_LINE).get(0),
-				ErrorTypeEnum.BLANK_LINE);
+		UserSettings.getInstance().loadErrorText(
+				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.BLANK_LINE).get(0), ErrorTypeEnum.BLANK_LINE);
 	}
 
 	@Override
@@ -313,7 +316,7 @@ public class ConfigurationModel implements IConfigurationModel {
 		logger.debug("CALL getNbTextLoadedForTexts");
 		return UserSettings.getInstance().getUserStructuredTextList(FolderSettingsEnum.FOLDER_TEXTS).size();
 	}
-	
+
 	@Override
 	public Boolean haveBlankLinesInErrorRemaining() {
 		logger.debug("CALL haveBlankLinesInErrorRemaining");
@@ -324,8 +327,8 @@ public class ConfigurationModel implements IConfigurationModel {
 	public Map<String, String> getConfigurationSpecificLabelNameFileMap() {
 		logger.debug("CALL getConfigurationSpecificLabelNameFileMap");
 		if (null != UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList()) {
-			return UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
-					.collect(Collectors.toMap(SpecificConfiguration::getLabel, SpecificConfiguration::getNameFileSuffix));
+			return UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream().collect(
+					Collectors.toMap(SpecificConfiguration::getLabel, SpecificConfiguration::getNameFileSuffix));
 		}
 		return new HashMap<String, String>();
 	}
@@ -341,7 +344,7 @@ public class ConfigurationModel implements IConfigurationModel {
 		logger.debug("CALL generateExcelFromTexts");
 		this.dispatcher.generateExcel(FolderSettingsEnum.FOLDER_TEXTS, cmd);
 	}
-	
+
 	@Override
 	public Map<String, String> getFieldConfigurationNameLabelMap() {
 		logger.debug("CALL getFieldConfigurationNameLabelMap");
@@ -367,7 +370,8 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void loadNextErrorMetaBlankLine() {
 		logger.debug("CALL loadNextErrorMetaBlankLine");
-		UserSettings.getInstance().loadErrorText(UserSettings.getInstance().getKeysInError(ErrorTypeEnum.META_BLANK_LINE).get(0),
+		UserSettings.getInstance().loadErrorText(
+				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.META_BLANK_LINE).get(0),
 				ErrorTypeEnum.META_BLANK_LINE);
 	}
 
@@ -452,7 +456,8 @@ public class ConfigurationModel implements IConfigurationModel {
 			if (StringUtils.isBlank(filterCorpus.getCorpusName()) && filterCorpus.getFiterTextList().isEmpty()) {
 				UserSettings.getInstance().addAllUserStructuredTextToKeyFilterList(FolderSettingsEnum.FOLDER_TEXTS);
 			} else {
-				UserSettings.getInstance().applyFilterOnCorpusForFolderText(filterCorpus, FolderSettingsEnum.FOLDER_TEXTS);
+				UserSettings.getInstance().applyFilterOnCorpusForFolderText(filterCorpus,
+						FolderSettingsEnum.FOLDER_TEXTS);
 			}
 		}
 	}
@@ -472,13 +477,15 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public List<String> getConfigurationNameList() {
 		logger.debug("CALL getConfigurationNameList");
-		return UserSettings.getInstance().getConfigurationList().stream().map(c -> c.getName()).collect(Collectors.toList());
+		return UserSettings.getInstance().getConfigurationList().stream().map(c -> c.getName())
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public void setCurrentConfiguration(String name) {
 		logger.debug(String.format("CALL setCurrentConfiguration : Nom de la configuration %s", name));
-		Optional<Configuration> findFirstConfiguration = UserSettings.getInstance().getConfigurationList().stream().filter(c -> name.equals(c.getName())).findFirst();
+		Optional<Configuration> findFirstConfiguration = UserSettings.getInstance().getConfigurationList().stream()
+				.filter(c -> name.equals(c.getName())).findFirst();
 		if (findFirstConfiguration.isPresent()) {
 			UserSettings.getInstance().setCurrentConfiguration(findFirstConfiguration.get());
 		}
@@ -497,7 +504,8 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth) throws IOException {
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth)
+			throws IOException {
 		logger.debug("CALL pathFolderToAnalyze");
 		return this.dispatcher.getNameFileToAnalyzeList(pathFolderToAnalyze, depth);
 	}
@@ -520,6 +528,22 @@ public class ConfigurationModel implements IConfigurationModel {
 		this.dispatcher.removeCurrentStateFile();
 	}
 
+	@Override
+	public void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException {
+		logger.debug(String.format("CALL export : TypeExport %s, Directory %s, nameFile %s", typeExport, directory,
+				StringUtils.defaultString(nameFile)));
+		switch (typeExport) {
+		case ALL_DOCUMENTS:
+			this.dispatcher.exportAllDocuments(new File(directory));
+			break;
+		case DOCUMENT:
+			this.dispatcher.exportDocument(new File(directory), nameFile);
+			break;
+		case SEARCH_RESULTS:
+			this.dispatcher.exportResultOfSearch(new File(directory), nameFile);
+			break;
+		}
 
+	}
 
 }

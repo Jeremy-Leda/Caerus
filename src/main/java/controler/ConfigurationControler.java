@@ -38,6 +38,7 @@ import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
+import view.beans.ExportTypeEnum;
 import view.beans.Filter;
 import view.beans.FilterTypeEnum;
 
@@ -50,6 +51,7 @@ import view.beans.FilterTypeEnum;
  */
 public class ConfigurationControler implements IConfigurationControler {
 
+	private static final String EXTENSION_TXT = ".txt";
 	private Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
 	private IConfigurationModel configurationModel = new ConfigurationModel();
 
@@ -565,6 +567,16 @@ public class ConfigurationControler implements IConfigurationControler {
 	public void removeCurrentStateFile() {
 		if (this.configurationModel.haveCurrentStateFile()) {
 			this.configurationModel.removeCurrentStateFile();
+		}
+	}
+
+	@Override
+	public void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException {
+		if (null != typeExport && StringUtils.isNotBlank(directory)) {
+			if (StringUtils.isNotBlank(nameFile) && !StringUtils.contains(nameFile, EXTENSION_TXT)) {
+				nameFile = StringUtils.join(nameFile, EXTENSION_TXT);
+			}
+			this.configurationModel.export(typeExport, directory, nameFile);
 		}
 	}
 

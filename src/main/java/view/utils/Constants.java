@@ -281,4 +281,26 @@ public final class Constants {
 	public static final String WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL="window.wizard.navigation.previous.button.label";
 	public static final String WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL="window.wizard.navigation.next.button.label";
 
+	public static final String WINDOW_MANAGE_TEXTS_EXPORT_DOCUMENT_TEXT_BUTTON_LABEL="window.manage.texts.export.document.text.button.label";
+
+	
+	public static final String WINDOW_EXPORT_DOCUMENT_TITLE="window.export.document.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_PANEL_TITLE="window.export.document.choose.directory.panel.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_LABEL="window.export.document.choose.directory.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_MODE_PANEL_TITLE="window.export.document.mode.panel.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_MODE_DOCUMENT_LABEL="window.export.document.mode.document.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_MODE_ALL_DOCUMENTS_LABEL="window.export.document.mode.all.documents.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_MODE_RESULT_SEARCH_LABEL="window.export.document.mode.result.search.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DOCUMENT_PANEL_TITLE="window.export.document.choose.document.panel.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DOCUMENT_LABEL="window.export.document.choose.document.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_FILE_PANEL_TITLE="window.export.document.choose.file.panel.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_FILE_LABEL="window.export.document.choose.file.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_BUTTON_PANEL_TITLE="window.export.document.button.panel.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_BUTTON_EXPORT_LABEL="window.export.document.button.export.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE_TITLE="window.export.document.information.message.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE="window.export.document.information.message";
+	public static final String WINDOW_EXPORT_DOCUMENT_BUTTON_CLOSE_LABEL="window.export.document.button.close.label";
+	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_DIALOG_TITLE="window.export.document.choose.directory.dialog.title";
+
+	
 }

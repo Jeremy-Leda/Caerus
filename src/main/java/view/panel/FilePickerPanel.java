@@ -45,6 +45,18 @@ public class FilePickerPanel implements IFilePickerPanel {
 	 * @param filePickerType Type de filepicker
 	 */
 	public FilePickerPanel(String titlePanel, String dialogTitle, FilePickerTypeEnum filePickerType) {
+		this(titlePanel, dialogTitle, null, filePickerType);
+	}
+
+	/**
+	 * Permet de créer un filepicker
+	 * 
+	 * @param titlePanel     Titre du panel
+	 * @param dialogTitle    Titre de la fenêtre de dialogue
+	 * @param label          Libellé devant la zone de texte
+	 * @param filePickerType Type de filepicker
+	 */
+	public FilePickerPanel(String titlePanel, String dialogTitle, String label, FilePickerTypeEnum filePickerType) {
 		this.filePickerPanel = new JPanel();
 		this.filePickerPanel.setBorder(BorderFactory.createTitledBorder(titlePanel));
 		this.fileChooser = new JFileChooser();
@@ -63,6 +75,9 @@ public class FilePickerPanel implements IFilePickerPanel {
 					.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_LABEL));
 			this.fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			break;
+		}
+		if (StringUtils.isNotBlank(label)) {
+			this.label.setText(label);
 		}
 		this.button.addActionListener(new ActionListener() {
 

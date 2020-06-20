@@ -53,6 +53,16 @@ public class PathUtils {
 	}
 	
 	/**
+	 * Permet de copier un fichier
+	 * @param oldFile ancien fichier
+	 * @param newFile nouveau fichier
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	public static void copyFile(File oldFile, File newFile) throws IOException {
+		Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+	}
+	
+	/**
 	 * Permet de déplacer un fichier dans un nouveau repertoire
 	 * @param fileToMove fichier à déplacer
 	 * @param newDirectory nouveau repertoire

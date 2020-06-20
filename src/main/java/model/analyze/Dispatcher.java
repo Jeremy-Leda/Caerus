@@ -36,6 +36,7 @@ import model.analyze.beans.SaveCurrentFixedText;
 import model.analyze.beans.SpecificConfiguration;
 import model.analyze.beans.StructuredField;
 import model.analyze.beans.StructuredFile;
+import model.analyze.beans.StructuredText;
 import model.analyze.beans.specific.ConfigurationStructuredText;
 import model.analyze.constants.FolderSettingsEnum;
 import model.excel.CreateExcel;
@@ -103,11 +104,12 @@ public class Dispatcher {
 	 * Permet traiter et de charger les textes
 	 * 
 	 * @param folderType type du dossier à prendre en charge
-	 * @param depth Profondeur de recherche dans le dossier
+	 * @param depth      Profondeur de recherche dans le dossier
 	 * @throws IOException       erreur d'éntrée sortie
 	 * @throws LoadTextException Exception dû au chargement des textes
 	 */
-	private void processAndLoadTexts(FolderSettingsEnum folderType, Integer depth) throws IOException, LoadTextException {
+	private void processAndLoadTexts(FolderSettingsEnum folderType, Integer depth)
+			throws IOException, LoadTextException {
 		logger.debug(String.format("CALL processAndLoadTexts => type %s", folderType));
 		File pathToProcess;
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
@@ -128,9 +130,9 @@ public class Dispatcher {
 			}
 		}
 		if (null != UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList())
-		UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
-				.forEach(sc -> UserSettings.getInstance().addConfigurationStructuredText(folderType,
-						new ConfigurationStructuredText(sc)));
+			UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
+					.forEach(sc -> UserSettings.getInstance().addConfigurationStructuredText(folderType,
+							new ConfigurationStructuredText(sc)));
 		UserSettings.getInstance().getConfigurationStructuredTextList(folderType).stream()
 				.forEach(st -> structuredTextSpecificProcess(memoryFiles, folderType, st));
 	}
@@ -140,47 +142,52 @@ public class Dispatcher {
 	 * à traiter
 	 * 
 	 * @param pathFolderToAnalyze Répertoire à analyser
-	 * @param depth Profondeur de la recherche des fichiers
+	 * @param depth               Profondeur de la recherche des fichiers
 	 * @return la liste des fichiers en mémoire
 	 * @throws IOException
 	 */
 	private List<MemoryFile> getMemoryFiles(String pathFolderToAnalyze, Integer depth) throws IOException {
 		final List<MemoryFile> listeSortie = new ArrayList<MemoryFile>();
-		Files.walkFileTree(Paths.get(pathFolderToAnalyze), EnumSet.noneOf(FileVisitOption.class), depth, new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				if (!Files.isDirectory(file)) {
-					logger.debug(String.format("Traitement du fichier %s", file.toString()));
-					listeSortie.add(new Loader(file).getMemoryFile());
-				}
-				return FileVisitResult.CONTINUE;
-			}
-		});
+		Files.walkFileTree(Paths.get(pathFolderToAnalyze), EnumSet.noneOf(FileVisitOption.class), depth,
+				new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+						if (!Files.isDirectory(file)) {
+							logger.debug(String.format("Traitement du fichier %s", file.toString()));
+							listeSortie.add(new Loader(file).getMemoryFile());
+						}
+						return FileVisitResult.CONTINUE;
+					}
+				});
 		return listeSortie;
 	}
-	
+
 	/**
-	 * Méthode permettant de se procurer la liste des fichiers a traité et la possibilité de pouvoir les traiter
+	 * Méthode permettant de se procurer la liste des fichiers a traité et la
+	 * possibilité de pouvoir les traiter
 	 * 
 	 * @param pathFolderToAnalyze Répertoire à analyser
-	 * @param depth profondeur pour la recherche
-	 * @return la liste des fichiers a traité et la possibilité de pouvoir les traiter
+	 * @param depth               profondeur pour la recherche
+	 * @return la liste des fichiers a traité et la possibilité de pouvoir les
+	 *         traiter
 	 * @throws IOException
 	 */
-	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth) throws IOException {
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Integer depth)
+			throws IOException {
 		final List<String> nameFileList = new ArrayList<String>();
 		final List<Boolean> launchAnalyzeIsOkList = new ArrayList<Boolean>();
-		Files.walkFileTree(pathFolderToAnalyze.toPath(), EnumSet.noneOf(FileVisitOption.class), depth,  new SimpleFileVisitor<Path>() {
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-				if (!Files.isDirectory(file)) {
-					String fileName = file.getFileName().toString();
-					nameFileList.add(fileName);
-					launchAnalyzeIsOkList.add("txt".equals(FilenameUtils.getExtension(fileName)));
-				}
-				return FileVisitResult.CONTINUE;
-			}
-		});
+		Files.walkFileTree(pathFolderToAnalyze.toPath(), EnumSet.noneOf(FileVisitOption.class), depth,
+				new SimpleFileVisitor<Path>() {
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+						if (!Files.isDirectory(file)) {
+							String fileName = file.getFileName().toString();
+							nameFileList.add(fileName);
+							launchAnalyzeIsOkList.add("txt".equals(FilenameUtils.getExtension(fileName)));
+						}
+						return FileVisitResult.CONTINUE;
+					}
+				});
 		boolean launchAnalyzeIsOk = launchAnalyzeIsOkList.stream().allMatch(b -> Boolean.TRUE.equals(b));
 		return new FilesToAnalyzeInformation(nameFileList, launchAnalyzeIsOk);
 	}
@@ -336,7 +343,7 @@ public class Dispatcher {
 			logger.error(e.getMessage(), e);
 		}
 	}
-	
+
 	/**
 	 * Permet de supprimer le fichier d'enregistrement temporaire
 	 */
@@ -391,13 +398,13 @@ public class Dispatcher {
 			}
 		}
 	}
-	
+
 	/**
-	 * Permet de supprimer définitivement un texte
-	 * Suppression logique et physique
-	 * @param key Clé du texte
+	 * Permet de supprimer définitivement un texte Suppression logique et physique
+	 * 
+	 * @param key        Clé du texte
 	 * @param folderType type du dossier
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void deleteTextAndWriteCorpus(String key, FolderSettingsEnum folderType) throws IOException {
 		String fileName = UserSettings.getInstance().getCorpusNameOfText(key, folderType);
@@ -466,8 +473,7 @@ public class Dispatcher {
 		CurrentUserConfiguration currentUserConfiguration;
 		if (userConfigurationFile.exists()) {
 			InputStream is = new FileInputStream(userConfigurationFile);
-			currentUserConfiguration = JSonFactoryUtils.createObjectFromJsonFile(is,
-					CurrentUserConfiguration.class);
+			currentUserConfiguration = JSonFactoryUtils.createObjectFromJsonFile(is, CurrentUserConfiguration.class);
 		} else {
 			currentUserConfiguration = new CurrentUserConfiguration();
 			String rootPath = PathUtils.getCaerusFolder();
@@ -591,18 +597,82 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'ajouter la configuration par défaut si le dossier des configurations est vide
-	 * @throws IOException Exception d'entrée sortie
+	 * Permet d'ajouter la configuration par défaut si le dossier des configurations
+	 * est vide
+	 * 
+	 * @throws IOException          Exception d'entrée sortie
 	 * @throws JsonMappingException Json mapping exception
-	 * @throws JsonParseException Json parse exception
+	 * @throws JsonParseException   Json parse exception
 	 */
-	private void createDefaultConfigurationIfFolderIsEmpty() throws JsonParseException, JsonMappingException, IOException {
+	private void createDefaultConfigurationIfFolderIsEmpty()
+			throws JsonParseException, JsonMappingException, IOException {
 		String rootPath = PathUtils.getCaerusFolder();
 		File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONFIGURATIONS);
 		if (configurationsPath.isDirectory() && configurationsPath.list().length == 0) {
 			Configuration basicalConfiguration = RessourcesUtils.getInstance().getBasicalConfiguration();
-			JSonFactoryUtils.createJsonInFile(basicalConfiguration, new File(configurationsPath, CONFIGURATION_CLASSIC_NAME + ".json"));
+			JSonFactoryUtils.createJsonInFile(basicalConfiguration,
+					new File(configurationsPath, CONFIGURATION_CLASSIC_NAME + ".json"));
 		}
 	}
-	
+
+	/**
+	 * Permet de sauvegarder tous les documents
+	 * 
+	 * @param directory Repertoire de sauvegarde
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	public void exportAllDocuments(File directory) throws IOException {
+		File directoryForSaveTextsInLibrary = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+		for (File file : directoryForSaveTextsInLibrary.listFiles()) {
+			PathUtils.copyFile(file, new File(directory, file.getName()));
+		}
+	}
+
+	/**
+	 * Permet de sauvegarder un document
+	 * 
+	 * @param directory Repertoire de sauvegarde
+	 * @param nameFile  Nom du fichier à sauvegarder
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	public void exportDocument(File directory, String nameFile) throws IOException {
+		File directoryForSaveTextsInLibrary = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+		Optional<File> optionalFileFound = Arrays.asList(directoryForSaveTextsInLibrary.listFiles()).stream()
+				.filter(f -> StringUtils.defaultString(nameFile).equals(f.getName())).findFirst();
+		if (optionalFileFound.isPresent()) {
+			PathUtils.copyFile(optionalFileFound.get(), new File(directory, nameFile));
+		} else {
+			throw new IOException("File not found");
+		}
+	}
+
+	/**
+	 * Permet de sauvegarder les textes du résultat de la recherche dans un nouveau
+	 * document
+	 * 
+	 * @param directory Repertoire de sauvegarde
+	 * @param nameFile  Nom du fichier pour la sauvegarde
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	public void exportResultOfSearch(File directory, String nameFile) throws IOException {
+		List<StructuredText> structuredTextList = UserSettings.getInstance()
+				.getUserStructuredTextList(FolderSettingsEnum.FOLDER_TEXTS).parallelStream()
+				.filter(ust -> UserSettings.getInstance().getKeysFilteredList().contains(ust.getKey()))
+				.map(ust -> ust.getStructuredText()).collect(Collectors.toList());
+		writeCorpus(directory, nameFile, structuredTextList);
+	}
+
+	/**
+	 * Permet d'écrire le corpus
+	 * 
+	 * @param structuredTextList Liste des textes structurés
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	public void writeCorpus(File directory, String nameFile, List<StructuredText> structuredTextList)
+			throws IOException {
+		try (Writer writer = new Writer(directory, nameFile)) {
+			UserSettings.getInstance().writeCorpus(writer, structuredTextList);
+		}
+	}
+
 }

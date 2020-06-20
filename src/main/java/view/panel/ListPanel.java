@@ -1,6 +1,5 @@
 package view.panel;
 
-import java.awt.Dimension;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -11,7 +10,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 

@@ -19,6 +19,7 @@ import model.analyze.constants.FolderSettingsEnum;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.beans.ExportTypeEnum;
 
 /**
  * 
@@ -523,4 +524,13 @@ public interface IConfigurationModel {
 	 * Permet de supprimer le fichier d'enregistrement temporaire
 	 */
 	void removeCurrentStateFile();
+	
+	/**
+	 * Permet d'exporter des documents en fonction du type
+	 * @param typeExport Type d'export
+	 * @param directory dossier d'export
+	 * @param file Nom du fichier
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException;
 }

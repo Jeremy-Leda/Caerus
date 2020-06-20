@@ -416,7 +416,7 @@ public class UserSettings {
 	public Integer getNbSpecificConfiguration() {
 		return getCurrentConfiguration().getSpecificConfigurationList().size();
 	}
-	
+
 	/**
 	 * Permet de se procurer la totalité des champs
 	 */
@@ -538,22 +538,26 @@ public class UserSettings {
 
 	/**
 	 * Permet de savoir s'il y a des champs spécifiques en erreur
+	 * 
 	 * @return Vrai si c'est le cas, faux sinon
 	 */
 	public Boolean haveErrorInSpecificFieldInEditingCorpus() {
 		int nbConfiguration = currentConfiguration.getSpecificConfigurationList().size();
 		for (int i = 0; i < nbConfiguration; i++) {
-			Map<String, List<String>> mapOfSpecificFieldProcessedInEditingCorpus = getMapOfSpecificFieldProcessedInEditingCorpus(i);
-			long nbListWithDifferentNbValues = mapOfSpecificFieldProcessedInEditingCorpus.values().stream().map(list -> list.size()).distinct().count();
+			Map<String, List<String>> mapOfSpecificFieldProcessedInEditingCorpus = getMapOfSpecificFieldProcessedInEditingCorpus(
+					i);
+			long nbListWithDifferentNbValues = mapOfSpecificFieldProcessedInEditingCorpus.values().stream()
+					.map(list -> list.size()).distinct().count();
 			if (nbListWithDifferentNbValues > 1) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
 	/**
-	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction pour avoir le même nombre d'élément
+	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction
+	 * pour avoir le même nombre d'élément
 	 * 
 	 * @param index index de la configuration utilisé
 	 * @return la map des champs spécifique
@@ -569,9 +573,10 @@ public class UserSettings {
 		});
 		return mapFinalOrdered;
 	}
-	
+
 	/**
 	 * Permet de se procurer la map des champs spécifiques qui a été traité
+	 * 
 	 * @param index index de la configuration utilisé
 	 * @return la map des champs spécifiques traité
 	 */
@@ -610,6 +615,28 @@ public class UserSettings {
 		writeLines(writer, EDITING_METAFIELD_MAP);
 		// On écrit les textes
 		for (LinkedHashMap<String, String> text : EDITING_CORPUS_TEXTS_LIST) {
+			writeLines(writer, text);
+			writer.addBreakLine();
+		}
+	}
+
+	/**
+	 * Permet d'écrire le corpus sur le disque
+	 * 
+	 * @param writer             le writer
+	 * @param structuredTextList Liste des textes structurés à écrire
+	 * @throws IOException erreur d'entrée sortie
+	 */
+	public void writeCorpus(IWriteText writer, List<StructuredText> structuredTextList) throws IOException {
+		Map<String, String> metaFieldMap = getListFieldMetaFile().entrySet().stream()
+				.collect(Collectors.toMap(Entry::getKey, s -> StringUtils.EMPTY));
+		Map<String, String> listAllCommonField = getListField(false, true, true, true);
+		// On écrit les champ meta
+		writeLines(writer, metaFieldMap);
+		// On écrit les textes structurés
+		for (StructuredText structuredText : structuredTextList) {
+			Map<String, String> text = new LinkedHashMap<String, String>();
+			listAllCommonField.keySet().forEach(key -> text.put(key, structuredText.getContent(key)));
 			writeLines(writer, text);
 			writer.addBreakLine();
 		}
@@ -873,7 +900,7 @@ public class UserSettings {
 	 */
 	public void clearAllSession(FolderSettingsEnum folder) {
 		clearCurrentFolderUserTexts(folder);
-		clearEditingCorpus();		
+		clearEditingCorpus();
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folder)) {
 			clearKeyFilteredList();
 		}
@@ -1212,9 +1239,10 @@ public class UserSettings {
 			});
 		}
 	}
-	
+
 	/**
 	 * Permet de se procurer la liste des configurations possibles
+	 * 
 	 * @return la liste des configurations
 	 */
 	public List<Configuration> getConfigurationList() {

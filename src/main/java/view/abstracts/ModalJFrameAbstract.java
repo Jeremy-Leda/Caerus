@@ -24,8 +24,8 @@ import view.interfaces.IModalFrameRepack;
 
 /**
  * 
- * Abstract permettant de gérer l'affichage avec une fenêtre modal Fournis les
- * méthodes utilitaire pour les JFrame
+ * Abstract permettant de gérer l'affichage avec une fenêtre modal 
+ * Fournis les méthodes utilitaire pour les JFrame
  * 
  * @author jerem
  *

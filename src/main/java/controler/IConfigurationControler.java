@@ -17,6 +17,7 @@ import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
+import view.beans.ExportTypeEnum;
 import view.beans.Filter;
 
 /**
@@ -526,4 +527,13 @@ public interface IConfigurationControler {
 	 * Permet de supprimer le fichier d'enregistrement temporaire
 	 */
 	void removeCurrentStateFile();
+	
+	/**
+	 * Permet d'exporter des documents en fonction du type
+	 * @param typeExport Type d'export
+	 * @param directory dossier d'export
+	 * @param file Nom du fichier
+	 * @throws IOException Erreur d'entrée sortie
+	 */
+	void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException;
 }

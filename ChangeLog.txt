@@ -29,3 +29,10 @@ Caerus 1.0.0 - 13/06/2020
 - Ajout de " sur la fenêtre des filtres
 - Revue de la traduction (phase 1)
 - Ajout d'une icone sur la zone des textes losqu'il y a une erreur de structure
+
+Caerus 1.0.0 - 13/06/2020 au 19/06/2020
+- Revue de l'interface de corrections des lignes
+- Correction de bug
+
+Caerus 1.1.0 - 20/06/2020
+- Ajout de la fonctionnalité d'export des documents

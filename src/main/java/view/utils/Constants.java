@@ -301,6 +301,7 @@ public final class Constants {
 	public static final String WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE="window.export.document.information.message";
 	public static final String WINDOW_EXPORT_DOCUMENT_BUTTON_CLOSE_LABEL="window.export.document.button.close.label";
 	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_DIALOG_TITLE="window.export.document.choose.directory.dialog.title";
+	public static final String WINDOW_EXPORT_DOCUMENT_INFORMATION_SEARCH_MESSAGE="window.export.document.information.search.message";
 
 	
 }

@@ -139,11 +139,6 @@ public class ExportDocument extends ModalJFrameAbstract {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					goForExport();
-					new UserInformation(
-							ConfigurationUtils.getInstance()
-									.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE_TITLE),
-							getControler(), PictureTypeEnum.INFORMATION, ConfigurationUtils.getInstance()
-									.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE));
 					closeFrame();
 				} catch (IOException e1) {
 					new UserInformation(
@@ -312,13 +307,28 @@ public class ExportDocument extends ModalJFrameAbstract {
 		switch (getExportTypeSelected()) {
 		case ALL_DOCUMENTS:
 			getControler().export(getExportTypeSelected(), chooseFolderPanel.getFile(), null);
+			new UserInformation(
+					ConfigurationUtils.getInstance()
+							.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE_TITLE),
+					getControler(), PictureTypeEnum.INFORMATION, ConfigurationUtils.getInstance()
+							.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE));
 			break;
 		case DOCUMENT:
 			getControler().export(getExportTypeSelected(), chooseFolderPanel.getFile(),
 					chooseDocumentPanel.getLabelSelected());
+			new UserInformation(
+					ConfigurationUtils.getInstance()
+							.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE_TITLE),
+					getControler(), PictureTypeEnum.INFORMATION, ConfigurationUtils.getInstance()
+							.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE));
 			break;
 		case SEARCH_RESULTS:
 			getControler().export(getExportTypeSelected(), chooseFolderPanel.getFile(), nameFile.getText());
+			new UserInformation(
+					ConfigurationUtils.getInstance()
+							.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_MESSAGE_TITLE),
+					getControler(), PictureTypeEnum.INFORMATION, ConfigurationUtils.getInstance()
+							.getDisplayMessage(Constants.WINDOW_EXPORT_DOCUMENT_INFORMATION_SEARCH_MESSAGE));
 			break;
 		}
 	}

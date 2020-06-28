@@ -1,5 +1,6 @@
 package model.analyze.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,6 +63,9 @@ public class SpecificConfiguration {
 	 * @return les champs à ignorer
 	 */
 	public List<String> getIgnoredFieldList() {
+		if (null == ignoredFieldList) {
+			this.ignoredFieldList = new ArrayList<String>();
+		}
 		return ignoredFieldList;
 	}
 
@@ -94,6 +98,9 @@ public class SpecificConfiguration {
 	 * @return les champs d'en tête
 	 */
 	public List<String> getHeaderFieldList() {
+		if (null == headerFieldList) {
+			this.headerFieldList = new ArrayList<String>();
+		}
 		return headerFieldList;
 	}
 

@@ -4,6 +4,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import javax.swing.JComponent;
@@ -98,6 +99,11 @@ public class ContentTextFieldTextPanel extends ContentTextPanelAbstract<JTextFie
 	@Override
 	public JComponent getObjectForListener(JTextField field) {
 		return field;
+	}
+
+	@Override
+	public void setRefreshDisplayConsumer(Consumer<?> refreshDisplay) {
+
 	}
 	
 

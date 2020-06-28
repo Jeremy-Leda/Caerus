@@ -58,6 +58,7 @@ public class Structuring {
 		final StructuredFile sf = new StructuredFile(memoryFile);
 		final List<String> listLines = new ArrayList<String>();
 		final List<StructuredField> listStructuredField = new ArrayList<StructuredField>();
+		StructuredField structuredFieldNewText = null;
 		memoryFile.createIterator();
 		Integer number = 1;
 		while (memoryFile.hasLine()) {
@@ -65,7 +66,8 @@ public class Structuring {
 			checkLineAndAddErrorIfNecessary(l, memoryFile);
 			StructuredField structuredFieldIfPossible = getStructuredFieldIfPossible(l);
 			if (null != structuredFieldIfPossible) {
-				if (listStructuredField.contains(structuredFieldIfPossible)) {					
+				if (listStructuredField.contains(structuredFieldIfPossible)) {
+					structuredFieldNewText = checkAndSaveInconsistencyChangeText(structuredFieldNewText, structuredFieldIfPossible, memoryFile.getCurrentLine());
 					listStructuredField.clear();
 					number = processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
 				}
@@ -77,6 +79,19 @@ public class Structuring {
 			processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
 		}
 		return sf;
+	}
+	
+	/**
+	 * Permet de vérifier et de sauvegarder les problèmes d'incohérences suite au changement de balise de référence pour les nouveaux textes
+	 * @param oldStructuredField Ancien champ structuré
+	 * @param newStructuredField Nouveau champ structuré
+	 * @return
+	 */
+	private StructuredField checkAndSaveInconsistencyChangeText(StructuredField oldStructuredField, StructuredField newStructuredField, Integer nbLine) {
+		if (null != oldStructuredField && !oldStructuredField.equals(newStructuredField)) {
+			UserSettings.getInstance().addInconsistencyError(oldStructuredField, newStructuredField, nbLine);
+		}
+		return newStructuredField;
 	}
 
 	/**

@@ -32,14 +32,21 @@ public class InformationPanel implements IInformationPanel {
 	 * @param typeImage type de l'image
 	 * @param title titre
 	 * @param text texte à afficher
+	 * @param enableScrollPane active la scrollpane
+	 * @param onlyHorizontalScrollBar Permet de définir que la bar horizontal
 	 */
-	public InformationPanel(PictureTypeEnum typeImage, String title, String text, Boolean enableScrollPane) {
+	public InformationPanel(PictureTypeEnum typeImage, String title, String text, Boolean enableScrollPane, Boolean onlyHorizontalScrollBar) {
 		this.enableScrollPane = enableScrollPane;
 		this.typeImage = typeImage;
 		this.title = title;
 		this.textPanel = new JLabel(text);
 		this.content = new JPanel();
-		this.contentWithScrollBar = new JScrollPane(this.content);
+		if (enableScrollPane && onlyHorizontalScrollBar) {
+			this.contentWithScrollBar = new JScrollPane(this.content, JScrollPane.VERTICAL_SCROLLBAR_NEVER,
+		            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		} else {
+			this.contentWithScrollBar = new JScrollPane(this.content);
+		}
 		createWindow();
 	} 
 	

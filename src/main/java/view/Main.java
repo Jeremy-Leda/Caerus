@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -39,6 +40,8 @@ import view.beans.ExcelTypeGenerationEnum;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IAnalyzeConfiguration;
+import view.interfaces.IGenericAccessPanel;
+import view.panel.GenericAccessPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 import view.windows.ChooseConfiguration;
@@ -48,6 +51,7 @@ import view.windows.FixedBlankLine;
 import view.windows.FixedErrorLine;
 import view.windows.FixedOrEditCorpus;
 import view.windows.FixedOrEditText;
+import view.windows.InconsistencyErrorView;
 import view.windows.LoadTextConfigurationSelector;
 import view.windows.ManageText;
 import view.windows.SaveCustomExcel;
@@ -133,6 +137,8 @@ public class Main extends JFrame {
 	private final JButton moveFileLibraryButton = new JButton();
 	private final IConfigurationControler configurationControler = new ConfigurationControler();
 	private IAnalyzeConfiguration analyzeConfiguration;
+	private IGenericAccessPanel errorInconsistencyPanel = new GenericAccessPanel();
+	private JButton openInconsistencyErrorsButton = new JButton();
 
 	/**
 	 * Constructeur
@@ -161,8 +167,10 @@ public class Main extends JFrame {
 			logger.error(e1.getMessage(), e1);
 		}
 		analyzeConfiguration = null;
+
 		createWindow();
 	}
+
 
 	/**
 	 * Permet de créer la fenetre
@@ -174,12 +182,27 @@ public class Main extends JFrame {
 		this.setTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_TITLE));
 		this.setSize(400, 100);
 		this.setLocationRelativeTo(null);
-		this.setIconImage(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO));
+		this.setIconImages(getIconsListImage());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initMenu();
 		reloadLanguage();
 		repack();
 		this.setVisible(true);
+	}
+	
+	/**
+	 * Permet de se procurer la liste des icones possible (taille différentes)
+	 * @return la liste des icones
+	 */
+	private List<Image> getIconsListImage() {
+		List<Image> allImages = new ArrayList<>();
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_16_16));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_32_32));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_64_64));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_96_96));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_128_128));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_256_256));
+		return allImages;
 	}
 
 	private void initMenu() {
@@ -315,8 +338,10 @@ public class Main extends JFrame {
 		createBlankLineErrorPanel();
 		createMoveFileLibraryPanel();
 		refreshEnabledAndValueWithTextsFolderLibrary();
+		createErrorInconsistencyPanel();
 		panContent.add(panAnalyze);
 		panContent.add(panLineError);
+		panContent.add(errorInconsistencyPanel.getJPanel());
 		panContent.add(panTextError);
 		panContent.add(panBlankLineError);
 		panContent.add(panMoveFileLibrary);
@@ -501,6 +526,8 @@ public class Main extends JFrame {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_PANEL_LABEL)));
 		moveFileLibraryButton.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_BUTTON_LABEL));
+		openInconsistencyErrorsButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_BUTTON_LABEL));
+		errorInconsistencyPanel.refreshTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_PANEL_TITLE));
 		try {
 			refreshDisplay();
 		} catch (HeadlessException | IOException e) {
@@ -511,6 +538,7 @@ public class Main extends JFrame {
 
 	private void refreshDisplay() throws HeadlessException, IOException {
 		stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
+		errorInconsistencyPanel.getJPanel().setVisible(Boolean.FALSE);
 		if (configurationControler.getNbTextsError() == 0 && configurationControler.getNbBlankLinesError() == 0
 				&& configurationControler.getListOfStructuredFileForAnalyze().isEmpty()) {
 			panLineError.setVisible(false);
@@ -532,6 +560,9 @@ public class Main extends JFrame {
 				saveConfiguration.setEnabled(false);
 				saveCustomExcel.setEnabled(false);
 			} else {
+				if (configurationControler.haveInconsistencyError()) {
+					errorInconsistencyPanel.getJPanel().setVisible(Boolean.TRUE);
+				}
 				saveConfiguration.setEnabled(true);
 				saveCustomExcel.setEnabled(true);
 				fixedLineErrorButton.setEnabled(false);
@@ -805,6 +836,24 @@ public class Main extends JFrame {
 				}
 			}
 		};
+	}
+	
+	
+	/**
+	 * Permet créer le panel d'erreurs d'incohérences
+	 */
+	private void createErrorInconsistencyPanel() {
+		openInconsistencyErrorsButton.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
+		openInconsistencyErrorsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new InconsistencyErrorView(configurationControler);
+			}
+		});
+		JPanel subPanButtonError = new JPanel();
+		subPanButtonError.add(openInconsistencyErrorsButton);
+		errorInconsistencyPanel.addComponent(subPanButtonError);
 	}
 
 }

@@ -83,10 +83,10 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract implement
 		this.actionPanel = new ActionPanel(1);
 		this.informationsFilesPanel = new InformationPanel(PictureTypeEnum.INFORMATION, ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_INFORMATIONS_PANEL_TITLE), ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT), true);
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT), true, true);
 		this.warningFilesPanel = new InformationPanel(PictureTypeEnum.WARNING, ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_PANEL_TITLE), ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_MESSAGE), false);
+				.getDisplayMessage(Constants.WINDOW_LOAD_TEXTS_WARNING_MESSAGE), false, false);
 		this.warningFilesPanel.getJPanel().setVisible(false);
 		this.checkBoxPanel = new CheckBoxPanel(1, false);
 		createWindow();

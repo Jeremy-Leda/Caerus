@@ -41,6 +41,7 @@ import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
 import view.beans.Filter;
 import view.beans.FilterTypeEnum;
+import view.beans.InconsistencyError;
 
 /**
  * 
@@ -541,7 +542,8 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Boolean withSubFolder) throws IOException {
+	public FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Boolean withSubFolder)
+			throws IOException {
 		if (null != pathFolderToAnalyze && pathFolderToAnalyze.isDirectory()) {
 			Integer depth = withSubFolder ? Integer.MAX_VALUE : 1;
 			return this.configurationModel.getNameFileToAnalyzeList(pathFolderToAnalyze, depth);
@@ -578,6 +580,19 @@ public class ConfigurationControler implements IConfigurationControler {
 			}
 			this.configurationModel.export(typeExport, directory, nameFile);
 		}
+	}
+
+	@Override
+	public Boolean haveInconsistencyError() {
+		return this.configurationModel.haveInconsistencyError();
+	}
+
+	@Override
+	public List<InconsistencyError> getInconsistencyChangeTextErrorList() {
+		return this.configurationModel.getInconsistencyChangeTextErrorList().stream()
+				.map(error -> new InconsistencyError(error.getOldStructuredFieldNewText().getFieldName(),
+						error.getNewStructuredFieldNewText().getFieldName(), error.getLine()))
+				.collect(Collectors.toCollection(LinkedList::new));
 	}
 
 }

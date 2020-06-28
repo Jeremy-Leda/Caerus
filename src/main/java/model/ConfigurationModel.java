@@ -25,6 +25,7 @@ import model.analyze.UserSettings;
 import model.analyze.beans.Configuration;
 import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.FilterCorpus;
+import model.analyze.beans.InconsistencyChangeText;
 import model.analyze.beans.LineError;
 import model.analyze.beans.SpecificConfiguration;
 import model.analyze.beans.StructuredField;
@@ -63,6 +64,7 @@ public class ConfigurationModel implements IConfigurationModel {
 		}
 		stopWatch.stop();
 		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
+		logger.info(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 	}
 
 	@Override
@@ -487,7 +489,7 @@ public class ConfigurationModel implements IConfigurationModel {
 		Optional<Configuration> findFirstConfiguration = UserSettings.getInstance().getConfigurationList().stream()
 				.filter(c -> name.equals(c.getName())).findFirst();
 		if (findFirstConfiguration.isPresent()) {
-			UserSettings.getInstance().setCurrentConfiguration(findFirstConfiguration.get());
+			this.dispatcher.setCurrentConfigurationWithSaveUserConfiguration(findFirstConfiguration.get());
 		}
 	}
 
@@ -544,6 +546,18 @@ public class ConfigurationModel implements IConfigurationModel {
 			break;
 		}
 
+	}
+
+	@Override
+	public Boolean haveInconsistencyError() {
+		logger.debug("CALL haveInconsistencyError");
+		return UserSettings.getInstance().haveInconsistencyErrors();
+	}
+
+	@Override
+	public List<InconsistencyChangeText> getInconsistencyChangeTextErrorList() {
+		logger.debug("CALL getAllInconsistencyChangeTextErrorList");
+		return UserSettings.getInstance().getInconsistencyErrorList();
 	}
 
 }

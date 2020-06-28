@@ -12,7 +12,9 @@ import java.util.function.Consumer;
 import javax.swing.BoxLayout;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +70,7 @@ public class CreateText extends ModalJFrameAbstract {
 	@Override
 	public void initComponents() {
 		this.informationsTextPanel.refresh(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_CONTENT_PANEL_TITLE));
+		this.informationsTextPanel.setRefreshDisplayConsumer(s -> repack());
 		refreshFilePanel();
 		updateContentInformationsTextPanel();
 		refreshActionPanelMessage();
@@ -81,7 +84,9 @@ public class CreateText extends ModalJFrameAbstract {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
 		content.add(this.filePanel.getJPanel());
-		content.add(this.informationsTextPanel.getJPanel());
+		JScrollPane scrollPane = new JScrollPane(this.informationsTextPanel.getJPanel());
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		content.add(scrollPane);
 		content.add(actionPanel.getJPanel());
 	}
 

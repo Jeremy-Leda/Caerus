@@ -2,6 +2,7 @@ package view.abstracts;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -81,7 +82,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 		initComponents();
 		this.frame.add(getContent());
 		this.frame.setModal(isModal);
-		this.frame.setIconImage(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO));
+		this.frame.setIconImages(getIconsListImage());
 		this.frame.getContentPane().add(getContent(), BorderLayout.CENTER);
 		this.frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.frame.addWindowListener(new WindowAdapter() {
@@ -91,6 +92,21 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 				dispose();
 			}
 		});
+	}
+	
+	/**
+	 * Permet de se procurer la liste des icones possible (taille différentes)
+	 * @return la liste des icones
+	 */
+	private List<Image> getIconsListImage() {
+		List<Image> allImages = new ArrayList<>();
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_16_16));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_32_32));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_64_64));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_96_96));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_128_128));
+		allImages.add(RessourcesUtils.getInstance().getImage(PictureTypeEnum.LOGO_256_256));
+		return allImages;
 	}
 	
 	/**

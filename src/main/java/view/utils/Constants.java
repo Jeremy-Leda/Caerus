@@ -304,4 +304,20 @@ public final class Constants {
 	public static final String WINDOW_EXPORT_DOCUMENT_INFORMATION_SEARCH_MESSAGE="window.export.document.information.search.message";
 
 	
+	public static final String WINDOW_MAIN_INCONSISTENCY_ERROR_PANEL_TITLE="window.main.inconsistency.error.panel.title";
+	public static final String WINDOW_MAIN_INCONSISTENCY_ERROR_BUTTON_LABEL="window.main.inconsistency.error.button.label";
+
+	
+	public static final String WINDOW_ERROR_INCONSISTENCY_TITLE="window.error.inconsistency.title";
+	public static final String WINDOW_ERROR_INCONSISTENCY_PANEL_TITLE="window.error.inconsistency.panel.title";
+	public static final String WINDOW_ERROR_INCONSISTENCY_OLD_FIELD_LABEL="window.error.inconsistency.old.field.label";
+	public static final String WINDOW_ERROR_INCONSISTENCY_NEW_FIELD_LABEL="window.error.inconsistency.new.field.label";
+	public static final String WINDOW_ERROR_INCONSISTENCY_NUMBER_LINE_LABEL="window.error.inconsistency.number.line.label";
+	public static final String WINDOW_ERROR_INCONSISTENCY_MESSAGE_PANEL_TITLE="window.error.inconsistency.message.panel.title";
+	public static final String WINDOW_ERROR_INCONSISTENCY_MESSAGE="window.error.inconsistency.message";
+	public static final String WINDOW_ERROR_INCONSISTENCY_BUTTONS_PANEL_TITLE="window.error.inconsistency.buttons.panel.title";
+	public static final String WINDOW_ERROR_INCONSISTENCY_BUTTONS_CLOSE_BUTTON_LABEL="window.error.inconsistency.buttons.close.button.label";
+	public static final String WINDOW_ERROR_INCONSISTENCY_LISTE_LABEL="window.error.inconsistency.liste.label";
+
+	
 }

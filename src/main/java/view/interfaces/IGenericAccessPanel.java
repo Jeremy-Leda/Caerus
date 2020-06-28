@@ -19,4 +19,10 @@ public interface IGenericAccessPanel extends IAccessPanel {
 	 */
 	void addComponent(JComponent component);
 	
+	/**
+	 * Permet de mettre à jour le titre du panel
+	 * @param title titre du panel
+	 */
+	void refreshTitle(String title);
+	
 }

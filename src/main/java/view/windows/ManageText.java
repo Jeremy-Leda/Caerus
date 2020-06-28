@@ -50,7 +50,7 @@ public class ManageText extends ModalJFrameAbstract {
 		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_INFORMATION_TITLE),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_INFORMATION_LABEL),
-				false);
+				false, true);
 		super.addActionOnClose(closeAutomaticallyOtherChildrenWindow());
 		this.displayTextsList.addConsumerOnCloseEditText(getConsumerOnCloseEditText());
 		this.displayTextsList.addConsumerOnOpenEditText(getConsumerOnOpenEditText());

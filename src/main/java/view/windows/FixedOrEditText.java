@@ -11,10 +11,15 @@ import java.util.function.Consumer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
@@ -84,7 +89,9 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
 		content.add(this.filePanel.getJPanel());
-		content.add(this.informationsTextPanel.getJPanel());
+		JScrollPane scrollPane = new JScrollPane(this.informationsTextPanel.getJPanel());
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		content.add(scrollPane);
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
 			content.add(actionFixedTextPanel.getJPanel());
 		} else if (ActionUserTypeEnum.FOLDER_TEXTS.equals(actionUserType)) {
@@ -100,6 +107,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	public void initComponents() {
 		this.informationsTextPanel.refresh(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_CONTENT_PANEL_TITLE));
+		this.informationsTextPanel.setRefreshDisplayConsumer(s -> repack());
 		refreshFilePanel();
 		addActionPanelMessage();
 		displayMessageForAction();

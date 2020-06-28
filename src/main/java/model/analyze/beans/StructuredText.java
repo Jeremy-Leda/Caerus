@@ -51,6 +51,7 @@ public class StructuredText {
 	 * @param value la nouvelle valeur
 	 */
 	public void modifyContent(String tag, String value) {
+		logger.debug(String.format("Le champ %s a été setté avec la valeur %s", tag, value));
 		Optional<Content> optionalContent = this.listContent.stream().filter(c -> tag.equals(c.getKey())).findFirst();
 		if (optionalContent.isPresent()) {
 			optionalContent.get().setValue(value);

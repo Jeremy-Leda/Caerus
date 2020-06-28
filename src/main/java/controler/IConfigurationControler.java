@@ -19,6 +19,7 @@ import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
 import view.beans.Filter;
+import view.beans.InconsistencyError;
 
 /**
  * 
@@ -536,4 +537,16 @@ public interface IConfigurationControler {
 	 * @throws IOException Erreur d'entrée sortie
 	 */
 	void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException;
+	
+	/**
+	 * Permet de savoir si il y a des erreurs potentielles au niveau du changement de textes (incohérence et risque de décalage)
+	 * @return Vrai si des erreurs existe
+	 */
+	Boolean haveInconsistencyError();
+	
+	/**
+	 * Permet de se procurer les erreurs potentielles d'incohérence
+	 * @return la liste des erreurs potentielles d'incohérence
+	 */
+	List<InconsistencyError> getInconsistencyChangeTextErrorList();
 }

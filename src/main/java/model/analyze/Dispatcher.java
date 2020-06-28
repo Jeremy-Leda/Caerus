@@ -120,7 +120,7 @@ public class Dispatcher {
 		List<MemoryFile> memoryFiles = getMemoryFiles(pathToProcess.toString(), depth);
 		UserSettings.getInstance().clearAllSession(folderType);
 		UserSettings.getInstance().addMemoryFilesList(folderType, memoryFiles);
-		memoryFiles.parallelStream().map(f -> new Structuring(f, folderType).getStructuredFile())
+		memoryFiles.stream().map(f -> new Structuring(f, folderType).getStructuredFile())
 				.forEach(sf -> UserSettings.getInstance().addStructuredFile(folderType, sf));
 		if (UserSettings.getInstance().getNbLineError() > 0) {
 			if (FolderSettingsEnum.FOLDER_ANALYZE.equals(folderType)) {
@@ -199,6 +199,15 @@ public class Dispatcher {
 	 */
 	public void setTextsFolder(File textsFolder) {
 		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
+		saveUserConfiguration();
+	}
+	
+	/**
+	 * Permet de changer la configuration et de sauvegarder le changement
+	 * @param currentConfiguration Configuration courante
+	 */
+	public void setCurrentConfigurationWithSaveUserConfiguration(Configuration currentConfiguration) {
+		UserSettings.getInstance().setCurrentConfiguration(currentConfiguration);
 		saveUserConfiguration();
 	}
 

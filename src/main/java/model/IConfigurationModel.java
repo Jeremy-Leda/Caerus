@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import model.analyze.beans.Configuration;
 import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.FilterCorpus;
+import model.analyze.beans.InconsistencyChangeText;
 import model.analyze.beans.LineError;
 import model.analyze.beans.StructuredFile;
 import model.analyze.beans.UserStructuredText;
@@ -533,4 +534,16 @@ public interface IConfigurationModel {
 	 * @throws IOException Erreur d'entrée sortie
 	 */
 	void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException;
+	
+	/**
+	 * Permet de savoir si il y a des erreurs potentielles au niveau du changement de textes (incohérence et risque de décalage)
+	 * @return Vrai si des erreurs existe
+	 */
+	Boolean haveInconsistencyError();
+	
+	/**
+	 * Permet de se procurer les erreurs potentielles d'incohérence
+	 * @return la liste des erreurs potentielles d'incohérence
+	 */
+	List<InconsistencyChangeText> getInconsistencyChangeTextErrorList();
 }

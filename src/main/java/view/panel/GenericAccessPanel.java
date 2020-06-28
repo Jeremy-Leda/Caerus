@@ -8,6 +8,8 @@ import javax.swing.BoxLayout;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 
+import org.junit.platform.commons.util.StringUtils;
+
 import view.interfaces.IGenericAccessPanel;
 
 /**
@@ -24,13 +26,21 @@ public class GenericAccessPanel implements IGenericAccessPanel {
 	
 	/**
 	 * Constructeur
+	 */
+	public GenericAccessPanel() {
+		this(null);
+	}
+	
+	/**
+	 * Constructeur
 	 * @param title titre du panel
 	 */
 	public GenericAccessPanel(String title) {
 		this.content = new JPanel();
 		this.componentList = new LinkedList<JComponent>();
-		this.content.setBorder(
-				BorderFactory.createTitledBorder(title));
+		if (StringUtils.isNotBlank(title)) {
+			refreshTitle(title);
+		}
 		BoxLayout boxlayout = new BoxLayout(this.content, BoxLayout.Y_AXIS);
 		this.content.setLayout(boxlayout);
 	}
@@ -54,6 +64,12 @@ public class GenericAccessPanel implements IGenericAccessPanel {
 	private void refreshContent() {
 		this.content.removeAll();
 		this.componentList.forEach(component -> this.content.add(component));
+	}
+
+	@Override
+	public void refreshTitle(String title) {
+		this.content.setBorder(
+				BorderFactory.createTitledBorder(title));
 	}
 	
 }

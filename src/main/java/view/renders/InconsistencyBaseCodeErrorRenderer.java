@@ -48,7 +48,11 @@ public class InconsistencyBaseCodeErrorRenderer extends JLabel implements ListCe
 	private String constructFilterToDisplay(BaseCodeError value) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<html><p><br/>");
-		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_MISSING_BASE_CODE_FIELD_LABEL));
+		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_MISSING_BASE_CODE_NAME_FILE_LABEL));
+		stringBuilder.append(" ");
+		stringBuilder.append(value.getNameFile());
+		stringBuilder.append("<br/>");
+		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_MISSING_BASE_CODE_FIELD_LABEL));
 		stringBuilder.append(" <font color='red'>");
 		stringBuilder.append(value.getFieldName());
 		stringBuilder.append("</font><br/>");

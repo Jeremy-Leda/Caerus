@@ -69,7 +69,8 @@ public class Structuring {
 			if (null != structuredFieldIfPossible) {
 				if (listStructuredField.contains(structuredFieldIfPossible)) {
 					structuredFieldNewText = checkAndSaveInconsistencyChangeText(structuredFieldNewText,
-							structuredFieldIfPossible, currentLinestructuredFieldNewText, memoryFile.getCurrentLine() + 1);
+							structuredFieldIfPossible, currentLinestructuredFieldNewText,
+							memoryFile.getCurrentLine() + 1, memoryFile.nameFile());
 					currentLinestructuredFieldNewText = memoryFile.getCurrentLine() + 1;
 					listStructuredField.clear();
 					number = processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
@@ -93,14 +94,16 @@ public class Structuring {
 	 * 
 	 * @param oldStructuredField Ancien champ structuré
 	 * @param newStructuredField Nouveau champ structuré
-	 * @param oldLine ligne de l'ancien champ
-	 * @param newLine ligne du nouveau champ
+	 * @param oldLine            ligne de l'ancien champ
+	 * @param newLine            ligne du nouveau champ
+	 * @param nameFile           nom du fichier
 	 * @return
 	 */
 	private StructuredField checkAndSaveInconsistencyChangeText(StructuredField oldStructuredField,
-			StructuredField newStructuredField, Integer oldLine, Integer newLine) {
+			StructuredField newStructuredField, Integer oldLine, Integer newLine, String nameFile) {
 		if (null != oldStructuredField && !oldStructuredField.equals(newStructuredField)) {
-			UserSettings.getInstance().addInconsistencyError(oldStructuredField, newStructuredField, oldLine, newLine);
+			UserSettings.getInstance().addInconsistencyError(oldStructuredField, newStructuredField, oldLine, newLine,
+					nameFile);
 		}
 		return newStructuredField;
 	}
@@ -332,7 +335,7 @@ public class Structuring {
 		if (StringUtils.isBlank(line)) {
 			return;
 		}
-		if (!StringUtils.startsWith(line, "[") && !checkIfHaveFieldsCode(line, false, memoryFile.getCurrentLine())) {
+		if (!StringUtils.startsWith(line, "[") && !checkIfHaveFieldsCode(line, false, memoryFile.getCurrentLine(), memoryFile.nameFile())) {
 			return;
 		} else {
 			if (StringUtils.startsWith(line, configuration.getBaseCode())) {
@@ -342,7 +345,7 @@ public class Structuring {
 				if (optionalStructuredField.isPresent()) {
 					return;
 				}
-			} else if (!checkIfHaveFieldsCode(line, true, memoryFile.getCurrentLine())) {
+			} else if (!checkIfHaveFieldsCode(line, true, memoryFile.getCurrentLine(), memoryFile.nameFile())) {
 				return;
 			}
 		}
@@ -376,9 +379,11 @@ public class Structuring {
 	 * @param addMissingBaseCode permet de déterminer si on ajoute l'information de
 	 *                           code de base manquant
 	 * @param currentLine        Ligne courante
+	 * @param nameFile           Nom du fichier
 	 * @return Vrai s'il n'y a pas de balise
 	 */
-	private Boolean checkIfHaveFieldsCode(String line, Boolean addMissingBaseCode, Integer currentLine) {
+	private Boolean checkIfHaveFieldsCode(String line, Boolean addMissingBaseCode, Integer currentLine,
+			String nameFile) {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
 		if (!configuration.getStructuredFieldList().stream()
 				.map(field -> StringUtils.contains(line,
@@ -394,7 +399,7 @@ public class Structuring {
 								StringUtils.remove(StringUtils.remove(field.getFieldName(), "["), "]")))
 						.findFirst();
 				if (structuredFieldFind.isPresent()) {
-					UserSettings.getInstance().addMissingBaseCodeError(structuredFieldFind.get(), currentLine + 1);
+					UserSettings.getInstance().addMissingBaseCodeError(structuredFieldFind.get(), currentLine + 1, nameFile);
 				}
 			}
 			return false;

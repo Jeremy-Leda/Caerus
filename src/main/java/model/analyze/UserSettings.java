@@ -75,7 +75,7 @@ public class UserSettings {
 	private final List<LineError> LINES_ERROR_LIST = new LinkedList<LineError>();
 	private final Map<ErrorTypeEnum, Set<String>> MAP_TYPE_ERROR_KEYS_LIST = new HashMap<>();
 	private final List<InconsistencyChangeText> INCONSISTENCY_CHANGE_TEXT_ERROR_LIST = new LinkedList<InconsistencyChangeText>();
-	private final List<MissingBaseCode> MISSING_BASE_CODE_LIST = new LinkedList<MissingBaseCode>();
+	private final Set<MissingBaseCode> MISSING_BASE_CODE_LIST = new LinkedHashSet<MissingBaseCode>();
 	private String currentEditKey;
 	private Integer totalKeysStructuredTextError = null;
 	private Integer totalBlankLineError = null;
@@ -331,11 +331,12 @@ public class UserSettings {
 	 * @param newStructuredFieldNewText nouvelle balise de changement de texte
 	 * @param oldLine numéro de la ligne de l'ancienne balise
 	 * @param newLine numéro de la ligne de la nouvelle balise
+	 * @param nameFile nom du fichier
 	 * @param 
 	 */
 	public void addInconsistencyError(StructuredField oldStructuredFieldNewText, StructuredField newStructuredFieldNewText,
-			Integer oldLine, Integer newLine) {
-		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.add(new InconsistencyChangeText(oldStructuredFieldNewText, newStructuredFieldNewText, oldLine, newLine));
+			Integer oldLine, Integer newLine, String nameFile) {
+		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.add(new InconsistencyChangeText(oldStructuredFieldNewText, newStructuredFieldNewText, oldLine, newLine, nameFile));
 	}
 
 	/**
@@ -352,9 +353,10 @@ public class UserSettings {
 	 * 
 	 * @param structuredFieldFound balise reperé
 	 * @param line numéro de la ligne
+	 * @param nameFile nom du fichier
 	 */
-	public void addMissingBaseCodeError(StructuredField structuredFieldFound, Integer line) {
-		MISSING_BASE_CODE_LIST.add(new MissingBaseCode(structuredFieldFound, line));
+	public void addMissingBaseCodeError(StructuredField structuredFieldFound, Integer line, String nameFile) {
+		MISSING_BASE_CODE_LIST.add(new MissingBaseCode(structuredFieldFound, line, nameFile));
 	}
 
 	/**
@@ -379,7 +381,7 @@ public class UserSettings {
 	 * @return la liste non modifiables des erreurs d'inconsistence
 	 */
 	public List<MissingBaseCode> getMissingBaseCodeErrorList() {
-		return Collections.unmodifiableList(this.MISSING_BASE_CODE_LIST);
+		return Collections.unmodifiableList(new LinkedList<>(this.MISSING_BASE_CODE_LIST));
 	}
 	
 	/**

@@ -15,6 +15,7 @@ public class InconsistencyChangeText {
 	private final StructuredField newStructuredFieldNewText;
 	private final Integer oldLine;
 	private final Integer newLine;
+	private final String nameFile;
 	
 	/**
 	 * Constructeur
@@ -22,13 +23,15 @@ public class InconsistencyChangeText {
 	 * @param newStructuredFieldNewText nouvelle balise de changement de texte
 	 * @param oldLine numéro de la ligne pour l'ancienne balise
 	 * @param newLine numéro de la ligne pour la nouvelle balise
+	 * @param nameFile Nom du fichier
 	 */
 	public InconsistencyChangeText(StructuredField oldStructuredFieldNewText, StructuredField newStructuredFieldNewText,
-			Integer oldLine, Integer newLine) {
+			Integer oldLine, Integer newLine, String nameFile) {
 		this.oldStructuredFieldNewText = oldStructuredFieldNewText;
 		this.newStructuredFieldNewText = newStructuredFieldNewText;
 		this.oldLine = oldLine;
 		this.newLine = newLine;
+		this.nameFile = nameFile;
 	}
 
 	/**
@@ -63,6 +66,12 @@ public class InconsistencyChangeText {
 		return newLine;
 	}
 	
-	
+	/**
+	 * Permet de se procurer le nom du fichier
+	 * @return le nom du fichier
+	 */
+	public String getNameFile() {
+		return nameFile;
+	}
 	
 }

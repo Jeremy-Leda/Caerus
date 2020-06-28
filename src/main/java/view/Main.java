@@ -44,6 +44,7 @@ import view.interfaces.IGenericAccessPanel;
 import view.panel.GenericAccessPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
+import view.windows.BaseCodeErrorView;
 import view.windows.ChooseConfiguration;
 import view.windows.CreateCorpus;
 import view.windows.CreateText;
@@ -139,6 +140,7 @@ public class Main extends JFrame {
 	private IAnalyzeConfiguration analyzeConfiguration;
 	private IGenericAccessPanel errorInconsistencyPanel = new GenericAccessPanel();
 	private JButton openInconsistencyErrorsButton = new JButton();
+	private JButton openBaseCodeErrorsButton = new JButton();
 
 	/**
 	 * Constructeur
@@ -526,7 +528,8 @@ public class Main extends JFrame {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_PANEL_LABEL)));
 		moveFileLibraryButton.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_BUTTON_LABEL));
-		openInconsistencyErrorsButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_BUTTON_LABEL));
+		openInconsistencyErrorsButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_DUPLICATE_BUTTON_LABEL));
+		openBaseCodeErrorsButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_BASE_CODE_BUTTON_LABEL));
 		errorInconsistencyPanel.refreshTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_PANEL_TITLE));
 		try {
 			refreshDisplay();
@@ -560,9 +563,9 @@ public class Main extends JFrame {
 				saveConfiguration.setEnabled(false);
 				saveCustomExcel.setEnabled(false);
 			} else {
-				if (configurationControler.haveInconsistencyError() || configurationControler.haveMissingBaseCodeError()) {
-					errorInconsistencyPanel.getJPanel().setVisible(Boolean.TRUE);
-				}
+				errorInconsistencyPanel.getJPanel().setVisible(Boolean.TRUE);
+				openInconsistencyErrorsButton.setEnabled(configurationControler.haveInconsistencyError());
+				openBaseCodeErrorsButton.setEnabled(configurationControler.haveMissingBaseCodeError());
 				saveConfiguration.setEnabled(true);
 				saveCustomExcel.setEnabled(true);
 				fixedLineErrorButton.setEnabled(false);
@@ -849,10 +852,22 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new InconsistencyErrorView(configurationControler);
+				launchAnalyze();
 			}
 		});
+		openBaseCodeErrorsButton.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
+		openBaseCodeErrorsButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				new BaseCodeErrorView(configurationControler);
+				launchAnalyze();
+			}
+		});
+		
 		JPanel subPanButtonError = new JPanel();
 		subPanButtonError.add(openInconsistencyErrorsButton);
+		subPanButtonError.add(openBaseCodeErrorsButton);
 		errorInconsistencyPanel.addComponent(subPanButtonError);
 	}
 

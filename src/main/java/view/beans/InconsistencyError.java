@@ -17,6 +17,7 @@ public class InconsistencyError {
 	private final Integer oldNumLine;
 	private final Integer newNumLine;
 	private final Boolean oldFieldIsMetaFile;
+	private final String nameFile;
 	
 	/**
 	 * Constructeur 
@@ -24,14 +25,17 @@ public class InconsistencyError {
 	 * @param newFieldName nouveau champ
 	 * @param oldNumLine numéro de la ligne de l'ancien champ
 	 * @param newNumLine numéro de la ligne du nouveau champ
+	 * @param oldFieldIsMetaFile Permet de déterminer si le champ est de type méta
+	 * @param nameFile Nom du fichier
 	 */
-	public InconsistencyError(String oldFieldName, String newFieldName, Integer oldNumLine, Integer newNumLine, Boolean oldFieldIsMetaFile) {
+	public InconsistencyError(String oldFieldName, String newFieldName, Integer oldNumLine, Integer newNumLine, Boolean oldFieldIsMetaFile, String nameFile) {
 		this.typeImage = PictureTypeEnum.INCONSISTENCY;
 		this.oldFieldName = oldFieldName;
 		this.newFieldName = newFieldName;
 		this.oldNumLine = oldNumLine;
 		this.newNumLine = newNumLine;
 		this.oldFieldIsMetaFile = oldFieldIsMetaFile;
+		this.nameFile = nameFile;
 	}
 
 	/**
@@ -82,11 +86,19 @@ public class InconsistencyError {
 		return oldFieldIsMetaFile;
 	}
 	
+	/**
+	 * Permet de se procurer le nom du fichier
+	 * @return le nom du fichier
+	 */
+	public String getNameFile() {
+		return nameFile;
+	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
+		result = prime * result + ((nameFile == null) ? 0 : nameFile.hashCode());
 		result = prime * result + ((newFieldName == null) ? 0 : newFieldName.hashCode());
 		result = prime * result + ((newNumLine == null) ? 0 : newNumLine.hashCode());
 		result = prime * result + ((oldFieldName == null) ? 0 : oldFieldName.hashCode());
@@ -103,6 +115,11 @@ public class InconsistencyError {
 		if (getClass() != obj.getClass())
 			return false;
 		InconsistencyError other = (InconsistencyError) obj;
+		if (nameFile == null) {
+			if (other.nameFile != null)
+				return false;
+		} else if (!nameFile.equals(other.nameFile))
+			return false;
 		if (newFieldName == null) {
 			if (other.newFieldName != null)
 				return false;
@@ -125,7 +142,7 @@ public class InconsistencyError {
 			return false;
 		return true;
 	}
-
+	
 
 
 	

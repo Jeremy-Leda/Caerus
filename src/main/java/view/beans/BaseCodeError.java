@@ -14,16 +14,19 @@ public class BaseCodeError {
 	private final PictureTypeEnum typeImage;
 	private final String fieldName;
 	private final Integer numLine;
+	private final String nameFile;
 	
 	/**
 	 * Constructeur 
 	 * @param fieldName Champ en erreur
 	 * @param numLine numéro de la ligne
+	 * @param nameFile Nom du fichier
 	 */
-	public BaseCodeError(String fieldName, Integer numLine) {
+	public BaseCodeError(String fieldName, Integer numLine, String nameFile) {
 		this.typeImage = PictureTypeEnum.INCONSISTENCY;
 		this.fieldName = fieldName;
 		this.numLine = numLine;
+		this.nameFile = nameFile;
 	}
 
 	/**
@@ -50,37 +53,13 @@ public class BaseCodeError {
 		return numLine;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((fieldName == null) ? 0 : fieldName.hashCode());
-		result = prime * result + ((numLine == null) ? 0 : numLine.hashCode());
-		return result;
+	/**
+	 * Permet de se procurer le nom du fichier
+	 * @return le nom du fichier
+	 */
+	public String getNameFile() {
+		return nameFile;
 	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		BaseCodeError other = (BaseCodeError) obj;
-		if (fieldName == null) {
-			if (other.fieldName != null)
-				return false;
-		} else if (!fieldName.equals(other.fieldName))
-			return false;
-		if (numLine == null) {
-			if (other.numLine != null)
-				return false;
-		} else if (!numLine.equals(other.numLine))
-			return false;
-		return true;
-	}
-	
 	
 	
 }

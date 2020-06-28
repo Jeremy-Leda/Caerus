@@ -593,7 +593,7 @@ public class ConfigurationControler implements IConfigurationControler {
 		return this.configurationModel.getInconsistencyChangeTextErrorList().stream()
 				.map(error -> new InconsistencyError(error.getOldStructuredFieldNewText().getFieldName(),
 						error.getNewStructuredFieldNewText().getFieldName(), error.getOldLine(), error.getNewLine(),
-						error.getOldStructuredFieldNewText().getIsMetaFile()))
+						error.getOldStructuredFieldNewText().getIsMetaFile(), error.getNameFile()))
 				.collect(Collectors.toCollection(LinkedList::new));
 	}
 
@@ -605,7 +605,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public List<BaseCodeError> getMissingBaseCodeErrorList() {
 		return this.configurationModel.getMissingBaseCodeErrorList().stream()
-				.map(error -> new BaseCodeError(error.getStructuredFieldFound().getFieldName(), error.getLine()))
+				.map(error -> new BaseCodeError(error.getStructuredFieldFound().getFieldName(), error.getLine(), error.getNameFile()))
 				.collect(Collectors.toCollection(LinkedList::new));
 	}
 

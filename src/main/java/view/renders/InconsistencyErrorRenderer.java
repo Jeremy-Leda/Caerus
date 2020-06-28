@@ -48,7 +48,11 @@ public class InconsistencyErrorRenderer extends JLabel implements ListCellRender
 	private String constructFilterToDisplay(InconsistencyError value) {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("<html><p><br/>");
-		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_MISSING_BASE_CODE_FIELD_LABEL));
+		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_NAME_FILE_LABEL));
+		stringBuilder.append(" ");
+		stringBuilder.append(value.getNameFile());
+		stringBuilder.append("<br/>");
+		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_FIELD_LABEL));
 		stringBuilder.append(" <font color='red'>");
 		if (value.getOldFieldIsMetaFile()) {
 			stringBuilder.append(value.getOldFieldName());

@@ -70,6 +70,8 @@ public class Structuring {
 					structuredFieldNewText = checkAndSaveInconsistencyChangeText(structuredFieldNewText, structuredFieldIfPossible, memoryFile.getCurrentLine());
 					listStructuredField.clear();
 					number = processStructuring(memoryFile, folderType, beanConfiguration, sf, listLines, number);
+				} else if (null == structuredFieldNewText && !structuredFieldIfPossible.getIsMetaFile()) {
+					structuredFieldNewText = structuredFieldIfPossible;
 				}
 				listStructuredField.add(structuredFieldIfPossible);
 			}

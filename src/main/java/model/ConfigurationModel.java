@@ -27,6 +27,7 @@ import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.FilterCorpus;
 import model.analyze.beans.InconsistencyChangeText;
 import model.analyze.beans.LineError;
+import model.analyze.beans.MissingBaseCode;
 import model.analyze.beans.SpecificConfiguration;
 import model.analyze.beans.StructuredField;
 import model.analyze.beans.StructuredFile;
@@ -558,6 +559,18 @@ public class ConfigurationModel implements IConfigurationModel {
 	public List<InconsistencyChangeText> getInconsistencyChangeTextErrorList() {
 		logger.debug("CALL getAllInconsistencyChangeTextErrorList");
 		return UserSettings.getInstance().getInconsistencyErrorList();
+	}
+
+	@Override
+	public Boolean haveMissingBaseCodeError() {
+		logger.debug("CALL haveMissingBaseCodeError");
+		return UserSettings.getInstance().haveMissingBaseCodeError();
+	}
+
+	@Override
+	public List<MissingBaseCode> getMissingBaseCodeErrorList() {
+		logger.debug("CALL getMissingBaseCodeErrorList");
+		return UserSettings.getInstance().getMissingBaseCodeErrorList();
 	}
 
 }

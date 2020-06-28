@@ -14,19 +14,24 @@ public class InconsistencyError {
 	private final PictureTypeEnum typeImage;
 	private final String oldFieldName;
 	private final String newFieldName;
-	private final Integer numLine;
+	private final Integer oldNumLine;
+	private final Integer newNumLine;
+	private final Boolean oldFieldIsMetaFile;
 	
 	/**
 	 * Constructeur 
 	 * @param oldFieldName ancien champ
 	 * @param newFieldName nouveau champ
-	 * @param numLine numéro de la ligne
+	 * @param oldNumLine numéro de la ligne de l'ancien champ
+	 * @param newNumLine numéro de la ligne du nouveau champ
 	 */
-	public InconsistencyError(String oldFieldName, String newFieldName, Integer numLine) {
+	public InconsistencyError(String oldFieldName, String newFieldName, Integer oldNumLine, Integer newNumLine, Boolean oldFieldIsMetaFile) {
 		this.typeImage = PictureTypeEnum.INCONSISTENCY;
 		this.oldFieldName = oldFieldName;
 		this.newFieldName = newFieldName;
-		this.numLine = numLine;
+		this.oldNumLine = oldNumLine;
+		this.newNumLine = newNumLine;
+		this.oldFieldIsMetaFile = oldFieldIsMetaFile;
 	}
 
 	/**
@@ -54,21 +59,38 @@ public class InconsistencyError {
 	}
 
 	/**
-	 * Permet de se procurer le numéro de la ligne
-	 * @return le numéro de la ligne
+	 * Permet de se procurer le numéro de la ligne de l'ancienne balise
+	 * @return le numéro de la ligne de l'ancienne balise
 	 */
-	public Integer getNumLine() {
-		return numLine;
+	public Integer getOldNumLine() {
+		return oldNumLine;
 	}
 	
+	/**
+	 * Permet de se procurer le numéro de la ligne de la nouvelle balise
+	 * @return le numéro de la ligne de la nouvelle balise
+	 */
+	public Integer getNewNumLine() {
+		return newNumLine;
+	}
 	
+	/**
+	 * Permet de déterminer si l'ancienne balise est une balise de type méta
+	 * @return Vrai si c'est le cas
+	 */
+	public Boolean getOldFieldIsMetaFile() {
+		return oldFieldIsMetaFile;
+	}
+	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((newFieldName == null) ? 0 : newFieldName.hashCode());
-		result = prime * result + ((numLine == null) ? 0 : numLine.hashCode());
+		result = prime * result + ((newNumLine == null) ? 0 : newNumLine.hashCode());
 		result = prime * result + ((oldFieldName == null) ? 0 : oldFieldName.hashCode());
+		result = prime * result + ((oldNumLine == null) ? 0 : oldNumLine.hashCode());
 		return result;
 	}
 
@@ -86,17 +108,25 @@ public class InconsistencyError {
 				return false;
 		} else if (!newFieldName.equals(other.newFieldName))
 			return false;
-		if (numLine == null) {
-			if (other.numLine != null)
+		if (newNumLine == null) {
+			if (other.newNumLine != null)
 				return false;
-		} else if (!numLine.equals(other.numLine))
+		} else if (!newNumLine.equals(other.newNumLine))
 			return false;
 		if (oldFieldName == null) {
 			if (other.oldFieldName != null)
 				return false;
 		} else if (!oldFieldName.equals(other.oldFieldName))
 			return false;
+		if (oldNumLine == null) {
+			if (other.oldNumLine != null)
+				return false;
+		} else if (!oldNumLine.equals(other.oldNumLine))
+			return false;
 		return true;
 	}
+
+
+
 	
 }

@@ -39,6 +39,7 @@ import model.analyze.beans.FilterText;
 import model.analyze.beans.InconsistencyChangeText;
 import model.analyze.beans.LineError;
 import model.analyze.beans.MemoryFile;
+import model.analyze.beans.MissingBaseCode;
 import model.analyze.beans.SaveCurrentFixedText;
 import model.analyze.beans.SpecificConfiguration;
 import model.analyze.beans.StructuredField;
@@ -74,6 +75,7 @@ public class UserSettings {
 	private final List<LineError> LINES_ERROR_LIST = new LinkedList<LineError>();
 	private final Map<ErrorTypeEnum, Set<String>> MAP_TYPE_ERROR_KEYS_LIST = new HashMap<>();
 	private final List<InconsistencyChangeText> INCONSISTENCY_CHANGE_TEXT_ERROR_LIST = new LinkedList<InconsistencyChangeText>();
+	private final List<MissingBaseCode> MISSING_BASE_CODE_LIST = new LinkedList<MissingBaseCode>();
 	private String currentEditKey;
 	private Integer totalKeysStructuredTextError = null;
 	private Integer totalBlankLineError = null;
@@ -327,11 +329,13 @@ public class UserSettings {
 	 * 
 	 * @param oldStructuredFieldNewText ancienne balise de changement de texte
 	 * @param newStructuredFieldNewText nouvelle balise de changement de texte
-	 * @param line numéro de la ligne
+	 * @param oldLine numéro de la ligne de l'ancienne balise
+	 * @param newLine numéro de la ligne de la nouvelle balise
+	 * @param 
 	 */
 	public void addInconsistencyError(StructuredField oldStructuredFieldNewText, StructuredField newStructuredFieldNewText,
-			Integer line) {
-		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.add(new InconsistencyChangeText(oldStructuredFieldNewText, newStructuredFieldNewText, line));
+			Integer oldLine, Integer newLine) {
+		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.add(new InconsistencyChangeText(oldStructuredFieldNewText, newStructuredFieldNewText, oldLine, newLine));
 	}
 
 	/**
@@ -344,6 +348,25 @@ public class UserSettings {
 	}
 	
 	/**
+	 * Permet d'ajouter des erreurs détecté au niveau du repérage des balises
+	 * 
+	 * @param structuredFieldFound balise reperé
+	 * @param line numéro de la ligne
+	 */
+	public void addMissingBaseCodeError(StructuredField structuredFieldFound, Integer line) {
+		MISSING_BASE_CODE_LIST.add(new MissingBaseCode(structuredFieldFound, line));
+	}
+
+	/**
+	 * Permet de se procurer un booléen pour savoir si il y a des erreurs potentielles au niveau du repérage des balises
+	 * 
+	 * @return Vrai si il y a des erreurs
+	 */
+	public Boolean haveMissingBaseCodeError() {
+		return !MISSING_BASE_CODE_LIST.isEmpty();
+	}
+	
+	/**
 	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau des textes
 	 * @return la liste non modifiables des erreurs d'inconsistence
 	 */
@@ -352,10 +375,25 @@ public class UserSettings {
 	}
 	
 	/**
+	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau du repérage des balises
+	 * @return la liste non modifiables des erreurs d'inconsistence
+	 */
+	public List<MissingBaseCode> getMissingBaseCodeErrorList() {
+		return Collections.unmodifiableList(this.MISSING_BASE_CODE_LIST);
+	}
+	
+	/**
 	 * Permet de supprimer toutes les erreurs d'inconsistence de la liste
 	 */
 	public void clearInconsistencyErrorList() {
 		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.clear();
+	}
+	
+	/**
+	 * Permet de supprimer toutes les erreurs d'inconsistence au niveau du repérage des balises de la liste
+	 */
+	public void clearMissingBaseCodeErrorList() {
+		MISSING_BASE_CODE_LIST.clear();
 	}
 
 	/**
@@ -950,6 +988,7 @@ public class UserSettings {
 		}
 		if (FolderSettingsEnum.FOLDER_ANALYZE.equals(folder)) {
 			clearInconsistencyErrorList();
+			clearMissingBaseCodeErrorList();
 			clearLineErrorList();
 			clearKeysStructuredTextErrorList();
 			clearBlankLineErrorList();

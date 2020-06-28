@@ -36,6 +36,7 @@ import model.analyze.constants.TypeFilterTextEnum;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.beans.BaseCodeError;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
@@ -591,7 +592,20 @@ public class ConfigurationControler implements IConfigurationControler {
 	public List<InconsistencyError> getInconsistencyChangeTextErrorList() {
 		return this.configurationModel.getInconsistencyChangeTextErrorList().stream()
 				.map(error -> new InconsistencyError(error.getOldStructuredFieldNewText().getFieldName(),
-						error.getNewStructuredFieldNewText().getFieldName(), error.getLine()))
+						error.getNewStructuredFieldNewText().getFieldName(), error.getOldLine(), error.getNewLine(),
+						error.getOldStructuredFieldNewText().getIsMetaFile()))
+				.collect(Collectors.toCollection(LinkedList::new));
+	}
+
+	@Override
+	public Boolean haveMissingBaseCodeError() {
+		return this.configurationModel.haveMissingBaseCodeError();
+	}
+
+	@Override
+	public List<BaseCodeError> getMissingBaseCodeErrorList() {
+		return this.configurationModel.getMissingBaseCodeErrorList().stream()
+				.map(error -> new BaseCodeError(error.getStructuredFieldFound().getFieldName(), error.getLine()))
 				.collect(Collectors.toCollection(LinkedList::new));
 	}
 

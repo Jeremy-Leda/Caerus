@@ -14,10 +14,12 @@ import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;
 import view.interfaces.IGenericAccessPanel;
 import view.interfaces.IInformationPanel;
+import view.interfaces.IManageInconsistencyBaseCodeErrorPanel;
 import view.interfaces.IManageInconsistencyErrorPanel;
 import view.panel.ActionPanel;
 import view.panel.GenericAccessPanel;
 import view.panel.InformationPanel;
+import view.panel.ManageInconsistencyBaseCodeErrorPanel;
 import view.panel.ManageInconsistencyErrorPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
@@ -38,8 +40,11 @@ public class InconsistencyErrorView extends ModalJFrameAbstract {
 	private final JPanel content;
 	private final IInformationPanel informationPanel;
 	private final IManageInconsistencyErrorPanel inconsistencyErrorsPanel;
+	private final IManageInconsistencyBaseCodeErrorPanel inconsistencyBaseCodeErrorPanel;
 	private final IActionPanel actionPanel;
-	private final IGenericAccessPanel genericPanel;
+	private final IGenericAccessPanel genericInconsistencyErrorsPanel;
+	private final IGenericAccessPanel genericInconsistencyBaseCodeErrorsPanel;
+	
 	
 	/**
 	 * Constructeur
@@ -51,8 +56,11 @@ public class InconsistencyErrorView extends ModalJFrameAbstract {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_MESSAGE_PANEL_TITLE), 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_MESSAGE), true, true);
 		this.inconsistencyErrorsPanel = new ManageInconsistencyErrorPanel();
-		this.genericPanel = new GenericAccessPanel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_PANEL_TITLE));
-		this.genericPanel.addComponent(this.inconsistencyErrorsPanel.getJPanel());
+		this.inconsistencyBaseCodeErrorPanel = new ManageInconsistencyBaseCodeErrorPanel();
+		this.genericInconsistencyErrorsPanel = new GenericAccessPanel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_PANEL_TITLE));
+		this.genericInconsistencyErrorsPanel.addComponent(this.inconsistencyErrorsPanel.getJPanel());
+		this.genericInconsistencyBaseCodeErrorsPanel = new GenericAccessPanel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ERROR_INCONSISTENCY_MISSING_BASE_CODE_PANEL_TITLE));
+		this.genericInconsistencyBaseCodeErrorsPanel.addComponent(this.inconsistencyBaseCodeErrorPanel.getJPanel());
 		this.actionPanel = new ActionPanel(1);
 		this.content = new JPanel();
 		createWindow();
@@ -77,7 +85,12 @@ public class InconsistencyErrorView extends ModalJFrameAbstract {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
 		content.add(this.informationPanel.getJPanel());
-		content.add(this.genericPanel.getJPanel());
+		if (getControler().haveInconsistencyError()) {
+			content.add(this.genericInconsistencyErrorsPanel.getJPanel());
+		}
+		if (getControler().haveMissingBaseCodeError()) {
+			content.add(this.genericInconsistencyBaseCodeErrorsPanel.getJPanel());
+		}
 		content.add(this.actionPanel.getJPanel());
 	}
 	
@@ -86,6 +99,7 @@ public class InconsistencyErrorView extends ModalJFrameAbstract {
 	 */
 	private void fillErrorsPanel() {
 		getControler().getInconsistencyChangeTextErrorList().forEach(error -> this.inconsistencyErrorsPanel.addInconsistencyError(error));
+		getControler().getMissingBaseCodeErrorList().forEach(error -> this.inconsistencyBaseCodeErrorPanel.addInconsistencyBaseCodeError(error));
 	}
 	
 	/**

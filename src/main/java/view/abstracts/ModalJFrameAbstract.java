@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -43,6 +44,8 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	private final Boolean isModal;
 	private final List<Consumer<?>> consumerForCloseList;
 	private final Dimension screenSize;
+	private final List<JComponent> optionalComponents;
+	private Boolean automaticRepack = Boolean.FALSE;
 
 	/**
 	 * Constructeur
@@ -64,6 +67,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 		this.consumerForCloseList.add(getConsumerOnCloseForLog());
 		this.frame = new JDialog((JFrame) null, title, isModal);
 		this.configurationControler = configurationControler;
+		this.optionalComponents = new ArrayList<>();
 	}
 	
 	/**
@@ -132,7 +136,8 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	@Override
 	public void repack(Boolean changeLocation) {
 		frame.pack();
-		checkLimitSize();
+		checkLimitSize(changeLocation);
+		automaticRepack = Boolean.FALSE;
 		if (changeLocation) {
 			frame.setLocationRelativeTo(null);
 		}
@@ -182,9 +187,14 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 		return (v) -> logger.debug("Close " + getWindowName());
 	}
 	
-	private void checkLimitSize() {
-		Double limitHeight = screenSize.getHeight() * 0.80;
+	private void checkLimitSize(Boolean changeLocation) {
+		Double limitHeight = screenSize.getHeight() * 0.95;
 		if (this.frame.getHeight() > limitHeight.intValue()) {
+			if (!automaticRepack) {
+				automaticRepack = Boolean.TRUE;
+				optionalComponents.forEach(oc -> oc.setVisible(Boolean.FALSE));
+				repack(changeLocation);
+			}
 			this.frame.setSize(this.frame.getWidth(), limitHeight.intValue());
 		}
 	}
@@ -203,4 +213,13 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 		this.consumerForCloseList.forEach(c -> c.accept(null));
 		super.dispose();
 	}
+	
+	/**
+	 * permet d'ajouter un composant optionel
+	 * @param component composant optionel
+	 */
+	public void addOptionalFrame(JComponent component) {
+		this.optionalComponents.add(component);
+	}
+	
 }

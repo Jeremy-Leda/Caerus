@@ -13,19 +13,22 @@ public class InconsistencyChangeText {
 
 	private final StructuredField oldStructuredFieldNewText;
 	private final StructuredField newStructuredFieldNewText;
-	private final Integer line;
+	private final Integer oldLine;
+	private final Integer newLine;
 	
 	/**
 	 * Constructeur
 	 * @param oldStructuredFieldNewText ancienne balise de changement de texte
 	 * @param newStructuredFieldNewText nouvelle balise de changement de texte
-	 * @param line numéro de la ligne
+	 * @param oldLine numéro de la ligne pour l'ancienne balise
+	 * @param newLine numéro de la ligne pour la nouvelle balise
 	 */
 	public InconsistencyChangeText(StructuredField oldStructuredFieldNewText, StructuredField newStructuredFieldNewText,
-			Integer line) {
+			Integer oldLine, Integer newLine) {
 		this.oldStructuredFieldNewText = oldStructuredFieldNewText;
 		this.newStructuredFieldNewText = newStructuredFieldNewText;
-		this.line = line;
+		this.oldLine = oldLine;
+		this.newLine = newLine;
 	}
 
 	/**
@@ -45,11 +48,19 @@ public class InconsistencyChangeText {
 	}
 
 	/**
-	 * Permet de se procurer le numéro de la ligne
-	 * @return le numéro de la ligne
+	 * Permet de se procurer le numéro de la ligne de l'ancienne balise
+	 * @return le numéro de la ligne de l'ancienne balise
 	 */
-	public Integer getLine() {
-		return line;
+	public Integer getOldLine() {
+		return oldLine;
+	}
+
+	/**
+	 * Permet de se procurer le numéro de la ligne de la nouvelle balise
+	 * @return le numéro de la ligne de la nouvelle balise
+	 */
+	public Integer getNewLine() {
+		return newLine;
 	}
 	
 	

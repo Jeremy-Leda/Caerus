@@ -15,6 +15,7 @@ import model.analyze.beans.StructuredFile;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.beans.BaseCodeError;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
@@ -549,4 +550,17 @@ public interface IConfigurationControler {
 	 * @return la liste des erreurs potentielles d'incohérence
 	 */
 	List<InconsistencyError> getInconsistencyChangeTextErrorList();
+	
+	
+	/**
+	 * Permet de savoir si il y a des erreurs potentielles de balise code
+	 * @return Vrai si des erreurs existe
+	 */
+	Boolean haveMissingBaseCodeError();
+	
+	/**
+	 * Permet de se procurer les erreurs potentielles de balise code
+	 * @return la liste des erreurs potentielles de balise code
+	 */
+	List<BaseCodeError> getMissingBaseCodeErrorList();
 }

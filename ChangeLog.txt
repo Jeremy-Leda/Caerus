@@ -43,3 +43,4 @@ Caerus 1.1.2 - 28/06/2020
 - Modifications de l'intégration du Json (ajout jsonignore)
 - Corrections de bug graphiques
 - Suppression des champs inutilisé dans la configuration
+- Ajout de panel optionnelle pour miniser les informations sur la fenêtre (fenêtre spécifique light)

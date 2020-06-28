@@ -61,6 +61,8 @@ public class FillSpecificText extends ModalJFrameAbstract {
 		this.specificContentPanel = new SpecificControlAndListPanel(this.specificTextModel);
 		this.specificTextModel.addRefreshConsumerOnLoadAllField(refreshDisplayWarning());
 		this.content = new JPanel();
+		super.addOptionalFrame(filePanel.getJPanel());
+		super.addOptionalFrame(textInformationPanel.getJPanel());
 		createWindow();
 	}
 	

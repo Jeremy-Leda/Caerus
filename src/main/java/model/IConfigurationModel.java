@@ -14,6 +14,7 @@ import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.FilterCorpus;
 import model.analyze.beans.InconsistencyChangeText;
 import model.analyze.beans.LineError;
+import model.analyze.beans.MissingBaseCode;
 import model.analyze.beans.StructuredFile;
 import model.analyze.beans.UserStructuredText;
 import model.analyze.constants.FolderSettingsEnum;
@@ -546,4 +547,16 @@ public interface IConfigurationModel {
 	 * @return la liste des erreurs potentielles d'incohérence
 	 */
 	List<InconsistencyChangeText> getInconsistencyChangeTextErrorList();
+	
+	/**
+	 * Permet de savoir si il y a des erreurs potentielles de balise code
+	 * @return Vrai si des erreurs existe
+	 */
+	Boolean haveMissingBaseCodeError();
+	
+	/**
+	 * Permet de se procurer les erreurs potentielles de balise code
+	 * @return la liste des erreurs potentielles de balise code
+	 */
+	List<MissingBaseCode> getMissingBaseCodeErrorList();
 }

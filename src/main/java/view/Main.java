@@ -560,7 +560,7 @@ public class Main extends JFrame {
 				saveConfiguration.setEnabled(false);
 				saveCustomExcel.setEnabled(false);
 			} else {
-				if (configurationControler.haveInconsistencyError()) {
+				if (configurationControler.haveInconsistencyError() || configurationControler.haveMissingBaseCodeError()) {
 					errorInconsistencyPanel.getJPanel().setVisible(Boolean.TRUE);
 				}
 				saveConfiguration.setEnabled(true);

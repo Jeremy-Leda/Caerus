@@ -37,7 +37,7 @@ public class UserInformation extends ModalJFrameAbstract {
 	public UserInformation(String title, IConfigurationControler configurationControler, PictureTypeEnum pictureType, String message) {
 		super(title, configurationControler);
 		this.content = new JPanel();
-		this.infoPanel = new InformationPanel(pictureType, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_MESSAGE_PANEL_LABEL), message, true);
+		this.infoPanel = new InformationPanel(pictureType, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_MESSAGE_PANEL_LABEL), message, true, true);
 		this.actionPanel = new ActionPanel(1);
 		createWindow();
 	}

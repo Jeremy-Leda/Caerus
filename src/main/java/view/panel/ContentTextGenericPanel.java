@@ -3,6 +3,7 @@ package view.panel;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import javax.swing.JComponent;
 
@@ -118,6 +119,11 @@ public class ContentTextGenericPanel implements IContentTextGenericPanel {
 	@Override
 	public void reloadValue() {
 		this.contentTextPanel.reloadValue();
+	}
+
+	@Override
+	public void setRefreshDisplayConsumer(Consumer<?> refreshDisplay) {
+		this.contentTextPanel.setRefreshDisplayConsumer(refreshDisplay);
 	}
 
 }

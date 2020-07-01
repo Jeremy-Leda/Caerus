@@ -66,7 +66,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 		this.checkBoxTextFieldPanelList = new ArrayList<ICheckBoxTextFieldPanel>();
 		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION,
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TITLE),
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TEXT_NOTHING), true);
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TEXT_NOTHING), true, true);
 		this.actionPanel = new ActionPanel(1);
 		this.actionPanel.setEnabled(0, false);
 		this.actionPanel.addAction(0, getGenerateExcelAction(excelGenerationType));

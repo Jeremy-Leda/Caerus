@@ -85,6 +85,10 @@ public class StructuredField {
 		this.order = order;
 	}
     
+	@Override
+	public boolean equals(Object obj) {
+		return this.getFieldName().equals(((StructuredField)obj).getFieldName());
+	}
 	
     
 }

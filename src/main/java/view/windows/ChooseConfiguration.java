@@ -53,7 +53,7 @@ public class ChooseConfiguration extends ModalJFrameAbstract {
 		this.textInformationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CHANGE_CONFIGURATION_MESSAGE_PANEL_TITLE),
 				String.format(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CHANGE_CONFIGURATION_MESSAGE_CONTENT),
-						configurationControler.getConfigurationFolder()), true);
+						configurationControler.getConfigurationFolder()), true, false);
 		createWindow();
 	}
 

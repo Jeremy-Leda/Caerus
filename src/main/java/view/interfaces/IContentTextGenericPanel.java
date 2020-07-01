@@ -3,6 +3,7 @@ package view.interfaces;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * 
@@ -90,5 +91,10 @@ public interface IContentTextGenericPanel extends IAccessPanel {
 	 */
 	void reloadValue();
 	
+	/**
+	 * Permet de définir un consumer pour rafraichir l'interface
+	 * @param refreshDisplay refresh display consumer
+	 */
+	void setRefreshDisplayConsumer(Consumer<?> refreshDisplay);
 	
 }

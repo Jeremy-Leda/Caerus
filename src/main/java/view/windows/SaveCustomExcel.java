@@ -75,7 +75,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 		this.checkBoxFieldsPanel = new CheckBoxPanel(getControler().getFieldConfigurationNameLabelMap().size(), true);
 		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION,
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TITLE),
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TEXT_NOTHING), false);
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_SPECIFIC_INFORMATION_PANEL_TEXT_NOTHING), false, true);
 		this.actionPanel = new ActionPanel(1);
 		this.actionPanel.setEnabled(0, false);
 		this.actionPanel.addAction(0, getGenerateExcelAction(excelGenerationType));

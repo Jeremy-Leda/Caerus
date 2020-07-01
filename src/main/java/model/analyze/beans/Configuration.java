@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * 
  * Bean permettant de décrire une configuration
@@ -12,11 +15,11 @@ import java.util.stream.Collectors;
  * @author jerem
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Configuration {
 
 	private String name;
 	private String baseCode;
-	private String excelFileName;
 	private List<SpecificConfiguration> specificConfigurationList;
 	private List<StructuredField> structuredFieldList;
 	
@@ -60,22 +63,6 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de se procurer le nom du fichier excel
-	 * @return le nom du fichier excel
-	 */
-	public String getExcelFileName() {
-		return excelFileName;
-	}
-
-	/**
-	 * Permet de définir le nom du fichier excel
-	 * @param excelFileName nom du fichier excel
-	 */
-	public void setExcelFileName(String excelFileName) {
-		this.excelFileName = excelFileName;
-	}
-
-	/**
 	 * Permet de se procurer la liste des configurations spécifique
 	 * @return la liste des configurations spécifique
 	 */
@@ -114,6 +101,7 @@ public class Configuration {
 	 * Permet de se procurer la liste des champ méta
 	 * @return la liste des champ méta
 	 */
+	@JsonIgnore
 	public List<String> getMetaFieldList() {
 		return this.structuredFieldList.stream()
 				.filter(s -> s.getIsMetaFile()).map(s -> s.getFieldName()).collect(Collectors.toList());
@@ -123,6 +111,7 @@ public class Configuration {
 	 * Permet de se procurer la liste des champ spécific
 	 * @return la liste des champ spécific
 	 */
+	@JsonIgnore
 	public List<String> getSpecificFieldList() {
 		return getSpecificConfigurationList().stream().flatMap(sc -> sc.getTreatmentFieldList().stream()).distinct()
 				.collect(Collectors.toList());
@@ -132,6 +121,7 @@ public class Configuration {
 	 * Permet de se procurer la liste des champ en tête spécific
 	 * @return la liste des champ en tête spécific
 	 */
+	@JsonIgnore
 	public List<String> getSpecificHeaderFieldList() {
 		return getSpecificConfigurationList().stream().flatMap(sc -> sc.getHeaderFieldList().stream()).distinct()
 				.collect(Collectors.toList());
@@ -141,6 +131,7 @@ public class Configuration {
 	 * Permet de se procurer la liste des champ commun (ni spécifique, ni meta)
 	 * @return la liste des champ communs
 	 */
+	@JsonIgnore
 	public List<String> getCommonFieldList() {
 		List<String> otherFieldList = new ArrayList<String>();
 		otherFieldList.addAll(getSpecificFieldList());

@@ -53,14 +53,16 @@ public class FillSpecificText extends ModalJFrameAbstract {
 		this.actionPanel = new ActionPanel(3);
 		this.textInformationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_INFORMATION_PANEL_TITLE),
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_INFORMATION_PANEL_TEXT), false);
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_INFORMATION_PANEL_TEXT), true, true);
 		this.textWarningPanel = new InformationPanel(PictureTypeEnum.WARNING, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_WARNING_PANEL_TITLE),
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_WARNING_PANEL_TEXT), false);
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SPECIFIC_WARNING_PANEL_TEXT), false, false);
 		this.specificTextModel.addSpecificTextRefresh(this.actionPanel);
 		this.specificContentPanel = new SpecificControlAndListPanel(this.specificTextModel);
 		this.specificTextModel.addRefreshConsumerOnLoadAllField(refreshDisplayWarning());
 		this.content = new JPanel();
+		super.addOptionalFrame(filePanel.getJPanel());
+		super.addOptionalFrame(textInformationPanel.getJPanel());
 		createWindow();
 	}
 	

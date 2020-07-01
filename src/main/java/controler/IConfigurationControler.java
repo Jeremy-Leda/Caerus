@@ -15,10 +15,12 @@ import model.analyze.beans.StructuredFile;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.beans.BaseCodeError;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
 import view.beans.Filter;
+import view.beans.InconsistencyError;
 
 /**
  * 
@@ -536,4 +538,29 @@ public interface IConfigurationControler {
 	 * @throws IOException Erreur d'entrée sortie
 	 */
 	void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException;
+	
+	/**
+	 * Permet de savoir si il y a des erreurs potentielles au niveau du changement de textes (incohérence et risque de décalage)
+	 * @return Vrai si des erreurs existe
+	 */
+	Boolean haveInconsistencyError();
+	
+	/**
+	 * Permet de se procurer les erreurs potentielles d'incohérence
+	 * @return la liste des erreurs potentielles d'incohérence
+	 */
+	List<InconsistencyError> getInconsistencyChangeTextErrorList();
+	
+	
+	/**
+	 * Permet de savoir si il y a des erreurs potentielles de balise code
+	 * @return Vrai si des erreurs existe
+	 */
+	Boolean haveMissingBaseCodeError();
+	
+	/**
+	 * Permet de se procurer les erreurs potentielles de balise code
+	 * @return la liste des erreurs potentielles de balise code
+	 */
+	List<BaseCodeError> getMissingBaseCodeErrorList();
 }

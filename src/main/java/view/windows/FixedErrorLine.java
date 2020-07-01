@@ -119,7 +119,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_EXPERT),
-				false);
+				true, true);
 
 		this.fieldsListMap.putAll(getControler().getAllField());
 		this.listPanel.addConsumerOnSelectChange(afterChangeSelectionList());
@@ -205,7 +205,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE1),
-				false);
+				true, true);
 		this.wizardPanel.addStep(Arrays.asList(informationStep));
 	}
 
@@ -218,7 +218,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE2),
-				false);
+				true, true);
 		this.wizardPanel.addStep(Arrays.asList(informationStep, listPanel));
 	}
 
@@ -231,7 +231,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE3),
-				false);
+				true, true);
 		IGenericAccessPanel genericPanel = new GenericAccessPanel(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_SELECTED_DATA_PANEL_TITLE));
 		JPanel panelSelectText = new JPanel();
@@ -277,7 +277,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE),
 				ConfigurationUtils.getInstance()
 						.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE4),
-				false);
+				true, true);
 		this.wizardPanel.addStep(Arrays.asList(informationStep));
 	}
 

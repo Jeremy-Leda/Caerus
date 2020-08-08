@@ -7,6 +7,8 @@ import java.util.function.Consumer;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import view.beans.SpecificRow;
+
 /**
  * 
  * Interfaces pour fournir les méthodes nécessaires aux IHM des textes spécifiques
@@ -39,6 +41,19 @@ public interface ISpecificTextModel {
 	 * @return la map des liste des champs spécifique (clé/label)
 	 */
 	Map<String, String> getMapTextLabelField();
+	
+	/**
+	 * Permet de se procurer la liste des en têtes
+	 * @return la liste des en têtes
+	 */
+	List<String> getHeaderList();
+	
+	/**
+	 * Permet de se procurer la liste des lignes
+	 * @return la liste des lignes
+	 */
+	List<SpecificRow> getSpecificRowList();
+	
 	
 	/**
 	 * Permet de mettre à jour une valeur coté serveur
@@ -146,5 +161,11 @@ public interface ISpecificTextModel {
 	 * @param consumer consumer à ajouter
 	 */
 	void addRefreshConsumerOnLoadAllField(Consumer<?> consumer);
+	
+	/**
+	 * Permet de définir le consumer permettant de clear la selection
+	 * @param consumer consumer à définir
+	 */
+	void setClearSelectionConsumer(Consumer<?> consumer);
 	
 }

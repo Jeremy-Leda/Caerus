@@ -2,9 +2,11 @@ package model.analyze.beans;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * 
@@ -16,9 +18,9 @@ import java.util.Set;
 public class SaveCurrentFixedText {
 	private File path;
 	private List<UserStructuredText> userStructuredTextList = new ArrayList<UserStructuredText>();
-	private Set<String> keysStructuredTextErrorSet = new HashSet<>();
-	private Set<String> keysBlankLineErrorSet = new HashSet<>();
-	private Set<String> keysMetaBlankLineErrorSet = new HashSet<>();
+	private Set<String> keysStructuredTextErrorSet = new LinkedHashSet<>();
+	private Set<String> keysBlankLineErrorSet = new LinkedHashSet<>();
+	private Set<String> keysMetaBlankLineErrorSet = new LinkedHashSet<>();
 	
 	public List<UserStructuredText> getUserStructuredTextList() {
 		return userStructuredTextList;
@@ -29,6 +31,7 @@ public class SaveCurrentFixedText {
 	public Set<String> getKeysStructuredTextErrorSet() {
 		return keysStructuredTextErrorSet;
 	}
+	@JsonDeserialize(as=LinkedHashSet.class)
 	public void setKeysStructuredTextErrorSet(Set<String> keysStructuredTextErrorSet) {
 		this.keysStructuredTextErrorSet = keysStructuredTextErrorSet;
 	}
@@ -41,12 +44,14 @@ public class SaveCurrentFixedText {
 	public Set<String> getKeysBlankLineErrorSet() {
 		return keysBlankLineErrorSet;
 	}
+	@JsonDeserialize(as=LinkedHashSet.class)
 	public void setKeysBlankLineErrorSet(Set<String> keysBlankLineErrorSet) {
 		this.keysBlankLineErrorSet = keysBlankLineErrorSet;
 	}
 	public Set<String> getKeysMetaBlankLineErrorSet() {
 		return keysMetaBlankLineErrorSet;
 	}
+	@JsonDeserialize(as=LinkedHashSet.class)
 	public void setKeysMetaBlankLineErrorSet(Set<String> keysMetaBlankLineErrorSet) {
 		this.keysMetaBlankLineErrorSet = keysMetaBlankLineErrorSet;
 	}

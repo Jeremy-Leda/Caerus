@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -73,6 +74,7 @@ public class UserSettings {
 	private final Set<String> MAP_FILTER_KEY_LIST = Collections.synchronizedSet(new LinkedHashSet<>());
 	// ERROR MAP
 	private final List<LineError> LINES_ERROR_LIST = new LinkedList<LineError>();
+	private final Map<ErrorTypeEnum, Map<String, Set<String>>> MAP_TYPE_ERROR_KEYS_LIST_BY_FILE = new ConcurrentHashMap<>();
 	private final Map<ErrorTypeEnum, Set<String>> MAP_TYPE_ERROR_KEYS_LIST = new HashMap<>();
 	private final List<InconsistencyChangeText> INCONSISTENCY_CHANGE_TEXT_ERROR_LIST = new LinkedList<InconsistencyChangeText>();
 	private final Set<MissingBaseCode> MISSING_BASE_CODE_LIST = new LinkedHashSet<MissingBaseCode>();
@@ -143,8 +145,8 @@ public class UserSettings {
 	 * @param typeError type de l'erreur
 	 * @return la liste des clés en erreur
 	 */
-	public List<String> getKeysInError(ErrorTypeEnum typeError) {
-		return Collections.unmodifiableList(new ArrayList<>(this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError)));
+	public Set<String> getKeysInError(ErrorTypeEnum typeError) {
+		return Collections.unmodifiableSet(this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError));
 	}
 
 	/**
@@ -322,77 +324,86 @@ public class UserSettings {
 	public LineError getLineError(Integer index) {
 		return LINES_ERROR_LIST.get(index);
 	}
-	
+
 	/**
-	 * Permet d'ajouter des erreurs détecté au niveau des changement de répérage de textes
+	 * Permet d'ajouter des erreurs détecté au niveau des changement de répérage de
+	 * textes
 	 * 
 	 * 
 	 * @param oldStructuredFieldNewText ancienne balise de changement de texte
 	 * @param newStructuredFieldNewText nouvelle balise de changement de texte
-	 * @param oldLine numéro de la ligne de l'ancienne balise
-	 * @param newLine numéro de la ligne de la nouvelle balise
-	 * @param nameFile nom du fichier
-	 * @param 
+	 * @param oldLine                   numéro de la ligne de l'ancienne balise
+	 * @param newLine                   numéro de la ligne de la nouvelle balise
+	 * @param nameFile                  nom du fichier
+	 * @param
 	 */
-	public void addInconsistencyError(StructuredField oldStructuredFieldNewText, StructuredField newStructuredFieldNewText,
-			Integer oldLine, Integer newLine, String nameFile) {
-		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.add(new InconsistencyChangeText(oldStructuredFieldNewText, newStructuredFieldNewText, oldLine, newLine, nameFile));
+	public void addInconsistencyError(StructuredField oldStructuredFieldNewText,
+			StructuredField newStructuredFieldNewText, Integer oldLine, Integer newLine, String nameFile) {
+		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.add(new InconsistencyChangeText(oldStructuredFieldNewText,
+				newStructuredFieldNewText, oldLine, newLine, nameFile));
 	}
 
 	/**
-	 * Permet de se procurer un booléen pour savoir si il y a des erreurs potentielles au niveau des incohérences de changement de texte
+	 * Permet de se procurer un booléen pour savoir si il y a des erreurs
+	 * potentielles au niveau des incohérences de changement de texte
 	 * 
 	 * @return Vrai si il y a des erreurs
 	 */
 	public Boolean haveInconsistencyErrors() {
 		return !INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.isEmpty();
 	}
-	
+
 	/**
 	 * Permet d'ajouter des erreurs détecté au niveau du repérage des balises
 	 * 
 	 * @param structuredFieldFound balise reperé
-	 * @param line numéro de la ligne
-	 * @param nameFile nom du fichier
+	 * @param line                 numéro de la ligne
+	 * @param nameFile             nom du fichier
 	 */
 	public void addMissingBaseCodeError(StructuredField structuredFieldFound, Integer line, String nameFile) {
 		MISSING_BASE_CODE_LIST.add(new MissingBaseCode(structuredFieldFound, line, nameFile));
 	}
 
 	/**
-	 * Permet de se procurer un booléen pour savoir si il y a des erreurs potentielles au niveau du repérage des balises
+	 * Permet de se procurer un booléen pour savoir si il y a des erreurs
+	 * potentielles au niveau du repérage des balises
 	 * 
 	 * @return Vrai si il y a des erreurs
 	 */
 	public Boolean haveMissingBaseCodeError() {
 		return !MISSING_BASE_CODE_LIST.isEmpty();
 	}
-	
+
 	/**
-	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau des textes
+	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau des
+	 * textes
+	 * 
 	 * @return la liste non modifiables des erreurs d'inconsistence
 	 */
 	public List<InconsistencyChangeText> getInconsistencyErrorList() {
 		return Collections.unmodifiableList(this.INCONSISTENCY_CHANGE_TEXT_ERROR_LIST);
 	}
-	
+
 	/**
-	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau du repérage des balises
+	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau du
+	 * repérage des balises
+	 * 
 	 * @return la liste non modifiables des erreurs d'inconsistence
 	 */
 	public List<MissingBaseCode> getMissingBaseCodeErrorList() {
 		return Collections.unmodifiableList(new LinkedList<>(this.MISSING_BASE_CODE_LIST));
 	}
-	
+
 	/**
 	 * Permet de supprimer toutes les erreurs d'inconsistence de la liste
 	 */
 	public void clearInconsistencyErrorList() {
 		INCONSISTENCY_CHANGE_TEXT_ERROR_LIST.clear();
 	}
-	
+
 	/**
-	 * Permet de supprimer toutes les erreurs d'inconsistence au niveau du repérage des balises de la liste
+	 * Permet de supprimer toutes les erreurs d'inconsistence au niveau du repérage
+	 * des balises de la liste
 	 */
 	public void clearMissingBaseCodeErrorList() {
 		MISSING_BASE_CODE_LIST.clear();
@@ -680,7 +691,7 @@ public class UserSettings {
 			if (null == listValues) {
 				listValues = new ArrayList<>();
 			}
-			listValues.removeIf(v -> StringUtils.isBlank(v));
+			//listValues.removeIf(v -> StringUtils.isBlank(v));
 			mapFinalOrdered.put(structuredField.getFieldName(), listValues);
 		}
 		return mapFinalOrdered;
@@ -876,8 +887,9 @@ public class UserSettings {
 		}
 		try {
 			loadConfigurationsList();
-			Optional<Configuration> findFirstConfiguration = configurationsList.stream()
-					.filter(c -> null != save.getDefaultConfiguration() && save.getDefaultConfiguration().equals(c.getName())).findFirst();
+			Optional<Configuration> findFirstConfiguration = configurationsList.stream().filter(
+					c -> null != save.getDefaultConfiguration() && save.getDefaultConfiguration().equals(c.getName()))
+					.findFirst();
 			if (findFirstConfiguration.isPresent()) {
 				this.setCurrentConfiguration(findFirstConfiguration.get());
 			} else if (!configurationsList.isEmpty()) {
@@ -942,7 +954,7 @@ public class UserSettings {
 		Map<String, String> listFieldCommonFile = getListField(false, true, true, true);
 		List<UserStructuredText> orderedUserStructuredText = userStructuredTextList.stream()
 				.sorted(Comparator.comparing(UserStructuredText::getNumber)).collect(Collectors.toList());
-		for (UserStructuredText userStructuredText : orderedUserStructuredText) {			
+		for (UserStructuredText userStructuredText : orderedUserStructuredText) {
 			Map<String, String> mapFieldCommonFileToWrite = getMapToWrite(userStructuredText.getStructuredText(),
 					listFieldCommonFile.keySet());
 			writeLines(writer, mapFieldCommonFileToWrite);
@@ -1214,11 +1226,12 @@ public class UserSettings {
 						.addAll(this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folderType).getUserStructuredTextList());
 			}
 			if (!listUserStructuredText.isEmpty()) {
-				listUserStructuredText.stream().forEach(ust -> {
-					if (filterCorpus.getFiterTextList().stream().allMatch(getPredicateForFilterText(ust))) {
-						mapKeyFilteredList.add(ust.getKey());
-					}
-				});
+				listUserStructuredText.stream().sorted(Comparator.comparing(UserStructuredText::getFileName)
+						.thenComparing(UserStructuredText::getNumber)).forEach(ust -> {
+							if (filterCorpus.getFiterTextList().stream().allMatch(getPredicateForFilterText(ust))) {
+								mapKeyFilteredList.add(ust.getKey());
+							}
+						});
 			}
 			MAP_FILTER_KEY_LIST.clear();
 			MAP_FILTER_KEY_LIST.addAll(mapKeyFilteredList);
@@ -1333,6 +1346,53 @@ public class UserSettings {
 	 */
 	public List<Configuration> getConfigurationList() {
 		return Collections.unmodifiableList(this.configurationsList);
+	}
+
+	/**
+	 * Permet de sauvegarder les erreurs de manière à ce que celle ci soit trié
+	 */
+	public void saveAllErrorForFixed() {
+		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.isEmpty()) {
+			this.MAP_TYPE_ERROR_KEYS_LIST.clear();
+			this.MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.BLANK_LINE, new LinkedHashSet<>());
+			this.MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.META_BLANK_LINE, new LinkedHashSet<>());
+			this.MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.STRUCTURED_TEXT, new LinkedHashSet<>());
+			saveErrorForFixed(ErrorTypeEnum.STRUCTURED_TEXT);
+			saveErrorForFixed(ErrorTypeEnum.BLANK_LINE);
+			saveErrorForFixed(ErrorTypeEnum.META_BLANK_LINE);
+		}
+		this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.clear();
+	}
+
+	/**
+	 * Permet de sauvegarder les erreurs demandé de lanière trié
+	 * 
+	 * @param typeError type d'erreur à trié
+	 */
+	private void saveErrorForFixed(ErrorTypeEnum typeError) {
+		if (this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.containsKey(typeError)) {
+			Map<String, Set<String>> errorMap = this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError);
+			errorMap.keySet().stream().sorted().forEach(keyFile -> {
+				this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).addAll(errorMap.get(keyFile));
+			});
+		}
+	}
+
+	/**
+	 * Permet de sauvegarder le type d'erreur en fonction du fichier
+	 * 
+	 * @param typeError type d'erreur
+	 * @param file      le fichier
+	 * @param keyError  la clé d'erreur
+	 */
+	public void addKeyErrorByFile(ErrorTypeEnum typeError, String file, String keyError) {
+		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.containsKey(typeError)) {
+			this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.put(typeError, new ConcurrentHashMap<>());
+		}
+		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).containsKey(file)) {
+			this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).put(file, new LinkedHashSet<>());
+		}
+		this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).get(file).add(keyError);
 	}
 
 }

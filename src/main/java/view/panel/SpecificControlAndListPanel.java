@@ -29,7 +29,8 @@ public class SpecificControlAndListPanel implements IAccessPanel {
 	public SpecificControlAndListPanel(ISpecificTextModel specificTextModel) {
 		this.specificTextModel = specificTextModel;
 		this.entryContentSpecificTextPanel = new SpecificControlPanel(this.specificTextModel);
-		this.detailListContentSpecificTextPanel = new SpecificListPanel(this.specificTextModel);
+		this.detailListContentSpecificTextPanel = new SpecificListTablePanel(this.specificTextModel);
+		//this.detailListContentSpecificTextPanel = new SpecificListPanel(this.specificTextModel);
 		this.specificTextModel.addSpecificTextRefresh(this.entryContentSpecificTextPanel);
 		this.specificTextModel.addSpecificTextRefresh(this.detailListContentSpecificTextPanel);
 		this.content = new JPanel();

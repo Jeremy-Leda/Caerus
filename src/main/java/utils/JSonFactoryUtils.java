@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -49,6 +50,9 @@ public final class JSonFactoryUtils {
 		// Code temporaire pour indenter le temps de créer les interfaces graphiques
 		// Plus simple pour comprendre la structure
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,false);
+		mapper.configure(SerializationFeature.INDENT_OUTPUT,true);
+		mapper.setSerializationInclusion(Include.NON_NULL);
 		//
 		mapper.writeValue(file, objet);		
 		return file.exists();
@@ -79,6 +83,9 @@ public final class JSonFactoryUtils {
 	 */
 	public static <T> T createObjectFromJsonFile(InputStream inputStream, Class<T> clazz) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,false);
+		mapper.configure(SerializationFeature.INDENT_OUTPUT,true);
+		mapper.setSerializationInclusion(Include.NON_NULL);
 		return mapper.readValue(inputStream, clazz);
 	}
 	

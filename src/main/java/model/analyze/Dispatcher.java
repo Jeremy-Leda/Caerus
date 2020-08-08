@@ -135,6 +135,7 @@ public class Dispatcher {
 							new ConfigurationStructuredText(sc)));
 		UserSettings.getInstance().getConfigurationStructuredTextList(folderType).stream()
 				.forEach(st -> structuredTextSpecificProcess(memoryFiles, folderType, st));
+		UserSettings.getInstance().saveAllErrorForFixed();
 	}
 
 	/**

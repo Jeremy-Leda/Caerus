@@ -255,7 +255,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	public void loadNextErrorText() {
 		logger.debug("CALL loadNextErrorText");
 		UserSettings.getInstance().loadErrorText(
-				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.STRUCTURED_TEXT).get(0),
+				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.STRUCTURED_TEXT).iterator().next(),
 				ErrorTypeEnum.STRUCTURED_TEXT);
 	}
 
@@ -305,7 +305,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	public void loadNextErrorBlankLine() {
 		logger.debug("CALL loadNextErrorBlankLine");
 		UserSettings.getInstance().loadErrorText(
-				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.BLANK_LINE).get(0), ErrorTypeEnum.BLANK_LINE);
+				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.BLANK_LINE).iterator().next(), ErrorTypeEnum.BLANK_LINE);
 	}
 
 	@Override
@@ -374,7 +374,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	public void loadNextErrorMetaBlankLine() {
 		logger.debug("CALL loadNextErrorMetaBlankLine");
 		UserSettings.getInstance().loadErrorText(
-				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.META_BLANK_LINE).get(0),
+				UserSettings.getInstance().getKeysInError(ErrorTypeEnum.META_BLANK_LINE).iterator().next(),
 				ErrorTypeEnum.META_BLANK_LINE);
 	}
 

@@ -3,6 +3,7 @@ package view.utils;
 import java.awt.Component;
 import java.awt.FontMetrics;
 
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
@@ -17,7 +18,7 @@ import javax.swing.table.TableColumn;
  *
  */
 public class ColumnsAutoSize {
-	
+
 	public static void sizeColumnsToFit(JTable table) {
 		sizeColumnsToFit(table, 5);
 	}
@@ -29,35 +30,40 @@ public class ColumnsAutoSize {
 			// can't auto size a table without a header
 			return;
 		}
+		
 
 		FontMetrics headerFontMetrics = tableHeader.getFontMetrics(tableHeader.getFont());
 
 		int[] minWidths = new int[table.getColumnCount()];
 		int[] maxWidths = new int[table.getColumnCount()];
 
-		for (int columnIndex = 0; columnIndex < table.getColumnCount(); columnIndex++) {
-			int headerWidth = headerFontMetrics.stringWidth(table.getColumnName(columnIndex));
+		int headerWidth = headerFontMetrics.stringWidth(table.getColumnName(0));
 
-			minWidths[columnIndex] = headerWidth + columnMargin;
+		minWidths[0] = headerWidth + columnMargin;
 
-			int maxWidth = getMaximalRequiredColumnWidth(table, columnIndex, headerWidth);
+		int maxWidth = getMaximalRequiredColumnWidth(table, 0, headerWidth);
 
-			maxWidths[columnIndex] = Math.max(maxWidth, minWidths[columnIndex]) + columnMargin;
-		}
+		maxWidths[0] = Math.max(maxWidth, minWidths[0]) + columnMargin;
 
 		adjustMaximumWidths(table, minWidths, maxWidths);
-
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setVerticalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 		for (int i = 0; i < minWidths.length; i++) {
-			if (minWidths[i] > 0) {
-				table.getColumnModel().getColumn(i).setMinWidth(minWidths[i]);
-			}
 
-			if (maxWidths[i] > 0) {
-				table.getColumnModel().getColumn(i).setMaxWidth(maxWidths[i]);
-
-				table.getColumnModel().getColumn(i).setWidth(maxWidths[i]);
-			}
+			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
 		}
+		if (minWidths[0] > 0) {
+			table.getColumnModel().getColumn(0).setMinWidth(minWidths[0]);
+		}
+
+		if (maxWidths[0] > 0) {
+			table.getColumnModel().getColumn(0).setMaxWidth(maxWidths[0]);
+
+			table.getColumnModel().getColumn(0).setWidth(maxWidths[0]);
+		}
+		table.setRowHeight(30);
+		table.setShowGrid(false);
 	}
 
 	private static void adjustMaximumWidths(JTable table, int[] minWidths, int[] maxWidths) {

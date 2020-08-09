@@ -58,6 +58,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private Map<String,String> mapSelectedValue;
 	private final List<Consumer<?>> refreshOnLoadFieldConsumerList;
 	private Consumer<?> clearSelectionConsumer;
+	private final String HTML_BOLD_HEADER = "<html><b>%s</b></html>";
 
 	/**
 	 * Constructeur
@@ -159,7 +160,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 			//String valueKeyField = this.controler.getListFieldSpecific(index).get(entry.getKey());
 			this.mapKeyIndex.put(entry.getKey(), this.headerList.size());
 			String labelControler = this.controler.getListFieldSpecific(index).get(entry.getKey());				
-			this.headerList.add(labelControler.replace("[", "").replace("]", ""));
+			this.headerList.add(String.format(HTML_BOLD_HEADER, labelControler.replace("[", "").replace("]", "")));
 			for (int j = 0; j < entry.getValue().size(); j++) {
 				if (this.specificRowList.size() <= j) {
 					SpecificRow row = new SpecificRow();
@@ -266,9 +267,13 @@ public class SpecificTextModel implements ISpecificTextModel {
 //				this.mapKeyFieldListField.get(key).set(this.currentSelectedIndexInList, StringUtils.trim(textField.getText()));
 //			});
 			updateListModel(mapKeyFieldTextField);
+			removeEmptyLine();
 			updateSpecificFieldControler();
 		}
 	}
+	
+
+	
 	
 	/**
 	 * Permet de mettre à jour le modéle par rapport aux champs de l'interface
@@ -277,8 +282,41 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private void updateListModel(Map<String, JTextField> mapKeyFieldTextField) {
 		mapKeyFieldTextField.forEach((key, textField) -> {
 			Integer index = this.mapKeyIndex.get(key);
-			this.specificRowList.get(this.currentSelectedIndexInList).getSpecificList().set(index, StringUtils.trim(textField.getText()));
+			if (StringUtils.isBlank(textField.getText())) {
+				shiftCell(key);
+			} else {			
+				this.specificRowList.get(this.currentSelectedIndexInList).getSpecificList().set(index, StringUtils.trim(textField.getText()));
+			}
 		});
+	}
+	
+	/**
+	 * Permet de décaler les valeurs pour un champ spécifié
+	 * @param key champ
+	 */
+	private void shiftCell(String key) {
+		Integer index = this.mapKeyIndex.get(key);
+		for (int i = this.currentSelectedIndexInList; i < this.specificRowList.size(); i++) {
+			Integer nextCell = i+1;
+			String value = StringUtils.EMPTY;
+			if (nextCell < this.specificRowList.size()) {
+				value = this.specificRowList.get(nextCell).getSpecificList().get(index);
+			}
+			this.specificRowList.get(i).getSpecificList().set(index, StringUtils.trim(value));
+		}
+	}
+	
+	/**
+	 * Permet de supprimer les lignes vides automatiquement
+	 */
+	private void removeEmptyLine() {
+		List<SpecificRow> listToRemove = new ArrayList<>();
+		for (SpecificRow sr : this.specificRowList) {
+			if (this.mapKeyIndex.values().stream().allMatch(v -> StringUtils.isBlank(sr.getSpecificList().get(v)))) {
+				listToRemove.add(sr);
+			}
+		}
+		listToRemove.stream().forEach(row -> this.specificRowList.remove(row));
 	}
 	
 	/**

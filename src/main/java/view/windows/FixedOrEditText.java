@@ -23,6 +23,7 @@ import view.abstracts.ModalJFrameAbstract;
 import view.beans.ActionOperationTypeEnum;
 import view.beans.ActionUserTypeEnum;
 import view.beans.ConsumerTextTypeEnum;
+import view.beans.DirectionTypeEnum;
 import view.beans.FunctionTextTypeEnum;
 import view.beans.PictureTypeEnum;
 import view.beans.TextIhmTypeEnum;
@@ -55,6 +56,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	private final IActionPanel actionFixedTextPanel;
 	private final IActionPanel actionManageTextPanel;
 	private final IActionPanel actionAddTextPanel;
+	private final IActionPanel actionNavigationPanel;
 	private Integer currentIndex;
 	private final JPanel content;
 	private IActionOnClose fillSpecificTextFrame;
@@ -72,6 +74,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		this.actionFixedTextPanel = new ActionPanel(2);
 		this.actionManageTextPanel = new ActionPanel(3);
 		this.actionAddTextPanel = new ActionPanel(3);
+		this.actionNavigationPanel = new ActionPanel(2);
 		this.content = new JPanel();
 		this.currentIndex = 0;
 		super.addActionOnClose(closeAutomaticallySpecificText());
@@ -96,6 +99,8 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				content.add(actionAddTextPanel.getJPanel());
 			} else if (ActionOperationTypeEnum.EDIT.equals(actionOperationType)) {
 				content.add(actionManageTextPanel.getJPanel());
+				content.add(actionNavigationPanel.getJPanel());
+				updateEnableNavigationPanel();
 			}
 		}
 	}
@@ -152,7 +157,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		this.actionFixedTextPanel.addAction(1, saveAndGoToNextIndexOrQuit());
 		this.actionManageTextPanel.setEnabled(0, isEnabledSpecific);
 		this.actionManageTextPanel.addAction(0, openFixedSpecificText(Constants.WINDOW_EDIT_SPECIFIC_TITLE));
-		this.actionManageTextPanel.addAction(1, saveAndQuit());
+		this.actionManageTextPanel.addAction(1, save());
 		this.actionManageTextPanel.addAction(2, new ActionListener() {
 
 			@Override
@@ -170,13 +175,16 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				closeFrame();
 			}
 		});
+		this.actionNavigationPanel.addAction(0, changeText(DirectionTypeEnum.PREVIOUS));
+		this.actionNavigationPanel.addAction(1, changeText(DirectionTypeEnum.NEXT));
 		this.actionFixedTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
 		this.actionManageTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
 		this.actionAddTextPanel.setIconButton(1, PictureTypeEnum.SAVE);
 	}
-	
+
 	/**
-	 * Permet d'afficher une icone de warning s'il y a une erreur dans les structures spécifiques
+	 * Permet d'afficher une icone de warning s'il y a une erreur dans les
+	 * structures spécifiques
 	 */
 	private void displayIconIfHaveErrorInSpecific() {
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
@@ -240,7 +248,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		messageButtonMap.put(0, ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_FILL_SPECIFIC_BUTTON_TITLE));
 		messageButtonMap.put(1, ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_SAVE_AND_QUIT_LABEL));
+				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_SAVE_LABEL));
 		messageButtonMap.put(2, ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_QUIT_LABEL));
 		this.actionManageTextPanel.setStaticLabel(ConfigurationUtils.getInstance()
@@ -255,14 +263,47 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_QUIT_LABEL));
 		this.actionAddTextPanel.setStaticLabel(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_PANEL_TITLE), messageButtonMap);
+		
+		messageButtonMap.clear();
+		messageButtonMap.put(0, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL));
+		messageButtonMap.put(1, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL));
+		this.actionNavigationPanel.setStaticLabel(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_NAVIGATION_PANEL_TITLE), messageButtonMap);
 	}
 
+	/**
+	 * Permet de mettre à jour les boutons de navigation
+	 */
+	private void updateEnableNavigationPanel() {
+		actionNavigationPanel.setEnabled(0, getControler().haveTextInFilteredText(DirectionTypeEnum.PREVIOUS));
+		actionNavigationPanel.setEnabled(1, getControler().haveTextInFilteredText(DirectionTypeEnum.NEXT));
+	}
+	
+	/**
+	 * Permet de changer de texte
+	 * @param direction sens de navigation
+	 */
+	private ActionListener changeText(DirectionTypeEnum direction) {
+		return new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getControler().loadFilteredText(direction);
+				updateContentInformationsTextPanel();
+				updateEnableNavigationPanel();
+				repack();
+			}
+		};
+	}
+	
 	/**
 	 * Permet de sauvegarder un texte et de quitter (édition)
 	 * 
 	 * @return
 	 */
-	private ActionListener saveAndQuit() {
+	private ActionListener save() {
 		return new ActionListener() {
 
 			@Override
@@ -273,7 +314,10 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);
 				}
-				closeFrame();
+				new UserInformation(
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
+						getControler(), PictureTypeEnum.INFORMATION,
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MESSAGE_SAVE));
 			}
 		};
 	}
@@ -330,9 +374,11 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 
 		};
 	}
-	
+
 	/**
-	 * Permet d'effectuer les actions nécessaires sur la fermeture de fenêtre des spécifiques
+	 * Permet d'effectuer les actions nécessaires sur la fermeture de fenêtre des
+	 * spécifiques
+	 * 
 	 * @return le consumer
 	 */
 	private Consumer<?> actionOnCloseSpecificFrame() {

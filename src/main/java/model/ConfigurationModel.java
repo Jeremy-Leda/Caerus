@@ -573,4 +573,10 @@ public class ConfigurationModel implements IConfigurationModel {
 		return UserSettings.getInstance().getMissingBaseCodeErrorList();
 	}
 
+	@Override
+	public String getDelimiterSpecific(Integer index) {
+		logger.debug("CALL getDelimiterSpecific");
+		return UserSettings.getInstance().getDelimiterSpecific(index);
+	}
+
 }

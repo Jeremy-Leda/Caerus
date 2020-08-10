@@ -16,6 +16,7 @@ import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import view.beans.BaseCodeError;
+import view.beans.DirectionTypeEnum;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
@@ -563,4 +564,25 @@ public interface IConfigurationControler {
 	 * @return la liste des erreurs potentielles de balise code
 	 */
 	List<BaseCodeError> getMissingBaseCodeErrorList();
+	
+	/**
+	 * Permet de savoir si un texte existe dans les textes filtrés en fonction de la direction
+	 * @param direction sens de navigation
+	 * @return Vrai si il existe un texte, faux sinon
+	 */
+	Boolean haveTextInFilteredText(DirectionTypeEnum direction);
+	
+	/**
+	 * Permet de charger la clé suivante en fonction de la direction
+	 * @param direction sens de navigation
+	 */
+	void loadFilteredText(DirectionTypeEnum direction);
+	
+	/**
+	 * Permet de se procurer le delimiteur pour la configuration
+	 * @param index index de la configuration spécifique
+	 * @return le délimiteur
+	 */
+	String getDelimiterSpecific(Integer index);
+	
 }

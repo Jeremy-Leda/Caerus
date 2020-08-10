@@ -331,4 +331,13 @@ public final class Constants {
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_BUTTONS_PANEL_TITLE="window.error.missing.base.code.buttons.panel.title";
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_BUTTONS_CLOSE_BUTTON_LABEL="window.error.missing.base.code.buttons.close.button.label";
 
+	
+	public static final String WINDOW_MESSAGE_SAVE="window.message.save";
+
+
+	public static final String WINDOW_NAVIGATION_PANEL_TITLE="window.navigation.panel.title";
+	
+	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_SAVE_LABEL="window.manage.texts.edit.text.action.button.save.label";
+
+
 }

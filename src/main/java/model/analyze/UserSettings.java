@@ -497,6 +497,18 @@ public class UserSettings {
 				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
 				.getTreatmentFieldList());
 	}
+	
+	/**
+	 * Permet de se procurer les champs en tête de la configuration spécifique
+	 * désiré
+	 * 
+	 * @param index index de la configuration
+	 * @return les champs spécifiques
+	 */
+	public String getDelimiterSpecific(Integer index) {
+		return getCurrentConfiguration().getSpecificConfigurationList().stream()
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index).getDelimiter();
+	}
 
 	/**
 	 * Permet de connaitre le nombre maximum de configuration spécifique

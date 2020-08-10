@@ -559,4 +559,11 @@ public interface IConfigurationModel {
 	 * @return la liste des erreurs potentielles de balise code
 	 */
 	List<MissingBaseCode> getMissingBaseCodeErrorList();
+	
+	/**
+	 * Permet de se procurer le delimiteur pour la configuration
+	 * @param index index de la configuration spécifique
+	 * @return le délimiteur
+	 */
+	String getDelimiterSpecific(Integer index);
 }

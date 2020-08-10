@@ -1,6 +1,7 @@
 package view.panel.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -40,14 +41,14 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private final Map<String, List<String>> mapKeyFieldListField;
 	// Cle = FieldName / Valeur = Label (string)
 	private final Map<String, String> mapTextLabelField;
-	
+
 	// Liste des en-têtes
 	private final List<String> headerList;
 	// Liste des lignes
 	private final List<SpecificRow> specificRowList;
-	
+
 	private final Map<String, Integer> mapKeyIndex;
-	
+
 	// Controler
 	private final IConfigurationControler controler;
 	// Liste pour lancer le refresh de l'interface
@@ -55,7 +56,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private final IModalFrameRepack modalFrameRepack;
 	private Integer currentIndex;
 	private Integer currentSelectedIndexInList;
-	private Map<String,String> mapSelectedValue;
+	private Map<String, String> mapSelectedValue;
 	private final List<Consumer<?>> refreshOnLoadFieldConsumerList;
 	private Consumer<?> clearSelectionConsumer;
 	private final String HTML_BOLD_HEADER = "<html><b>%s</b></html>";
@@ -66,7 +67,8 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 * @param controler controler pour le chargment des données
 	 */
 	public SpecificTextModel(IConfigurationControler controler, IModalFrameRepack modalFrameRepack) {
-		this.mapKeyIndex = new HashMap<String, Integer>();;
+		this.mapKeyIndex = new HashMap<String, Integer>();
+		;
 		this.mapHeaderKeyFieldText = new LinkedHashMap<String, String>();
 		this.mapHeaderFieldTextLabelField = new LinkedHashMap<String, String>();
 		this.mapTextLabelField = new LinkedHashMap<String, String>();
@@ -150,26 +152,28 @@ public class SpecificTextModel implements ISpecificTextModel {
 		specificFieldInEditingCorpus.entrySet().stream().forEach(entry -> {
 			this.mapKeyFieldListField.put(entry.getKey(), entry.getValue());
 		});
-		
+
 		this.headerList.clear();
 		this.specificRowList.clear();
 		this.mapKeyIndex.clear();
 		this.headerList.add("");
-		
+
 		specificFieldInEditingCorpus.entrySet().stream().forEach(entry -> {
-			//String valueKeyField = this.controler.getListFieldSpecific(index).get(entry.getKey());
+			// String valueKeyField =
+			// this.controler.getListFieldSpecific(index).get(entry.getKey());
 			this.mapKeyIndex.put(entry.getKey(), this.headerList.size());
-			String labelControler = this.controler.getListFieldSpecific(index).get(entry.getKey());				
+			String labelControler = this.controler.getListFieldSpecific(index).get(entry.getKey());
 			this.headerList.add(String.format(HTML_BOLD_HEADER, labelControler.replace("[", "").replace("]", "")));
 			for (int j = 0; j < entry.getValue().size(); j++) {
 				if (this.specificRowList.size() <= j) {
 					SpecificRow row = new SpecificRow();
-					row.addSpecific(String.valueOf(j+1));
+					row.addSpecific(String.valueOf(j + 1));
 					this.specificRowList.add(row);
 				}
 				this.specificRowList.get(j).addSpecific(entry.getValue().get(j));
 			}
 		});
+		removeEmptyLine();
 	}
 
 	/**
@@ -194,6 +198,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	@Override
 	public void loadAllField(Integer index) {
 		this.currentIndex = index;
+		clearCurrentSelection();
 		this.loadHeader(index);
 		this.loadSpecificField(index);
 		this.loadSpecificFieldListValue(index);
@@ -247,11 +252,11 @@ public class SpecificTextModel implements ISpecificTextModel {
 			}
 		});
 		this.specificRowList.add(newRow);
-		
+
 //		mapKeyFieldTextField.forEach((key, textField) -> {
 //			Integer integer = this.mapKeyIndex.get(key);
 //		});
-		
+
 		updateSpecificFieldControler();
 	}
 
@@ -271,12 +276,10 @@ public class SpecificTextModel implements ISpecificTextModel {
 			updateSpecificFieldControler();
 		}
 	}
-	
 
-	
-	
 	/**
 	 * Permet de mettre à jour le modéle par rapport aux champs de l'interface
+	 * 
 	 * @param mapKeyFieldTextField map des champs de l'interface
 	 */
 	private void updateListModel(Map<String, JTextField> mapKeyFieldTextField) {
@@ -284,20 +287,22 @@ public class SpecificTextModel implements ISpecificTextModel {
 			Integer index = this.mapKeyIndex.get(key);
 			if (StringUtils.isBlank(textField.getText())) {
 				shiftCell(key);
-			} else {			
-				this.specificRowList.get(this.currentSelectedIndexInList).getSpecificList().set(index, StringUtils.trim(textField.getText()));
+			} else {
+				this.specificRowList.get(this.currentSelectedIndexInList).getSpecificList().set(index,
+						StringUtils.trim(textField.getText()));
 			}
 		});
 	}
-	
+
 	/**
 	 * Permet de décaler les valeurs pour un champ spécifié
+	 * 
 	 * @param key champ
 	 */
 	private void shiftCell(String key) {
 		Integer index = this.mapKeyIndex.get(key);
 		for (int i = this.currentSelectedIndexInList; i < this.specificRowList.size(); i++) {
-			Integer nextCell = i+1;
+			Integer nextCell = i + 1;
 			String value = StringUtils.EMPTY;
 			if (nextCell < this.specificRowList.size()) {
 				value = this.specificRowList.get(nextCell).getSpecificList().get(index);
@@ -305,7 +310,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 			this.specificRowList.get(i).getSpecificList().set(index, StringUtils.trim(value));
 		}
 	}
-	
+
 	/**
 	 * Permet de supprimer les lignes vides automatiquement
 	 */
@@ -318,7 +323,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 		}
 		listToRemove.stream().forEach(row -> this.specificRowList.remove(row));
 	}
-	
+
 	/**
 	 * Permet de supprimer les champs sélectionnés
 	 */
@@ -326,7 +331,8 @@ public class SpecificTextModel implements ISpecificTextModel {
 	public void removeSpecificField() {
 		if (haveCurrentSelectedIndexInList()) {
 			this.specificRowList.remove(this.currentSelectedIndexInList.intValue());
-			//this.mapKeyFieldListField.values().forEach(values -> values.remove(this.currentSelectedIndexInList.intValue()));
+			// this.mapKeyFieldListField.values().forEach(values ->
+			// values.remove(this.currentSelectedIndexInList.intValue()));
 			updateSpecificFieldControler();
 		}
 	}
@@ -335,21 +341,28 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 * Permet de mettre à jour tous les champs coté serveur
 	 */
 	private void updateSpecificFieldControler() {
-		//controler.updateSpecificFieldInEditingCorpus(currentIndex, mapKeyFieldListField);
+		// controler.updateSpecificFieldInEditingCorpus(currentIndex,
+		// mapKeyFieldListField);
 		controler.updateSpecificFieldInEditingCorpus(currentIndex, constructMapKeyListValueForControler());
 		clearCurrentSelection();
 		loadAllField(currentIndex);
 	}
-	
+
 	/**
 	 * Permet de construire la liste des spécfiques à destination du controler
+	 * 
 	 * @return la liste des clé valeur
 	 */
 	private Map<String, List<String>> constructMapKeyListValueForControler() {
 		Map<String, List<String>> mapKeyListValueForControler = new HashMap<>();
+		String delimiterSpecific = controler.getDelimiterSpecific(currentIndex);
 		this.mapKeyIndex.forEach((key, value) -> {
 			List<String> listValue = new LinkedList<>();
-			this.specificRowList.forEach(row -> listValue.add(row.getSpecificList().get(value)));
+			this.specificRowList.forEach(row -> {
+				List<String> allValues = Arrays.asList(StringUtils.split(row.getSpecificList().get(value), delimiterSpecific));
+				listValue.addAll(allValues);
+			});
+			listValue.removeIf(v -> StringUtils.isBlank(v));
 			mapKeyListValueForControler.put(key, listValue);
 		});
 		return mapKeyListValueForControler;
@@ -362,12 +375,13 @@ public class SpecificTextModel implements ISpecificTextModel {
 		if (null != this.clearSelectionConsumer) {
 			this.clearSelectionConsumer.accept(null);
 		}
-		//this.setCurrentSelectedIndexInList(-1);
+		// this.setCurrentSelectedIndexInList(-1);
 		this.mapSelectedValue.clear();
 	}
-	
+
 	/**
 	 * Permet de savoir si on a un index de slectionné
+	 * 
 	 * @return
 	 */
 	@Override
@@ -392,7 +406,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 */
 	private void fillSelectedValueMap() {
 		if (haveCurrentSelectedIndexInList()) {
-			this.mapKeyFieldListField.forEach((key,valueList) -> {
+			this.mapKeyFieldListField.forEach((key, valueList) -> {
 				this.mapSelectedValue.put(key, valueList.get(this.currentSelectedIndexInList));
 			});
 		}
@@ -459,5 +473,5 @@ public class SpecificTextModel implements ISpecificTextModel {
 	public void setClearSelectionConsumer(Consumer<?> consumer) {
 		this.clearSelectionConsumer = consumer;
 	}
-	
+
 }

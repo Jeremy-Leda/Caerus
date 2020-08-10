@@ -37,6 +37,7 @@ import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import view.beans.BaseCodeError;
+import view.beans.DirectionTypeEnum;
 import view.beans.DisplayText;
 import view.beans.ErrorStructuredLine;
 import view.beans.ExportTypeEnum;
@@ -56,6 +57,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	private static final String EXTENSION_TXT = ".txt";
 	private Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
 	private IConfigurationModel configurationModel = new ConfigurationModel();
+	private String currentKeyFilteredText;
 
 	@Override
 	public void launchAnalyze(Boolean withSubFolder) throws LoadTextException {
@@ -466,6 +468,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	public void loadFilteredText(String key) {
 		if (null != key) {
 			this.configurationModel.loadKeyFiltered(key);
+			this.currentKeyFilteredText = key;
 		}
 	}
 
@@ -605,8 +608,45 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public List<BaseCodeError> getMissingBaseCodeErrorList() {
 		return this.configurationModel.getMissingBaseCodeErrorList().stream()
-				.map(error -> new BaseCodeError(error.getStructuredFieldFound().getFieldName(), error.getLine(), error.getNameFile()))
+				.map(error -> new BaseCodeError(error.getStructuredFieldFound().getFieldName(), error.getLine(),
+						error.getNameFile()))
 				.collect(Collectors.toCollection(LinkedList::new));
+	}
+
+	@Override
+	public Boolean haveTextInFilteredText(DirectionTypeEnum direction) {
+		if (null != this.currentKeyFilteredText) {
+			List<String> keyFilteredList = this.configurationModel.getKeyFilteredList();
+			int indexKey = keyFilteredList.indexOf(this.currentKeyFilteredText);
+			switch (direction) {
+			case PREVIOUS:
+				return indexKey > 0;
+			case NEXT:
+				return indexKey < (keyFilteredList.size() - 1);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public void loadFilteredText(DirectionTypeEnum direction) {
+		if (null != this.currentKeyFilteredText) {
+			List<String> keyFilteredList = this.configurationModel.getKeyFilteredList();
+			int indexKey = keyFilteredList.indexOf(this.currentKeyFilteredText);
+			switch (direction) {
+			case PREVIOUS:
+				loadFilteredText(keyFilteredList.get(indexKey - 1));
+				break;
+			case NEXT:
+				loadFilteredText(keyFilteredList.get(indexKey + 1));
+				break;
+			}
+		}
+	}
+
+	@Override
+	public String getDelimiterSpecific(Integer index) {
+		return this.configurationModel.getDelimiterSpecific(index);
 	}
 
 }

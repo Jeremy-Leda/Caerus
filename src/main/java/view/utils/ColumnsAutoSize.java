@@ -48,7 +48,7 @@ public class ColumnsAutoSize {
 		adjustMaximumWidths(table, minWidths, maxWidths);
 		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
 		centerRenderer.setVerticalAlignment(JLabel.CENTER);
-		centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+		centerRenderer.setHorizontalAlignment(JLabel.LEFT);
 		for (int i = 0; i < minWidths.length; i++) {
 
 			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);

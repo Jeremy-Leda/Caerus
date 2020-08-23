@@ -74,7 +74,7 @@ public class UserSettings {
 	private final Set<String> MAP_FILTER_KEY_LIST = Collections.synchronizedSet(new LinkedHashSet<>());
 	// ERROR MAP
 	private final List<LineError> LINES_ERROR_LIST = new LinkedList<LineError>();
-	private final Map<ErrorTypeEnum, Map<String, Set<String>>> MAP_TYPE_ERROR_KEYS_LIST_BY_FILE = new ConcurrentHashMap<>();
+	private final Map<ErrorTypeEnum, Map<String, Map<Integer, String>>> MAP_TYPE_ERROR_KEYS_LIST_BY_FILE = new ConcurrentHashMap<>();
 	private final Map<ErrorTypeEnum, Set<String>> MAP_TYPE_ERROR_KEYS_LIST = new HashMap<>();
 	private final List<InconsistencyChangeText> INCONSISTENCY_CHANGE_TEXT_ERROR_LIST = new LinkedList<InconsistencyChangeText>();
 	private final Set<MissingBaseCode> MISSING_BASE_CODE_LIST = new LinkedHashSet<MissingBaseCode>();
@@ -497,7 +497,7 @@ public class UserSettings {
 				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
 				.getTreatmentFieldList());
 	}
-	
+
 	/**
 	 * Permet de se procurer les champs en tête de la configuration spécifique
 	 * désiré
@@ -507,7 +507,8 @@ public class UserSettings {
 	 */
 	public String getDelimiterSpecific(Integer index) {
 		return getCurrentConfiguration().getSpecificConfigurationList().stream()
-				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index).getDelimiter();
+				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
+				.getDelimiter();
 	}
 
 	/**
@@ -703,7 +704,7 @@ public class UserSettings {
 			if (null == listValues) {
 				listValues = new ArrayList<>();
 			}
-			//listValues.removeIf(v -> StringUtils.isBlank(v));
+			// listValues.removeIf(v -> StringUtils.isBlank(v));
 			mapFinalOrdered.put(structuredField.getFieldName(), listValues);
 		}
 		return mapFinalOrdered;
@@ -1377,15 +1378,16 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de sauvegarder les erreurs demandé de lanière trié
+	 * Permet de sauvegarder les erreurs demandé de manière trié
 	 * 
 	 * @param typeError type d'erreur à trié
 	 */
 	private void saveErrorForFixed(ErrorTypeEnum typeError) {
 		if (this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.containsKey(typeError)) {
-			Map<String, Set<String>> errorMap = this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError);
+			Map<String, Map<Integer, String>> errorMap = this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError);
 			errorMap.keySet().stream().sorted().forEach(keyFile -> {
-				this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).addAll(errorMap.get(keyFile));
+				this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).addAll(errorMap.get(keyFile).entrySet().stream()
+						.sorted(Map.Entry.comparingByKey()).map(Map.Entry::getValue).collect(Collectors.toList()));
 			});
 		}
 	}
@@ -1395,16 +1397,17 @@ public class UserSettings {
 	 * 
 	 * @param typeError type d'erreur
 	 * @param file      le fichier
+	 * @param number    le numéro
 	 * @param keyError  la clé d'erreur
 	 */
-	public void addKeyErrorByFile(ErrorTypeEnum typeError, String file, String keyError) {
+	public void addKeyErrorByFile(ErrorTypeEnum typeError, String file, Integer number, String keyError) {
 		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.containsKey(typeError)) {
 			this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.put(typeError, new ConcurrentHashMap<>());
 		}
 		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).containsKey(file)) {
-			this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).put(file, new LinkedHashSet<>());
+			this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).put(file, new HashMap<>());
 		}
-		this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).get(file).add(keyError);
+		this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).get(file).put(number, keyError);
 	}
 
 }

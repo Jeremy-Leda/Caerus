@@ -132,12 +132,16 @@ public class Structuring {
 				structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
 				keyStructuredText = KeyGenerator.generateKey(structuredText);
 				if (structuredText.getHaveBlankLine()) {
-					UserSettings.getInstance().addKeyErrorByFile(ErrorTypeEnum.BLANK_LINE, memoryFile.nameFile(), keyStructuredText);
-					//UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE, keyStructuredText);
+					UserSettings.getInstance().addKeyErrorByFile(ErrorTypeEnum.BLANK_LINE, memoryFile.nameFile(),
+							number, keyStructuredText);
+					// UserSettings.getInstance().addKeyError(ErrorTypeEnum.BLANK_LINE,
+					// keyStructuredText);
 				}
 				if (structuredText.getHaveMetaBlankLine()) {
-					UserSettings.getInstance().addKeyErrorByFile(ErrorTypeEnum.META_BLANK_LINE, memoryFile.nameFile(), keyStructuredText);
-					//UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE, keyStructuredText);
+					UserSettings.getInstance().addKeyErrorByFile(ErrorTypeEnum.META_BLANK_LINE, memoryFile.nameFile(),
+							number, keyStructuredText);
+					// UserSettings.getInstance().addKeyError(ErrorTypeEnum.META_BLANK_LINE,
+					// keyStructuredText);
 				}
 			}
 			listLines.clear();
@@ -147,8 +151,8 @@ public class Structuring {
 							beanConfiguration, memoryFile, sf));
 
 				} catch (IndexOutOfBoundsException e) {
-					UserSettings.getInstance().addKeyErrorByFile(ErrorTypeEnum.STRUCTURED_TEXT, memoryFile.nameFile(), keyStructuredText);
-					//UserSettings.getInstance().addKeyError(ErrorTypeEnum.STRUCTURED_TEXT, keyStructuredText);
+					UserSettings.getInstance().addKeyErrorByFile(ErrorTypeEnum.STRUCTURED_TEXT, memoryFile.nameFile(),
+							number, keyStructuredText);
 				}
 
 			} else if (null != structuredText) {
@@ -338,7 +342,8 @@ public class Structuring {
 		if (StringUtils.isBlank(line)) {
 			return;
 		}
-		if (!StringUtils.startsWith(line, "[") && !checkIfHaveFieldsCode(line, false, memoryFile.getCurrentLine(), memoryFile.nameFile())) {
+		if (!StringUtils.startsWith(line, "[")
+				&& !checkIfHaveFieldsCode(line, false, memoryFile.getCurrentLine(), memoryFile.nameFile())) {
 			return;
 		} else {
 			if (StringUtils.startsWith(line, configuration.getBaseCode())) {
@@ -402,7 +407,8 @@ public class Structuring {
 								StringUtils.remove(StringUtils.remove(field.getFieldName(), "["), "]")))
 						.findFirst();
 				if (structuredFieldFind.isPresent()) {
-					UserSettings.getInstance().addMissingBaseCodeError(structuredFieldFind.get(), currentLine + 1, nameFile);
+					UserSettings.getInstance().addMissingBaseCodeError(structuredFieldFind.get(), currentLine + 1,
+							nameFile);
 				}
 			}
 			return false;

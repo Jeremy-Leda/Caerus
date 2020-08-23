@@ -55,7 +55,7 @@ public class SpecificTableModel extends AbstractTableModel implements IRefreshPa
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return true;
+		return columnIndex != 0;
 	}
 	
 	@Override

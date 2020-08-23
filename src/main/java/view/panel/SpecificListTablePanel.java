@@ -1,9 +1,16 @@
 package view.panel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -36,6 +43,22 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 		this.specificTextModel.setClearSelectionConsumer(v -> this.table.clearSelection());
 		this.scrollPanel = new JScrollPane(table);
 		loadDisplayDetailsListPanel();
+
+		InputMap im = table.getInputMap(JTable.WHEN_FOCUSED);
+		ActionMap am = table.getActionMap();
+
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "DeleteRow");
+		am.put("DeleteRow", new AbstractAction() {
+			private static final long serialVersionUID = -4413772916234405739L;
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (specificTextModel.haveCurrentSelectedIndexInList()) {
+					specificTextModel.removeSpecificField();
+				}
+
+			}
+		});
 	}
 
 	/**
@@ -50,9 +73,17 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+				specificTextModel.clearAllSelectedIndexList();
 				specificTextModel.setCurrentSelectedIndexInList(lsm.getAnchorSelectionIndex());
-				
+				// On ajoute la liste des index sélectionné
+				int minIndex = lsm.getMinSelectionIndex();
+				int maxIndex = lsm.getMaxSelectionIndex();
+				for (int i = minIndex; i <= maxIndex; i++) {
+					if (lsm.isSelectedIndex(i)) {
+						specificTextModel.addIndexToSelectedIndexList(i);
+					}
+				}
 			}
 		});
 	}

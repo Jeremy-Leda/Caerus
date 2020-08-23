@@ -60,6 +60,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private final List<Consumer<?>> refreshOnLoadFieldConsumerList;
 	private Consumer<?> clearSelectionConsumer;
 	private final String HTML_BOLD_HEADER = "<html><b>%s</b></html>";
+	private final List<Integer> allSelectedIndexList;
 
 	/**
 	 * Constructeur
@@ -82,6 +83,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 		this.modalFrameRepack = modalFrameRepack;
 		this.currentIndex = 0;
 		this.currentSelectedIndexInList = null;
+		allSelectedIndexList = new ArrayList<>();
 	}
 
 	/**
@@ -329,10 +331,16 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 */
 	@Override
 	public void removeSpecificField() {
-		if (haveCurrentSelectedIndexInList()) {
-			this.specificRowList.remove(this.currentSelectedIndexInList.intValue());
-			// this.mapKeyFieldListField.values().forEach(values ->
-			// values.remove(this.currentSelectedIndexInList.intValue()));
+		if (haveCurrentSelectedIndexInList() && !this.allSelectedIndexList.isEmpty()) {
+			List<SpecificRow> newList = new LinkedList<SpecificRow>();
+			for (int i = 0; i < this.specificRowList.size(); i++) {
+				if (!this.allSelectedIndexList.contains(i)) {
+					newList.add(this.specificRowList.get(i));
+				}
+			}
+			this.specificRowList.clear();
+			this.specificRowList.addAll(newList);
+			this.allSelectedIndexList.clear();
 			updateSpecificFieldControler();
 		}
 	}
@@ -359,7 +367,8 @@ public class SpecificTextModel implements ISpecificTextModel {
 		this.mapKeyIndex.forEach((key, value) -> {
 			List<String> listValue = new LinkedList<>();
 			this.specificRowList.forEach(row -> {
-				List<String> allValues = Arrays.asList(StringUtils.split(row.getSpecificList().get(value), delimiterSpecific));
+				List<String> allValues = Arrays
+						.asList(StringUtils.split(row.getSpecificList().get(value), delimiterSpecific));
 				listValue.addAll(allValues);
 			});
 			listValue.removeIf(v -> StringUtils.isBlank(v));
@@ -472,6 +481,23 @@ public class SpecificTextModel implements ISpecificTextModel {
 	@Override
 	public void setClearSelectionConsumer(Consumer<?> consumer) {
 		this.clearSelectionConsumer = consumer;
+	}
+
+	@Override
+	public void addIndexToSelectedIndexList(Integer index) {
+		this.allSelectedIndexList.add(index);
+	}
+
+	@Override
+	public void updateFromCell(Integer rowIndex, Integer columnIndex, String newValue) {
+		this.specificRowList.get(rowIndex).getSpecificList().set(columnIndex,
+				StringUtils.trim(newValue));
+		updateSpecificFieldControler();
+	}
+
+	@Override
+	public void clearAllSelectedIndexList() {
+		this.allSelectedIndexList.clear();
 	}
 
 }

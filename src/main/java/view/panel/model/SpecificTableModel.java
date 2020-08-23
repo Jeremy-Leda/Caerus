@@ -54,6 +54,17 @@ public class SpecificTableModel extends AbstractTableModel implements IRefreshPa
 	}
 
 	@Override
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return true;
+	}
+	
+	@Override
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		this.specificTextModel.updateFromCell(rowIndex, columnIndex, aValue.toString());
+	}
+	
+	
+	@Override
 	public String getColumnName(int column) {
 		return this.headersList.get(column);
 	}

@@ -168,4 +168,22 @@ public interface ISpecificTextModel {
 	 */
 	void setClearSelectionConsumer(Consumer<?> consumer);
 	
+	/**
+	 * Permet d'ajouter un index à la liste des index sélectionné
+	 * @param index index à ajouter
+	 */
+	void addIndexToSelectedIndexList(Integer index);
+	
+	/**
+	 * Permet d'effectuer la modification à partir d'une cellule editable
+	 * @param rowIndex index de la ligne
+	 * @param columnIndex index de la colonne
+	 * @param newValue nouvelle valeur
+	 */
+	void updateFromCell(Integer rowIndex, Integer columnIndex, String newValue);
+	
+	/**
+	 * Permet de supprimer la liste des index sélectionné de la liste
+	 */
+	void clearAllSelectedIndexList();
 }

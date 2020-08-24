@@ -475,6 +475,10 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public void writeEditText() throws IOException {
 		this.configurationModel.writeEditText();
+		// Une fois le text écris, on recharge si on a chargé un texte par clé
+		if (null != this.currentKeyFilteredText) {
+			loadFilteredText(currentKeyFilteredText);
+		}
 	}
 
 	@Override
@@ -648,5 +652,4 @@ public class ConfigurationControler implements IConfigurationControler {
 	public String getDelimiterSpecific(Integer index) {
 		return this.configurationModel.getDelimiterSpecific(index);
 	}
-
 }

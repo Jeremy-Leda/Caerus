@@ -48,7 +48,7 @@ public class ManageTextFilter extends ModalJFrameAbstract {
 	
 	public ManageTextFilter(IConfigurationControler configurationControler, Consumer<Void> consumerForRefreshAfterApplyFilters) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_FILTERS_GLOBAL_PANEL_TITLE),
-				configurationControler, false);
+				configurationControler, true);
 		this.todosCorpus = ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_FILTERS_CORPUS_ALL_LABEL);
 		this.content = new JPanel();
 		this.corpusFilterPanel = new ComboBoxPanel(
@@ -139,6 +139,7 @@ public class ManageTextFilter extends ModalJFrameAbstract {
 				if (null != consumerForRefreshAfterApplyFilters) {
 					consumerForRefreshAfterApplyFilters.accept(null);
 				}
+				closeFrame();
 			}
 		};
 	}

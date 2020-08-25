@@ -87,13 +87,13 @@ public class ManageText extends ModalJFrameAbstract {
 					displayTextsList.refresh();
 					repack();
 				});
-				displayTextsList.setEnabledAllButton(false);
-				actionPanel.setEnabled(0, Boolean.FALSE);
-				manageTextFilter.addActionOnClose(v -> {
-					displayTextsList.setEnabledAllButton(true);
-					actionPanel.setEnabled(0, Boolean.TRUE);
-					manageTextFilter = null;
-				});
+//				displayTextsList.setEnabledAllButton(false);
+//				actionPanel.setEnabled(0, Boolean.FALSE);
+//				manageTextFilter.addActionOnClose(v -> {
+//					displayTextsList.setEnabledAllButton(true);
+//					actionPanel.setEnabled(0, Boolean.TRUE);
+//					manageTextFilter = null;
+//				});
 			}
 		});
 		this.actionPanel.addAction(1, new ActionListener() {

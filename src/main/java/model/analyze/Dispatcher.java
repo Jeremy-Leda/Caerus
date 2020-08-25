@@ -383,7 +383,6 @@ public class Dispatcher {
 		StringBuilder corpusNameFile = new StringBuilder(UserSettings.getInstance().getEditingCorpusNameFile());
 		corpusNameFile.append(".txt");
 		writeText(FolderSettingsEnum.FOLDER_TEXTS, Arrays.asList(corpusNameFile.toString()));
-		UserSettings.getInstance().clearEditingCorpus();
 	}
 
 	/**

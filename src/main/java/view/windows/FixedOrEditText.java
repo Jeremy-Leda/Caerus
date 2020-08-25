@@ -2,6 +2,8 @@ package view.windows;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -62,6 +64,8 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	private IActionOnClose fillSpecificTextFrame;
 	private final ActionUserTypeEnum actionUserType;
 	private final ActionOperationTypeEnum actionOperationType;
+	private Integer scrollBarPosition;
+	private Boolean isMaximumScrollbar;
 
 	public FixedOrEditText(String title, IConfigurationControler configurationControler,
 			ActionUserTypeEnum actionUserType, ActionOperationTypeEnum actionOperationType) {
@@ -69,6 +73,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		this.actionUserType = actionUserType;
 		this.actionOperationType = actionOperationType;
 		this.filePanel = new FilePanel();
+		this.isMaximumScrollbar = Boolean.FALSE;
 		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE,
 				ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
 		this.actionFixedTextPanel = new ActionPanel(2);
@@ -77,6 +82,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		this.actionNavigationPanel = new ActionPanel(2);
 		this.content = new JPanel();
 		this.currentIndex = 0;
+		this.scrollBarPosition = 0;
 		super.addActionOnClose(closeAutomaticallySpecificText());
 		updateContentInformationsTextPanel();
 		createWindow();
@@ -91,6 +97,21 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		content.add(this.filePanel.getJPanel());
 		JScrollPane scrollPane = new JScrollPane(this.informationsTextPanel.getJPanel());
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				if (e.getValueIsAdjusting()) {
+					scrollBarPosition = e.getAdjustable().getValue();
+					isMaximumScrollbar = e.getAdjustable().getMaximum() == (scrollBarPosition + scrollPane.getVerticalScrollBar().getModel().getExtent());
+				} else {
+					if (isMaximumScrollbar) {
+						e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+					} else {
+						e.getAdjustable().setValue(scrollBarPosition);
+					}
+				}
+
+			}
+		});
 		content.add(scrollPane);
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
 			content.add(actionFixedTextPanel.getJPanel());
@@ -263,14 +284,15 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_QUIT_LABEL));
 		this.actionAddTextPanel.setStaticLabel(ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_PANEL_TITLE), messageButtonMap);
-		
+
 		messageButtonMap.clear();
 		messageButtonMap.put(0, ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL));
 		messageButtonMap.put(1, ConfigurationUtils.getInstance()
 				.getDisplayMessage(Constants.WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL));
-		this.actionNavigationPanel.setStaticLabel(ConfigurationUtils.getInstance()
-				.getDisplayMessage(Constants.WINDOW_NAVIGATION_PANEL_TITLE), messageButtonMap);
+		this.actionNavigationPanel.setStaticLabel(
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_NAVIGATION_PANEL_TITLE),
+				messageButtonMap);
 	}
 
 	/**
@@ -280,14 +302,15 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		actionNavigationPanel.setEnabled(0, getControler().haveTextInFilteredText(DirectionTypeEnum.PREVIOUS));
 		actionNavigationPanel.setEnabled(1, getControler().haveTextInFilteredText(DirectionTypeEnum.NEXT));
 	}
-	
+
 	/**
 	 * Permet de changer de texte
+	 * 
 	 * @param direction sens de navigation
 	 */
 	private ActionListener changeText(DirectionTypeEnum direction) {
 		return new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				getControler().loadFilteredText(direction);
@@ -297,7 +320,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 			}
 		};
 	}
-	
+
 	/**
 	 * Permet de sauvegarder un texte et de quitter (édition)
 	 * 
@@ -338,6 +361,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);
 				}
+				getControler().clearEditingCorpus();
 				closeFrame();
 			}
 		};

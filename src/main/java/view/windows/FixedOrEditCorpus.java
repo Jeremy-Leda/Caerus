@@ -131,6 +131,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);
 				}
+				getControler().clearEditingCorpus();
 				closeFrame();
 			}
 		};

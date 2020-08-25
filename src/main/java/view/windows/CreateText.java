@@ -2,6 +2,8 @@ package view.windows;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -56,10 +58,14 @@ public class CreateText extends ModalJFrameAbstract {
 	private final IActionPanel actionPanel;
 	private final JPanel content;
 	private IActionOnClose fillSpecificTextFrame;
+	private Integer scrollBarPosition;
+	private Boolean isMaximumScrollbar;
 	
 	public CreateText(IConfigurationControler configurationControler) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_TITLE), configurationControler, false);
 		this.filePanel = new FilePanel();
+		this.isMaximumScrollbar = Boolean.FALSE;
+		this.scrollBarPosition = 0;
 		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
 		this.actionPanel = new ActionPanel(3);
 		this.content = new JPanel();
@@ -86,6 +92,21 @@ public class CreateText extends ModalJFrameAbstract {
 		content.add(this.filePanel.getJPanel());
 		JScrollPane scrollPane = new JScrollPane(this.informationsTextPanel.getJPanel());
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+			public void adjustmentValueChanged(AdjustmentEvent e) {
+				if (e.getValueIsAdjusting()) {
+					scrollBarPosition = e.getAdjustable().getValue();
+					isMaximumScrollbar = e.getAdjustable().getMaximum() == (scrollBarPosition + scrollPane.getVerticalScrollBar().getModel().getExtent());
+				} else {
+					if (isMaximumScrollbar) {
+						e.getAdjustable().setValue(e.getAdjustable().getMaximum());
+					} else {
+						e.getAdjustable().setValue(scrollBarPosition);
+					}
+				}
+
+			}
+		});
 		content.add(scrollPane);
 		content.add(actionPanel.getJPanel());
 	}

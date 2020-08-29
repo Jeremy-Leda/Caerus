@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -55,6 +56,7 @@ import view.windows.FixedOrEditText;
 import view.windows.InconsistencyErrorView;
 import view.windows.LoadTextConfigurationSelector;
 import view.windows.ManageText;
+import view.windows.ProgressBarView;
 import view.windows.SaveCustomExcel;
 import view.windows.SaveReferenceExcels;
 import view.windows.UserInformation;
@@ -141,6 +143,7 @@ public class Main extends JFrame {
 	private IGenericAccessPanel errorInconsistencyPanel = new GenericAccessPanel();
 	private JButton openInconsistencyErrorsButton = new JButton();
 	private JButton openBaseCodeErrorsButton = new JButton();
+	private final Integer progressMaxValue = 100;
 
 	/**
 	 * Constructeur
@@ -173,7 +176,6 @@ public class Main extends JFrame {
 		createWindow();
 	}
 
-
 	/**
 	 * Permet de créer la fenetre
 	 * 
@@ -191,9 +193,10 @@ public class Main extends JFrame {
 		repack();
 		this.setVisible(true);
 	}
-	
+
 	/**
 	 * Permet de se procurer la liste des icones possible (taille différentes)
+	 * 
 	 * @return la liste des icones
 	 */
 	private List<Image> getIconsListImage() {
@@ -315,17 +318,21 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					configurationControler.loadTexts();
-					ManageText manageText = new ManageText(configurationControler);
-					manageText.addActionOnClose((v) -> {
-						setEnabled(true);
-					});
-					setEnabled(false);
-				} catch (LoadTextException e1) {
-					// TODO gérer les exceptions
-					e1.printStackTrace();
-				}
+				new ProgressBarView(r -> {
+					try {
+
+						configurationControler.loadTexts();
+						ManageText manageText = new ManageText(configurationControler);
+						manageText.addActionOnClose((v) -> {
+							setEnabled(true);
+						});
+						setEnabled(false);
+					} catch (LoadTextException e1) {
+						logger.error(e1.getMessage(), e);
+					}
+				}, getProgressConsumer(), progressMaxValue,
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL));
+				configurationControler.resetProgress();
 			}
 		});
 
@@ -349,6 +356,24 @@ public class Main extends JFrame {
 		panContent.add(panMoveFileLibrary);
 
 		this.add(panContent);
+	}
+
+	/**
+	 * Permet de se procurer le progress consumer
+	 * 
+	 * @return le progressConsumer
+	 */
+	private Consumer<Consumer<Integer>> getProgressConsumer() {
+		return valueProgressSetter -> {
+			while (this.configurationControler.getProgress() < progressMaxValue) {
+				valueProgressSetter.accept(this.configurationControler.getProgress());
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+		};
 	}
 
 	/**
@@ -528,9 +553,12 @@ public class Main extends JFrame {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_PANEL_LABEL)));
 		moveFileLibraryButton.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MOVE_FILE_LIBRARY_BUTTON_LABEL));
-		openInconsistencyErrorsButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_DUPLICATE_BUTTON_LABEL));
-		openBaseCodeErrorsButton.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_BASE_CODE_BUTTON_LABEL));
-		errorInconsistencyPanel.refreshTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_PANEL_TITLE));
+		openInconsistencyErrorsButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_DUPLICATE_BUTTON_LABEL));
+		openBaseCodeErrorsButton.setText(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_BASE_CODE_BUTTON_LABEL));
+		errorInconsistencyPanel.refreshTitle(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MAIN_INCONSISTENCY_ERROR_PANEL_TITLE));
 		try {
 			refreshDisplay();
 		} catch (HeadlessException | IOException e) {
@@ -840,31 +868,32 @@ public class Main extends JFrame {
 			}
 		};
 	}
-	
-	
+
 	/**
 	 * Permet créer le panel d'erreurs d'incohérences
 	 */
 	private void createErrorInconsistencyPanel() {
-		openInconsistencyErrorsButton.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
+		openInconsistencyErrorsButton
+				.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
 		openInconsistencyErrorsButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new InconsistencyErrorView(configurationControler);
 				launchAnalyze();
 			}
 		});
-		openBaseCodeErrorsButton.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
+		openBaseCodeErrorsButton
+				.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
 		openBaseCodeErrorsButton.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new BaseCodeErrorView(configurationControler);
 				launchAnalyze();
 			}
 		});
-		
+
 		JPanel subPanButtonError = new JPanel();
 		subPanButtonError.add(openInconsistencyErrorsButton);
 		subPanButtonError.add(openBaseCodeErrorsButton);

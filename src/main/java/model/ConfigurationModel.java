@@ -339,13 +339,21 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void generateExcelFromAnalyze(ExcelGenerateConfigurationCmd cmd) throws IOException {
 		logger.debug("CALL generateExcelFromAnalyze");
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		this.dispatcher.generateExcel(FolderSettingsEnum.FOLDER_ANALYZE, cmd);
+		stopWatch.stop();
+		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 	}
 
 	@Override
 	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException {
 		logger.debug("CALL generateExcelFromTexts");
+		StopWatch stopWatch = new StopWatch();
+		stopWatch.start();
 		this.dispatcher.generateExcel(FolderSettingsEnum.FOLDER_TEXTS, cmd);
+		stopWatch.stop();
+		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 	}
 
 	@Override
@@ -577,6 +585,16 @@ public class ConfigurationModel implements IConfigurationModel {
 	public String getDelimiterSpecific(Integer index) {
 		logger.debug("CALL getDelimiterSpecific");
 		return UserSettings.getInstance().getDelimiterSpecific(index);
+	}
+
+	@Override
+	public Integer getProgress() {
+		return dispatcher.getProgress();
+	}
+
+	@Override
+	public void resetProgress() {
+		this.dispatcher.resetProgress();
 	}
 
 }

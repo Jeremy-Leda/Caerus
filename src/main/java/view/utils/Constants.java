@@ -339,5 +339,8 @@ public final class Constants {
 	
 	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_SAVE_LABEL="window.manage.texts.edit.text.action.button.save.label";
 
+	public static final String WINDOW_PROGRESS_BAR_PANEL_TITLE="window.progress.bar.panel.title";
+	public static final String WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL="window.progress.bar.load.text.label";
+	public static final String WINDOW_PROGRESS_BAR_EXPORT_EXCEL_LABEL="window.progress.bar.export.excel.label";
 
 }

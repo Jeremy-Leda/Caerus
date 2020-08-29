@@ -185,16 +185,20 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
-						getControler().generateExcelFromAnalyze(createExcelCmd());
-					} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
-						getControler().generateExcelFromTexts(createExcelCmd());
+				new ProgressBarView(r -> {
+					try {
+						if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
+							getControler().generateExcelFromAnalyze(createExcelCmd());
+						} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
+							getControler().generateExcelFromTexts(createExcelCmd());
+						}
+						closeFrame();
+					} catch (IOException e1) {
+						logger.error(e1.getMessage(), e1);
 					}
-					closeFrame();
-				} catch (IOException e1) {
-					logger.error(e1.getMessage(), e1);
-				}
+				}, getProgressConsumer(100), 100,
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_EXPORT_EXCEL_LABEL));
+				getControler().resetProgress();
 			}
 		};
 	}

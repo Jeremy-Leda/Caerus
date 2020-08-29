@@ -6,12 +6,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFCell;
+import org.apache.poi.xssf.streaming.SXSSFRow;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import model.analyze.beans.Progress;
 import model.excel.beans.ExcelRow;
 
 public class CreateExcel {
@@ -30,22 +31,25 @@ public class CreateExcel {
 		rows.add(row);
 	}
 
-	public void generateExcel() throws IOException {
-		try (XSSFWorkbook workbook = new XSSFWorkbook()) {
-			XSSFSheet sheet = workbook.createSheet("Textos");
-			rows.forEach(er -> createRow(sheet, er));
-
+	public void generateExcel(Progress progressBean) throws IOException {
+		try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
+			SXSSFSheet sheet = workbook.createSheet("Textos");
+			progressBean.setNbMaxElementForCurrentIterate(rows.size());
+			for (int i = 0; i < rows.size(); i++) {
+				progressBean.setCurrentElementForCurrentIterate(i);
+				createRow(sheet, rows.get(i));
+			}
 			try (FileOutputStream fos = new FileOutputStream(path)) {
 				workbook.write(fos);
 			}
 		}
 	}
 
-	private void createRow(XSSFSheet sheet, ExcelRow er) {
-		XSSFRow row = null;
+	private void createRow(SXSSFSheet sheet, ExcelRow er) {
+		SXSSFRow row = null;
 		row = sheet.createRow(sheet.getLastRowNum()+1);
 		for (String ecell : er.getCells()) {
-			XSSFCell cell = null;
+			SXSSFCell cell = null;
 			if (row.getLastCellNum() < 0) {
 				cell = row.createCell(row.getLastCellNum()+1);
 			} else {

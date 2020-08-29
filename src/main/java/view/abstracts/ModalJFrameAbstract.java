@@ -80,6 +80,23 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
+	 * Permet de créer la fenêtre
+	 * @param actionBeforeCreated action à lancer avant que la fenêtre soit créé (la jdialog est passé en paramétre)
+	 * @param actionAfterCreated action à lancer une fois la fenêtre créé (la jdialog est passé en paramétre)
+	 */
+	protected void createWindow(Consumer<JDialog> actionBeforeCreated, Consumer<JDialog> actionAfterCreated) {
+		if (null != actionBeforeCreated) {
+			actionBeforeCreated.accept(this.frame);
+		}
+		init();
+		repack();
+		if (null != actionAfterCreated) {
+			actionAfterCreated.accept(this.frame);
+		}
+		this.frame.setVisible(true);
+	}
+	
+	/**
 	 * Permet d'initialiser les informations principales et le placement de la jFrame
 	 */
 	private void init() {
@@ -222,4 +239,22 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 		this.optionalComponents.add(component);
 	}
 	
+	/**
+	 * Permet de se procurer le progress consumer
+	 * 
+	 * @param progressMaxValue le maximum de la valeur
+	 * @return le progressConsumer
+	 */
+	public Consumer<Consumer<Integer>> getProgressConsumer(Integer progressMaxValue) {
+		return valueProgressSetter -> {
+			while (this.configurationControler.getProgress() < progressMaxValue) {
+				valueProgressSetter.accept(this.configurationControler.getProgress());
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					logger.error(e.getMessage(), e);
+				}
+			}
+		};
+	}
 }

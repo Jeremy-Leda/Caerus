@@ -41,13 +41,15 @@ public class ManageText extends ModalJFrameAbstract {
 	private final IManageTextDisplayPanel displayTextsList;
 	private final IActionPanel actionPanel;
 	private IActionOnClose manageTextFilter;
-	
+
 	public ManageText(IConfigurationControler configurationControler) {
-		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_TITLE), configurationControler, false);
+
+		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_TITLE),
+				configurationControler, false);
 		this.displayTextsList = new DisplayTextsFilteredWithPagingPanel(configurationControler);
 		this.actionPanel = new ActionPanel(4);
 		this.content = new JPanel();
-		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 
+		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION,
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_INFORMATION_TITLE),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_INFORMATION_LABEL),
 				false, true);
@@ -68,19 +70,24 @@ public class ManageText extends ModalJFrameAbstract {
 		content.add(this.displayTextsList.getJPanel());
 		content.add(this.actionPanel.getJPanel());
 	}
-	
+
 	/**
 	 * Permet de rafraichir l'affichage pour les bouttons
 	 */
 	private void refreshActionPanelMessage() {
 		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
-		messageButtonMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_FILTERS_BUTTON_LABEL));
-		messageButtonMap.put(1, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_CLASSICAL_BUTTON_LABEL));
-		messageButtonMap.put(2, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_SPECIFIC_BUTTON_LABEL));
-		messageButtonMap.put(3, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EXPORT_DOCUMENT_TEXT_BUTTON_LABEL));
-		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_PANEL_TITLE), messageButtonMap);
+		messageButtonMap.put(0,
+				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_FILTERS_BUTTON_LABEL));
+		messageButtonMap.put(1, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_CLASSICAL_BUTTON_LABEL));
+		messageButtonMap.put(2, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_SPECIFIC_BUTTON_LABEL));
+		messageButtonMap.put(3, ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_EXPORT_DOCUMENT_TEXT_BUTTON_LABEL));
+		this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance()
+				.getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_PANEL_TITLE), messageButtonMap);
 		this.actionPanel.addAction(0, new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				manageTextFilter = new ManageTextFilter(getControler(), v -> {
@@ -115,8 +122,7 @@ public class ManageText extends ModalJFrameAbstract {
 			}
 		});
 	}
-	
-	
+
 	@Override
 	public void initComponents() {
 		createContent();
@@ -126,9 +132,10 @@ public class ManageText extends ModalJFrameAbstract {
 	public JPanel getContent() {
 		return this.content;
 	}
-	
+
 	/**
 	 * Permet de se procurer le consumer sur l'ouverture de la fenêtre d'édition
+	 * 
 	 * @return le consumer
 	 */
 	private Consumer<Void> getConsumerOnOpenEditText() {
@@ -136,9 +143,10 @@ public class ManageText extends ModalJFrameAbstract {
 			actionPanel.setEnabled(0, Boolean.FALSE);
 		};
 	}
-	
+
 	/**
 	 * Permet de se procurer le consumer sur la fermeture de la fenêtre d'édition
+	 * 
 	 * @return le consumer
 	 */
 	private Consumer<Void> getConsumerOnCloseEditText() {
@@ -146,7 +154,7 @@ public class ManageText extends ModalJFrameAbstract {
 			actionPanel.setEnabled(0, Boolean.TRUE);
 		};
 	}
-	
+
 	/**
 	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
 	 * 

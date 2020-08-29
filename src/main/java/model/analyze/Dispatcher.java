@@ -17,6 +17,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -32,10 +33,10 @@ import model.analyze.beans.Configuration;
 import model.analyze.beans.CurrentUserConfiguration;
 import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.MemoryFile;
+import model.analyze.beans.Progress;
 import model.analyze.beans.SaveCurrentFixedText;
 import model.analyze.beans.SpecificConfiguration;
 import model.analyze.beans.StructuredField;
-import model.analyze.beans.StructuredFile;
 import model.analyze.beans.StructuredText;
 import model.analyze.beans.specific.ConfigurationStructuredText;
 import model.analyze.constants.FolderSettingsEnum;
@@ -65,6 +66,8 @@ public class Dispatcher {
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
 	private static final String ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT = "ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT";
+	// private Integer progress;
+	private Progress progressBean;
 
 	/**
 	 * Constructeur
@@ -111,6 +114,9 @@ public class Dispatcher {
 	private void processAndLoadTexts(FolderSettingsEnum folderType, Integer depth)
 			throws IOException, LoadTextException {
 		logger.debug(String.format("CALL processAndLoadTexts => type %s", folderType));
+		progressBean = new Progress(
+				1 + UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().size());
+		progressBean.setCurrentIterate(1);
 		File pathToProcess;
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
 			pathToProcess = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
@@ -120,8 +126,13 @@ public class Dispatcher {
 		List<MemoryFile> memoryFiles = getMemoryFiles(pathToProcess.toString(), depth);
 		UserSettings.getInstance().clearAllSession(folderType);
 		UserSettings.getInstance().addMemoryFilesList(folderType, memoryFiles);
-		memoryFiles.stream().map(f -> new Structuring(f, folderType).getStructuredFile())
-				.forEach(sf -> UserSettings.getInstance().addStructuredFile(folderType, sf));
+		progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
+		for (int i = 0; i < memoryFiles.size(); i++) {
+			UserSettings.getInstance().addStructuredFile(folderType,
+					new Structuring(memoryFiles.get(i), folderType).getStructuredFile());
+
+			progressBean.setCurrentElementForCurrentIterate(i);
+		}
 		if (UserSettings.getInstance().getNbLineError() > 0) {
 			if (FolderSettingsEnum.FOLDER_ANALYZE.equals(folderType)) {
 				return;
@@ -129,12 +140,15 @@ public class Dispatcher {
 				throw new LoadTextException(ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT);
 			}
 		}
-		if (null != UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList())
-			UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
-					.forEach(sc -> UserSettings.getInstance().addConfigurationStructuredText(folderType,
-							new ConfigurationStructuredText(sc)));
-		UserSettings.getInstance().getConfigurationStructuredTextList(folderType).stream()
-				.forEach(st -> structuredTextSpecificProcess(memoryFiles, folderType, st));
+		UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().stream()
+				.forEach(sc -> UserSettings.getInstance().addConfigurationStructuredText(folderType,
+						new ConfigurationStructuredText(sc)));
+		List<ConfigurationStructuredText> configurationStructuredTextList = UserSettings.getInstance()
+				.getConfigurationStructuredTextList(folderType);
+		for (int i = 0; i < configurationStructuredTextList.size(); i++) {
+			structuredTextSpecificProcess(memoryFiles, folderType, configurationStructuredTextList.get(i), i,
+					configurationStructuredTextList.size());
+		}
 		UserSettings.getInstance().saveAllErrorForFixed();
 	}
 
@@ -202,9 +216,10 @@ public class Dispatcher {
 		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
 		saveUserConfiguration();
 	}
-	
+
 	/**
 	 * Permet de changer la configuration et de sauvegarder le changement
+	 * 
 	 * @param currentConfiguration Configuration courante
 	 */
 	public void setCurrentConfigurationWithSaveUserConfiguration(Configuration currentConfiguration) {
@@ -236,18 +251,23 @@ public class Dispatcher {
 	 */
 	private void generateClassicalExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd)
 			throws IOException {
+		progressBean = new Progress(cmd.getMapLabelSpecificFileName().size() + 1);
+		Integer currentIterate = 1;
+		progressBean.setCurrentIterate(currentIterate);
 		ExcelStructuring es = new ExcelStructuring();
 		List<List<String>> rows = es.getStructuringRows(UserSettings.getInstance().getStructuredFileList(folder),
 				UserSettings.getInstance().getCurrentConfiguration(), cmd);
 		CreateExcel ce = new CreateExcel(new File(cmd.getFileName()));
 		rows.forEach(r -> ce.createRow(r));
-		ce.generateExcel();
+		ce.generateExcel(progressBean);
 		/* -- SPECIFIC CONFIGURATION EXCEL PROCESSING -- */
-		cmd.getMapLabelSpecificFileName().forEach((key, value) -> {
+		for (Entry<String, String> entry : cmd.getMapLabelSpecificFileName().entrySet()) {
 			Optional<ConfigurationStructuredText> findFirstCst = UserSettings.getInstance()
 					.getConfigurationStructuredTextList(folder).stream()
-					.filter(s -> s.getSpecificConfiguration().getLabel().equals(key)).findFirst();
+					.filter(s -> s.getSpecificConfiguration().getLabel().equals(entry.getKey())).findFirst();
 			if (findFirstCst.isPresent()) {
+				currentIterate++;
+				progressBean.setCurrentIterate(currentIterate);
 				List<StructuredField> listSf = UserSettings.getInstance().getCurrentConfiguration()
 						.getStructuredFieldList().stream().filter(field -> !findFirstCst.get()
 								.getSpecificConfiguration().getIgnoredFieldList().contains(field.getFieldName()))
@@ -255,12 +275,12 @@ public class Dispatcher {
 				cmd.clearFieldListGenerate();
 				listSf.forEach(sf -> cmd.addFieldToGenerate(sf.getFieldName()));
 				try {
-					createExcelSpecific(new File(value), findFirstCst.get(), cmd);
+					createExcelSpecific(new File(entry.getValue()), findFirstCst.get(), cmd, progressBean);
 				} catch (IOException e) {
 					logger.error(e.getMessage(), e);
 				}
 			}
-		});
+		}
 	}
 
 	/**
@@ -271,13 +291,15 @@ public class Dispatcher {
 	 * @throws IOException
 	 */
 	private void generateCustomExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd) throws IOException {
+		progressBean = new Progress(1);
+		progressBean.setCurrentIterate(1);
 		if (!cmd.getIsSpecificGeneration()) {
 			ExcelStructuring es = new ExcelStructuring();
 			List<List<String>> rows = es.getStructuringRows(UserSettings.getInstance().getStructuredFileList(folder),
 					UserSettings.getInstance().getCurrentConfiguration(), cmd);
 			CreateExcel ce = new CreateExcel(new File(cmd.getFileName()));
 			rows.forEach(r -> ce.createRow(r));
-			ce.generateExcel();
+			ce.generateExcel(progressBean);
 		} else {
 			Optional<ConfigurationStructuredText> findFirstCst = UserSettings.getInstance()
 					.getConfigurationStructuredTextList(folder).stream()
@@ -285,7 +307,7 @@ public class Dispatcher {
 					.findFirst();
 			if (findFirstCst.isPresent()) {
 				try {
-					createExcelSpecific(new File(cmd.getFileName()), findFirstCst.get(), cmd);
+					createExcelSpecific(new File(cmd.getFileName()), findFirstCst.get(), cmd, progressBean);
 				} catch (IOException e) {
 					logger.error(e.getMessage(), e);
 				}
@@ -301,11 +323,16 @@ public class Dispatcher {
 	 * @param configurationSpecific configuration specifique
 	 */
 	private void structuredTextSpecificProcess(List<MemoryFile> memoryFiles, FolderSettingsEnum folderType,
-			ConfigurationStructuredText configurationSpecific) {
-		List<StructuredFile> structuredFileList = memoryFiles.stream()
-				.map(f -> new Structuring(f, folderType, configurationSpecific).getStructuredFile())
-				.collect(Collectors.toList());
-		configurationSpecific.getStructuredFileList().addAll(structuredFileList);
+			ConfigurationStructuredText configurationSpecific, Integer currentConfigurationSpecificIndex,
+			Integer nbConfigurationSpecific) {
+		for (int i = 0; i < memoryFiles.size(); i++) {
+			progressBean.setCurrentIterate(2 + currentConfigurationSpecificIndex);
+			progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
+			progressBean.setCurrentElementForCurrentIterate(i);
+			progressBean.getProgress();
+			configurationSpecific.getStructuredFileList()
+					.add(new Structuring(memoryFiles.get(i), folderType, configurationSpecific).getStructuredFile());
+		}
 	}
 
 	/**
@@ -318,13 +345,13 @@ public class Dispatcher {
 	 * @throws IOException io exception
 	 */
 	private void createExcelSpecific(File path, ConfigurationStructuredText configurationSpecific,
-			ExcelGenerateConfigurationCmd cmd) throws IOException {
+			ExcelGenerateConfigurationCmd cmd, Progress progressBean) throws IOException {
 		ExcelStructuring es = new ExcelStructuring();
 		List<List<String>> rows = es.getStructuringRows(configurationSpecific.getStructuredFileList(),
 				UserSettings.getInstance().getCurrentConfiguration(), cmd);
 		CreateExcel ce = new CreateExcel(path);
 		rows.forEach(r -> ce.createRow(r));
-		ce.generateExcel();
+		ce.generateExcel(progressBean);
 	}
 
 	/**
@@ -683,5 +710,32 @@ public class Dispatcher {
 			UserSettings.getInstance().writeCorpus(writer, structuredTextList);
 		}
 	}
+
+	/**
+	 * Permet de se procurer la progression d'une tache
+	 * 
+	 * @return la progression
+	 */
+	public Integer getProgress() {
+		if (null != progressBean) {
+			return progressBean.getProgress();
+		}
+		return 0;
+	}
+
+	/**
+	 * Permet de remettre la barre de progression à zéro
+	 */
+	public void resetProgress() {
+		this.progressBean = null;
+	}
+//
+//	/**
+//	 * Permet de définir l'état de la progression
+//	 * @param progress niveau de la progression
+//	 */
+//	public void setProgress(Integer progress) {
+//		this.progress = progress;
+//	}
 
 }

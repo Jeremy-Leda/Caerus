@@ -1122,7 +1122,7 @@ public class UserSettings {
 
 	/**
 	 * Permet de se procurer la liste des clés filtrés pour l'affichage des
-	 * résultats
+	 * résultatsx
 	 * 
 	 * @return la liste de clés filtrés
 	 */

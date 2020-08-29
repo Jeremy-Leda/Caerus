@@ -585,4 +585,14 @@ public interface IConfigurationControler {
 	 */
 	String getDelimiterSpecific(Integer index);
 	
+	/**
+	 * Permet de se procurer la progression
+	 * @return la progression
+	 */
+	Integer getProgress();
+	
+	/**
+	 * Permet de remettre la barre de progression à zéro
+	 */
+	void resetProgress();
 }

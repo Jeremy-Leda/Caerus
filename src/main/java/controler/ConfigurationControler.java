@@ -12,11 +12,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -406,22 +404,16 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException {
 		if (null != cmd) {
-			StopWatch stopWatch = new StopWatch();
-			stopWatch.start();
 			this.configurationModel.getTextsLoadedForTextsList().parallelStream()
 					.filter(ust -> this.configurationModel.getKeyFilteredList().contains(ust.getKey()))
 					.forEach(ust -> cmd.addUniqueKey(ust.getStructuredText().getUniqueKey()));
 			this.configurationModel.generateExcelFromTexts(cmd);
-			stopWatch.stop();
-			logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 		}
 	}
 
 	@Override
 	public List<DisplayText> getDisplayTextListFromFilteredText(Integer start, Integer nbTextToLoad) {
 		Set<DisplayText> setTextList = new LinkedHashSet<>();
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
 		// SI configuration existe
 		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())) {
 			Map<String, String> configurationFieldCommonFile = this.configurationModel
@@ -443,8 +435,6 @@ public class ConfigurationControler implements IConfigurationControler {
 				setTextList.add(new DisplayText(this.configurationModel.getEditingCorpusName(), i, mapKeyValue, key));
 			}
 		}
-		stopWatch.stop();
-		logger.debug(String.format("Time Elapsed: %d ms", stopWatch.getTime(TimeUnit.MILLISECONDS)));
 		return Collections.unmodifiableList(new LinkedList<>(setTextList));
 	}
 
@@ -647,5 +637,15 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public String getDelimiterSpecific(Integer index) {
 		return this.configurationModel.getDelimiterSpecific(index);
+	}
+
+	@Override
+	public Integer getProgress() {
+		return this.configurationModel.getProgress();
+	}
+
+	@Override
+	public void resetProgress() {
+		this.configurationModel.resetProgress();
 	}
 }

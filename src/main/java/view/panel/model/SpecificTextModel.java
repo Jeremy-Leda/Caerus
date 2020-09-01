@@ -69,7 +69,6 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 */
 	public SpecificTextModel(IConfigurationControler controler, IModalFrameRepack modalFrameRepack) {
 		this.mapKeyIndex = new HashMap<String, Integer>();
-		;
 		this.mapHeaderKeyFieldText = new LinkedHashMap<String, String>();
 		this.mapHeaderFieldTextLabelField = new LinkedHashMap<String, String>();
 		this.mapTextLabelField = new LinkedHashMap<String, String>();
@@ -323,7 +322,19 @@ public class SpecificTextModel implements ISpecificTextModel {
 				listToRemove.add(sr);
 			}
 		}
-		listToRemove.stream().forEach(row -> this.specificRowList.remove(row));
+		if (!listToRemove.isEmpty()) {
+			listToRemove.stream().forEach(row -> this.specificRowList.remove(row));
+			fixedPosition();
+		}
+	}
+
+	/**
+	 * Permet de corriger la position qui est renseigner dans chaque ligne
+	 */
+	private void fixedPosition() {
+		for (int i = 0; i < this.specificRowList.size(); i++) {
+			this.specificRowList.get(i).getSpecificList().set(0, String.valueOf(i + 1));
+		}
 	}
 
 	/**
@@ -490,8 +501,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 
 	@Override
 	public void updateFromCell(Integer rowIndex, Integer columnIndex, String newValue) {
-		this.specificRowList.get(rowIndex).getSpecificList().set(columnIndex,
-				StringUtils.trim(newValue));
+		this.specificRowList.get(rowIndex).getSpecificList().set(columnIndex, StringUtils.trim(newValue));
 		updateSpecificFieldControler();
 	}
 

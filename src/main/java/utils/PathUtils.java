@@ -80,4 +80,12 @@ public class PathUtils {
 	public static String getCaerusFolder() {
 		return System.getProperty("user.home") + File.separator + "Documents" + File.separator + GLOBAL_FOLDER;
 	}
+	
+	/**
+	 * Permet de se procurer le dossier temporaire du système
+	 * @return le dossier temporaire du système
+	 */
+	public static String getTempFolder() {
+		return System.getProperty("java.io.tmpdir");
+	}
 }

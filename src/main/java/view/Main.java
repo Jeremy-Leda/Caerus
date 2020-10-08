@@ -4,6 +4,8 @@ import java.awt.HeadlessException;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -151,7 +153,7 @@ public class Main extends JFrame {
 	 * @throws IOException
 	 * @throws HeadlessException
 	 */
-	public Main() throws HeadlessException, IOException {
+	public Main(Consumer<?> consumerOnClose) throws HeadlessException, IOException {
 		// On regarde l'existence d'un état précédent
 		if (this.configurationControler.haveCurrentStateFile()) {
 			// on demande
@@ -173,21 +175,55 @@ public class Main extends JFrame {
 		}
 		analyzeConfiguration = null;
 
-		createWindow();
+		createWindow(consumerOnClose);
 	}
 
 	/**
 	 * Permet de créer la fenetre
 	 * 
+	 * @param consumerOnClose consumer à executer sur la fermeture
 	 * @throws IOException
 	 * @throws HeadlessException
 	 */
-	private void createWindow() throws HeadlessException, IOException {
+	private void createWindow(Consumer<?> consumerOnClose) throws HeadlessException, IOException {
 		this.setTitle(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_TITLE));
 		this.setSize(400, 100);
 		this.setLocationRelativeTo(null);
 		this.setIconImages(getIconsListImage());
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.addWindowListener(new WindowListener() {
+			
+			@Override
+			public void windowOpened(WindowEvent e) {
+				logger.info("Welcome to Caerus");
+			}
+			
+			@Override
+			public void windowIconified(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				consumerOnClose.accept(null);
+				logger.info("GoodBye Caerus");
+			}
+			
+			@Override
+			public void windowClosed(WindowEvent e) {
+			}
+			
+			@Override
+			public void windowActivated(WindowEvent e) {
+			}
+		});
 		initMenu();
 		reloadLanguage();
 		repack();
@@ -216,8 +252,8 @@ public class Main extends JFrame {
 		fileMenu.add(createAnalyze);
 		fileMenu.add(saveConfiguration);
 		fileMenu.add(saveCustomExcel);
-		fileMenu.addSeparator();
-		fileMenu.add(exit);
+//		fileMenu.addSeparator();
+//		fileMenu.add(exit);
 
 		stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
 		panContent.setLayout(new BoxLayout(panContent, BoxLayout.Y_AXIS));

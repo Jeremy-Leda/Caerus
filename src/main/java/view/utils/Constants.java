@@ -342,5 +342,9 @@ public final class Constants {
 	public static final String WINDOW_PROGRESS_BAR_PANEL_TITLE="window.progress.bar.panel.title";
 	public static final String WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL="window.progress.bar.load.text.label";
 	public static final String WINDOW_PROGRESS_BAR_EXPORT_EXCEL_LABEL="window.progress.bar.export.excel.label";
+	
+	public static final String WINDOW_ALERT_MORE_ONE_CAERUS_LAUNCH_MESSAGE_TITLE="window.alert.more.one.caerus.launch.message.title";
+	public static final String WINDOW_ALERT_MORE_ONE_CAERUS_LAUNCH_MESSAGE_CONTENT="window.alert.more.one.caerus.launch.message.content";
+
 
 }

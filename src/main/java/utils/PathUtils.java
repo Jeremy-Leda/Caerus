@@ -6,7 +6,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import com.sun.jna.Native;
+import com.sun.jna.Platform;
+import com.sun.jna.platform.win32.Shell32;
+import com.sun.jna.platform.win32.ShlObj;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinNT;
 import view.Main;
+
+import javax.swing.filechooser.FileSystemView;
 
 /**
  * 
@@ -31,9 +39,9 @@ public class PathUtils {
 	}
 	
 	/**
-	 * Permet de créer un repertoire s'il n'existe pas
+	 * Permet de crï¿½er un repertoire s'il n'existe pas
 	 * @param root chemin root
-	 * @param folder dossier à crééer
+	 * @param folder dossier ï¿½ crï¿½ï¿½er
 	 * @return le fichier
 	 */
 	public static File addFolderAndCreate(String root, String folder) {
@@ -43,8 +51,8 @@ public class PathUtils {
 	}
 	
 	/**
-	 * Effectue la suppression du fichier passé en paramétre
-	 * @param fileToDelete fichier à supprimer
+	 * Effectue la suppression du fichier passï¿½ en paramï¿½tre
+	 * @param fileToDelete fichier ï¿½ supprimer
 	 */
 	public static void deleteFile(File fileToDelete) {
 		if (fileToDelete.exists()) {
@@ -56,15 +64,15 @@ public class PathUtils {
 	 * Permet de copier un fichier
 	 * @param oldFile ancien fichier
 	 * @param newFile nouveau fichier
-	 * @throws IOException Erreur d'entrée sortie
+	 * @throws IOException Erreur d'entrï¿½e sortie
 	 */
 	public static void copyFile(File oldFile, File newFile) throws IOException {
 		Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	/**
-	 * Permet de déplacer un fichier dans un nouveau repertoire
-	 * @param fileToMove fichier à déplacer
+	 * Permet de dï¿½placer un fichier dans un nouveau repertoire
+	 * @param fileToMove fichier ï¿½ dï¿½placer
 	 * @param newDirectory nouveau repertoire
 	 * @throws IOException
 	 */
@@ -78,12 +86,19 @@ public class PathUtils {
 	 * @return le dossier Caerus dans les Documents
 	 */
 	public static String getCaerusFolder() {
-		return System.getProperty("user.home") + File.separator + "Documents" + File.separator + GLOBAL_FOLDER;
+		if (Platform.isWindows()) {
+			char[] pszPath = new char[WinDef.MAX_PATH];
+			Shell32.INSTANCE.SHGetFolderPath(null,
+					ShlObj.CSIDL_MYDOCUMENTS, null, ShlObj.SHGFP_TYPE_CURRENT,
+					pszPath);
+			return Native.toString(pszPath) + File.separator + GLOBAL_FOLDER;
+		}
+		return System.getProperty("user.home") + File.separator + GLOBAL_FOLDER;
 	}
 	
 	/**
-	 * Permet de se procurer le dossier temporaire du système
-	 * @return le dossier temporaire du système
+	 * Permet de se procurer le dossier temporaire du systï¿½me
+	 * @return le dossier temporaire du systï¿½me
 	 */
 	public static String getTempFolder() {
 		return System.getProperty("java.io.tmpdir");

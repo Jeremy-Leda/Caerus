@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 
 /**
  * 
- * Interface pemettant l'accés au panel
+ * Interface permettant l'accÃ¨s au panel
  * 
  * @author jerem
  *

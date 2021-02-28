@@ -2,10 +2,11 @@ package model.analyze.beans;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 
- * Bean déterminant une configuration spécifique
+ * Bean dï¿½terminant une configuration spï¿½cifique
  * 
  * @author jerem
  *
@@ -27,16 +28,16 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de se procurer le délimiteur
-	 * @return le délimiteur
+	 * Permet de se procurer le dï¿½limiteur
+	 * @return le dï¿½limiteur
 	 */
 	public String getDelimiter() {
 		return delimiter;
 	}
 
 	/**
-	 * Permet de définir le délimiteur
-	 * @param delimiter délimiteur
+	 * Permet de dï¿½finir le dï¿½limiteur
+	 * @param delimiter dï¿½limiteur
 	 */
 	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
@@ -51,7 +52,7 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de définir le suffixe pour le nom du fichier excel
+	 * Permet de dï¿½finir le suffixe pour le nom du fichier excel
 	 * @param nameFileSuffix le suffixe pour le nom du fichier excel
 	 */
 	public void setNameFileSuffix(String nameFileSuffix) {
@@ -59,8 +60,8 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de se procurer les champs à ignorer
-	 * @return les champs à ignorer
+	 * Permet de se procurer les champs ï¿½ ignorer
+	 * @return les champs ï¿½ ignorer
 	 */
 	public List<String> getIgnoredFieldList() {
 		if (null == ignoredFieldList) {
@@ -70,32 +71,32 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de définir les champs à ignorer
-	 * @param ignoredFieldList les champs à ignorer
+	 * Permet de dï¿½finir les champs ï¿½ ignorer
+	 * @param ignoredFieldList les champs ï¿½ ignorer
 	 */
 	public void setIgnoredFieldList(List<String> ignoredFieldList) {
 		this.ignoredFieldList = ignoredFieldList;
 	}
 
 	/**
-	 * Permet de se procurer les champs à retraiter
-	 * @return les champs à retraiter
+	 * Permet de se procurer les champs ï¿½ retraiter
+	 * @return les champs ï¿½ retraiter
 	 */
 	public List<String> getTreatmentFieldList() {
 		return treatmentFieldList;
 	}
 
 	/**
-	 * Permet de définir les champs à retraiter
-	 * @param treatmentFieldList les champs à retraiter
+	 * Permet de dï¿½finir les champs ï¿½ retraiter
+	 * @param treatmentFieldList les champs ï¿½ retraiter
 	 */
 	public void setTreatmentFieldList(List<String> treatmentFieldList) {
 		this.treatmentFieldList = treatmentFieldList;
 	}
 	
 	/**
-	 * Permet de se procurer les champs d'en tête
-	 * @return les champs d'en tête
+	 * Permet de se procurer les champs d'en tï¿½te
+	 * @return les champs d'en tï¿½te
 	 */
 	public List<String> getHeaderFieldList() {
 		if (null == headerFieldList) {
@@ -105,8 +106,8 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de définir les champs d'en tête
-	 * @param headerFieldList les champs d'en tête
+	 * Permet de dï¿½finir les champs d'en tï¿½te
+	 * @param headerFieldList les champs d'en tï¿½te
 	 */
 	public void setHeaderFieldList(List<String> headerFieldList) {
 		this.headerFieldList = headerFieldList;
@@ -122,7 +123,7 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de définir l'order
+	 * Permet de dï¿½finir l'order
 	 * @param order l'order
 	 */
 	public void setOrder(Integer order) {
@@ -138,11 +139,20 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de définir le label
-	 * @param label label à définir
+	 * Permet de dï¿½finir le label
+	 * @param label label ï¿½ dï¿½finir
 	 */
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		return this.getLabel().equals(((SpecificConfiguration)obj).getLabel());
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(label);
+	}
 }

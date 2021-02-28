@@ -3,6 +3,7 @@ package model.analyze.beans;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * 
- * Bean permettant de décrire une configuration
+ * Bean permettant de dï¿½crire une configuration
  * 
  * @author jerem
  *
@@ -39,7 +40,7 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de définir le nom de la configuration
+	 * Permet de dï¿½finir le nom de la configuration
 	 * @param baseCode le nom de la configuration
 	 */
 	public void setName(String name) {
@@ -55,16 +56,16 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de définir le code de base
-	 * @param baseCode code de base à définir
+	 * Permet de dï¿½finir le code de base
+	 * @param baseCode code de base ï¿½ dï¿½finir
 	 */
 	public void setBaseCode(String baseCode) {
 		this.baseCode = baseCode;
 	}
 
 	/**
-	 * Permet de se procurer la liste des configurations spécifique
-	 * @return la liste des configurations spécifique
+	 * Permet de se procurer la liste des configurations spï¿½cifique
+	 * @return la liste des configurations spï¿½cifique
 	 */
 	public List<SpecificConfiguration> getSpecificConfigurationList() {
 		if (null != specificConfigurationList) {
@@ -74,32 +75,32 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de définir la liste des configurations spécifiques
-	 * @param specificConfigurationList La liste des configurations spécifique
+	 * Permet de dï¿½finir la liste des configurations spï¿½cifiques
+	 * @param specificConfigurationList La liste des configurations spï¿½cifique
 	 */
 	public void setSpecificConfigurationList(List<SpecificConfiguration> specificConfigurationList) {
 		this.specificConfigurationList = specificConfigurationList;
 	}
 
 	/**
-	 * Permet de se procurer la liste des champs structurés
-	 * @return la liste des champs structurés
+	 * Permet de se procurer la liste des champs structurï¿½s
+	 * @return la liste des champs structurï¿½s
 	 */
 	public List<StructuredField> getStructuredFieldList() {
 		return structuredFieldList;
 	}
 
 	/**
-	 * Permet de définir la liste des champs structurés
-	 * @param structuredFieldList la liste des champs structurés
+	 * Permet de dï¿½finir la liste des champs structurï¿½s
+	 * @param structuredFieldList la liste des champs structurï¿½s
 	 */
 	public void setStructuredFieldList(List<StructuredField> structuredFieldList) {
 		this.structuredFieldList = structuredFieldList;
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ méta
-	 * @return la liste des champ méta
+	 * Permet de se procurer la liste des champ mï¿½ta
+	 * @return la liste des champ mï¿½ta
 	 */
 	@JsonIgnore
 	public List<String> getMetaFieldList() {
@@ -108,8 +109,8 @@ public class Configuration {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ spécific
-	 * @return la liste des champ spécific
+	 * Permet de se procurer la liste des champ spï¿½cific
+	 * @return la liste des champ spï¿½cific
 	 */
 	@JsonIgnore
 	public List<String> getSpecificFieldList() {
@@ -118,8 +119,8 @@ public class Configuration {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ en tête spécific
-	 * @return la liste des champ en tête spécific
+	 * Permet de se procurer la liste des champ en tï¿½te spï¿½cific
+	 * @return la liste des champ en tï¿½te spï¿½cific
 	 */
 	@JsonIgnore
 	public List<String> getSpecificHeaderFieldList() {
@@ -128,7 +129,7 @@ public class Configuration {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ commun (ni spécifique, ni meta)
+	 * Permet de se procurer la liste des champ commun (ni spï¿½cifique, ni meta)
 	 * @return la liste des champ communs
 	 */
 	@JsonIgnore
@@ -139,5 +140,21 @@ public class Configuration {
 		otherFieldList.addAll(getSpecificHeaderFieldList());
 		return this.structuredFieldList.stream().sorted(Comparator.comparing(StructuredField::getOrder))
 				.map(s -> s.getFieldName()).filter(s -> !otherFieldList.contains(s)).collect(Collectors.toList());
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Configuration that = (Configuration) o;
+		return Objects.equals(name, that.name) &&
+				Objects.equals(baseCode, that.baseCode) &&
+				Objects.equals(specificConfigurationList, that.specificConfigurationList) &&
+				Objects.equals(structuredFieldList, that.structuredFieldList);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(name, baseCode, specificConfigurationList, structuredFieldList);
 	}
 }

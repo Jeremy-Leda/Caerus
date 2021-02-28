@@ -16,14 +16,14 @@ import model.analyze.beans.Configuration;
 import view.beans.PictureTypeEnum;
 
 /**
- * Permet de fournir des méthodes pour ce procurer des ressources simplement
+ * Permet de fournir des mï¿½thodes pour ce procurer des ressources simplement
  * @author jerem
  *
  */
 public class RessourcesUtils {
 	
 	private static RessourcesUtils _instance;
-	private static final String DEFAULT_CONFIGURATION = "ConfiguraciónBásica.json";
+	private static final String DEFAULT_CONFIGURATION = "ConfiguraciÃ³nBÃ¡sica.json";
 	private static Logger logger = LoggerFactory.getLogger(RessourcesUtils.class);
 	
 	/**

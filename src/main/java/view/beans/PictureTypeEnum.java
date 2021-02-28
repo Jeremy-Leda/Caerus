@@ -19,8 +19,8 @@ public enum PictureTypeEnum {
 	LOGO_96_96("icons/icons_logo_96_96.png"),
 	LOGO_128_128("icons/icons_logo_128_128.png"),
 	LOGO_256_256("icons/icons_logo_256_256.png"),
-	WARNING("icons/icons_warning.png"),
-	INCONSISTENCY("icons/icons_inconsistency.png");
+	QUESTION("icons/icons_question.png"),
+	WARNING("icons/icons_warning.png");
 
 	/**
 	 * Constructeur pour l'image
@@ -33,7 +33,7 @@ public enum PictureTypeEnum {
 	private String fileName;
 
 	/**
-	 * Permet de récupérer le nom du fichier
+	 * Permet de rï¿½cupï¿½rer le nom du fichier
 	 * @return
 	 */
 	public String getFileName() {

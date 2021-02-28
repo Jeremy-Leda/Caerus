@@ -8,20 +8,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -57,7 +45,7 @@ import utils.KeyGenerator;
 
 /**
  * 
- * Permet de gérer les réglages et les instances en cours de l'utilisateur
+ * Permet de gï¿½rer les rï¿½glages et les instances en cours de l'utilisateur
  * 
  * @author jerem
  *
@@ -83,7 +71,7 @@ public class UserSettings {
 	private Integer totalBlankLineError = null;
 	private ErrorTypeEnum currentErrorTypeFixed = null;
 	private FilterCorpus lastFilterCorpus = null;
-	private List<Configuration> configurationsList = new ArrayList<>();
+	private Set<Configuration> configurationsList = new HashSet<>();
 
 	private Configuration currentConfiguration;
 	private String editingCorpusNameFile;
@@ -129,10 +117,10 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter une clé en erreur
+	 * Permet d'ajouter une clï¿½ en erreur
 	 * 
 	 * @param typeError type d'erreur
-	 * @param key       clé en erreur à ajouter
+	 * @param key       clï¿½ en erreur ï¿½ ajouter
 	 */
 	public void addKeyError(ErrorTypeEnum typeError, String key) {
 		this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).add(key);
@@ -140,27 +128,27 @@ public class UserSettings {
 
 	/**
 	 * 
-	 * Permet de se procurer la liste des clés en erreurs
+	 * Permet de se procurer la liste des clï¿½s en erreurs
 	 * 
 	 * @param typeError type de l'erreur
-	 * @return la liste des clés en erreur
+	 * @return la liste des clï¿½s en erreur
 	 */
 	public Set<String> getKeysInError(ErrorTypeEnum typeError) {
 		return Collections.unmodifiableSet(this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError));
 	}
 
 	/**
-	 * Permet de connaitre le nb de clés en erreur
+	 * Permet de connaitre le nb de clï¿½s en erreur
 	 * 
 	 * @param typeError type d'erreurs
-	 * @return Le nombre de clé en erreur
+	 * @return Le nombre de clï¿½ en erreur
 	 */
 	public Integer getNbKeysInError(ErrorTypeEnum typeError) {
 		return this.MAP_TYPE_ERROR_KEYS_LIST.get(typeError).size();
 	}
 
 	/**
-	 * Permet de nettoyer une liste de clés en erreur
+	 * Permet de nettoyer une liste de clï¿½s en erreur
 	 * 
 	 * @param typeError type de l'erreur
 	 */
@@ -169,8 +157,8 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de supprimer la clé courante en erreur de la liste et de remettre à
-	 * l'état initial le type et la clé en cours de correction
+	 * Permet de supprimer la clï¿½ courante en erreur de la liste et de remettre ï¿½
+	 * l'ï¿½tat initial le type et la clï¿½ en cours de correction
 	 */
 	public void deleteCurrentErrorKey() {
 		this.MAP_TYPE_ERROR_KEYS_LIST.get(currentErrorTypeFixed).remove(currentEditKey);
@@ -179,7 +167,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de vider la liste des clés en erreur pour les structures des textes
+	 * Permet de vider la liste des clï¿½s en erreur pour les structures des textes
 	 */
 	public void clearKeysStructuredTextErrorList() {
 		totalKeysStructuredTextError = null;
@@ -199,7 +187,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de vider la liste des clés en erreur pour les lignes vides
+	 * Permet de vider la liste des clï¿½s en erreur pour les lignes vides
 	 */
 	public void clearBlankLineErrorList() {
 		totalBlankLineError = null;
@@ -207,30 +195,30 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter un texte structuré utilisateur
+	 * Permet d'ajouter un texte structurï¿½ utilisateur
 	 * 
-	 * @param folder             dossier à modifier
-	 * @param userStructuredText texte structuré utilisateur
+	 * @param folder             dossier ï¿½ modifier
+	 * @param userStructuredText texte structurï¿½ utilisateur
 	 */
 	public void addUserStructuredText(FolderSettingsEnum folder, UserStructuredText userStructuredText) {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addUserStructuredText(userStructuredText);
 	}
 
 	/**
-	 * Permet de vider la liste des textes structurés utilisateur
+	 * Permet de vider la liste des textes structurï¿½s utilisateur
 	 * 
-	 * @param folder dossier à modifier
+	 * @param folder dossier ï¿½ modifier
 	 */
 	public void clearUserStructuredTextList(FolderSettingsEnum folder) {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearUserStructuredTextList();
 	}
 
 	/**
-	 * Permet de se procurer la liste des textes structuré utilisateur Une liste
-	 * immutable est retourné, cette liste ne peut donc pas être modifier
+	 * Permet de se procurer la liste des textes structurï¿½ utilisateur Une liste
+	 * immutable est retournï¿½, cette liste ne peut donc pas ï¿½tre modifier
 	 * 
-	 * @param folder dossier à modifier
-	 * @return la liste des textes structuré utilisateurs immutable
+	 * @param folder dossier ï¿½ modifier
+	 * @return la liste des textes structurï¿½ utilisateurs immutable
 	 */
 	public List<UserStructuredText> getUserStructuredTextList(FolderSettingsEnum folder) {
 		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getUserStructuredTextList();
@@ -250,7 +238,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de définir un dossier de réglages
+	 * Permet de dï¿½finir un dossier de rï¿½glages
 	 * 
 	 * @param setting type de dossier
 	 * @param folder  dossier
@@ -269,34 +257,34 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de définir la configuration courante
+	 * Permet de dï¿½finir la configuration courante
 	 * 
-	 * @param currentConfiguration configuration à définir
+	 * @param currentConfiguration configuration ï¿½ dï¿½finir
 	 */
 	public void setCurrentConfiguration(Configuration currentConfiguration) {
 		this.currentConfiguration = currentConfiguration;
 	}
 
 	/**
-	 * Permet de se procurer le nom du fichier du corpus en cours d'édition
+	 * Permet de se procurer le nom du fichier du corpus en cours d'ï¿½dition
 	 * 
-	 * @return le nom du fichier du corpus en cours d'édition
+	 * @return le nom du fichier du corpus en cours d'ï¿½dition
 	 */
 	public String getEditingCorpusNameFile() {
 		return editingCorpusNameFile;
 	}
 
 	/**
-	 * Permet de définir le nom du corpus en cours d'édition
+	 * Permet de dï¿½finir le nom du corpus en cours d'ï¿½dition
 	 * 
-	 * @param editingCorpusNameFile nom du corpus en cours d'édition
+	 * @param editingCorpusNameFile nom du corpus en cours d'ï¿½dition
 	 */
 	public void setEditingCorpusNameFile(String editingCorpusNameFile) {
 		this.editingCorpusNameFile = editingCorpusNameFile;
 	}
 
 	/**
-	 * Permet d'ajouter des erreurs détecté au niveau des lignes Avant les erreurs
+	 * Permet d'ajouter des erreurs dï¿½tectï¿½ au niveau des lignes Avant les erreurs
 	 * structurelle. Provient du memory file
 	 * 
 	 * @param line  ligne
@@ -326,14 +314,14 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter des erreurs détecté au niveau des changement de répérage de
+	 * Permet d'ajouter des erreurs dï¿½tectï¿½ au niveau des changement de rï¿½pï¿½rage de
 	 * textes
 	 * 
 	 * 
 	 * @param oldStructuredFieldNewText ancienne balise de changement de texte
 	 * @param newStructuredFieldNewText nouvelle balise de changement de texte
-	 * @param oldLine                   numéro de la ligne de l'ancienne balise
-	 * @param newLine                   numéro de la ligne de la nouvelle balise
+	 * @param oldLine                   numï¿½ro de la ligne de l'ancienne balise
+	 * @param newLine                   numï¿½ro de la ligne de la nouvelle balise
 	 * @param nameFile                  nom du fichier
 	 * @param
 	 */
@@ -344,8 +332,8 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer un booléen pour savoir si il y a des erreurs
-	 * potentielles au niveau des incohérences de changement de texte
+	 * Permet de se procurer un boolï¿½en pour savoir si il y a des erreurs
+	 * potentielles au niveau des incohï¿½rences de changement de texte
 	 * 
 	 * @return Vrai si il y a des erreurs
 	 */
@@ -354,10 +342,10 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter des erreurs détecté au niveau du repérage des balises
+	 * Permet d'ajouter des erreurs dï¿½tectï¿½ au niveau du repï¿½rage des balises
 	 * 
-	 * @param structuredFieldFound balise reperé
-	 * @param line                 numéro de la ligne
+	 * @param structuredFieldFound balise reperï¿½
+	 * @param line                 numï¿½ro de la ligne
 	 * @param nameFile             nom du fichier
 	 */
 	public void addMissingBaseCodeError(StructuredField structuredFieldFound, Integer line, String nameFile) {
@@ -365,8 +353,8 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer un booléen pour savoir si il y a des erreurs
-	 * potentielles au niveau du repérage des balises
+	 * Permet de se procurer un boolï¿½en pour savoir si il y a des erreurs
+	 * potentielles au niveau du repï¿½rage des balises
 	 * 
 	 * @return Vrai si il y a des erreurs
 	 */
@@ -386,7 +374,7 @@ public class UserSettings {
 
 	/**
 	 * Permet de se procurer la liste des erreurs d'inconsistence au niveau du
-	 * repérage des balises
+	 * repï¿½rage des balises
 	 * 
 	 * @return la liste non modifiables des erreurs d'inconsistence
 	 */
@@ -402,7 +390,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de supprimer toutes les erreurs d'inconsistence au niveau du repérage
+	 * Permet de supprimer toutes les erreurs d'inconsistence au niveau du repï¿½rage
 	 * des balises de la liste
 	 */
 	public void clearMissingBaseCodeErrorList() {
@@ -410,9 +398,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de mettre à jour la ligne en erreur
+	 * Permet de mettre ï¿½ jour la ligne en erreur
 	 * 
-	 * @param index     index de mise à jour
+	 * @param index     index de mise ï¿½ jour
 	 * @param lineError la ligne en erreur
 	 */
 	public void updateLineError(Integer index, LineError lineError) {
@@ -427,9 +415,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter les champs méta au corpus d'édition
+	 * Permet d'ajouter les champs mï¿½ta au corpus d'ï¿½dition
 	 * 
-	 * @param metaFieldMap map des champs méta
+	 * @param metaFieldMap map des champs mï¿½ta
 	 */
 	public void addMetaFieldsToEditingCorpus(Map<String, String> metaFieldMap) {
 		getListFieldMetaFile().keySet().stream().forEach(key -> {
@@ -441,7 +429,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter le texte en cours d'édition au corpus en cours
+	 * Permet d'ajouter le texte en cours d'ï¿½dition au corpus en cours
 	 */
 	public void addEditingTextToCurrentCorpus() {
 		LinkedHashMap<String, String> orderedFieldMap = new LinkedHashMap<String, String>();
@@ -455,9 +443,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de fournir une liste des champs méta de la configuration courante
+	 * Permet de fournir une liste des champs mï¿½ta de la configuration courante
 	 * 
-	 * @return la liste des champs méta
+	 * @return la liste des champs mï¿½ta
 	 */
 	public Map<String, String> getListFieldMetaFile() {
 		return getListField(true, false, false, false);
@@ -465,7 +453,7 @@ public class UserSettings {
 
 	/**
 	 * Permet de fournir une liste des champs commun de la configuration courante
-	 * (non méta et non spécifique)
+	 * (non mï¿½ta et non spï¿½cifique)
 	 * 
 	 * @return la liste des champs commun
 	 */
@@ -474,11 +462,11 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer les champs en tête de la configuration spécifique
-	 * désiré
+	 * Permet de se procurer les champs en tï¿½te de la configuration spï¿½cifique
+	 * dï¿½sirï¿½
 	 * 
 	 * @param index index de la configuration
-	 * @return les champs spécifiques
+	 * @return les champs spï¿½cifiques
 	 */
 	public Map<String, String> getListFieldHeaderSpecific(Integer index) {
 		return getListField(getCurrentConfiguration().getSpecificConfigurationList().stream()
@@ -487,10 +475,10 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer les champs de la configuration spécifique désiré
+	 * Permet de se procurer les champs de la configuration spï¿½cifique dï¿½sirï¿½
 	 * 
 	 * @param index index de la configuration
-	 * @return les champs spécifiques
+	 * @return les champs spï¿½cifiques
 	 */
 	public Map<String, String> getListFieldSpecific(Integer index) {
 		return getListField(getCurrentConfiguration().getSpecificConfigurationList().stream()
@@ -499,11 +487,11 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer les champs en tête de la configuration spécifique
-	 * désiré
+	 * Permet de se procurer les champs en tï¿½te de la configuration spï¿½cifique
+	 * dï¿½sirï¿½
 	 * 
 	 * @param index index de la configuration
-	 * @return les champs spécifiques
+	 * @return les champs spï¿½cifiques
 	 */
 	public String getDelimiterSpecific(Integer index) {
 		return getCurrentConfiguration().getSpecificConfigurationList().stream()
@@ -512,29 +500,29 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de connaitre le nombre maximum de configuration spécifique
+	 * Permet de connaitre le nombre maximum de configuration spï¿½cifique
 	 * 
-	 * @return le nombre de configuration spécifique
+	 * @return le nombre de configuration spï¿½cifique
 	 */
 	public Integer getNbSpecificConfiguration() {
 		return getCurrentConfiguration().getSpecificConfigurationList().size();
 	}
 
 	/**
-	 * Permet de se procurer la totalité des champs
+	 * Permet de se procurer la totalitï¿½ des champs
 	 */
 	public Map<String, String> getAllListField() {
 		return getListField(true, true, true, true);
 	}
 
 	/**
-	 * Permet de se procurer la liste des champs souhaité
+	 * Permet de se procurer la liste des champs souhaitï¿½
 	 * 
-	 * @param isMeta     méta
-	 * @param isSpecific spécifique
+	 * @param isMeta     mï¿½ta
+	 * @param isSpecific spï¿½cifique
 	 * @param isHeader   header
 	 * @param isCommon   commun
-	 * @return la liste des champs filtré
+	 * @return la liste des champs filtrï¿½
 	 */
 	private Map<String, String> getListField(Boolean isMeta, Boolean isSpecific, Boolean isHeader, Boolean isCommon) {
 		List<String> fieldName = new ArrayList<>();
@@ -572,7 +560,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de créer un nouveau corpus
+	 * Permet de crï¿½er un nouveau corpus
 	 * 
 	 * @param nameFile         nom du fichier
 	 * @param metaFileFieldMap map des champ metafile
@@ -583,16 +571,16 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de définir si un corpus est en cours d'édition
+	 * Permet de dï¿½finir si un corpus est en cours d'ï¿½dition
 	 * 
-	 * @return Vrai si un corpus est en cours d'édition
+	 * @return Vrai si un corpus est en cours d'ï¿½dition
 	 */
 	public Boolean haveEditingCorpus() {
 		return StringUtils.isNotBlank(getEditingCorpusNameFile());
 	}
 
 	/**
-	 * Permet de supprimer le corpus en cours d'édition
+	 * Permet de supprimer le corpus en cours d'ï¿½dition
 	 */
 	public void clearEditingCorpus() {
 		setEditingCorpusNameFile(StringUtils.EMPTY);
@@ -603,7 +591,7 @@ public class UserSettings {
 	/**
 	 * Permet de se procurer la valeur d'un champ
 	 * 
-	 * @param key Clé du champ à récupérer
+	 * @param key Clï¿½ du champ ï¿½ rï¿½cupï¿½rer
 	 * @return la valeur
 	 */
 	public String getFieldInEditingCorpus(String key) {
@@ -614,9 +602,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de mettre à jour un champ de le corpus en cours d'édition
+	 * Permet de mettre ï¿½ jour un champ de le corpus en cours d'ï¿½dition
 	 * 
-	 * @param key   Clé
+	 * @param key   Clï¿½
 	 * @param value Valeur
 	 */
 	public void updateFieldInEditingCorpus(String key, String value) {
@@ -624,11 +612,11 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de mettre à jour la liste des champs spécifique pour la configuration
+	 * Permet de mettre ï¿½ jour la liste des champs spï¿½cifique pour la configuration
 	 * en cours
 	 * 
-	 * @param index            index de la configuration utilisé
-	 * @param specificFieldMap champ à mettre à jour
+	 * @param index            index de la configuration utilisï¿½
+	 * @param specificFieldMap champ ï¿½ mettre ï¿½ jour
 	 */
 	public void updateSpecificFieldInEditingCorpus(Integer index, Map<String, List<String>> specificFieldMap) {
 		String delimiter = currentConfiguration.getSpecificConfigurationList().stream()
@@ -640,7 +628,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de savoir s'il y a des champs spécifiques en erreur
+	 * Permet de savoir s'il y a des champs spï¿½cifiques en erreur
 	 * 
 	 * @return Vrai si c'est le cas, faux sinon
 	 */
@@ -659,11 +647,11 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction
-	 * pour avoir le même nombre d'élément
+	 * Permet de se procurer la map des champs spï¿½cifique traitï¿½ avec l'adjonction
+	 * pour avoir le mï¿½me nombre d'ï¿½lï¿½ment
 	 * 
-	 * @param index index de la configuration utilisé
-	 * @return la map des champs spécifique
+	 * @param index index de la configuration utilisï¿½
+	 * @return la map des champs spï¿½cifique
 	 */
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
 		Map<String, List<String>> mapFinalOrdered = getMapOfSpecificFieldProcessedInEditingCorpus(index);
@@ -678,10 +666,10 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer la map des champs spécifiques qui a été traité
+	 * Permet de se procurer la map des champs spï¿½cifiques qui a ï¿½tï¿½ traitï¿½
 	 * 
-	 * @param index index de la configuration utilisé
-	 * @return la map des champs spécifiques traité
+	 * @param index index de la configuration utilisï¿½
+	 * @return la map des champs spï¿½cifiques traitï¿½
 	 */
 	private Map<String, List<String>> getMapOfSpecificFieldProcessedInEditingCorpus(Integer index) {
 		String delimiter = currentConfiguration.getSpecificConfigurationList().stream()
@@ -711,15 +699,15 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'écrire le corpus sur le disque
+	 * Permet d'ï¿½crire le corpus sur le disque
 	 * 
 	 * @param writer le writer
-	 * @throws IOException erreur d'entrée sortie
+	 * @throws IOException erreur d'entrï¿½e sortie
 	 */
 	public void writeCorpus(IWriteText writer) throws IOException {
-		// On écrit les champ meta
+		// On ï¿½crit les champ meta
 		writeLines(writer, EDITING_METAFIELD_MAP);
-		// On écrit les textes
+		// On ï¿½crit les textes
 		for (LinkedHashMap<String, String> text : EDITING_CORPUS_TEXTS_LIST) {
 			writeLines(writer, text);
 			writer.addBreakLine();
@@ -727,19 +715,19 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'écrire le corpus sur le disque
+	 * Permet d'ï¿½crire le corpus sur le disque
 	 * 
 	 * @param writer             le writer
-	 * @param structuredTextList Liste des textes structurés à écrire
-	 * @throws IOException erreur d'entrée sortie
+	 * @param structuredTextList Liste des textes structurï¿½s ï¿½ ï¿½crire
+	 * @throws IOException erreur d'entrï¿½e sortie
 	 */
 	public void writeCorpus(IWriteText writer, List<StructuredText> structuredTextList) throws IOException {
 		Map<String, String> metaFieldMap = getListFieldMetaFile().entrySet().stream()
 				.collect(Collectors.toMap(Entry::getKey, s -> StringUtils.EMPTY));
 		Map<String, String> listAllCommonField = getListField(false, true, true, true);
-		// On écrit les champ meta
+		// On ï¿½crit les champ meta
 		writeLines(writer, metaFieldMap);
-		// On écrit les textes structurés
+		// On ï¿½crit les textes structurï¿½s
 		for (StructuredText structuredText : structuredTextList) {
 			Map<String, String> text = new LinkedHashMap<String, String>();
 			listAllCommonField.keySet().forEach(key -> text.put(key, structuredText.getContent(key)));
@@ -749,11 +737,11 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'écrire les lignes d'une map de clé valeur
+	 * Permet d'ï¿½crire les lignes d'une map de clï¿½ valeur
 	 * 
 	 * @param writer     le writer
-	 * @param mapToWrite la map à écrire
-	 * @throws IOException Exception d'entré sorti
+	 * @param mapToWrite la map ï¿½ ï¿½crire
+	 * @throws IOException Exception d'entrï¿½ sorti
 	 */
 	private void writeLines(IWriteText writer, Map<String, String> mapToWrite) throws IOException {
 		Iterator<Entry<String, String>> iterator = mapToWrite.entrySet().iterator();
@@ -765,9 +753,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de créer la ligne à écrire dans le fichier
+	 * Permet de crï¿½er la ligne ï¿½ ï¿½crire dans le fichier
 	 * 
-	 * @param key   clé du champ
+	 * @param key   clï¿½ du champ
 	 * @param value valeur du champ
 	 * @return la ligne
 	 */
@@ -782,8 +770,8 @@ public class UserSettings {
 	/**
 	 * Permet d'ajouter les memory files
 	 * 
-	 * @param folder          dossier à modifier
-	 * @param memoryFilesList liste des memory files à ajouter
+	 * @param folder          dossier ï¿½ modifier
+	 * @param memoryFilesList liste des memory files ï¿½ ajouter
 	 */
 	public void addMemoryFilesList(FolderSettingsEnum folder, List<MemoryFile> memoryFilesList) {
 		memoryFilesList.stream().forEach(mf -> this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addMemoryFile(mf));
@@ -792,7 +780,7 @@ public class UserSettings {
 	/**
 	 * Permet de vider la liste des memoryfiles
 	 * 
-	 * @param folder dossier à modifier
+	 * @param folder dossier ï¿½ modifier
 	 */
 	public void clearMemoryFilesList(FolderSettingsEnum folder) {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearMemoryFileList();
@@ -800,7 +788,7 @@ public class UserSettings {
 
 	/**
 	 * Permet de corriger toutes les lignes en erreur dans tous les fichiers en
-	 * mémoire
+	 * mï¿½moire
 	 * 
 	 * @throws IOException
 	 */
@@ -820,7 +808,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de corriger les lignes en erreurs dans un fichier en mémoire
+	 * Permet de corriger les lignes en erreurs dans un fichier en mï¿½moire
 	 * 
 	 * @param memoryFile fichier en memoire
 	 * @throws IOException
@@ -837,7 +825,7 @@ public class UserSettings {
 	/**
 	 * Permet de charger un texte en erreur pour la correction
 	 * 
-	 * @param key       Clé du texte
+	 * @param key       Clï¿½ du texte
 	 * @param errorType Type d'erreur
 	 */
 	public void loadErrorText(String key, ErrorTypeEnum errorType) {
@@ -906,7 +894,7 @@ public class UserSettings {
 			if (findFirstConfiguration.isPresent()) {
 				this.setCurrentConfiguration(findFirstConfiguration.get());
 			} else if (!configurationsList.isEmpty()) {
-				this.setCurrentConfiguration(configurationsList.get(0));
+				this.setCurrentConfiguration(configurationsList.stream().findFirst().get());
 			}
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
@@ -928,7 +916,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'appliquer les modifications au texte structuré
+	 * Permet d'appliquer les modifications au texte structurï¿½
 	 */
 	public void applyCurrentTextToStructuredText(FolderSettingsEnum folderType) {
 		Optional<UserStructuredText> optionalUserStructuredText = this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folderType)
@@ -945,10 +933,10 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'écrire les textes qui ont été corrigé
+	 * Permet d'ï¿½crire les textes qui ont ï¿½tï¿½ corrigï¿½
 	 * 
 	 * @param writer writer
-	 * @return Vrai si le fichier a pu être écris, Faux sinon et dans ce cas il
+	 * @return Vrai si le fichier a pu ï¿½tre ï¿½cris, Faux sinon et dans ce cas il
 	 *         faudra supprimer le fichier car il ne doit rien contenir
 	 * @throws IOException
 	 */
@@ -957,7 +945,7 @@ public class UserSettings {
 				.getUserStructuredTextList().stream().filter(ust -> ust.getFileName().equals(file))
 				.collect(Collectors.toList());
 		if (userStructuredTextList.isEmpty()) {
-			// si aucun texte trouvé, on retourne false pour supprimer le fichier
+			// si aucun texte trouvï¿½, on retourne false pour supprimer le fichier
 			return false;
 		}
 		Map<String, String> listFieldMetaFile = getListFieldMetaFile();
@@ -977,7 +965,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de nettoyer les informations après l'enregistrement des fichiers
+	 * Permet de nettoyer les informations aprï¿½s l'enregistrement des fichiers
 	 */
 	public void clearAfterWriteFixedText() {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(FolderSettingsEnum.FOLDER_ANALYZE).clearUserStructuredTextList();
@@ -987,11 +975,11 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer une map des clés valeur pour écriture
+	 * Permet de se procurer une map des clï¿½s valeur pour ï¿½criture
 	 * 
 	 * @param structureText Structure text
-	 * @param key           Clé à retenir
-	 * @return la map à écrire
+	 * @param key           Clï¿½ ï¿½ retenir
+	 * @return la map ï¿½ ï¿½crire
 	 */
 	private Map<String, String> getMapToWrite(StructuredText structureText, Set<String> key) {
 		Map<String, String> map = new LinkedHashMap<>();
@@ -1004,7 +992,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de nettoyer les informations stockés suite à une précédente analyse ou
+	 * Permet de nettoyer les informations stockï¿½s suite ï¿½ une prï¿½cï¿½dente analyse ou
 	 * chargement de textes
 	 */
 	public void clearAllSession(FolderSettingsEnum folder) {
@@ -1060,40 +1048,40 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet d'ajouter un fichier structuré
+	 * Permet d'ajouter un fichier structurï¿½
 	 * 
-	 * @param folder         dossier à modifier
-	 * @param structuredFile fichier structuré
+	 * @param folder         dossier ï¿½ modifier
+	 * @param structuredFile fichier structurï¿½
 	 */
 	public void addStructuredFile(FolderSettingsEnum folder, StructuredFile structuredFile) {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).addStructuredFile(structuredFile);
 	}
 
 	/**
-	 * Permet de vider la liste des fichier structuré utilisateur
+	 * Permet de vider la liste des fichier structurï¿½ utilisateur
 	 * 
-	 * @param folder dossier à modifier
+	 * @param folder dossier ï¿½ modifier
 	 */
 	public void clearStructuredFileList(FolderSettingsEnum folder) {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearStructuredFileList();
 	}
 
 	/**
-	 * Permet de se procurer la liste des fichiers structuré Une liste immutable est
-	 * retourné, cette liste ne peut donc pas être modifier
+	 * Permet de se procurer la liste des fichiers structurï¿½ Une liste immutable est
+	 * retournï¿½, cette liste ne peut donc pas ï¿½tre modifier
 	 * 
-	 * @param folder dossier à modifier
-	 * @return la liste des fichier structuré utilisateurs immutable
+	 * @param folder dossier ï¿½ modifier
+	 * @return la liste des fichier structurï¿½ utilisateurs immutable
 	 */
 	public List<StructuredFile> getStructuredFileList(FolderSettingsEnum folder) {
 		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getStructuredFileList();
 	}
 
 	/**
-	 * Permet d'ajouter un texte structuré spécifique
+	 * Permet d'ajouter un texte structurï¿½ spï¿½cifique
 	 * 
-	 * @param folder                      dossier à modifier
-	 * @param configurationStructuredText un texte structuré spécifique
+	 * @param folder                      dossier ï¿½ modifier
+	 * @param configurationStructuredText un texte structurï¿½ spï¿½cifique
 	 */
 	public void addConfigurationStructuredText(FolderSettingsEnum folder,
 			ConfigurationStructuredText configurationStructuredText) {
@@ -1101,55 +1089,55 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de vider la liste des textes structurés spécifique
+	 * Permet de vider la liste des textes structurï¿½s spï¿½cifique
 	 * 
-	 * @param folder dossier à modifier
+	 * @param folder dossier ï¿½ modifier
 	 */
 	public void clearConfigurationStructuredTextList(FolderSettingsEnum folder) {
 		this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).clearConfigurationStructuredTextList();
 	}
 
 	/**
-	 * Permet de se procurer la liste des textes structurés spécifique Une liste
-	 * immutable est retourné, cette liste ne peut donc pas être modifier
+	 * Permet de se procurer la liste des textes structurï¿½s spï¿½cifique Une liste
+	 * immutable est retournï¿½, cette liste ne peut donc pas ï¿½tre modifier
 	 * 
-	 * @param folder dossier à modifier
-	 * @return la liste des textes structurés spécifique utilisateurs immutable
+	 * @param folder dossier ï¿½ modifier
+	 * @return la liste des textes structurï¿½s spï¿½cifique utilisateurs immutable
 	 */
 	public List<ConfigurationStructuredText> getConfigurationStructuredTextList(FolderSettingsEnum folder) {
 		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folder).getConfigurationStructuredTextList();
 	}
 
 	/**
-	 * Permet de se procurer la liste des clés filtrés pour l'affichage des
-	 * résultatsx
+	 * Permet de se procurer la liste des clï¿½s filtrï¿½s pour l'affichage des
+	 * rï¿½sultatsx
 	 * 
-	 * @return la liste de clés filtrés
+	 * @return la liste de clï¿½s filtrï¿½s
 	 */
 	public List<String> getKeysFilteredList() {
 		return Collections.unmodifiableList(new LinkedList<>(this.MAP_FILTER_KEY_LIST));
 	}
 
 	/**
-	 * Permet d'ajouter une clé à la liste des clés filtrés
+	 * Permet d'ajouter une clï¿½ ï¿½ la liste des clï¿½s filtrï¿½s
 	 * 
-	 * @param key Clé à ajouter
+	 * @param key Clï¿½ ï¿½ ajouter
 	 */
 	public synchronized void addKeyToFilteredList(String key) {
 		this.MAP_FILTER_KEY_LIST.add(key);
 	}
 
 	/**
-	 * Permet de vider la liste des clés filtrés
+	 * Permet de vider la liste des clï¿½s filtrï¿½s
 	 */
 	public void clearKeyFilteredList() {
 		this.MAP_FILTER_KEY_LIST.clear();
 	}
 
 	/**
-	 * Permet de charger un texte en cours d'édition
+	 * Permet de charger un texte en cours d'ï¿½dition
 	 * 
-	 * @param key clé du texte
+	 * @param key clï¿½ du texte
 	 */
 	public void loadFilteredText(String key) {
 		loadText(key, FolderSettingsEnum.FOLDER_TEXTS);
@@ -1158,7 +1146,7 @@ public class UserSettings {
 	/**
 	 * Permet de charger un texte
 	 * 
-	 * @param key        clé du texte
+	 * @param key        clï¿½ du texte
 	 * @param folderType Type du dossier
 	 */
 	private void loadText(String key, FolderSettingsEnum folderType) {
@@ -1171,14 +1159,14 @@ public class UserSettings {
 			optionalUserStructuredText.get().getStructuredText().getListContent()
 					.forEach(content -> this.updateFieldInEditingCorpus(content.getKey(), content.getValue()));
 		} else {
-			logger.error(String.format("Clé %s non trouvé", key));
+			logger.error(String.format("Clï¿½ %s non trouvï¿½", key));
 		}
 	}
 
 	/**
 	 * Permet de supprimer un texte d'un corpus (suppression logique)
 	 * 
-	 * @param key        Clé du texte à supprimer
+	 * @param key        Clï¿½ du texte ï¿½ supprimer
 	 * @param folderType type du dossier
 	 */
 	public void deleteText(String key, FolderSettingsEnum folderType) {
@@ -1192,9 +1180,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de se procurer le nom du corpus associé à la clé du texte
+	 * Permet de se procurer le nom du corpus associï¿½ ï¿½ la clï¿½ du texte
 	 * 
-	 * @param key        Clé du texte
+	 * @param key        Clï¿½ du texte
 	 * @param folderType type du dossier
 	 * @return Le nom du corpus
 	 */
@@ -1255,10 +1243,10 @@ public class UserSettings {
 
 	/**
 	 * Permet de se procurer le filtre sur le filter text pour filtrer sur les
-	 * textes structuré utilisateurs
+	 * textes structurï¿½ utilisateurs
 	 * 
-	 * @param userStructuredText texte à vérifié
-	 * @return le predicat à appliquer
+	 * @param userStructuredText texte ï¿½ vï¿½rifiï¿½
+	 * @return le predicat ï¿½ appliquer
 	 */
 	private Predicate<FilterText> getPredicateForFilterText(UserStructuredText userStructuredText) {
 		return new Predicate<FilterText>() {
@@ -1280,7 +1268,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de réinitialiser le filtre avec l'ensemble des textes (raz)
+	 * Permet de rï¿½initialiser le filtre avec l'ensemble des textes (raz)
 	 * 
 	 * @param folderType Type de dossier
 	 */
@@ -1319,7 +1307,7 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de préparer pour l'ajout d'un texte
+	 * Permet de prï¿½parer pour l'ajout d'un texte
 	 */
 	public void cleanCurrentEditingCorpusForAddText() {
 		getListField(false, true, true, true).keySet().stream().forEach(key -> {
@@ -1332,7 +1320,7 @@ public class UserSettings {
 	/**
 	 * Permet de charger la liste des configurations
 	 * 
-	 * @throws IOException erreur d'entrée sortie
+	 * @throws IOException erreur d'entrï¿½e sortie
 	 */
 	private void loadConfigurationsList() throws IOException {
 		File configurationFolder = getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
@@ -1357,12 +1345,12 @@ public class UserSettings {
 	 * 
 	 * @return la liste des configurations
 	 */
-	public List<Configuration> getConfigurationList() {
-		return Collections.unmodifiableList(this.configurationsList);
+	public Set<Configuration> getConfigurationList() {
+		return Collections.unmodifiableSet(this.configurationsList);
 	}
 
 	/**
-	 * Permet de sauvegarder les erreurs de manière à ce que celle ci soit trié
+	 * Permet de sauvegarder les erreurs de maniï¿½re ï¿½ ce que celle ci soit triï¿½
 	 */
 	public void saveAllErrorForFixed() {
 		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.isEmpty()) {
@@ -1378,9 +1366,9 @@ public class UserSettings {
 	}
 
 	/**
-	 * Permet de sauvegarder les erreurs demandé de manière trié
+	 * Permet de sauvegarder les erreurs demandï¿½ de maniï¿½re triï¿½
 	 * 
-	 * @param typeError type d'erreur à trié
+	 * @param typeError type d'erreur ï¿½ triï¿½
 	 */
 	private void saveErrorForFixed(ErrorTypeEnum typeError) {
 		if (this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.containsKey(typeError)) {
@@ -1397,8 +1385,8 @@ public class UserSettings {
 	 * 
 	 * @param typeError type d'erreur
 	 * @param file      le fichier
-	 * @param number    le numéro
-	 * @param keyError  la clé d'erreur
+	 * @param number    le numï¿½ro
+	 * @param keyError  la clï¿½ d'erreur
 	 */
 	public void addKeyErrorByFile(ErrorTypeEnum typeError, String file, Integer number, String keyError) {
 		if (!this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.containsKey(typeError)) {

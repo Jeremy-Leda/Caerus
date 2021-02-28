@@ -47,21 +47,7 @@ import view.interfaces.IGenericAccessPanel;
 import view.panel.GenericAccessPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
-import view.windows.BaseCodeErrorView;
-import view.windows.ChooseConfiguration;
-import view.windows.CreateCorpus;
-import view.windows.CreateText;
-import view.windows.FixedBlankLine;
-import view.windows.FixedErrorLine;
-import view.windows.FixedOrEditCorpus;
-import view.windows.FixedOrEditText;
-import view.windows.InconsistencyErrorView;
-import view.windows.LoadTextConfigurationSelector;
-import view.windows.ManageText;
-import view.windows.ProgressBarView;
-import view.windows.SaveCustomExcel;
-import view.windows.SaveReferenceExcels;
-import view.windows.UserInformation;
+import view.windows.*;
 
 /**
  * 
@@ -93,6 +79,10 @@ public class Main extends JFrame {
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MANAGE_MENU_TITLE)),
 			configurationLoadLibrary = new JMenuItem(ConfigurationUtils.getInstance()
 					.getDisplayMessage(Constants.CONFIGURATION_LIBRARY_LOAD_MENU_TITLE)),
+			analysis_assistant = new JMenuItem(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL1_TITLE)),
+			load_analysis = new JMenuItem(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL2_TITLE)),
 			openAbout = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT_OPEN));
 	private List<JMenuItem> languages = new ArrayList<JMenuItem>();
 	private JMenu fileMenu = new JMenu(
@@ -104,6 +94,8 @@ public class Main extends JFrame {
 	private JMenu configurationLibrary = new JMenu(
 			ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
 	private JMenu about = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT));
+	private JMenu analysis = new JMenu(ConfigurationUtils.getInstance()
+					.getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_TITLE));
 	private JMenuBar menuBar = new JMenuBar();
 	private final JPanel panContent = new JPanel();
 	private final JPanel panAnalyze = new JPanel();
@@ -154,13 +146,16 @@ public class Main extends JFrame {
 	 * @throws HeadlessException
 	 */
 	public Main(Consumer<?> consumerOnClose) throws HeadlessException, IOException {
-		// On regarde l'existence d'un état précédent
+		// On regarde l'existence d'un ï¿½tat prï¿½cï¿½dent
 		if (this.configurationControler.haveCurrentStateFile()) {
 			// on demande
-			Integer result = JOptionPane.showConfirmDialog(null,
-					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_ANSWER),
-					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_TITLE), 0);
-			if (JOptionPane.YES_OPTION == result) {
+			YesNoQuestion yesNoQuestion = new YesNoQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_TITLE),
+					configurationControler,
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_ANSWER));
+//			Integer result = JOptionPane.showConfirmDialog(null,
+//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_ANSWER),
+//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_TITLE), 0);
+			if (JOptionPane.YES_OPTION == yesNoQuestion.getAnswer()) {
 				this.configurationControler.restoreCurrentState();
 			} else {
 				this.configurationControler.removeCurrentStateFile();
@@ -179,9 +174,9 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de créer la fenetre
+	 * Permet de crï¿½er la fenetre
 	 * 
-	 * @param consumerOnClose consumer à executer sur la fermeture
+	 * @param consumerOnClose consumer ï¿½ executer sur la fermeture
 	 * @throws IOException
 	 * @throws HeadlessException
 	 */
@@ -231,7 +226,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de se procurer la liste des icones possible (taille différentes)
+	 * Permet de se procurer la liste des icones possible (taille diffï¿½rentes)
 	 * 
 	 * @return la liste des icones
 	 */
@@ -373,6 +368,19 @@ public class Main extends JFrame {
 		});
 
 		menuBar.add(textLibrary);
+
+		menuBar.add(analysis);
+		analysis.add(analysis_assistant);
+		analysis_assistant.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				AnalysisAssistant analysisAssistant = new AnalysisAssistant(
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), configurationControler);
+			}
+		});
+
+		analysis.add(load_analysis);
+
 		menuBar.add(about);
 
 		this.setJMenuBar(menuBar);
@@ -413,7 +421,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de repack la fenêtre Position centrer
+	 * Permet de repack la fenï¿½tre Position centrer
 	 */
 	private void repack() {
 		this.pack();
@@ -455,7 +463,7 @@ public class Main extends JFrame {
 	}
 
 	/***
-	 * Permet de créer le panel pour les erreurs de ligne
+	 * Permet de crï¿½er le panel pour les erreurs de ligne
 	 */
 	private void createLineErrorPanel() {
 		panLineError.setLayout(new BoxLayout(panLineError, BoxLayout.Y_AXIS));
@@ -471,7 +479,7 @@ public class Main extends JFrame {
 	}
 
 	/***
-	 * Permet de créer le panel pour les erreurs de textes
+	 * Permet de crï¿½er le panel pour les erreurs de textes
 	 */
 	private void createTextErrorPanel() {
 		panTextError.setLayout(new BoxLayout(panTextError, BoxLayout.Y_AXIS));
@@ -487,7 +495,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de créer le panel pour transférer les textes vers la bibliotheque de
+	 * Permet de crï¿½er le panel pour transfï¿½rer les textes vers la bibliotheque de
 	 * texte
 	 */
 	private void createMoveFileLibraryPanel() {
@@ -501,7 +509,7 @@ public class Main extends JFrame {
 	}
 
 	/***
-	 * Permet de créer le panel pour les erreurs de lignes vides
+	 * Permet de crï¿½er le panel pour les erreurs de lignes vides
 	 */
 	private void createBlankLineErrorPanel() {
 		panBlankLineError.setLayout(new BoxLayout(panBlankLineError, BoxLayout.Y_AXIS));
@@ -551,6 +559,9 @@ public class Main extends JFrame {
 		configurationLibrary.setText(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
 		textLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
+		analysis.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_TITLE));
+		load_analysis.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL2_TITLE));
+		analysis_assistant.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL1_TITLE));
 		textLoadLibrary
 				.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_LOAD_MENU_TITLE));
 		createTextLibrary
@@ -714,7 +725,7 @@ public class Main extends JFrame {
 	/**
 	 * Permet de construire le message d'information
 	 * 
-	 * @param listErreur liste des fichiers en erreur
+	 * @param fileResultMap liste des fichiers en erreur
 	 * @return le message d'erreur
 	 */
 	private String constructInformationFileMessage(Map<Path, Path> fileResultMap) {
@@ -735,7 +746,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de construire l'erreur pour les fichiers déjà existant
+	 * Permet de construire l'erreur pour les fichiers dï¿½jï¿½ existant
 	 * 
 	 * @param listErreur liste des fichiers en erreur
 	 * @return le message d'erreur
@@ -807,7 +818,7 @@ public class Main extends JFrame {
 	}
 
 //	/**
-//	 * permet de créer la fenêtre de sélection du dossier et de lancer l'analyse
+//	 * permet de crï¿½er la fenï¿½tre de sï¿½lection du dossier et de lancer l'analyse
 //	 * 
 //	 * @param parent JFrame parente
 //	 * @return
@@ -859,7 +870,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de rafraichir pour les activations et les valeurs suite à la présence
+	 * Permet de rafraichir pour les activations et les valeurs suite ï¿½ la prï¿½sence
 	 * du chemin de la librairie des textes
 	 */
 	private void refreshEnabledAndValueWithTextsFolderLibrary() {
@@ -879,8 +890,8 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de créer la fenêtre de sélection du dossier et la définir en tant que
-	 * bibliothéque de textes
+	 * Permet de crï¿½er la fenï¿½tre de sï¿½lection du dossier et la dï¿½finir en tant que
+	 * bibliothï¿½que de textes
 	 * 
 	 * @param parent JFrame parent
 	 * @return
@@ -906,11 +917,11 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet créer le panel d'erreurs d'incohérences
+	 * Permet crï¿½er le panel d'erreurs d'incohï¿½rences
 	 */
 	private void createErrorInconsistencyPanel() {
 		openInconsistencyErrorsButton
-				.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
+				.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.WARNING)));
 		openInconsistencyErrorsButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -920,7 +931,7 @@ public class Main extends JFrame {
 			}
 		});
 		openBaseCodeErrorsButton
-				.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.INCONSISTENCY)));
+				.setIcon(new ImageIcon(RessourcesUtils.getInstance().getImage(PictureTypeEnum.WARNING)));
 		openBaseCodeErrorsButton.addActionListener(new ActionListener() {
 
 			@Override

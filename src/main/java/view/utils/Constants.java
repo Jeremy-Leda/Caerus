@@ -176,21 +176,21 @@ public final class Constants {
 	public static final String WINDOW_MESSAGE_ERROR_MOVE_FILE_EXISTS = "window.message.error.move.file.exists";
 	public static final String WINDOW_MESSAGE_RESULT_MOVE_FILE = "window.message.result.move.file";
 	public static final String WINDOW_MESSAGE_UNKNOW_ERROR = "window.message.unknow.error";
-	
+
 	public static final String WINDOW_MESSAGE_FROM = "window.message.from";
 	public static final String WINDOW_MESSAGE_TO = "window.message.to";
-	
+
 	public static final String WINDOW_DISPLAY_TEXTS_PANEL_LABEL = "window.display.texts.panel.label";
 	public static final String WINDOW_DISPLAY_CORPUS_EDIT_BUTTON_LABEL = "window.display.corpus.edit.button.label";
 	public static final String WINDOW_DISPLAY_TEXTS_EDIT_BUTTON_LABEL = "window.display.texts.edit.button.label";
 	public static final String WINDOW_DISPLAY_TEXTS_DELETE_BUTTON_LABEL = "window.display.texts.delete.button.label";
-	
+
 	public static final String WINDOW_DISPLAY_TEXTS_PREVIOUS_BUTTON_LABEL = "window.display.texts.previous.button.label";
 	public static final String WINDOW_DISPLAY_TEXTS_NEXT_BUTTON_LABEL = "window.display.texts.next.button.label";
 	public static final String WINDOW_DISPLAY_TEXTS_CURRENT_POSITION_LABEL = "window.display.texts.current.position.label";
 	public static final String WINDOW_DISPLAY_TEXTS_NB_TEXTS_BY_PAGE_LABEL = "window.display.texts.nb.texts.by.page.label";
 	public static final String WINDOW_DISPLAY_TEXTS_CORPUS_LABEL = "window.display.texts.corpus.label";
-	
+
 	public static final String WINDOW_MANAGE_TEXTS_TITLE = "window.manage.texts.title";
 	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_PANEL_TITLE = "window.manage.texts.generate.excel.panel.title";
 	public static final String WINDOW_MANAGE_TEXTS_GENERATE_EXCEL_CLASSICAL_BUTTON_LABEL = "window.manage.texts.generate.excel.classical.button.label";
@@ -202,14 +202,14 @@ public final class Constants {
 	public static final String WINDOW_MANAGE_TEXTS_FILTERS_BUTTON_LABEL = "window.manage.texts.filters.button.label";
 	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_FILL_SPECIFIC_BUTTON_TITLE = "window.manage.texts.edit.text.action.fill.specific.button.title";
 	public static final String WINDOW_MANAGE_TEXTS_ADD_TEXT_ACTION_BUTTON_SAVE_AND_QUIT_LABEL = "window.manage.texts.add.text.action.button.save.and.quit.label";
-	
-	
-	
+
+
+
 	public static final String WINDOW_MANAGE_TEXTS_DELETE_TEXT_ACTION_MESSAGE_TITLE ="window.manage.texts.delete.text.action.message.title";
 	public static final String WINDOW_MANAGE_TEXTS_DELETE_TEXT_ACTION_MESSAGE_CONTENT ="window.manage.texts.delete.text.action.message.content";
 
 	public static final String WINDOW_FILTER_TYPE_PREFIX = "window.filter.type.";
-	
+
 	public static final String WINDOW_MANAGE_FILTERS_GLOBAL_PANEL_TITLE = "window.manage.filters.global.panel.title";
 	public static final String WINDOW_MANAGE_FILTERS_PANEL_TITLE = "window.manage.filters.panel.title";
 	public static final String WINDOW_MANAGE_FILTERS_TYPE_FILTER_LABEL = "window.manage.filters.type.filter.label";
@@ -221,12 +221,12 @@ public final class Constants {
 	public static final String WINDOW_MANAGE_FILTERS_ACTION_PANEL_TITLE = "window.manage.filters.action.panel.title";
 	public static final String WINDOW_MANAGE_FILTERS_ACTION_APPLY_BUTTON_LABEL = "window.manage.filters.action.apply.button.label";
 	public static final String WINDOW_MANAGE_FILTERS_CORPUS_ALL_LABEL ="window.manage.filters.corpus.all.label";
-	
+
 	public static final String WINDOW_MANAGE_CORPUS_TITLE ="window.manage.corpus.title";
-	
+
 	public static final String WINDOW_MANAGE_TEXTS_INFORMATION_TITLE = "window.manage.texts.information.title";
 	public static final String WINDOW_MANAGE_TEXTS_INFORMATION_LABEL = "window.manage.texts.information.label";
-	
+
 
 	public static final String WINDOW_CHANGE_CONFIGURATION_TITLE="window.change.configuration.title";
 	public static final String WINDOW_CHANGE_CONFIGURATION_LIST_LABEL="window.change.configuration.list.label";
@@ -237,11 +237,11 @@ public final class Constants {
 	public static final String WINDOW_CHANGE_CONFIGURATION_BUTTON_CLOSE="window.change.configuration.button.close";
 	public static final String WINDOW_CHANGE_CONFIGURATION_BUTTONS_PANEL_TITLE="window.change.configuration.buttons.panel.title";
 	public static final String WINDOW_MAIN_ANALYZE_PANEL_STATE_CURRENT_CONFIGURATION_LABEL="window.main.analyze.panel.state.current.configuration.label";
-	
+
 	public static final String MENU_ABOUT="menu.about";
 	public static final String MENU_ABOUT_OPEN="menu.about.open";
 
-	
+
 	public static final String WINDOW_ABOUT_TITLE="window.about.title";
 	public static final String WINDOW_ABOUT_MESSAGE_CONTENT="window.about.message.content";
 
@@ -254,7 +254,7 @@ public final class Constants {
 	public static final String WINDOW_LOAD_TEXTS_INFORMATIONS_MESSAGE_DEFAULT="window.load.texts.informations.message.default";
 
 	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_PANEL_TITLE="window.fixed.error.line.information.panel.title";
-	
+
 	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_ETAPE1="window.fixed.error.line.information.message.etape1";
 	public static final String WINDOW_FIXED_ERROR_LINE_LIST_FIELD_LABEL="window.fixed.error.line.list.field.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_LIST_FIELD_PANEL_TITLE="window.fixed.error.line.list.field.panel.title";
@@ -271,19 +271,19 @@ public final class Constants {
 	public static final String WINDOW_FIXED_ERROR_LINE_MODE_EXPERT_LABEL="window.fixed.error.line.mode.expert.label";
 	public static final String WINDOW_FIXED_ERROR_LINE_INFORMATION_MESSAGE_EXPERT="window.fixed.error.line.information.message.expert";
 
-	
+
 
 	public static final String WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_PANEL_TITLE="window.load.texts.choose.search.panel.title";
 	public static final String WINDOW_LOAD_TEXTS_CHOOSE_SEARCH_LABEL="window.load.texts.choose.search.label";
 
-	
+
 	public static final String WINDOW_WIZARD_NAVIGATION_PANEL_TITLE="window.wizard.navigation.panel.title";
 	public static final String WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL="window.wizard.navigation.previous.button.label";
 	public static final String WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL="window.wizard.navigation.next.button.label";
 
 	public static final String WINDOW_MANAGE_TEXTS_EXPORT_DOCUMENT_TEXT_BUTTON_LABEL="window.manage.texts.export.document.text.button.label";
 
-	
+
 	public static final String WINDOW_EXPORT_DOCUMENT_TITLE="window.export.document.title";
 	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_PANEL_TITLE="window.export.document.choose.directory.panel.title";
 	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_LABEL="window.export.document.choose.directory.label";
@@ -303,13 +303,13 @@ public final class Constants {
 	public static final String WINDOW_EXPORT_DOCUMENT_CHOOSE_DIRECTORY_DIALOG_TITLE="window.export.document.choose.directory.dialog.title";
 	public static final String WINDOW_EXPORT_DOCUMENT_INFORMATION_SEARCH_MESSAGE="window.export.document.information.search.message";
 
-	
+
 	public static final String WINDOW_MAIN_INCONSISTENCY_ERROR_PANEL_TITLE="window.main.inconsistency.error.panel.title";
 	public static final String WINDOW_MAIN_INCONSISTENCY_ERROR_DUPLICATE_BUTTON_LABEL="window.main.inconsistency.error.duplicate.button.label";
 	public static final String WINDOW_MAIN_INCONSISTENCY_ERROR_BASE_CODE_BUTTON_LABEL="window.main.inconsistency.error.base.code.button.label";
 
 
-	
+
 	public static final String WINDOW_ERROR_INCONSISTENCY_TITLE="window.error.inconsistency.title";
 	public static final String WINDOW_ERROR_INCONSISTENCY_PANEL_TITLE="window.error.inconsistency.panel.title";
 	public static final String WINDOW_ERROR_INCONSISTENCY_FIELD_LABEL="window.error.inconsistency.field.label";
@@ -320,7 +320,7 @@ public final class Constants {
 	public static final String WINDOW_ERROR_INCONSISTENCY_BUTTONS_PANEL_TITLE="window.error.inconsistency.buttons.panel.title";
 	public static final String WINDOW_ERROR_INCONSISTENCY_BUTTONS_CLOSE_BUTTON_LABEL="window.error.inconsistency.buttons.close.button.label";
 
-	
+
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_TITLE="window.error.missing.base.code.title";
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_PANEL_TITLE="window.error.missing.base.code.panel.title";
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_FIELD_LABEL="window.error.missing.base.code.field.label";
@@ -331,20 +331,36 @@ public final class Constants {
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_BUTTONS_PANEL_TITLE="window.error.missing.base.code.buttons.panel.title";
 	public static final String WINDOW_ERROR_MISSING_BASE_CODE_BUTTONS_CLOSE_BUTTON_LABEL="window.error.missing.base.code.buttons.close.button.label";
 
-	
+
 	public static final String WINDOW_MESSAGE_SAVE="window.message.save";
 
 
 	public static final String WINDOW_NAVIGATION_PANEL_TITLE="window.navigation.panel.title";
-	
+
 	public static final String WINDOW_MANAGE_TEXTS_EDIT_TEXT_ACTION_BUTTON_SAVE_LABEL="window.manage.texts.edit.text.action.button.save.label";
 
 	public static final String WINDOW_PROGRESS_BAR_PANEL_TITLE="window.progress.bar.panel.title";
 	public static final String WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL="window.progress.bar.load.text.label";
 	public static final String WINDOW_PROGRESS_BAR_EXPORT_EXCEL_LABEL="window.progress.bar.export.excel.label";
-	
+
 	public static final String WINDOW_ALERT_MORE_ONE_CAERUS_LAUNCH_MESSAGE_TITLE="window.alert.more.one.caerus.launch.message.title";
 	public static final String WINDOW_ALERT_MORE_ONE_CAERUS_LAUNCH_MESSAGE_CONTENT="window.alert.more.one.caerus.launch.message.content";
+
+	public static final String WINDOW_START_ANALYSIS_CODE_TITLE ="window.start.analysis.code.title";
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE ="window.start.analysis.information.panel.title";
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE1 ="window.start.analysis.information.message.etape1";
+	public static final String WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE ="window.start.analysis.wizard.panel.title";
+
+	public static final String WINDOW_MENU_LEVEL6_TITLE="window.menu.level6.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL1_TITLE="window.menu.level6.sublevel1.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL2_TITLE="window.menu.level6.sublevel2.title";
+
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE2="window.start.analysis.information.message.etape2";
+	public static final String WINDOW_START_ANALYSIS_OPTION_TOKENIZATION="window.start.analysis.option.tokenization";
+	public static final String WINDOW_START_ANALYSIS_OPTION_LEMMATIZATION="window.start.analysis.option.lemmatization";
+	public static final String WINDOW_START_ANALYSIS_OPTION_FREQUENCY="window.start.analysis.option.frequency";
+	public static final String WINDOW_START_ANALYSIS_OPTION_PANEL_TITLE="window.start.analysis.option.panel.title";
+
 
 
 }

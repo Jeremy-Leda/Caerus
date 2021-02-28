@@ -1,8 +1,10 @@
 package model.analyze.beans;
 
+import java.util.Objects;
+
 /**
  * 
- * Bean déterminant un champ structuré
+ * Bean dï¿½terminant un champ structurï¿½
  * 
  * @author jerem
  *
@@ -22,32 +24,32 @@ public class StructuredField {
 	}
 
 	/**
-	 * Permet de définir si le champ est une méta données
-	 * @return vrai si le champ est une méta donnée
+	 * Permet de dï¿½finir si le champ est une mï¿½ta donnï¿½es
+	 * @return vrai si le champ est une mï¿½ta donnï¿½e
 	 */
 	public Boolean getIsMetaFile() {
 		return isMetaFile;
 	}
 
 	/**
-	 * Permet de définir si le champ est une méta donnée
-	 * @param isMetaFile Vrai si c'est une méta donnée
+	 * Permet de dï¿½finir si le champ est une mï¿½ta donnï¿½e
+	 * @param isMetaFile Vrai si c'est une mï¿½ta donnï¿½e
 	 */
 	public void setIsMetaFile(Boolean isMetaFile) {
 		this.isMetaFile = isMetaFile;
 	}
 
 	/**
-	 * Permet se procurer la liste des libellés pour le champ structuré
-	 * @return la liste des libellés
+	 * Permet se procurer la liste des libellï¿½s pour le champ structurï¿½
+	 * @return la liste des libellï¿½s
 	 */
 	public String getLabel() {
 		return label;
 	}
 
 	/**
-	 * Permet de définir la liste des libellés
-	 * @param labels libellés à définir
+	 * Permet de dï¿½finir la liste des libellï¿½s
+	 * @param labels libellï¿½s ï¿½ dï¿½finir
 	 */
 	public void setLabels(String label) {
 		this.label = label;
@@ -62,8 +64,8 @@ public class StructuredField {
 	}
 
 	/**
-	 * Permet de définir le nom du champ
-	 * @param fieldName la nom du champ structuré
+	 * Permet de dï¿½finir le nom du champ
+	 * @param fieldName la nom du champ structurï¿½
 	 */
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
@@ -78,7 +80,7 @@ public class StructuredField {
 	}
 	
 	/**
-	 * Permet de définir l'ordre
+	 * Permet de dï¿½finir l'ordre
 	 * @param order l'ordre
 	 */
 	public void setOrder(Integer order) {
@@ -89,6 +91,10 @@ public class StructuredField {
 	public boolean equals(Object obj) {
 		return this.getFieldName().equals(((StructuredField)obj).getFieldName());
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(fieldName);
+	}
     
 }

@@ -19,17 +19,13 @@ import view.utils.Constants;
 
 /**
  * 
- * Permet d'afficher une information à l'utilisateur
+ * Permet d'afficher une information Ã  l'utilisateur
  * 
  * @author jerem
  *
  */
 public class UserInformation extends ModalJFrameAbstract {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -2658338502746380314L;
 	private final JPanel content;
 	private final InformationPanel infoPanel;
 	private final IActionPanel actionPanel;
@@ -49,7 +45,7 @@ public class UserInformation extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -74,7 +70,7 @@ public class UserInformation extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de fermer la fenêtre
+	 * Permet de fermer la fenÃªtre
 	 * @return l'action listener
 	 */
 	private ActionListener closeAction() {

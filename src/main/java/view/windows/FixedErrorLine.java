@@ -45,7 +45,7 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 /**
- * Interface pour corriger les erreurs de lignes mal formaté
+ * Interface pour corriger les erreurs de lignes mal formatï¿½
  * 
  * @author jerem
  *
@@ -175,7 +175,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de rafraichir après le changement de mode
+	 * Permet de rafraichir aprï¿½s le changement de mode
 	 */
 	private void refreshAfterChangeMode() {
 		if (isModeExpert) {
@@ -197,7 +197,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer l'étape 0 de l'assitant
+	 * Permet de crÃ©er l'Ã©tape 0 de l'assistant
 	 */
 	private void createStep_0() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -210,7 +210,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer l'étape 1 de l'assitant
+	 * Permet de crï¿½er l'ï¿½tape 1 de l'assitant
 	 */
 	private void createStep_1() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -223,7 +223,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer l'étape 2 de l'assitant
+	 * Permet de crï¿½er l'ï¿½tape 2 de l'assitant
 	 */
 	private void createStep_2() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -269,7 +269,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer l'étape 3 de l'assitant
+	 * Permet de crï¿½er l'ï¿½tape 3 de l'assitant
 	 */
 	private void createStep_3() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -354,7 +354,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Action a effectuer après le changement dans la liste
+	 * Action a effectuer aprï¿½s le changement dans la liste
 	 * 
 	 * @return Le consumer
 	 */
@@ -368,7 +368,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de rafraichir le texte de la balise corrigé
+	 * Permet de rafraichir le texte de la balise corrigï¿½
 	 */
 	private void refreshFixedText() {
 		if (StringUtils.isNotBlank(listPanel.getLabelSelected())) {
@@ -400,7 +400,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 		logger.debug(String.format("Load index %d", currentIndex));
 		ErrorStructuredLine errorLine = getControler().getErrorLine(currentIndex);
 		if (null != errorLine) {
-			logger.debug(String.format("Ligne chargé %s", errorLine));
+			logger.debug(String.format("Ligne chargï¿½ %s", errorLine));
 			fillList();
 			String panContentLabel = String.format(
 					ConfigurationUtils.getInstance()
@@ -428,7 +428,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de sauvegarder la ligne et gérer le passage à la suivante ou quitter
+	 * Permet de sauvegarder la ligne et gï¿½rer le passage ï¿½ la suivante ou quitter
 	 * 
 	 * @return l'action
 	 */
@@ -477,7 +477,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	/**
 	 * Permet d'adapter le nombre de ligne pour le textarea
 	 * 
-	 * @param nbCharByLine Nombre de caractère par ligne
+	 * @param nbCharByLine Nombre de caractï¿½re par ligne
 	 * @param component    composant text area
 	 */
 	private void refreshRowNum(Integer nbCharByLine, JTextArea component) {

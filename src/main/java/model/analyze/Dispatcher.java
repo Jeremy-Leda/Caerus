@@ -50,8 +50,8 @@ import utils.RessourcesUtils;
 
 /**
  * 
- * Classe en charge de dispatcher les informations en chargeant les donnÈes dans
- * differentes classes. Aucune communication n'existe entre les autres classes
+ * Classe en charge de dispatcher les informations en chargeant les donn√©es dans
+ * diff√©rentes classes. Aucune communication n'existe entre les autres classes
  * 
  * @author Jeremy
  *
@@ -62,7 +62,7 @@ public class Dispatcher {
 	private static final String FOLDER_CONTEXT = "context";
 	private static final String FOLDER_TEXTS = "library";
 	private static final String FOLDER_CONFIGURATIONS = "configurations";
-	private static final String CONFIGURATION_CLASSIC_NAME = "ConfiguraciÛn b·sica";
+	private static final String CONFIGURATION_CLASSIC_NAME = "Configuraci√≥n b√°sica";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
 	private static final String ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT = "ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT";
@@ -106,10 +106,10 @@ public class Dispatcher {
 	/**
 	 * Permet traiter et de charger les textes
 	 * 
-	 * @param folderType type du dossier ‡ prendre en charge
+	 * @param folderType type du dossier √† prendre en charge
 	 * @param depth      Profondeur de recherche dans le dossier
-	 * @throws IOException       erreur d'ÈntrÈe sortie
-	 * @throws LoadTextException Exception d˚ au chargement des textes
+	 * @throws IOException       erreur d'entr√©e sortie
+	 * @throws LoadTextException Exception d√π au chargement des textes
 	 */
 	private void processAndLoadTexts(FolderSettingsEnum folderType, Integer depth)
 			throws IOException, LoadTextException {
@@ -153,12 +153,12 @@ public class Dispatcher {
 	}
 
 	/**
-	 * MÈthode permettant de lancer la montÈe en mÈmoire de l'ensemble du rÈpertoire
-	 * ‡ traiter
+	 * M√©thode permettant de lancer la mont√©e en m√©moire de l'ensemble du r√©pertoire
+	 * √† traiter
 	 * 
-	 * @param pathFolderToAnalyze RÈpertoire ‡ analyser
+	 * @param pathFolderToAnalyze R√©pertoire √† analyser
 	 * @param depth               Profondeur de la recherche des fichiers
-	 * @return la liste des fichiers en mÈmoire
+	 * @return la liste des fichiers en m√©moire
 	 * @throws IOException
 	 */
 	private List<MemoryFile> getMemoryFiles(String pathFolderToAnalyze, Integer depth) throws IOException {
@@ -178,12 +178,12 @@ public class Dispatcher {
 	}
 
 	/**
-	 * MÈthode permettant de se procurer la liste des fichiers a traitÈ et la
-	 * possibilitÈ de pouvoir les traiter
+	 * M√©thode permettant de se procurer la liste des fichiers √† traiter et la
+	 * possibilit√© de pouvoir les traiter
 	 * 
-	 * @param pathFolderToAnalyze RÈpertoire ‡ analyser
+	 * @param pathFolderToAnalyze R√©pertoire √† analyser
 	 * @param depth               profondeur pour la recherche
-	 * @return la liste des fichiers a traitÈ et la possibilitÈ de pouvoir les
+	 * @return la liste des fichiers a trait√© et la possibilit√© de pouvoir les
 	 *         traiter
 	 * @throws IOException
 	 */
@@ -208,7 +208,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de dÈfinir le dossier des textes
+	 * Permet de d√©finir le dossier des textes
 	 * 
 	 * @param textsFolder dossier des textes
 	 */
@@ -228,10 +228,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de gÈnÈrer le fichier excel
+	 * Permet de g√©n√©rer le fichier excel
 	 * 
 	 * @param folder Type de dossier
-	 * @param cmd    commande de gÈnÈration
+	 * @param cmd    commande de g√©n√©ration
 	 * @throws IOException
 	 */
 	public void generateExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd) throws IOException {
@@ -243,7 +243,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * permet de gÈnÈrer de l'excel classique
+	 * permet de g√©n√©rer de l'Excel classique
 	 * 
 	 * @param folder type de dossier
 	 * @param cmd    cmd
@@ -284,7 +284,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * permet de gÈnÈrer un excel custom
+	 * permet de g√©n√©rer un excel custom
 	 * 
 	 * @param folder type de dossier
 	 * @param cmd    command
@@ -316,11 +316,11 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de gÈnÈrer le fichier structurÈ en fonction d'une configuration
-	 * spÈcifique
+	 * Permet de g√©n√©rer le fichier structur√© en fonction d'une configuration
+	 * sp√©cifique
 	 * 
-	 * @param memoryFiles           liste des fichiers mÈmoires
-	 * @param configurationSpecific configuration specifique
+	 * @param memoryFiles           liste des fichiers m√©moires
+	 * @param configurationSpecific configuration sp√©cifique
 	 */
 	private void structuredTextSpecificProcess(List<MemoryFile> memoryFiles, FolderSettingsEnum folderType,
 			ConfigurationStructuredText configurationSpecific, Integer currentConfigurationSpecificIndex,
@@ -336,12 +336,12 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de gÈnÈrer un fichier excel pour une configuraton spÈcifique On
+	 * Permet de g√©n√©rer un fichier excel pour une configuration sp√©cifique On
 	 * modifie le nom du fichier pour ajouter un suffixe en provenance de la
 	 * configuration
 	 * 
-	 * @param commonPath            chemin du fichier gÈnÈrale
-	 * @param configurationSpecific configuration spÈcifique
+	 * @param path            chemin du fichier g√©n√©rale
+	 * @param configurationSpecific configuration sp√©cifique
 	 * @throws IOException io exception
 	 */
 	private void createExcelSpecific(File path, ConfigurationStructuredText configurationSpecific,
@@ -355,9 +355,9 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'Ècrire le corpus
+	 * Permet d'√©crire le corpus
 	 * 
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	public void writeCorpus() throws IOException {
 		StringBuilder fileName = new StringBuilder();
@@ -370,7 +370,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de sauvegarder temporairement l'Ètat
+	 * Permet de sauvegarder temporairement l'√©tat
 	 */
 	public void saveCurrentStateOfFixedText() {
 		SaveCurrentFixedText save = UserSettings.getInstance().getSaveCurrentFixedText();
@@ -389,9 +389,9 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'Ècrire le corpus
+	 * Permet d'√©crire le corpus
 	 * 
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	public void writeFixedText() throws IOException {
 		List<String> filesList = UserSettings.getInstance().getUserStructuredTextList(FolderSettingsEnum.FOLDER_ANALYZE)
@@ -402,7 +402,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'Ècrire le texte en cours d'Èdition
+	 * Permet d'√©crire le texte en cours d'√©dition
 	 * 
 	 * @throws IOException
 	 */
@@ -413,10 +413,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'Ècrire le fichier
+	 * Permet d'√©crire le fichier
 	 * 
 	 * @param folderType type du dossier
-	 * @param filesList  liste des fichiers ‡ Ècrire
+	 * @param filesList  liste des fichiers √† √©crire
 	 * @throws IOException
 	 */
 	private void writeText(FolderSettingsEnum folderType, List<String> filesList) throws IOException {
@@ -436,9 +436,9 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de supprimer dÈfinitivement un texte Suppression logique et physique
+	 * Permet de supprimer d√©finitivement un texte Suppression logique et physique
 	 * 
-	 * @param key        ClÈ du texte
+	 * @param key        Cl√© du texte
 	 * @param folderType type du dossier
 	 * @throws IOException
 	 */
@@ -449,18 +449,18 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de connaitre l'existance d'un fichier d'Ètat
+	 * Permet de connaitre l'existence d'un fichier d'√©tat
 	 * 
-	 * @return Vrai si un fichier d'Ètat existe
+	 * @return Vrai si un fichier d'√©tat existe
 	 */
 	public Boolean haveCurrentStateFile() {
 		return getCurrentStateFile().exists();
 	}
 
 	/**
-	 * Permet de restaurer l'Ètat courant
+	 * Permet de restaurer l'√©tat courant
 	 * 
-	 * @throws IOException          Erreur d'entrÈe sorties
+	 * @throws IOException          Erreur d'entr√©e sorties
 	 * @throws JsonMappingException Erreur de mapping
 	 * @throws JsonParseException   Erreur de parsing
 	 */
@@ -472,9 +472,9 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de se procurer le fichier d'Ètat Si le repertoire n'existe pas, il
-	 * sera crÈÈ lors du passage dans cette mÈthode. Le fichier quand ‡ lui ne sera
-	 * pas crÈÈ
+	 * Permet de se procurer le fichier d'√©tat Si le repertoire n'existe pas, il
+	 * sera cr√©√© lors du passage dans cette m√©thode. Le fichier quand √† lui ne sera
+	 * pas cr√©√©
 	 * 
 	 * @return
 	 */
@@ -485,9 +485,9 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de se procurer le fichier de configuration utililisateur Si le
-	 * repertoire n'existe pas, il sera crÈÈ lors du passage dans cette mÈthode. Le
-	 * fichier quand ‡ lui ne sera pas crÈÈ
+	 * Permet de se procurer le fichier de configuration utilisateur Si le
+	 * repertoire n'existe pas, il sera cr√©√© lors du passage dans cette m√©thode. Le
+	 * fichier quand √† lui ne sera pas cr√©√©
 	 * 
 	 * @return
 	 */
@@ -498,7 +498,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de charger le context ‡ partir de la configuration utilisateur
+	 * Permet de charger le context √† partir de la configuration utilisateur
 	 * 
 	 * @throws JsonParseException
 	 * @throws JsonMappingException
@@ -524,7 +524,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de sauvegarder temporairement l'Ètat
+	 * Permet de sauvegarder temporairement l'√©tat
 	 */
 	private void saveUserConfiguration() {
 		CurrentUserConfiguration save = UserSettings.getInstance().getUserConfiguration();
@@ -536,7 +536,7 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de se procurer la liste des champs ‡ process
+	 * Permet de se procurer la liste des champs √† process
 	 * 
 	 * @param labelSpecificConfiguration label du specific dont on souhaite les
 	 *                                   champs
@@ -554,7 +554,7 @@ public class Dispatcher {
 
 	/**
 	 * Permet de se procurer la liste des champs que l'on ne peux pas afficher si on
-	 * selectionne le specifique en parametre
+	 * s√©lectionne le sp√©cifique en param√®tre
 	 * 
 	 * @param labelSpecificConfiguration label du specific dont on souhaite les
 	 *                                   champs
@@ -569,11 +569,11 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de dÈplacer les fichiers de l'analyze vers la librairie
+	 * Permet de d√©placer les fichiers de l'analyse vers la librairie
 	 * 
-	 * @return La map des fichiers dÈplacÈs (key = ancien fichier, value = nouveau
+	 * @return La map des fichiers d√©plac√©s (key = ancien fichier, value = nouveau
 	 *         fichier)
-	 * @throws IOException       exception d'Ècriture
+	 * @throws IOException       exception d'√©criture
 	 * @throws MoveFileException
 	 */
 	public Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException {
@@ -602,10 +602,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de savoir si le fichier existe dans la bibliotheque de textes (chemin
+	 * Permet de savoir si le fichier existe dans la biblioth√®que de textes (chemin
 	 * avec la configuration)
 	 * 
-	 * @param file fichier a dÈplacer
+	 * @param file fichier a d√©placer
 	 * @return Vrai si il existe, Faux sinon
 	 */
 	private Boolean checkIfFileExistInFolderText(File file) {
@@ -618,10 +618,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de dÈplacer le fichier dans le dossier des textes
+	 * Permet de d√©placer le fichier dans le dossier des textes
 	 * 
-	 * @param file fichier ‡ dÈplacer
-	 * @return le path du fichier dÈplacÈ (nouveau fichier)
+	 * @param file fichier √† d√©placer
+	 * @return le path du fichier d√©plac√© (nouveau fichier)
 	 * @throws IOException
 	 */
 	private Path moveFileInFolderText(File file) throws IOException {
@@ -633,10 +633,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'ajouter la configuration par dÈfaut si le dossier des configurations
+	 * Permet d'ajouter la configuration par d√©faut si le dossier des configurations
 	 * est vide
 	 * 
-	 * @throws IOException          Exception d'entrÈe sortie
+	 * @throws IOException          Exception d'entr√©e sortie
 	 * @throws JsonMappingException Json mapping exception
 	 * @throws JsonParseException   Json parse exception
 	 */
@@ -655,7 +655,7 @@ public class Dispatcher {
 	 * Permet de sauvegarder tous les documents
 	 * 
 	 * @param directory Repertoire de sauvegarde
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	public void exportAllDocuments(File directory) throws IOException {
 		File directoryForSaveTextsInLibrary = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
@@ -668,8 +668,8 @@ public class Dispatcher {
 	 * Permet de sauvegarder un document
 	 * 
 	 * @param directory Repertoire de sauvegarde
-	 * @param nameFile  Nom du fichier ‡ sauvegarder
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @param nameFile  Nom du fichier √† sauvegarder
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	public void exportDocument(File directory, String nameFile) throws IOException {
 		File directoryForSaveTextsInLibrary = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
@@ -683,12 +683,12 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de sauvegarder les textes du rÈsultat de la recherche dans un nouveau
+	 * Permet de sauvegarder les textes du r√©sultat de la recherche dans un nouveau
 	 * document
 	 * 
 	 * @param directory Repertoire de sauvegarde
 	 * @param nameFile  Nom du fichier pour la sauvegarde
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	public void exportResultOfSearch(File directory, String nameFile) throws IOException {
 		List<StructuredText> structuredTextList = UserSettings.getInstance()
@@ -699,10 +699,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet d'Ècrire le corpus
+	 * Permet d'√©crire le corpus
 	 * 
-	 * @param structuredTextList Liste des textes structurÈs
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @param structuredTextList Liste des textes structur√©s
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	public void writeCorpus(File directory, String nameFile, List<StructuredText> structuredTextList)
 			throws IOException {
@@ -724,18 +724,10 @@ public class Dispatcher {
 	}
 
 	/**
-	 * Permet de remettre la barre de progression ‡ zÈro
+	 * Permet de remettre la barre de progression √† z√©ro
 	 */
 	public void resetProgress() {
 		this.progressBean = null;
 	}
-//
-//	/**
-//	 * Permet de dÈfinir l'Ètat de la progression
-//	 * @param progress niveau de la progression
-//	 */
-//	public void setProgress(Integer progress) {
-//		this.progress = progress;
-//	}
 
 }

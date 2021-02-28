@@ -1,0 +1,87 @@
+{
+  "name" : "Livre Analyse",
+  "baseCode" : "[LIVRE_ANALYSE]",
+  "specificConfigurationList" : [ {
+    "order" : 1,
+    "label" : "Analyse des mot clés",
+    "delimiter" : ",",
+    "nameFileSuffix" : "_mot_cle_analyse",
+    "ignoredFieldList" : [ "[RESUME_CHAPITRE]", "[NOM_EXAMINATEUR]", "[NOTE]", "[NOMBRE_EXAMINATEURS]" ],
+    "treatmentFieldList" : [ "[CATEGORIE_MOT_CLE]", "[MOT_CLE]", "[NB_OCCURENCE]" ],
+    "headerFieldList" : []
+  }, {
+    "order" : 2,
+    "label" : "Analyse des examinateurs",
+    "delimiter" : ",",
+    "nameFileSuffix" : "_examinateur_analyse",
+    "ignoredFieldList" : [ "[RESUME_CHAPITRE]", "[CATEGORIE_MOT_CLE]", "[MOT_CLE]", "[NB_OCCURENCE]" ],
+    "treatmentFieldList" : [ "[NOM_EXAMINATEUR]", "[NOTE]" ],
+    "headerFieldList" : [ "[NOMBRE_EXAMINATEURS]"]
+  } ],
+  "structuredFieldList" : [ {
+	"isMetaFile" : true,
+    "order" : 1,
+    "label" : "Titre du livre",
+    "fieldName" : "[TITRE]"
+  }, {
+    "isMetaFile" : true,
+    "order" : 2,
+    "label" : "Auteur du livre",
+    "fieldName" : "[AUTEUR]"
+  }, {
+    "isMetaFile" : true,
+    "order" : 3,
+    "label" : "Année du livre",
+    "fieldName" : "[ANNEE]"
+  }, {
+    "isMetaFile" : true,
+    "order" : 4,
+    "label" : "Genre du livre",
+    "fieldName" : "[GENRE]"
+  }, {
+    "isMetaFile" : false,
+    "order" : 5,
+    "label" : "Numéro du chapitre",
+    "fieldName" : "[NUMERO_CHAPITRE]"
+  }, {
+    "isMetaFile" : false,
+    "order" : 6,
+    "label" : "Titre du chapitre",
+    "fieldName" : "[TITRE_CHAPITRE]"
+  }, {
+    "isMetaFile" : false,
+    "order" : 7,
+    "label" : "Résumé du chapitre",
+    "fieldName" : "[RESUME_CHAPITRE]"
+  }, {
+    "isMetaFile" : false,
+    "order" : 8,
+    "label" : "Catégorie Mot Clé",
+    "fieldName" : "[CATEGORIE_MOT_CLE]"
+  }, {
+	"isMetaFile" : false,
+    "order" : 9,
+    "label" : "Mot Clé",
+    "fieldName" : "[MOT_CLE]"
+  }, {
+	"isMetaFile" : false,
+    "order" : 10,
+    "label" : "Nb d'occurrence",
+    "fieldName" : "[NB_OCCURENCE]"
+  }, {
+	"isMetaFile" : false,
+    "order" : 11,
+    "label" : "Nombre d'examinateurs",
+    "fieldName" : "[NOMBRE_EXAMINATEURS]"
+  }, {
+	"isMetaFile" : false,
+    "order" : 12,
+    "label" : "Nom de l'examinateur",
+    "fieldName" : "[NOM_EXAMINATEUR]"
+  }, {
+	"isMetaFile" : false,
+    "order" : 13,
+    "label" : "Note sur 5",
+    "fieldName" : "[NOTE]"
+  }]
+}

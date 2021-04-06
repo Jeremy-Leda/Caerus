@@ -16,7 +16,7 @@ import view.renders.InconsistencyErrorRenderer;
 
 /**
  * 
- * Panel pour l'affichage des textes filtrés
+ * Panel pour l'affichage des textes filtrÃ©s
  * 
  * @author jerem
  *
@@ -31,7 +31,7 @@ public class ManageInconsistencyErrorPanel implements IManageInconsistencyErrorP
 	/**
 	 * Constructeur
 	 * 
-	 * @param consumerToItemChange Consumer à appliquer en cas de changement de la
+	 * @param consumerToItemChange Consumer Ã  appliquer en cas de changement de la
 	 *                             liste
 	 */
 	public ManageInconsistencyErrorPanel() {
@@ -57,9 +57,9 @@ public class ManageInconsistencyErrorPanel implements IManageInconsistencyErrorP
 	}
 
 	/**
-	 * Permet de se procurer la liste des filtre à afficher
+	 * Permet de se procurer la liste des filtre Ã  afficher
 	 * 
-	 * @return la liste des filtres à afficher
+	 * @return la liste des filtres Ã  afficher
 	 */
 	private DefaultListModel<InconsistencyError> getDisplayTextModel() {
 		DefaultListModel<InconsistencyError> dlm = new DefaultListModel<>();

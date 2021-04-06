@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 /**
  * 
- * Interface pour gérer l'assistant
+ * Interface pour gÃ©rer l'assistant
  * 
  * @author jerem
  *
@@ -13,9 +13,9 @@ import java.util.function.Consumer;
 public interface IWizardPanel extends IAccessPanel {
 
 	/**
-	 * Permet d'ajouter une étape à l'assistant
+	 * Permet d'ajouter une Ã©tape Ã  l'assistant
 	 * 
-	 * @param panelList liste des panels pour l'étapes (seront affichés les uns en
+	 * @param panelList liste des panels pour l'Ã©tapes (seront affichÃ©s les uns en
 	 *                  dessous des autres)
 	 */
 	void addStep(List<IAccessPanel> panelList);
@@ -27,14 +27,14 @@ public interface IWizardPanel extends IAccessPanel {
 	void addConsumerOnChangeStep(Consumer<?> consumer);
 	
 	/**
-	 * Permet de savoir si c'est la dernière page
+	 * Permet de savoir si c'est la derniÃ¨re page
 	 * @return Vrai si c'est le cas
 	 */
 	Boolean isLastPage();
 	
 	/**
-	 * Permet de définir le retour à une étape
-	 * @param numStep Numéro de l'étape
+	 * Permet de dÃ©finir le retour Ã  une Ã©tape
+	 * @param numStep NumÃ©ro de l'Ã©tape
 	 */
 	void setStep(Integer numStep);
 

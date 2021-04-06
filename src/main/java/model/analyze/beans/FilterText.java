@@ -19,7 +19,7 @@ public class FilterText {
 	/**
 	 * Constructeur	
 	 * @param field Champ sur lequel on souhaite rechercher
-	 * @param typeFilter type de filtre à appliquer
+	 * @param typeFilter type de filtre Ã  appliquer
 	 * @param value Valeur sur laquelle on va filtrer
 	 */
 	public FilterText(String field, TypeFilterTextEnum typeFilter, String value) {

@@ -4,7 +4,7 @@ import view.beans.InconsistencyError;
 
 /**
  * 
- * Interface de gestion des erreurs d'incohérences
+ * Interface de gestion des erreurs d'incohÃ©rences
  * 
  * @author jerem
  *
@@ -12,20 +12,20 @@ import view.beans.InconsistencyError;
 public interface IManageInconsistencyErrorPanel extends IGetInconsistencyErrorPanel {
 
 	/**
-	 * Permet d'ajouter une erreur d'incohérence
-	 * @param errorToAdd une erreur d'incohérence
+	 * Permet d'ajouter une erreur d'incohÃ©rence
+	 * @param errorToAdd une erreur d'incohÃ©rence
 	 */
 	void addInconsistencyError(InconsistencyError errorToAdd);
 	
 	/**
-	 * Permet de se procurer l'erreur d'incohérence sélectionné
-	 * @return l'erreur d'incohérence sélectionné
+	 * Permet de se procurer l'erreur d'incohÃ©rence sÃ©lectionnÃ©
+	 * @return l'erreur d'incohÃ©rence sÃ©lectionnÃ©
 	 */
 	InconsistencyError getFilterSelected();
 	
 	/**
-	 * Permet de supprimer une erreur d'incohérence
-	 * @param errorToRemove erreur d'incohérence à supprimer
+	 * Permet de supprimer une erreur d'incohÃ©rence
+	 * @param errorToRemove erreur d'incohÃ©rence Ã  supprimer
 	 */
 	void removeInconsistencyError(InconsistencyError errorToRemove);
 	

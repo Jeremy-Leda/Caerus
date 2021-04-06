@@ -2,7 +2,7 @@ package view.beans;
 
 /**
  * 
- * Permet de définir le type d'export
+ * Permet de dÃ©finir le type d'export
  * 
  * @author jerem
  *

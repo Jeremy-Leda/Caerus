@@ -18,7 +18,7 @@ import view.interfaces.IRadioButtonPanel;
 
 /**
  * 
- * Permet de gérer les boutons radio
+ * Permet de gÃ©rer les boutons radio
  * 
  * @author jerem
  *

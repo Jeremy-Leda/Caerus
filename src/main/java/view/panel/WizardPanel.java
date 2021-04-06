@@ -56,7 +56,7 @@ public class WizardPanel implements IWizardPanel {
 	}
 
 	/**
-	 * Permet de réinitialiser le contenu
+	 * Permet de rÃ©initialiser le contenu
 	 */
 	private void refreshContent() {
 		content.removeAll();
@@ -82,7 +82,7 @@ public class WizardPanel implements IWizardPanel {
 	}
 
 	/**
-	 * Permet de se produire la fonction pour la mise à jour du titre du Jpanel
+	 * Permet de se produire la fonction pour la mise Ã  jour du titre du Jpanel
 	 * Action
 	 * 
 	 * @return la fonction
@@ -118,7 +118,7 @@ public class WizardPanel implements IWizardPanel {
 	}
 
 	/**
-	 * Action a effectué sur l'action previousStep
+	 * Action a effectuÃ© sur l'action previousStep
 	 * 
 	 * @return l'action
 	 */
@@ -134,7 +134,7 @@ public class WizardPanel implements IWizardPanel {
 	}
 
 	/**
-	 * Action a effectué sur l'action nextStep
+	 * Action a effectuÃ© sur l'action nextStep
 	 * 
 	 * @return l'action
 	 */
@@ -150,7 +150,7 @@ public class WizardPanel implements IWizardPanel {
 	}
 
 	/**
-	 * Permet de mettre à jour l'affichage pour l'étape en cours
+	 * Permet de mettre Ã  jour l'affichage pour l'Ã©tape en cours
 	 */
 	private void refreshCurrentStep() {
 		this.wizardStepMap.forEach(

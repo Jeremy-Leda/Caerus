@@ -13,7 +13,7 @@ public class Content {
 	private String value;
 	
 	/**
-	 * Utilisé par le chargement du Json
+	 * UtilisÃ© par le chargement du Json
 	 */
 	@SuppressWarnings("unused")
 	private Content() {
@@ -21,8 +21,8 @@ public class Content {
 	}
 	
 	/**
-	 * Constructeur avec la clé
-	 * @param key la clé
+	 * Constructeur avec la clÃ©
+	 * @param key la clÃ©
 	 * @param value la valeur
 	 */
 	public Content(String key, String value) {
@@ -31,15 +31,15 @@ public class Content {
 	}
 	
 	/**
-	 * La clé
-	 * @return la clé
+	 * La clÃ©
+	 * @return la clÃ©
 	 */
 	public String getKey() {
 		return this.key;
 	}
 	
 	/**
-	 * La valeur contenu pour la clé donné
+	 * La valeur contenu pour la clÃ© donnÃ©
 	 * @return les valeur
 	 */
 	public String getValue() {
@@ -57,7 +57,7 @@ public class Content {
 
 	/**
 	 * Permet de dupliquer l'objet
-	 * @return l'objet dupliqué
+	 * @return l'objet dupliquÃ©
 	 */
 	public Content duplicate() {
 		return new Content(new String(this.key), new String(this.value));

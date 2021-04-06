@@ -10,7 +10,7 @@ import view.interfaces.ISpecificTextRefreshPanel;
 
 /**
  * 
- * Permet de créer la structure Control + List Panel
+ * Permet de crÃ©er la structure Control + List Panel
  * 
  * @author jerem
  *
@@ -39,7 +39,7 @@ public class SpecificControlAndListPanel implements IAccessPanel {
 	
 	
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);

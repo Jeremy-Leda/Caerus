@@ -32,7 +32,7 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 /***
- * Fenêtre permettant de corriger les données vides ou d'éditer le corpus
+ * FenÃªtre permettant de corriger les donnÃ©es vides ou d'Ã©diter le corpus
  * 
  * @author jerem
  *
@@ -78,7 +78,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -116,7 +116,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de sauvegarder un corpus et de quitter (édition)
+	 * Permet de sauvegarder un corpus et de quitter (Ã©dition)
 	 * 
 	 * @return
 	 */
@@ -163,7 +163,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * Consumer pour rattacher la fermeture de la fenÃªtre fille si prÃ©sente
 	 * 
 	 * @return
 	 */
@@ -186,7 +186,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le contenu de l'information corpus panel
+	 * Met Ã  jour le contenu de l'information corpus panel
 	 */
 	private void updateContentInformationsCorpusPanel() {
 		this.informationsCorpusPanel.refresh(
@@ -223,7 +223,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le contenu avec l'erreur suivante
+	 * Met Ã  jour le contenu avec l'erreur suivante
 	 */
 	private void updateContentWithNextError() {
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {

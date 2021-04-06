@@ -25,7 +25,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Fenêtre permettant de changer la configuration courante du programme caerus
+ * FenÃªtre permettant de changer la configuration courante du programme caerus
  * 
  * @author jerem
  *
@@ -72,7 +72,7 @@ public class ChooseConfiguration extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -83,7 +83,7 @@ public class ChooseConfiguration extends ModalJFrameAbstract {
 	}
 	
 	/***
-	 * Permet de créer le panel pour le choix de la configuration
+	 * Permet de crÃ©er le panel pour le choix de la configuration
 	 */
 	private void createConfigurationsPanel() {
 		panConfigurations.setLayout(new BoxLayout(panConfigurations, BoxLayout.Y_AXIS));
@@ -116,7 +116,7 @@ public class ChooseConfiguration extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Action de fermeture de la fenêtre
+	 * Action de fermeture de la fenÃªtre
 	 * @return l'action listener
 	 */
 	private ActionListener closeAction() {
@@ -130,7 +130,7 @@ public class ChooseConfiguration extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de modifier la configuration et de fermer la fenêtre
+	 * Permet de modifier la configuration et de fermer la fenÃªtre
 	 * @return l'action listener
 	 */
 	private ActionListener changeConfigurationAndCloseAction() {

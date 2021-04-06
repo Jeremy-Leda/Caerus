@@ -2,7 +2,7 @@ package view.beans;
 
 /**
  * 
- * Enumération de possibilité pour un filtre
+ * EnumÃ©ration de possibilitÃ© pour un filtre
  * 
  * @author jerem
  *

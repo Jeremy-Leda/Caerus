@@ -7,8 +7,8 @@ import java.util.function.Consumer;
 
 /**
  * 
- * Interface pour la création des panels textes génériques
- * Permet la création des textarea avec scrollpane intégré ou des JtextField
+ * Interface pour la crÃ©ation des panels textes gÃ©nÃ©riques
+ * Permet la crÃ©ation des textarea avec scrollpane intÃ©grÃ© ou des JtextField
  * 
  * @author jerem
  *
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 public interface IContentTextGenericPanel extends IAccessPanel {
 	
 	/**
-	 * Permet de créer les composants à l'aide de la map d'information
+	 * Permet de crÃ©er les composants Ã  l'aide de la map d'information
 	 * @param informationFieldMap map d'information
 	 */
 	void refreshComponents(Map<String, String> informationFieldMap);
@@ -29,59 +29,59 @@ public interface IContentTextGenericPanel extends IAccessPanel {
 	
 	/**
 	 * Permet d'ajouter un key listener sur un champ particulier
-	 * @param key Clé pour l'affectation du key listener
-	 * @param keyListener Clé listener à affecter
+	 * @param key ClÃ© pour l'affectation du key listener
+	 * @param keyListener ClÃ© listener Ã  affecter
 	 */
 	void addKeyListener(String key, KeyListener keyListener);
 	
 	/**
 	 * Permet d'ajouter un key listener sur l'ensemble des champs
-	 * @param keyListener Clé listener à affecter
+	 * @param keyListener ClÃ© listener Ã  affecter
 	 */
 	void addKeyListenerOnAllField(KeyListener keyListener);
 	
 	/**
-	 * Permet de se procurer la map clé valeur des champs
-	 * @return la map contenant la clé et valeur
+	 * Permet de se procurer la map clÃ© valeur des champs
+	 * @return la map contenant la clÃ© et valeur
 	 */
 	Map<String, String> getFieldValueMap();
 	
 	/**
 	 * Permet de se procurer la valeur d'un champ
-	 * @param key Clé du champ
+	 * @param key ClÃ© du champ
 	 * @return la valeur
 	 */
 	String getValue(String key);
 	
 	/**
 	 * Permet d'ajouter un focus listener sur un champ particulier
-	 * @param key Clé pour l'affectation du key listener
-	 * @param focusListener Focus listener à affecter
+	 * @param key ClÃ© pour l'affectation du key listener
+	 * @param focusListener Focus listener Ã  affecter
 	 */
 	void addFocusListener(String key, FocusListener focusListener);
 	
 	/**
 	 * Permet d'ajouter un focus listener sur l'ensemble des champs
-	 * @param focusListener Focus listener à affecter
+	 * @param focusListener Focus listener Ã  affecter
 	 */
 	void addFocusListenerOnAllField(FocusListener focusListener);
 	
 	/**
-	 * Permet de définir si le champ est actif
-	 * @param key Clé du champ
+	 * Permet de dÃ©finir si le champ est actif
+	 * @param key ClÃ© du champ
 	 * @param enabled Vrai, si actif faux sinon
 	 */
 	void setEnabled(String key, boolean enabled);
 	
 	/**
-	 * Permet de définir si tous les champs sont actif
+	 * Permet de dÃ©finir si tous les champs sont actif
 	 * @param enabled Vrai, si actif faux sinon
 	 */
 	void setEnabledOnAllField(boolean enabled);
 	
 	/**
-	 * Permet de définir la valeur dans le champ texte à partir de la clé
-	 * @param key clé du champ
+	 * Permet de dÃ©finir la valeur dans le champ texte Ã  partir de la clÃ©
+	 * @param key clÃ© du champ
 	 * @param newValue nouvelle valeur
 	 */
 	void setValue(String key, String newValue);
@@ -92,7 +92,7 @@ public interface IContentTextGenericPanel extends IAccessPanel {
 	void reloadValue();
 	
 	/**
-	 * Permet de définir un consumer pour rafraichir l'interface
+	 * Permet de dÃ©finir un consumer pour rafraichir l'interface
 	 * @param refreshDisplay refresh display consumer
 	 */
 	void setRefreshDisplayConsumer(Consumer<?> refreshDisplay);

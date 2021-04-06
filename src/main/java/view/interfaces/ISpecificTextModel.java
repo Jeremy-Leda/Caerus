@@ -11,7 +11,7 @@ import view.beans.SpecificRow;
 
 /**
  * 
- * Interfaces pour fournir les méthodes nécessaires aux IHM des textes spécifiques
+ * Interfaces pour fournir les mÃ©thodes nÃ©cessaires aux IHM des textes spÃ©cifiques
  * 
  * @author jerem
  *
@@ -19,32 +19,32 @@ import view.beans.SpecificRow;
 public interface ISpecificTextModel {
 
 	/**
-	 * Permet de se procurer la map des headers (clé/valeur)
-	 * @return la map des headers (clé/valeur)
+	 * Permet de se procurer la map des headers (clÃ©/valeur)
+	 * @return la map des headers (clÃ©/valeur)
 	 */
 	Map<String, String> getMapHeaderKeyFieldText();
 	
 	/**
-	 * Permet de se procurer la map des headers (clé/label)
-	 * @return la map des headers (clé/label)
+	 * Permet de se procurer la map des headers (clÃ©/label)
+	 * @return la map des headers (clÃ©/label)
 	 */
 	Map<String, String> getMapHeaderFieldTextLabelField();
 	
 	/**
-	 * Permet de se procurer la map des liste de valeurs des champs spécifique (clé/Liste valeur)
-	 * @return la map des liste de valeurs des champs spécifique (clé/Liste valeur)
+	 * Permet de se procurer la map des liste de valeurs des champs spÃ©cifique (clÃ©/Liste valeur)
+	 * @return la map des liste de valeurs des champs spÃ©cifique (clÃ©/Liste valeur)
 	 */
 	Map<String, List<String>> getMapKeyFieldListField();	
 	
 	/**
-	 * Permet de se procurer la map des liste des champs spécifique (clé/label)
-	 * @return la map des liste des champs spécifique (clé/label)
+	 * Permet de se procurer la map des liste des champs spÃ©cifique (clÃ©/label)
+	 * @return la map des liste des champs spÃ©cifique (clÃ©/label)
 	 */
 	Map<String, String> getMapTextLabelField();
 	
 	/**
-	 * Permet de se procurer la liste des en têtes
-	 * @return la liste des en têtes
+	 * Permet de se procurer la liste des en tÃªtes
+	 * @return la liste des en tÃªtes
 	 */
 	List<String> getHeaderList();
 	
@@ -56,8 +56,8 @@ public interface ISpecificTextModel {
 	
 	
 	/**
-	 * Permet de mettre à jour une valeur coté serveur
-	 * @param key Clé
+	 * Permet de mettre Ã  jour une valeur cotÃ© serveur
+	 * @param key ClÃ©
 	 * @param value Valeur
 	 */
 	void updateField(String key, String value);
@@ -70,45 +70,45 @@ public interface ISpecificTextModel {
 	void addSpecificField(Map<String, JTextField> mapKeyFieldTextField);
 	
 	/**
-	 * Permet de mettre à jour les informations dans la liste
+	 * Permet de mettre Ã  jour les informations dans la liste
 	 * 
 	 * @param mapKeyFieldTextField map des champs de l'interface
 	 */
 	void updateSpecificField(Map<String, JTextField> mapKeyFieldTextField);
 	
 	/**
-	 * Permet de supprimer les champs sélectionnés
+	 * Permet de supprimer les champs sÃ©lectionnÃ©s
 	 */
 	void removeSpecificField();
 	
 	/**
-	 * Permet de savoir si on a un index de slectionné
+	 * Permet de savoir si on a un index de slectionnÃ©
 	 * @return
 	 */
 	Boolean haveCurrentSelectedIndexInList();
 	
 	/**
-	 * Permet de définir l'index sélectionné dans le model
+	 * Permet de dÃ©finir l'index sÃ©lectionnÃ© dans le model
 	 * @param index index
 	 */
 	void setCurrentSelectedIndexInList(Integer index);
 	
 	/**
-	 * Permet de se procurer les valeurs sélectionné
-	 * @return la map sous forme de clé valeur
+	 * Permet de se procurer les valeurs sÃ©lectionnÃ©
+	 * @return la map sous forme de clÃ© valeur
 	 */
 	Map<String,String> getCurrentSelectedKeyValueMap();
 	
 	/**
-	 * Permet de se procurer l'index courant sélectionné dans la liste
+	 * Permet de se procurer l'index courant sÃ©lectionnÃ© dans la liste
 	 * @return l'index
 	 */
 	Integer getCurrentSelectedIndexInList();
 	
 	/**
-	 * Permet de charger tous les champs spécifiques
+	 * Permet de charger tous les champs spÃ©cifiques
 	 * 
-	 * @param index index du champ specifique à charger
+	 * @param index index du champ specifique Ã  charger
 	 */
 	void loadAllField(Integer index);
 	
@@ -126,13 +126,13 @@ public interface ISpecificTextModel {
 	Integer getCurrentIndex();
 	
 	/**
-	 * Permet de déterminer s'il y a une configuration précédente
+	 * Permet de dÃ©terminer s'il y a une configuration prÃ©cÃ©dente
 	 * @return 
 	 */
 	Boolean havePreviousSpecificConfiguration();
 	
 	/**
-	 * Permet de déterminer s'il y a une configuration suivante
+	 * Permet de dÃ©terminer s'il y a une configuration suivante
 	 * @return 
 	 */
 	Boolean haveNextSpecificConfiguration();
@@ -144,7 +144,7 @@ public interface ISpecificTextModel {
 	Integer getNbMaxConfiguration();
 	
 	/**
-	 * Permet de créer le Jlabel
+	 * Permet de crÃ©er le Jlabel
 	 * @param text texte du jlabel
 	 * @return
 	 */
@@ -158,24 +158,24 @@ public interface ISpecificTextModel {
 	
 	/**
 	 * Permet d'ajouter un consumer sur le chargement des champs
-	 * @param consumer consumer à ajouter
+	 * @param consumer consumer Ã  ajouter
 	 */
 	void addRefreshConsumerOnLoadAllField(Consumer<?> consumer);
 	
 	/**
-	 * Permet de définir le consumer permettant de clear la selection
-	 * @param consumer consumer à définir
+	 * Permet de dÃ©finir le consumer permettant de clear la selection
+	 * @param consumer consumer Ã  dÃ©finir
 	 */
 	void setClearSelectionConsumer(Consumer<?> consumer);
 	
 	/**
-	 * Permet d'ajouter un index à la liste des index sélectionné
-	 * @param index index à ajouter
+	 * Permet d'ajouter un index Ã  la liste des index sÃ©lectionnÃ©
+	 * @param index index Ã  ajouter
 	 */
 	void addIndexToSelectedIndexList(Integer index);
 	
 	/**
-	 * Permet d'effectuer la modification à partir d'une cellule editable
+	 * Permet d'effectuer la modification Ã  partir d'une cellule editable
 	 * @param rowIndex index de la ligne
 	 * @param columnIndex index de la colonne
 	 * @param newValue nouvelle valeur
@@ -183,7 +183,7 @@ public interface ISpecificTextModel {
 	void updateFromCell(Integer rowIndex, Integer columnIndex, String newValue);
 	
 	/**
-	 * Permet de supprimer la liste des index sélectionné de la liste
+	 * Permet de supprimer la liste des index sÃ©lectionnÃ© de la liste
 	 */
 	void clearAllSelectedIndexList();
 }

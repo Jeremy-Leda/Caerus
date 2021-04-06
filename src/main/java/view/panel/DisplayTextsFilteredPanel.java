@@ -19,7 +19,7 @@ import view.renders.DisplayTextRenderer;
 
 /**
  * 
- * Panel pour l'affichage des textes filtrés
+ * Panel pour l'affichage des textes filtrÃ©s
  * 
  * @author jerem
  *
@@ -39,8 +39,8 @@ public class DisplayTextsFilteredPanel implements IRefreshTextDisplayPanel {
 	/**
 	 * Constructeur
 	 * @param controler controleur
-	 * @param nbTextsByPage Nb de textes par pages à initialiser
-	 * @param consumerToItemChange Consumer à appliquer en cas de changement de la liste
+	 * @param nbTextsByPage Nb de textes par pages Ã  initialiser
+	 * @param consumerToItemChange Consumer Ã  appliquer en cas de changement de la liste
 	 */
 	public DisplayTextsFilteredPanel(IConfigurationControler controler, Integer nbTextsByPage, Consumer<Void> consumerToItemChange) {
 		this.content = new JPanel();
@@ -97,8 +97,8 @@ public class DisplayTextsFilteredPanel implements IRefreshTextDisplayPanel {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des textes à afficher
-	 * @return la liste des textes à afficher
+	 * Permet de se procurer la liste des textes Ã  afficher
+	 * @return la liste des textes Ã  afficher
 	 */
 	private DefaultListModel<DisplayText> getDisplayTextModel() {
 		DefaultListModel<DisplayText> dlm = new DefaultListModel<>();

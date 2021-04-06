@@ -41,7 +41,7 @@ public class PathUtils {
 	/**
 	 * Permet de cr�er un repertoire s'il n'existe pas
 	 * @param root chemin root
-	 * @param folder dossier � cr��er
+	 * @param folder dossier à créer
 	 * @return le fichier
 	 */
 	public static File addFolderAndCreate(String root, String folder) {
@@ -51,8 +51,8 @@ public class PathUtils {
 	}
 	
 	/**
-	 * Effectue la suppression du fichier pass� en param�tre
-	 * @param fileToDelete fichier � supprimer
+	 * Effectue la suppression du fichier passé en paramètre
+	 * @param fileToDelete fichier à supprimer
 	 */
 	public static void deleteFile(File fileToDelete) {
 		if (fileToDelete.exists()) {
@@ -64,15 +64,15 @@ public class PathUtils {
 	 * Permet de copier un fichier
 	 * @param oldFile ancien fichier
 	 * @param newFile nouveau fichier
-	 * @throws IOException Erreur d'entr�e sortie
+	 * @throws IOException Erreur d'entrée sortie
 	 */
 	public static void copyFile(File oldFile, File newFile) throws IOException {
 		Files.copy(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 	
 	/**
-	 * Permet de d�placer un fichier dans un nouveau repertoire
-	 * @param fileToMove fichier � d�placer
+	 * Permet de déplacer un fichier dans un nouveau repertoire
+	 * @param fileToMove fichier à déplacer
 	 * @param newDirectory nouveau repertoire
 	 * @throws IOException
 	 */
@@ -97,8 +97,8 @@ public class PathUtils {
 	}
 	
 	/**
-	 * Permet de se procurer le dossier temporaire du syst�me
-	 * @return le dossier temporaire du syst�me
+	 * Permet de se procurer le dossier temporaire du système
+	 * @return le dossier temporaire du système
 	 */
 	public static String getTempFolder() {
 		return System.getProperty("java.io.tmpdir");

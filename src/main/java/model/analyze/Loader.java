@@ -8,7 +8,7 @@ import model.analyze.beans.MemoryFile;
 
 /**
  * 
- * Classe en charge de la montée en memoire d'un fichier
+ * Classe en charge de la montÃ©e en memoire d'un fichier
  * 
  * @author Jeremy
  *
@@ -22,15 +22,15 @@ public class Loader {
 
 	/**
 	 * Constructeur
-	 * @param file fichier a traité
+	 * @param file fichier a traitÃ©
 	 */
 	public Loader(Path path) {
 		this.path = path;
 	}
 	
 	/**
-	 * Permet de charger un fichier en mémoire
-	 * @return le bean du fichier en mémoire
+	 * Permet de charger un fichier en mÃ©moire
+	 * @return le bean du fichier en mÃ©moire
 	 * @throws IOException 
 	 */
 	public MemoryFile getMemoryFile() throws IOException {

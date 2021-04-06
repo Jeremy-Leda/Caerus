@@ -78,7 +78,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -134,7 +134,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le contenu avec l'erreur suivante
+	 * Met Ã  jour le contenu avec l'erreur suivante
 	 */
 	private void updateContentWithNextError() {
 		getControler().loadNextErrorBlankLine();
@@ -162,7 +162,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * Consumer pour rattacher la fermeture de la fenÃªtre fille si prÃ©sente
 	 * @return
 	 */
 	private Consumer<Void> closeAutomaticallySpecificText() {

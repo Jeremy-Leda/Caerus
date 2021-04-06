@@ -16,7 +16,7 @@ import model.analyze.interfaces.IWriteText;
 
 /**
  * 
- * Classe permettant de fournir les méthodes nécessaire à l'écriture d'un fichier
+ * Classe permettant de fournir les mÃ©thodes nÃ©cessaire Ã  l'Ã©criture d'un fichier
  * 
  * @author jerem
  *
@@ -30,7 +30,7 @@ public class Writer implements IWriteText {
 	
 	
 	/**
-	 * Créer un nouveau channel d'écriture
+	 * CrÃ©er un nouveau channel d'Ã©criture
 	 * @param path chemin de stockage
 	 * @param fileName nom du fichier avec extension
 	 * @throws FileNotFoundException 
@@ -40,7 +40,7 @@ public class Writer implements IWriteText {
 	}
 	
 	/**
-	 * Créer un nouveau channel d'écriture
+	 * CrÃ©er un nouveau channel d'Ã©criture
 	 * @param path chemin complet
 	 * @throws FileNotFoundException
 	 */
@@ -49,7 +49,7 @@ public class Writer implements IWriteText {
 	}
 	
 	/**
-	 * Créer un nouveau channel d'écriture
+	 * CrÃ©er un nouveau channel d'Ã©criture
 	 * @param file fichier
 	 * @throws FileNotFoundException
 	 */
@@ -85,7 +85,7 @@ public class Writer implements IWriteText {
 	
 	/**
 	 * Permet de fermer le fichier
-	 * @throws IOException Erreur d'entrée sortie
+	 * @throws IOException Erreur d'entrÃ©e sortie
 	 */
 	@Override
 	public void close() throws IOException {

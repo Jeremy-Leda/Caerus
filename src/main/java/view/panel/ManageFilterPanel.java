@@ -19,7 +19,7 @@ import view.renders.FilterRenderer;
 
 /**
  * 
- * Panel pour l'affichage des textes filtrés
+ * Panel pour l'affichage des textes filtrÃ©s
  * 
  * @author jerem
  *
@@ -34,7 +34,7 @@ public class ManageFilterPanel implements IManageFilterPanel {
 	
 	/**
 	 * Constructeur
-	 * @param consumerToItemChange Consumer à appliquer en cas de changement de la liste
+	 * @param consumerToItemChange Consumer Ã  appliquer en cas de changement de la liste
 	 */
 	public ManageFilterPanel(Consumer<Void> consumerToItemChange) {
 		this.content = new JPanel();
@@ -69,8 +69,8 @@ public class ManageFilterPanel implements IManageFilterPanel {
 	
 	
 	/**
-	 * Permet de se procurer la liste des filtre à afficher
-	 * @return la liste des filtres à afficher
+	 * Permet de se procurer la liste des filtre Ã  afficher
+	 * @return la liste des filtres Ã  afficher
 	 */
 	private DefaultListModel<Filter> getDisplayTextModel() {
 		DefaultListModel<Filter> dlm = new DefaultListModel<>();

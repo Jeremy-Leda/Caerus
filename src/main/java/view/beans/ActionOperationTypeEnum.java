@@ -2,7 +2,7 @@ package view.beans;
 
 /**
  * 
- * Enumération permettant de déterminer sur quel opération l'utilisateur va utiliser
+ * EnumÃ©ration permettant de dÃ©terminer sur quel opÃ©ration l'utilisateur va utiliser
  * 
  * @author jerem
  *

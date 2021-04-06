@@ -2,7 +2,7 @@ package view.beans;
 
 /**
  * 
- * Enumération permettant de déterminer sur quel environnement l'utilisateur va agir
+ * EnumÃ©ration permettant de dÃ©terminer sur quel environnement l'utilisateur va agir
  * 
  * @author jerem
  *

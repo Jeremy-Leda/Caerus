@@ -2,12 +2,13 @@ package view.beans;
 
 /**
  * 
- * Enumération permettant de choisir le type de file picker à utiliser
+ * EnumÃ©ration permettant de choisir le type de file picker Ã  utiliser
  * 
  * @author jerem
  *
  */
 public enum FilePickerTypeEnum {
 	SAVE_FILE,
-	OPEN_FOLDER
+	OPEN_FOLDER,
+	IMPORT_FILE;
 }

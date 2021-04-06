@@ -15,7 +15,7 @@ public class FilesToAnalyzeInformation {
 	/**
 	 * Constructeur
 	 * @param nameFileList liste des noms de fichiers
-	 * @param launchAnalyzeIsOk Détermine si on peut lancer l'analyse
+	 * @param launchAnalyzeIsOk DÃ©termine si on peut lancer l'analyse
 	 */
 	public FilesToAnalyzeInformation(List<String> nameFileList, Boolean launchAnalyzeIsOk) {
 		this.nameFileList = nameFileList;
@@ -31,7 +31,7 @@ public class FilesToAnalyzeInformation {
 	}
 
 	/**
-	 * Permet de définir si on peut lancer l'analyse
+	 * Permet de dÃ©finir si on peut lancer l'analyse
 	 * @return Vrai si on peut lancer l'analyse
 	 */
 	public Boolean getLaunchAnalyzeIsOk() {

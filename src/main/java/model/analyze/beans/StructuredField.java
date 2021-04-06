@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /**
  * 
- * Bean d�terminant un champ structur�
+ * Bean déterminant un champ structuré
  * 
  * @author jerem
  *
@@ -24,32 +24,32 @@ public class StructuredField {
 	}
 
 	/**
-	 * Permet de d�finir si le champ est une m�ta donn�es
-	 * @return vrai si le champ est une m�ta donn�e
+	 * Permet de définir si le champ est une méta données
+	 * @return vrai si le champ est une méta donnée
 	 */
 	public Boolean getIsMetaFile() {
 		return isMetaFile;
 	}
 
 	/**
-	 * Permet de d�finir si le champ est une m�ta donn�e
-	 * @param isMetaFile Vrai si c'est une m�ta donn�e
+	 * Permet de définir si le champ est une méta donnée
+	 * @param isMetaFile Vrai si c'est une méta donnée
 	 */
 	public void setIsMetaFile(Boolean isMetaFile) {
 		this.isMetaFile = isMetaFile;
 	}
 
 	/**
-	 * Permet se procurer la liste des libell�s pour le champ structur�
-	 * @return la liste des libell�s
+	 * Permet se procurer la liste des libellés pour le champ structuré
+	 * @return la liste des libellés
 	 */
 	public String getLabel() {
 		return label;
 	}
 
 	/**
-	 * Permet de d�finir la liste des libell�s
-	 * @param labels libell�s � d�finir
+	 * Permet de d�finir la liste des libellés
+	 * @param labels libellés à définir
 	 */
 	public void setLabels(String label) {
 		this.label = label;
@@ -64,8 +64,8 @@ public class StructuredField {
 	}
 
 	/**
-	 * Permet de d�finir le nom du champ
-	 * @param fieldName la nom du champ structur�
+	 * Permet de définir le nom du champ
+	 * @param fieldName la nom du champ structuré
 	 */
 	public void setFieldName(String fieldName) {
 		this.fieldName = fieldName;
@@ -80,7 +80,7 @@ public class StructuredField {
 	}
 	
 	/**
-	 * Permet de d�finir l'ordre
+	 * Permet de définir l'ordre
 	 * @param order l'ordre
 	 */
 	public void setOrder(Integer order) {

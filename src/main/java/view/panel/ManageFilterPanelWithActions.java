@@ -32,7 +32,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Classe permettant d'afficher la fenêtre des filtres avec les actions associés
+ * Classe permettant d'afficher la fenÃªtre des filtres avec les actions associÃ©s
  * 
  * @author jerem
  *
@@ -75,7 +75,7 @@ public class ManageFilterPanelWithActions implements IManageActionFilterPanel {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(this.content, BoxLayout.Y_AXIS);
@@ -90,7 +90,7 @@ public class ManageFilterPanelWithActions implements IManageActionFilterPanel {
 	}
 
 	/**
-	 * Permet de créer le panel pour le bouton de suppression
+	 * Permet de crÃ©er le panel pour le bouton de suppression
 	 * 
 	 * @return le panel pour le bouton de suppression
 	 */
@@ -105,7 +105,7 @@ public class ManageFilterPanelWithActions implements IManageActionFilterPanel {
 	}
 
 	/**
-	 * Permet de créer le panel pour les filtres
+	 * Permet de crÃ©er le panel pour les filtres
 	 * 
 	 * @return le panel pour les filtres
 	 */
@@ -194,7 +194,7 @@ public class ManageFilterPanelWithActions implements IManageActionFilterPanel {
 	}
 	
 	/**
-	 * Permet de se procurer l'action pour supprimer un élément
+	 * Permet de se procurer l'action pour supprimer un Ã©lÃ©ment
 	 * @return
 	 */
 	private ActionListener getDeleteActionListener() {

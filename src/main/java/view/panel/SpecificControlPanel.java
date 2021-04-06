@@ -44,7 +44,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	/**
 	 * Constructeur
 	 * 
-	 * @param specificTextModel Modele pour la récupération des doonnées
+	 * @param specificTextModel Modele pour la rÃ©cupÃ©ration des doonnÃ©es
 	 */
 	public SpecificControlPanel(ISpecificTextModel specificTextModel) {
 		this.mapHeaderKeyFieldTextField = new LinkedHashMap<String, JTextField>();
@@ -64,7 +64,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de remplir la map pour les champs spécific
+	 * Permet de remplir la map pour les champs spÃ©cific
 	 */
 	private void fillSpecificFieldMap() {
 		this.mapKeyFieldTextField.clear();
@@ -79,7 +79,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de remplis la map pour les entête spécifique
+	 * Permet de remplis la map pour les entÃªte spÃ©cifique
 	 */
 	private void fillSpecificHeaderFieldMap() {
 		this.mapHeaderKeyFieldTextField.clear();
@@ -132,7 +132,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de remettre à zero l'affichage
+	 * Permet de remettre Ã  zero l'affichage
 	 */
 	private void razDisplay() {
 		addSpecificButton.setEnabled(Boolean.FALSE);
@@ -141,7 +141,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet d'ajouter un ligne de champ spécifique
+	 * Permet d'ajouter un ligne de champ spÃ©cifique
 	 * 
 	 * @return l'actionlistener
 	 */
@@ -156,7 +156,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de supprimer une ligne de champ spécifique
+	 * Permet de supprimer une ligne de champ spÃ©cifique
 	 * 
 	 * @return l'actionlistener
 	 */
@@ -171,7 +171,7 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de modifier une ligne de champ spécifique
+	 * Permet de modifier une ligne de champ spÃ©cifique
 	 * 
 	 * @return l'actionlistener
 	 */
@@ -186,9 +186,9 @@ public class SpecificControlPanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de sauvegarder la clé/valeur coté serveur sur la perte du focus
+	 * Permet de sauvegarder la clÃ©/valeur cotÃ© serveur sur la perte du focus
 	 * 
-	 * @param key Clé
+	 * @param key ClÃ©
 	 * @return le focus listener
 	 */
 	private FocusListener saveValue(String key) {

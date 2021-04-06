@@ -28,12 +28,12 @@ public class InformationPanel implements IInformationPanel {
 	private final Boolean enableScrollPane;
 	
 	/**
-	 * Permet de créer une fenêtre d'information
+	 * Permet de crÃ©er une fenÃªtre d'information
 	 * @param typeImage type de l'image
 	 * @param title titre
-	 * @param text texte à afficher
+	 * @param text texte Ã  afficher
 	 * @param enableScrollPane active la scrollpane
-	 * @param onlyHorizontalScrollBar Permet de définir que la bar horizontal
+	 * @param onlyHorizontalScrollBar Permet de dÃ©finir que la bar horizontal
 	 */
 	public InformationPanel(PictureTypeEnum typeImage, String title, String text, Boolean enableScrollPane, Boolean onlyHorizontalScrollBar) {
 		this.enableScrollPane = enableScrollPane;
@@ -51,7 +51,7 @@ public class InformationPanel implements IInformationPanel {
 	} 
 	
 	/**
-	 * Permet de créer la fenetre
+	 * Permet de crÃ©er la fenetre
 	 */
 	private void createWindow() {
 		content.setBorder(

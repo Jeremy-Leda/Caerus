@@ -6,7 +6,7 @@ import view.beans.InconsistencyError;
 
 /**
  * 
- * Interface permettant de se procurer la liste des erreurs d'incohérences
+ * Interface permettant de se procurer la liste des erreurs d'incohÃ©rences
  * 
  * @author jerem
  *
@@ -14,8 +14,8 @@ import view.beans.InconsistencyError;
 public interface IGetInconsistencyErrorPanel extends IAccessPanel {
 
 	/**
-	 * Permet de se procurer la liste ses erreurs d'incohérences
-	 * @return la liste des erreurs d'incohérences
+	 * Permet de se procurer la liste ses erreurs d'incohÃ©rences
+	 * @return la liste des erreurs d'incohÃ©rences
 	 */
 	List<InconsistencyError> getAllInconsistencyErrorList();
 	

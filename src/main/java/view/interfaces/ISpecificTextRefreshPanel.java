@@ -2,7 +2,7 @@ package view.interfaces;
 
 /**
  * 
- * Interface permettant de fournir une méthode pour le rechargement du panel
+ * Interface permettant de fournir une mÃ©thode pour le rechargement du panel
  * 
  * @author jerem
  *

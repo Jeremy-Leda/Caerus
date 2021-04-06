@@ -361,6 +361,63 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_OPTION_FREQUENCY="window.start.analysis.option.frequency";
 	public static final String WINDOW_START_ANALYSIS_OPTION_PANEL_TITLE="window.start.analysis.option.panel.title";
 
+	public static final String EXCEL_HEADER_NUMBER="excel.header.number";
+
+	public static final String WINDOW_SAVE_EXCEL_OPTIONS_KEY_LABEL="window.save.excel.options.key.label";
+	public static final String WINDOW_SAVE_EXCEL_OPTIONS_NUMBER_LABEL="window.save.excel.options.number.label";
+
+
+	public static final String WINDOW_IMPORT_EXCEL_FILE_PICKER_PANEL_TITLE="window.import.excel.file.picker.panel.title";
+	public static final String WINDOW_IMPORT_EXCEL_PANEL_TITLE="window.import.excel.panel.title";
+	public static final String WINDOW_IMPORT_EXCEL_INFORMATION_PANEL_TITLE="window.import.excel.information.panel.title";
+	public static final String WINDOW_IMPORT_EXCEL_INFORMATION_PANEL_TEXT_NOTHING="window.import.excel.information.panel.text.nothing";
+	public static final String WINDOW_IMPORT_EXCEL_INFORMATION_PANEL_TEXT="window.import.excel.information.panel.text";
+	public static final String WINDOW_IMPORT_EXCEL_LIST_SPECIFIC_PANEL_TITLE="window.import.excel.list.specific.panel.title";
+	public static final String WINDOW_IMPORT_EXCEL_LIST_SPECIFIC_LABEL="window.import.excel.list.specific.label";
+	public static final String WINDOW_IMPORT_EXCEL_LIST_SPECIFIC_LABEL_NOTHING="window.import.excel.list.specific.label.nothing";
+	public static final String WINDOW_IMPORT_EXCEL_SHEET_NAME_LABEL="window.import.excel.sheet.name.label";
+	public static final String WINDOW_IMPORT_EXCEL_LIST_FIELDS_TITLE_PANEL="window.import.excel.list.fields.title.panel";
+	public static final String WINDOW_IMPORT_EXCEL_FILE_LABEL="window.import.excel.file.label";
+	public static final String WINDOW_IMPORT_EXCEL_ACTION_TITLE_PANEL="window.import.excel.action.title.panel";
+	public static final String WINDOW_IMPORT_EXCEL_ACTION_SELECT_ALL="window.import.excel.action.select.all";
+	public static final String WINDOW_IMPORT_EXCEL_ACTION_DESELECT_ALL="window.import.excel.action.deselect.all";
+	public static final String WINDOW_IMPORT_EXCEL_PRINCIPAL_ACTION_TITLE_PANEL="window.import.excel.principal.action.title.panel";
+	public static final String WINDOW_IMPORT_EXCEL_PRINCIPAL_ACTION_BUTTON_LABEL="window.import.excel.principal.action.button.label";
+	public static final String WINDOW_IMPORT_EXCEL_SHEET_NAME_PANEL_TITLE="window.import.excel.sheet.name.panel.title";
+	public static final String WINDOW_IMPORT_EXCEL_PICKER_PANEL_LABEL="window.import.excel.picker.panel.label";
+
+
+	public static final String WINDOW_MENU_LEVEL1_SUBLEVEL5_TITLE="window.menu.level1.sublevel5.title";
+
+	public static final String WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL="window.progress.bar.import.excel.label";
+
+	public static final String WINDOW_IMPORT_FILE_PICKER_PANEL_LABEL="window.import.file.picker.panel.label";
+	public static final String WINDOW_IMPORT_FILE_PICKER_PANEL_BUTTON="window.import.file.picker.panel.button";
+
+	public static final String WINDOW_OPERATION_SUCCEED_LABEL="window.operation.succeed.label";
+	public static final String WINDOW_OPERATION_FAILURE_TECHNICAL_LABEL="window.operation.failure.technical.label";
+	public static final String WINDOW_OPERATION_FAILURE_TECHNICAL_DETAIL_PANEL_TITLE="window.operation.failure.technical.detail.panel.title";
+	public static final String WINDOW_OPERATION_SUCCEED_PANEL_TITLE="window.operation.succeed.panel.title";
+	public static final String WINDOW_OPERATION_FAILURE_TECHNICAL_PANEL_TITLE="window.operation.failure.technical.panel.title";
+
+	public static final String WINDOW_FUNCTIONAL_ERROR_PANEL_TITLE="window.functional.error.panel.title";
+	public static final String WINDOW_FUNCTIONAL_ERROR_LIST_LABEL="window.functional.error.list.label";
+	public static final String WINDOW_FUNCTIONAL_ERROR_FILE_NOT_EXIST="window.functional.error.file.not.exist";
+	public static final String WINDOW_FUNCTIONAL_ERROR_NONE_FIELD_SELECTED="window.functional.error.none.field.selected";
+
+
+	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_CONFIGURATION="window.functional.error.invalid.configuration";
+	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_FIELD_WITH_CONFIGURATION="window.functional.error.invalid.field.with.configuration";
+	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_FILE_EXCEL="window.functional.error.invalid.file.excel";
+	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_SPECIFIC_CONFIGURATION="window.functional.error.invalid.specific.configuration";
+	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_FILE_EXCEL_SPECIFIC_CONFIGURATION="window.functional.error.invalid.file.excel.specific.configuration";
+
+
+
+
+
+
+
 
 
 }

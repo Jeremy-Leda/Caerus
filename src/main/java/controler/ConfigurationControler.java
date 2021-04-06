@@ -1,51 +1,27 @@
 package controler;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 import model.ConfigurationModel;
 import model.IConfigurationModel;
-import model.analyze.beans.Configuration;
-import model.analyze.beans.FilesToAnalyzeInformation;
-import model.analyze.beans.FilterCorpus;
-import model.analyze.beans.FilterText;
-import model.analyze.beans.LineError;
-import model.analyze.beans.StructuredFile;
+import model.analyze.beans.*;
 import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.constants.TypeFilterTextEnum;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
-import model.exceptions.LoadTextException;
-import model.exceptions.MoveFileException;
-import view.beans.BaseCodeError;
-import view.beans.DirectionTypeEnum;
-import view.beans.DisplayText;
-import view.beans.ErrorStructuredLine;
-import view.beans.ExportTypeEnum;
-import view.beans.Filter;
-import view.beans.FilterTypeEnum;
-import view.beans.InconsistencyError;
+import model.excel.beans.ExcelImportConfigurationCmd;
+import model.exceptions.*;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import view.beans.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 
- * Controller pour la jonction au modèle
+ * Controller pour la jonction au modÃ¨le
  * 
  * @author jerem
  *
@@ -53,8 +29,8 @@ import view.beans.InconsistencyError;
 public class ConfigurationControler implements IConfigurationControler {
 
 	private static final String EXTENSION_TXT = ".txt";
-	private Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
-	private IConfigurationModel configurationModel = new ConfigurationModel();
+	private final Logger logger = LoggerFactory.getLogger(ConfigurationControler.class);
+	private final IConfigurationModel configurationModel = new ConfigurationModel();
 	private String currentKeyFilteredText;
 
 	@Override
@@ -146,7 +122,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public Map<String, String> getListFieldSpecific(Integer index) {
 		if (!haveEditingCorpus()) {
-			return new HashMap<String, String>();
+			return new HashMap<>();
 		}
 		if (index < getNbSpecificConfiguration()) {
 			return this.configurationModel.getListFieldSpecific(index);
@@ -157,7 +133,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public Map<String, String> getListFieldHeaderSpecific(Integer index) {
 		if (!haveEditingCorpus()) {
-			return new HashMap<String, String>();
+			return new HashMap<>();
 		}
 		if (index < getNbSpecificConfiguration()) {
 			return this.configurationModel.getListFieldHeaderSpecific(index);
@@ -183,7 +159,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
 		if (!haveEditingCorpus()) {
-			return new HashMap<String, List<String>>();
+			return new HashMap<>();
 		}
 		if (null != index && index < getNbSpecificConfiguration()) {
 			return this.configurationModel.getSpecificFieldInEditingCorpus(index);
@@ -245,9 +221,9 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public void saveFileAfteFixedErrorLine() throws IOException {
+	public void saveFileAfterFixedErrorLine() throws IOException {
 		if (getNbLinesError() > 0) {
-			this.configurationModel.saveFileAfteFixedErrorLine();
+			this.configurationModel.saveFileAfterFixedErrorLine();
 		}
 	}
 
@@ -284,7 +260,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public void restoreCurrentState() throws JsonParseException, JsonMappingException, IOException {
+	public void restoreCurrentState() throws IOException {
 		this.configurationModel.restoreCurrentState();
 	}
 
@@ -331,7 +307,7 @@ public class ConfigurationControler implements IConfigurationControler {
 		if (StringUtils.isNotBlank(labelSpecificConfiguration)) {
 			return this.configurationModel.getFieldListToProcess(labelSpecificConfiguration);
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -339,7 +315,7 @@ public class ConfigurationControler implements IConfigurationControler {
 		if (StringUtils.isNotBlank(labelSpecificConfiguration)) {
 			return this.configurationModel.getFieldListForbiddenToDisplay(labelSpecificConfiguration);
 		}
-		return new ArrayList<String>();
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -418,19 +394,19 @@ public class ConfigurationControler implements IConfigurationControler {
 		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())) {
 			Map<String, String> configurationFieldCommonFile = this.configurationModel
 					.getConfigurationFieldCommonFile();
-			Integer end = start + nbTextToLoad;
+			int end = start + nbTextToLoad;
 			if (end > this.configurationModel.getKeyFilteredList().size()) {
 				end = this.configurationModel.getKeyFilteredList().size();
 			}
-			// PARCOURS La liste des clés filtrés
+			// PARCOURS La liste des clÃ©s filtrÃ©s
 			for (int i = start; i < end; i++) {
 				String key = this.configurationModel.getKeyFilteredList().get(i);
 				this.configurationModel.loadKeyFiltered(key);
 				Map<String, String> mapKeyValue = new LinkedHashMap<>();
 				// PARCOURS La liste des champs commun pour se procurer le label et sa valeur
-				configurationFieldCommonFile.entrySet().stream().forEach((entry) -> {
-					String value = this.configurationModel.getFieldInEditingCorpus(entry.getKey());
-					mapKeyValue.put(entry.getValue(), value);
+				configurationFieldCommonFile.forEach((key1, value1) -> {
+					String value = this.configurationModel.getFieldInEditingCorpus(key1);
+					mapKeyValue.put(value1, value);
 				});
 				setTextList.add(new DisplayText(this.configurationModel.getEditingCorpusName(), i, mapKeyValue, key));
 			}
@@ -552,11 +528,9 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public String getStructuredLine(String field, String content) {
-		StringBuilder sb = new StringBuilder();
-		sb.append(this.configurationModel.getBaseCode());
-		sb.append(field);
-		sb.append(content.trim());
-		return sb.toString();
+		return this.configurationModel.getBaseCode() +
+				field +
+				content.trim();
 	}
 
 	@Override
@@ -608,12 +582,10 @@ public class ConfigurationControler implements IConfigurationControler {
 		if (null != this.currentKeyFilteredText) {
 			List<String> keyFilteredList = this.configurationModel.getKeyFilteredList();
 			int indexKey = keyFilteredList.indexOf(this.currentKeyFilteredText);
-			switch (direction) {
-			case PREVIOUS:
-				return indexKey > 0;
-			case NEXT:
-				return indexKey < (keyFilteredList.size() - 1);
-			}
+			return switch (direction) {
+				case PREVIOUS -> indexKey > 0;
+				case NEXT -> indexKey < (keyFilteredList.size() - 1);
+			};
 		}
 		return false;
 	}
@@ -624,12 +596,8 @@ public class ConfigurationControler implements IConfigurationControler {
 			List<String> keyFilteredList = this.configurationModel.getKeyFilteredList();
 			int indexKey = keyFilteredList.indexOf(this.currentKeyFilteredText);
 			switch (direction) {
-			case PREVIOUS:
-				loadFilteredText(keyFilteredList.get(indexKey - 1));
-				break;
-			case NEXT:
-				loadFilteredText(keyFilteredList.get(indexKey + 1));
-				break;
+				case PREVIOUS -> loadFilteredText(keyFilteredList.get(indexKey - 1));
+				case NEXT -> loadFilteredText(keyFilteredList.get(indexKey + 1));
 			}
 		}
 	}
@@ -647,5 +615,31 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public void resetProgress() {
 		this.configurationModel.resetProgress();
+	}
+
+	@Override
+	public void importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException {
+		Set<InformationException> informationExceptionSet = new HashSet<>();
+		if (Objects.isNull(excelImportConfigurationCmd.getFileToImport()) || !excelImportConfigurationCmd.getFileToImport().exists()) {
+			informationExceptionSet.add(new InformationExceptionBuilder()
+				.errorCode(ErrorCode.FILE_NOT_EXIST)
+				.objectInError(excelImportConfigurationCmd)
+				.build());
+		}
+		if (excelImportConfigurationCmd.getFieldToImportList().isEmpty()) {
+			informationExceptionSet.add(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.NONE_FIELD_SELECTED)
+					.objectInError(excelImportConfigurationCmd)
+					.build());
+		}
+		if (informationExceptionSet.isEmpty()) {
+			informationExceptionSet.addAll(this.configurationModel.importExcel(excelImportConfigurationCmd));
+		}
+
+		if (!informationExceptionSet.isEmpty()) {
+			ServerException serverException = new ServerException();
+			informationExceptionSet.forEach(informationException -> serverException.addInformationException(informationException));
+			throw serverException;
+		}
 	}
 }

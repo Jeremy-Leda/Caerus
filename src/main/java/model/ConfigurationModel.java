@@ -3,15 +3,12 @@ package model;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import model.excel.beans.ExcelImportConfigurationCmd;
+import model.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
@@ -35,14 +32,12 @@ import model.analyze.beans.UserStructuredText;
 import model.analyze.constants.ErrorTypeEnum;
 import model.analyze.constants.FolderSettingsEnum;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
-import model.exceptions.LoadTextException;
-import model.exceptions.MoveFileException;
 import view.beans.ExportTypeEnum;
 
 /**
  * 
- * Cette classe permet d'intéragir avec les informations stockés et effectuer
- * des actions Il fait des appels au dispatcher et à la configuration
+ * Cette classe permet d'intï¿½ragir avec les informations stockï¿½s et effectuer
+ * des actions Il fait des appels au dispatcher et ï¿½ la configuration
  * utilisateur
  * 
  * @author jerem
@@ -240,7 +235,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public void saveFileAfteFixedErrorLine() throws IOException {
+	public void saveFileAfterFixedErrorLine() throws IOException {
 		logger.debug("CALL saveFileAfteFixedErrorLine");
 		UserSettings.getInstance().fixedErrorLinesInAllMemoryFiles();
 	}
@@ -597,4 +592,23 @@ public class ConfigurationModel implements IConfigurationModel {
 		this.dispatcher.resetProgress();
 	}
 
+	@Override
+	public Set<InformationException> importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException {
+		logger.debug(String.format("CALL importExcel => file : %s", excelImportConfigurationCmd.getFileToImport().getAbsolutePath()));
+		Set<InformationException> informationExceptionSet = new HashSet<>();
+		if (Objects.isNull(excelImportConfigurationCmd.getConfiguration())) {
+			excelImportConfigurationCmd.setConfiguration(UserSettings.getInstance().getCurrentConfiguration());
+		}
+		if (!UserSettings.getInstance().getConfigurationList().contains(excelImportConfigurationCmd.getConfiguration())) {
+			informationExceptionSet.add(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.ERROR_CONFIGURATION)
+					.objectInError(excelImportConfigurationCmd)
+					.build());
+		}
+		informationExceptionSet.addAll(excelImportConfigurationCmd.validate());
+		if (informationExceptionSet.isEmpty()) {
+			informationExceptionSet.addAll(this.dispatcher.importExcel(excelImportConfigurationCmd));
+		}
+		return informationExceptionSet;
+	}
 }

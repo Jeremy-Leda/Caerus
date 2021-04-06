@@ -3,6 +3,7 @@ package utils;
 import controler.ConfigurationControler;
 import model.analyze.constants.FolderSettingsEnum;
 import model.exceptions.LoadTextException;
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.mockito.MockedStatic;
 
@@ -58,8 +59,22 @@ public class SetUpTest {
     public ConfigurationControler getConfigurationWithTextLoaded(File fileToLoad) throws IOException, LoadTextException {
         ConfigurationControler configurationControler = getConfigurationSetUp();
         File parentFile = fileToLoad.getParentFile();
+        configurationControler.setCurrentConfiguration("Livre Analyse");
         configurationControler.setAnalyzeFolder(parentFile);
         configurationControler.launchAnalyze(false);
+        return configurationControler;
+    }
+
+    /**
+     * Permet de charger la librairie et retourner le controller pour faire les tests
+     * @param textFolder le chemin de la librairie
+     * @return le controller
+     */
+    public ConfigurationControler getConfigurationWithLibraryLoaded(File textFolder) throws IOException, LoadTextException {
+        ConfigurationControler configurationControler = getConfigurationSetUp();
+        configurationControler.setCurrentConfiguration("Livre Analyse");
+        configurationControler.setTextsFolder(textFolder);
+        configurationControler.loadTexts();
         return configurationControler;
     }
 

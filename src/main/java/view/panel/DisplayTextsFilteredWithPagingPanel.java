@@ -79,7 +79,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPa
 	}
 
 	/**
-	 * Permet d'initialiser les composants et de créer le contenu
+	 * Permet d'initialiser les composants et de crÃ©er le contenu
 	 */
 	private void initComponentsAndCreateContent() {
 		fillAndConfigureNbTextsByPageCombo();
@@ -91,7 +91,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPa
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(this.content, BoxLayout.Y_AXIS);
@@ -179,7 +179,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPa
 	}
 
 	/**
-	 * Permet de changer l'état des boutons
+	 * Permet de changer l'Ã©tat des boutons
 	 */
 	private void changeEnabledStateOfDirectionButton() {
 		this.previousButton.setEnabled(this.textDisplayPanel.isEnabled(DirectionTypeEnum.PREVIOUS));
@@ -187,7 +187,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPa
 	}
 
 	/**
-	 * Permet de se procurer le consumer pour le changement des textes selectionné
+	 * Permet de se procurer le consumer pour le changement des textes selectionnÃ©
 	 * 
 	 * @return le consumer
 	 */

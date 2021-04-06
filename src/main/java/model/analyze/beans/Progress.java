@@ -20,18 +20,18 @@ public class Progress {
 	private final static BigDecimal HUNDRED = new BigDecimal(100);
 
 	/**
-	 * Création de l'instance
+	 * CrÃ©ation de l'instance
 	 * 
-	 * @param nbMaxIterate nombre maximum d'itération
+	 * @param nbMaxIterate nombre maximum d'itÃ©ration
 	 */
 	public Progress(Integer nbMaxIterate) {
 		this.nbMaxIterate = nbMaxIterate;
 	}
 
 	/**
-	 * Permet de définir l'itération en cours (la premiére itération est à 0)
+	 * Permet de dÃ©finir l'itÃ©ration en cours (la premiÃ©re itÃ©ration est Ã  0)
 	 * 
-	 * @param currentIterate numéro de l'itération
+	 * @param currentIterate numÃ©ro de l'itÃ©ration
 	 */
 	public void setCurrentIterate(Integer currentIterate) {
 		this.currentIterate = currentIterate;
@@ -40,29 +40,29 @@ public class Progress {
 	}
 
 	/**
-	 * Permet de définir le nombre maximum d'éléments dans l'itération en cours
+	 * Permet de dÃ©finir le nombre maximum d'Ã©lÃ©ments dans l'itÃ©ration en cours
 	 * 
-	 * @param nbMaxElementForCurrentIterate le nombre maximum d'éléments dans
-	 *                                      l'itération en cours
+	 * @param nbMaxElementForCurrentIterate le nombre maximum d'Ã©lÃ©ments dans
+	 *                                      l'itÃ©ration en cours
 	 */
 	public void setNbMaxElementForCurrentIterate(Integer nbMaxElementForCurrentIterate) {
 		this.nbMaxElementForCurrentIterate = nbMaxElementForCurrentIterate;
 	}
 
 	/**
-	 * Permet de définir le numéro de l'élément courant pour l'itération en cours
+	 * Permet de dÃ©finir le numÃ©ro de l'Ã©lÃ©ment courant pour l'itÃ©ration en cours
 	 * 
-	 * @param currentElementForCurrentIterate le numéro de l'élément courant pour
-	 *                                        l'itération en cours
+	 * @param currentElementForCurrentIterate le numÃ©ro de l'Ã©lÃ©ment courant pour
+	 *                                        l'itÃ©ration en cours
 	 */
 	public void setCurrentElementForCurrentIterate(Integer currentElementForCurrentIterate) {
 		this.currentElementForCurrentIterate = currentElementForCurrentIterate;
 	}
 
 	/**
-	 * Permet de se procurer l'état en pourcentage de la progression
+	 * Permet de se procurer l'Ã©tat en pourcentage de la progression
 	 * 
-	 * @return l'état en pourcentage de la progression
+	 * @return l'Ã©tat en pourcentage de la progression
 	 */
 	public Integer getProgress() {
 		if (Objects.isNull(currentElementForCurrentIterate) || Objects.isNull(currentIterate)

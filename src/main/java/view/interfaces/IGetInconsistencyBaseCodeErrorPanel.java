@@ -6,7 +6,7 @@ import view.beans.BaseCodeError;
 
 /**
  * 
- * Interface permettant de se procurer la liste des erreurs d'incohérences au niveau des bases codes
+ * Interface permettant de se procurer la liste des erreurs d'incohÃ©rences au niveau des bases codes
  * 
  * @author jerem
  *
@@ -14,8 +14,8 @@ import view.beans.BaseCodeError;
 public interface IGetInconsistencyBaseCodeErrorPanel extends IAccessPanel {
 
 	/**
-	 * Permet de se procurer la liste ses erreurs d'incohérences au niveau des bases codes
-	 * @return la liste des erreurs d'incohérences au niveau des bases codes
+	 * Permet de se procurer la liste ses erreurs d'incohÃ©rences au niveau des bases codes
+	 * @return la liste des erreurs d'incohÃ©rences au niveau des bases codes
 	 */
 	List<BaseCodeError> getAllInconsistencyBaseCodeErrorList();
 	

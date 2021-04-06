@@ -13,26 +13,26 @@ import java.util.Map;
 public interface IRadioButtonPanel extends IAccessPanel {
 
 	/**
-	 * Permet de savoir quel radiobutton a été sélectionné
-	 * @return le numéro du bouton radio
+	 * Permet de savoir quel radiobutton a Ã©tÃ© sÃ©lectionnÃ©
+	 * @return le numÃ©ro du bouton radio
 	 */
 	Integer getSelectedRadioButtonNumber();
 	
 	/**
-	 * Permet de définir les libellés statique
+	 * Permet de dÃ©finir les libellÃ©s statique
 	 * @param titlePanel Titre du panel
-	 * @param radioButtonIdTextMap Map numero du radio bouton et texte associé
+	 * @param radioButtonIdTextMap Map numero du radio bouton et texte associÃ©
 	 */
 	void setStaticLabel(String titlePanel, Map<Integer,String> radioButtonIdTextMap);
 	
 	/**
-	 * Permet de définir le radio boutons par défaut (sélectionné)
-	 * @param number Numéro du radio bouton
+	 * Permet de dÃ©finir le radio boutons par dÃ©faut (sÃ©lectionnÃ©)
+	 * @param number NumÃ©ro du radio bouton
 	 */
 	void setDefaultSelectedRadioButton(Integer number);
 	
 	/**
-	 * Permet de définir l'action listener à executé lors du changement de radio bouton
+	 * Permet de dÃ©finir l'action listener Ã  executÃ© lors du changement de radio bouton
 	 * @param actionListener action listener
 	 */
 	void setActionListener(ActionListener actionListener);

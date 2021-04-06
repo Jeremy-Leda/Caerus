@@ -14,19 +14,19 @@ public interface IRefreshTextDisplayPanel extends IAccessPanel {
 
 	/**
 	 * Permet de changer de page
-	 * @param direction Direction à appliquer
+	 * @param direction Direction Ã  appliquer
 	 */
 	void changePage(DirectionTypeEnum direction);
 	
 	/**
-	 * Permet de définir le nb de textes par pages
-	 * @param nbTextsByPage nb textes à afficher par pages
+	 * Permet de dÃ©finir le nb de textes par pages
+	 * @param nbTextsByPage nb textes Ã  afficher par pages
 	 */
 	void setNbTextByPage(Integer nbTextsByPage);
 	
 	/**
-	 * Permet de déterminer si la direction en paramétre est possible
-	 * @param direction direction à tester
+	 * Permet de dÃ©terminer si la direction en paramÃ©tre est possible
+	 * @param direction direction Ã  tester
 	 * @return Vrai si c'est possible, Faux sinon
 	 */
 	Boolean isEnabled(DirectionTypeEnum direction);
@@ -38,14 +38,14 @@ public interface IRefreshTextDisplayPanel extends IAccessPanel {
 	Integer getCurrentPage();
 	
 	/**
-	 * Permet de déterminer le maximum de page
+	 * Permet de dÃ©terminer le maximum de page
 	 * @return le maximum de page
 	 */
 	Integer getMaxPage();
 	
 	/**
-	 * Permet de se procurer le texte sélectionné
-	 * @return le texte selectionné
+	 * Permet de se procurer le texte sÃ©lectionnÃ©
+	 * @return le texte selectionnÃ©
 	 */
 	DisplayText getDisplayTextSelected();
 	

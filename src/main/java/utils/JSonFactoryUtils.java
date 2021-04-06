@@ -15,7 +15,7 @@ import model.analyze.beans.Configuration;
 
 /**
  * 
- * Classe utilitaire pour gérer les Json
+ * Classe utilitaire pour gÃ©rer les Json
  * 
  * @author jerem
  *
@@ -23,10 +23,10 @@ import model.analyze.beans.Configuration;
 public final class JSonFactoryUtils {
 
 	/**
-	 * Permet de créer un json
-	 * @param objet objet à générer
-	 * @param file fichier à créer
-	 * @return  Vrai si le Json a été créé
+	 * Permet de crÃ©er un json
+	 * @param objet objet Ã  gÃ©nÃ©rer
+	 * @param file fichier Ã  crÃ©er
+	 * @return  Vrai si le Json a Ã©tÃ© crÃ©Ã©
 	 * @throws IOException 
 	 * @throws JsonMappingException 
 	 * @throws JsonGenerationException 
@@ -37,17 +37,17 @@ public final class JSonFactoryUtils {
 	}
 	
 	/**
-	 * Permet de créer un json
-	 * @param objet objet à générer
-	 * @param file fichier à créer
-	 * @return  Vrai si le Json a été créé
+	 * Permet de crÃ©er un json
+	 * @param objet objet Ã  gÃ©nÃ©rer
+	 * @param file fichier Ã  crÃ©er
+	 * @return  Vrai si le Json a Ã©tÃ© crÃ©Ã©
 	 * @throws IOException 
 	 * @throws JsonMappingException 
 	 * @throws JsonGenerationException 
 	 */
 	public static <T> Boolean createJsonInFile(T objet, File file) throws JsonGenerationException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
-		// Code temporaire pour indenter le temps de créer les interfaces graphiques
+		// Code temporaire pour indenter le temps de crÃ©er les interfaces graphiques
 		// Plus simple pour comprendre la structure
 		mapper.enable(SerializationFeature.INDENT_OUTPUT);
 		mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS,false);
@@ -59,7 +59,7 @@ public final class JSonFactoryUtils {
 	}
 	
 	/**
-	 * Permet de se procurer la configuration à partir d'un fichier Json
+	 * Permet de se procurer la configuration Ã  partir d'un fichier Json
 	 * @param inputStream Inputstream
 	 * @return la configuration
 	 * @throws JsonParseException
@@ -72,7 +72,7 @@ public final class JSonFactoryUtils {
 	}
 	
 	/**
-	 * Permet de se procurer un objet à partir d'un fichier Json
+	 * Permet de se procurer un objet Ã  partir d'un fichier Json
 	 * @param <T> Type d'objet
 	 * @param inputStream Inputstream
 	 * @param clazz Classe de l'objet

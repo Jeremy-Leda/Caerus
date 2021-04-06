@@ -15,7 +15,7 @@ public class MissingBaseCode {
 	
 	/**
 	 * Constructeur
-	 * @param structuredFieldFound champ trouvé
+	 * @param structuredFieldFound champ trouvÃ©
 	 * @param line ligne
 	 * @param nameFile Nom du fichier
 	 */
@@ -27,16 +27,16 @@ public class MissingBaseCode {
 	}
 
 	/**
-	 * Permet de se procurer le champ trouvé
-	 * @return le champ trouvé
+	 * Permet de se procurer le champ trouvÃ©
+	 * @return le champ trouvÃ©
 	 */
 	public StructuredField getStructuredFieldFound() {
 		return structuredFieldFound;
 	}
 
 	/**
-	 * Permet de se procurer la ligne trouvé
-	 * @return la ligne trouvé
+	 * Permet de se procurer la ligne trouvÃ©
+	 * @return la ligne trouvÃ©
 	 */
 	public Integer getLine() {
 		return line;

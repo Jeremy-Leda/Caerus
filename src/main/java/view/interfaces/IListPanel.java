@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 /**
  * 
- * Interface pour gérer les listBox
+ * Interface pour gÃ©rer les listBox
  * 
  * @author jerem
  *
@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 public interface IListPanel extends IAccessPanel {
 	
 	/**
-	 * Permet de se procurer le label selectionné
+	 * Permet de se procurer le label selectionnÃ©
 	 * @return le label selectionne
 	 */
 	String getLabelSelected();
@@ -25,14 +25,14 @@ public interface IListPanel extends IAccessPanel {
 	void addConsumerOnSelectChange(Consumer<?> consumer);
 	
 	/**
-	 * Permet de mettre à jour la combobox avec les labels suivants
+	 * Permet de mettre Ã  jour la combobox avec les labels suivants
 	 * @param labels labels
 	 */
 	void refresh(List<String> labels);
 	
 	/**
-	 * Permet de de sélectionner un item
-	 * @param itemToSelect item à selectionner
+	 * Permet de de sÃ©lectionner un item
+	 * @param itemToSelect item Ã  selectionner
 	 */
 	void selectItem(String itemToSelect);
 	

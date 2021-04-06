@@ -2,7 +2,7 @@ package model.exceptions;
 
 /**
  * 
- * Exception pour les déplacement de fichier
+ * Exception pour les dÃ©placement de fichier
  * 
  * @author jerem
  *
@@ -15,16 +15,16 @@ public class MoveFileException extends Exception {
 	private static final long serialVersionUID = -6266126022658208882L;
 	
 	/**
-	 * Permet de déterminer le message d'erreur à retourner lors d'une erreur de déplacement de fichier
-	 * @param message message à retourner à l'utilisateur
+	 * Permet de dÃ©terminer le message d'erreur Ã  retourner lors d'une erreur de dÃ©placement de fichier
+	 * @param message message Ã  retourner Ã  l'utilisateur
 	 */
 	public MoveFileException(String message) {
 		super(message);
 	}
 	
 	/**
-	 * Permet de déterminer le message d'erreur à retourner lors d'une erreur de déplacement de fichier
-	 * @param message message à retourner à l'utilisateur
+	 * Permet de dÃ©terminer le message d'erreur Ã  retourner lors d'une erreur de dÃ©placement de fichier
+	 * @param message message Ã  retourner Ã  l'utilisateur
 	 * @param ex exception
 	 */
 	public MoveFileException(String message, Exception ex) {

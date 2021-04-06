@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 /**
  * 
- * Interface permettant de manipuler la fenêtre de gestion des textes
+ * Interface permettant de manipuler la fenÃªtre de gestion des textes
  * 
  * @author jerem
  *
@@ -12,30 +12,30 @@ import java.util.function.Consumer;
 public interface IManageTextDisplayPanel extends IAccessPanel {
 
 	/**
-	 * Permet de fermer la fenêtre
+	 * Permet de fermer la fenÃªtre
 	 */
 	void close();
 	
 	/**
-	 * Permet de déactiver les boutons
+	 * Permet de dÃ©activer les boutons
 	 * @param enable Vrai si activer, faux sinon
 	 */
 	void setEnabledAllButton(Boolean enable);
 	
 	/**
-	 * Permet d'ajouter une action sur l'ouverture de la fenêtre d'édition
+	 * Permet d'ajouter une action sur l'ouverture de la fenÃªtre d'Ã©dition
 	 * @param consumer consumer
 	 */
 	void addConsumerOnOpenEditText(Consumer<Void> consumer);
 	
 	/**
-	 * Permet d'ajouter une action sur la fermeture de la fenêtre d'édition
+	 * Permet d'ajouter une action sur la fermeture de la fenÃªtre d'Ã©dition
 	 * @param consumer consumer
 	 */
 	void addConsumerOnCloseEditText(Consumer<Void> consumer);
 	
 	/**
-	 * Permet de rafraichir l'interface et de récupérer de nouveau les informations coté serveur
+	 * Permet de rafraichir l'interface et de rÃ©cupÃ©rer de nouveau les informations cotÃ© serveur
 	 */
 	void refresh();
 	

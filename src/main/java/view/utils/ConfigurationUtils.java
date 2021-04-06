@@ -1,10 +1,11 @@
 package view.utils;
 
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationException;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,9 +54,13 @@ public final class ConfigurationUtils {
 		try {
 			return this.bundleLangage.getString(key);			
 		} catch (MissingResourceException e) {
-			logger.error(String.format("La clé %s n'a pas été trouvé pour afficher le libellé", key));
-			logger.error(e.getMessage(), e);
-			throw e;
+			InformationException informationException = new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.objectInError(key)
+					.parameters(Set.of("La clé n'a pas été trouvé pour afficher le libellé dans la langue sélectionné"))
+					.build();
+			logger.error(informationException.toString());
+			throw new ServerException().addInformationException(informationException);
 		}
 	}
 

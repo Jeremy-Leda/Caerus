@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * 
- * Bean utilisé pour effectuer la sauvegarder du texte en cours
+ * Bean utilisÃ© pour effectuer la sauvegarder du texte en cours
  * 
  * @author jerem
  *

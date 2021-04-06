@@ -27,7 +27,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Classe permettant de remplir les informations spécifique pour l'utilisateur
+ * Classe permettant de remplir les informations spÃ©cifique pour l'utilisateur
  * 
  * @author jerem
  *
@@ -85,7 +85,7 @@ public class FillSpecificText extends ModalJFrameAbstract {
 	
 	
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -163,7 +163,7 @@ public class FillSpecificText extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de se produire la fonction pour la mise à jour du titre du Jpanel Action
+	 * Permet de se produire la fonction pour la mise Ã  jour du titre du Jpanel Action
 	 * @return la fonction
 	 */
 	private Function<Void, String> getFunctionTitleJPanelActionRefresh() {

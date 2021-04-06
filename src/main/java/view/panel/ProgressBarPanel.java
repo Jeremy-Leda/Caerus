@@ -9,7 +9,7 @@ import view.interfaces.IProgressBarPanel;
 
 /**
  * 
- * Permet de créer un panel avec une progressBar
+ * Permet de crÃ©er un panel avec une progressBar
  * 
  * @author jerem
  *
@@ -22,8 +22,8 @@ public class ProgressBarPanel implements IProgressBarPanel {
 	/**
 	 * Constructeur
 	 * 
-	 * @param progressBarModel Modele affecté
-	 * @param label            libellé a afficher dans la progressbar
+	 * @param progressBarModel Modele affectÃ©
+	 * @param label            libellÃ© a afficher dans la progressbar
 	 */
 	public ProgressBarPanel(IProgressBarModel progressBarModel, String label) {
 		this.progressBarModel = progressBarModel;

@@ -33,7 +33,7 @@ public enum PictureTypeEnum {
 	private String fileName;
 
 	/**
-	 * Permet de r�cup�rer le nom du fichier
+	 * Permet de récupérer le nom du fichier
 	 * @return
 	 */
 	public String getFileName() {

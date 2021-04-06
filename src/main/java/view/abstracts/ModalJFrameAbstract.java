@@ -9,12 +9,16 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
+import javax.swing.*;
 
+import io.vavr.CheckedFunction0;
+import io.vavr.CheckedRunnable;
+import io.vavr.control.Option;
+import io.vavr.control.Try;
+import model.exceptions.ErrorCode;
+import model.exceptions.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,11 +27,16 @@ import utils.RessourcesUtils;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IModalFrameRepack;
+import view.utils.ConfigurationUtils;
+import view.windows.ProgressBarView;
+import view.windows.UserInformation;
+
+import static view.utils.Constants.*;
 
 /**
  * 
- * Abstract permettant de gérer l'affichage avec une fenêtre modal 
- * Fournis les méthodes utilitaire pour les JFrame
+ * Abstract permettant de gÃ©rer l'affichage avec une fenÃªtre modal 
+ * Fournis les mÃ©thodes utilitaire pour les JFrame
  * 
  * @author jerem
  *
@@ -49,7 +58,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 
 	/**
 	 * Constructeur
-	 * @param title titre de la fenêtre
+	 * @param title titre de la fenÃªtre
 	 */
 	public ModalJFrameAbstract(String title, IConfigurationControler configurationControler) {
 		this(title, configurationControler, true);
@@ -57,13 +66,13 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	
 	/**
 	 * Constructeur
-	 * @param title titre de la fenêtre
+	 * @param title titre de la fenÃªtre
 	 */
 	public ModalJFrameAbstract(String title, IConfigurationControler configurationControler, Boolean isModal) {
 		logger.debug("Open " + getWindowName());
 		this.isModal = isModal;
 		this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		this.consumerForCloseList = new ArrayList<Consumer<?>>();
+		this.consumerForCloseList = new ArrayList<>();
 		this.consumerForCloseList.add(getConsumerOnCloseForLog());
 		this.frame = new JDialog((JFrame) null, title, isModal);
 		this.configurationControler = configurationControler;
@@ -71,18 +80,17 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
-	 * Permet de créer la fenêtre
+	 * Permet de crÃ©er la fenÃªtre
 	 */
 	protected void createWindow() {
-		init();
-		repack();
-		frame.setVisible(true);
+
+		createWindow(null, null);
 	}
 	
 	/**
-	 * Permet de créer la fenêtre
-	 * @param actionBeforeCreated action à lancer avant que la fenêtre soit créé (la jdialog est passé en paramétre)
-	 * @param actionAfterCreated action à lancer une fois la fenêtre créé (la jdialog est passé en paramétre)
+	 * Permet de crÃ©er la fenÃªtre
+	 * @param actionBeforeCreated action Ã  lancer avant que la fenÃªtre soit crÃ©Ã© (la jdialog est passÃ© en paramÃ©tre)
+	 * @param actionAfterCreated action Ã  lancer une fois la fenÃªtre crÃ©Ã© (la jdialog est passÃ© en paramÃ©tre)
 	 */
 	protected void createWindow(Consumer<JDialog> actionBeforeCreated, Consumer<JDialog> actionAfterCreated) {
 		if (null != actionBeforeCreated) {
@@ -116,7 +124,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
-	 * Permet de se procurer la liste des icones possible (taille différentes)
+	 * Permet de se procurer la liste des icones possible (taille diffÃ©rentes)
 	 * @return la liste des icones
 	 */
 	private List<Image> getIconsListImage() {
@@ -137,13 +145,13 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	
 	
 	/**
-	 * Permet de récupérer le contenu à afficher
+	 * Permet de rÃ©cupÃ©rer le contenu Ã  afficher
 	 * @return le contenu
 	 */
 	public abstract JPanel getContent();
 	
 	/**
-	 * Permet de repack la fenêtre Position centrer
+	 * Permet de repack la fenÃªtre Position centrer
 	 */
 	@Override
 	public void repack() {
@@ -169,7 +177,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
-	 * Permet de fermer la fenêtre
+	 * Permet de fermer la fenÃªtre
 	 */
 	@Override
 	public void closeFrame() {
@@ -177,7 +185,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
-	 * Permet de se procurer le consumer pour fermer automatiquement la fenêtre
+	 * Permet de se procurer le consumer pour fermer automatiquement la fenÃªtre
 	 * @return le consumer
 	 */
 	@Override
@@ -191,13 +199,13 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	
 	
 	/**
-	 * Fournis le nom de la fenêtre utilisé dans le code
+	 * Fournis le nom de la fenÃªtre utilisÃ© dans le code
 	 * @return
 	 */
 	public abstract String getWindowName();
 	
 	/**
-	 * Permet de créer un consumer pour logger la fermeture
+	 * Permet de crÃ©er un consumer pour logger la fermeture
 	 * @return le consumer
 	 */
 	private Consumer<Void> getConsumerOnCloseForLog() {
@@ -217,8 +225,8 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
-	 * Permet d'ajouter un consumer à lancer sur la fermeture de la fenêtre
-	 * @param consumer consumer à lancer
+	 * Permet d'ajouter un consumer Ã  lancer sur la fermeture de la fenÃªtre
+	 * @param consumer consumer Ã  lancer
 	 */
 	@Override
 	public void addActionOnClose(Consumer<?> consumer) {
@@ -257,4 +265,75 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 			}
 		};
 	}
+
+	public <R extends Object> Option<R> executeOnServer(CheckedFunction0<R> function) {
+		 return Try.of(function::apply)
+				 .onFailure(ServerException.class, this::logAndCreateErrorInterface)
+				 .toOption();
+	}
+
+
+	public void executeOnServer(CheckedRunnable runnable) {
+		executeOnServer(runnable, Boolean.FALSE);
+	}
+
+	public void executeOnServerWithProgressView(CheckedRunnable runnable, Boolean closeCurrentFrameOnSucceed) {
+		Try.run(() -> {
+			new ProgressBarView(r -> {
+				if (closeCurrentFrameOnSucceed) {
+					executeOnServerWithCloseCurrentFrame(runnable, Boolean.TRUE);
+				} else {
+					executeOnServer(runnable, Boolean.TRUE);
+				}
+			}, getProgressConsumer(100), 100, ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL));
+			getControler().resetProgress();
+		});
+	}
+
+	public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable) {
+		executeOnServerWithCloseCurrentFrame(runnable, Boolean.FALSE);
+	}
+
+	public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable, Boolean showSucceedPanel) {
+		Try.run(() -> runnable.run())
+				.onFailure(ServerException.class, this::logAndCreateErrorInterface)
+				.onSuccess(x -> { if (showSucceedPanel) { createSucceedInterface(); } })
+				.onSuccess(x -> closeFrame());
+	}
+
+
+	public void executeOnServer(CheckedRunnable runnable, Boolean showSucceedPanel) {
+		Try.run(() -> runnable.run())
+				.onFailure(ServerException.class, this::logAndCreateErrorInterface)
+				.onSuccess(x -> { if (showSucceedPanel) { createSucceedInterface(); } });
+	}
+
+	private void logAndCreateErrorInterface(ServerException serverException) {
+		logger.error(serverException.toString(), serverException);
+		if (serverException.getInformationExceptionSet().stream().anyMatch(informationException -> informationException.getErrorCode().equals(ErrorCode.TECHNICAL_ERROR))) {
+			new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_FAILURE_TECHNICAL_PANEL_TITLE),
+					getControler(),
+					PictureTypeEnum.WARNING,
+					ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_FAILURE_TECHNICAL_LABEL));
+		} else {
+			String functionalErrors = serverException.getInformationExceptionSet().stream()
+					.map(informationException -> "<li>" + informationException.getErrorCode().getErrorLabel() + "</li>")
+					.collect(Collectors.joining("\n"));
+			String errorLabel = String.format(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_FUNCTIONAL_ERROR_LIST_LABEL), functionalErrors);
+			new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_FUNCTIONAL_ERROR_PANEL_TITLE),
+					getControler(),
+					PictureTypeEnum.WARNING,
+					errorLabel);
+		}
+	}
+
+
+	private void createSucceedInterface() {
+		new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_SUCCEED_PANEL_TITLE),
+				getControler(),
+				PictureTypeEnum.INFORMATION,
+				ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_SUCCEED_LABEL));
+	}
+
+
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * 
- * Classe permettant de se procurer le détail des erreurs pour une erreur de
+ * Classe permettant de se procurer le dÃ©tail des erreurs pour une erreur de
  * structure
  * 
  * @author jerem
@@ -18,7 +18,7 @@ public class StructuringErrorDetails {
 	
 	/**
 	 * Constructeur
-	 * @param keyStructure Clé de la structure
+	 * @param keyStructure ClÃ© de la structure
 	 */
 	public StructuringErrorDetails(String keyStructure) {
 		super();
@@ -26,16 +26,16 @@ public class StructuringErrorDetails {
 	}
 
 	/**
-	 * Permet de se procurer la clé de la structure
-	 * @return la clé de la structure
+	 * Permet de se procurer la clÃ© de la structure
+	 * @return la clÃ© de la structure
 	 */
 	public String getKeyStructure() {
 		return keyStructure;
 	}
 	
 	/**
-	 * Permet de se procurer la liste des éléments concernés
-	 * @return la liste des éléments
+	 * Permet de se procurer la liste des Ã©lÃ©ments concernÃ©s
+	 * @return la liste des Ã©lÃ©ments
 	 */
 	public List<String> getListElements() {
 		return listElements;

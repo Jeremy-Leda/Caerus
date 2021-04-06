@@ -1,15 +1,15 @@
 package view.interfaces;
 
 /**
- * Permet de mettre à jour les informations du panel
+ * Permet de mettre Ã  jour les informations du panel
  * @author jerem
  *
  */
 public interface IInformationPanel extends IAccessPanel {
 
 	/**
-	 * Permet de mettre à jour l'informations
-	 * @param informations informations à afficher
+	 * Permet de mettre Ã  jour l'informations
+	 * @param informations informations Ã  afficher
 	 */
 	public void refreshInformations(String informations);
 	

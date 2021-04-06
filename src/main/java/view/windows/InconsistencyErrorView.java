@@ -24,7 +24,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Fenêtre pour l'affichage des erreurs d'incohérences
+ * FenÃªtre pour l'affichage des erreurs d'incohÃ©rences
  * 
  * @author jerem
  *
@@ -72,7 +72,7 @@ public class InconsistencyErrorView extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -92,7 +92,7 @@ public class InconsistencyErrorView extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de rafraichir les libellés et action pou les boutons
+	 * Permet de rafraichir les libellÃ©s et action pou les boutons
 	 */
 	private void refreshActionPanel() {
 		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();

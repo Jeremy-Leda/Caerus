@@ -107,7 +107,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract implement
 	}
 	
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -154,7 +154,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract implement
 
 	
 	/**
-	 * Permet de se procurer le consumer pour activer le bouton après la selection
+	 * Permet de se procurer le consumer pour activer le bouton aprÃ¨s la selection
 	 * @return le consumer
 	 */
 	private Consumer<Void> getConsumerAfterSelectFolder() {
@@ -179,7 +179,7 @@ public class LoadTextConfigurationSelector extends ModalJFrameAbstract implement
 	
 	/**
 	 * Permet de rafraichir le message d'informations
-	 * @param nameFileList liste des fichiers à analyser
+	 * @param nameFileList liste des fichiers Ã  analyser
 	 */
 	private void refreshMessageInformations(List<String> nameFileList) {
 		List<String> nameFileHtmlList = nameFileList.stream().map(fileName -> "<li>" + fileName + "</li>").collect(Collectors.toList());

@@ -18,8 +18,8 @@ public class StructuringError {
 	
 	/**
 	 * Constructeur
-	 * @param keyFile Clé du fichier
-	 * @param keyTexte Clé du texte
+	 * @param keyFile ClÃ© du fichier
+	 * @param keyTexte ClÃ© du texte
 	 */
 	public StructuringError(String keyFile, String keyText) {
 		super();
@@ -28,24 +28,24 @@ public class StructuringError {
 	}
 
 	/**
-	 * Permet de se procurer la clé du fichier
-	 * @return la clé du fichier
+	 * Permet de se procurer la clÃ© du fichier
+	 * @return la clÃ© du fichier
 	 */
 	public String getKeyFile() {
 		return keyFile;
 	}
 
 	/**
-	 * Permet de se procurer la clé du texte
-	 * @return clé du texte
+	 * Permet de se procurer la clÃ© du texte
+	 * @return clÃ© du texte
 	 */
 	public String getKeyText() {
 		return keyText;
 	}
 
 	/**
-	 * Permet de se procurer les détails des erreurs
-	 * @return la liste des détails
+	 * Permet de se procurer les dÃ©tails des erreurs
+	 * @return la liste des dÃ©tails
 	 */
 	public List<StructuringErrorDetails> getDetails() {
 		return lstDetails;

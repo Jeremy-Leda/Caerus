@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * 
- * Bean permettant de d�crire une configuration
+ * Bean permettant de d'écrire une configuration
  * 
  * @author jerem
  *
@@ -40,7 +40,7 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de d�finir le nom de la configuration
+	 * Permet de définir le nom de la configuration
 	 * @param baseCode le nom de la configuration
 	 */
 	public void setName(String name) {
@@ -56,16 +56,16 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de d�finir le code de base
-	 * @param baseCode code de base � d�finir
+	 * Permet de définir le code de base
+	 * @param baseCode code de base à définir
 	 */
 	public void setBaseCode(String baseCode) {
 		this.baseCode = baseCode;
 	}
 
 	/**
-	 * Permet de se procurer la liste des configurations sp�cifique
-	 * @return la liste des configurations sp�cifique
+	 * Permet de se procurer la liste des configurations spécifique
+	 * @return la liste des configurations spécifique
 	 */
 	public List<SpecificConfiguration> getSpecificConfigurationList() {
 		if (null != specificConfigurationList) {
@@ -75,32 +75,32 @@ public class Configuration {
 	}
 
 	/**
-	 * Permet de d�finir la liste des configurations sp�cifiques
-	 * @param specificConfigurationList La liste des configurations sp�cifique
+	 * Permet de définir la liste des configurations spécifiques
+	 * @param specificConfigurationList La liste des configurations spécifique
 	 */
 	public void setSpecificConfigurationList(List<SpecificConfiguration> specificConfigurationList) {
 		this.specificConfigurationList = specificConfigurationList;
 	}
 
 	/**
-	 * Permet de se procurer la liste des champs structur�s
-	 * @return la liste des champs structur�s
+	 * Permet de se procurer la liste des champs structurés
+	 * @return la liste des champs structurés
 	 */
 	public List<StructuredField> getStructuredFieldList() {
 		return structuredFieldList;
 	}
 
 	/**
-	 * Permet de d�finir la liste des champs structur�s
-	 * @param structuredFieldList la liste des champs structur�s
+	 * Permet de définir la liste des champs structurés
+	 * @param structuredFieldList la liste des champs structurés
 	 */
 	public void setStructuredFieldList(List<StructuredField> structuredFieldList) {
 		this.structuredFieldList = structuredFieldList;
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ m�ta
-	 * @return la liste des champ m�ta
+	 * Permet de se procurer la liste des champ méta
+	 * @return la liste des champ méta
 	 */
 	@JsonIgnore
 	public List<String> getMetaFieldList() {
@@ -109,8 +109,8 @@ public class Configuration {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ sp�cific
-	 * @return la liste des champ sp�cific
+	 * Permet de se procurer la liste des champ spécific
+	 * @return la liste des champ spécific
 	 */
 	@JsonIgnore
 	public List<String> getSpecificFieldList() {
@@ -119,8 +119,8 @@ public class Configuration {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ en t�te sp�cific
-	 * @return la liste des champ en t�te sp�cific
+	 * Permet de se procurer la liste des champ en tête spécific
+	 * @return la liste des champ en tête spécific
 	 */
 	@JsonIgnore
 	public List<String> getSpecificHeaderFieldList() {
@@ -129,7 +129,7 @@ public class Configuration {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champ commun (ni sp�cifique, ni meta)
+	 * Permet de se procurer la liste des champ commun (ni spécifique, ni meta)
 	 * @return la liste des champ communs
 	 */
 	@JsonIgnore

@@ -39,7 +39,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Permet de créer un texte
+ * Permet de crÃ©er un texte
  * 
  * @author jerem
  *
@@ -84,7 +84,7 @@ public class CreateText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -125,7 +125,7 @@ public class CreateText extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Met à jour le contenu de l'information text panel
+	 * Met Ã  jour le contenu de l'information text panel
 	 */
 	private void updateContentInformationsTextPanel() {
 		this.informationsTextPanel.refreshComponents(getControler().getConfigurationFieldCommonFile());
@@ -151,7 +151,7 @@ public class CreateText extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Execute l'action d'ouvrir une fenêtre pour remplir les specific text
+	 * Execute l'action d'ouvrir une fenÃªtre pour remplir les specific text
 	 * @return
 	 */
 	private ActionListener openFillSpecificText() {
@@ -159,9 +159,9 @@ public class CreateText extends ModalJFrameAbstract {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// on désactive les bouton
+				// on dÃ©sactive les bouton
 				setEnabledForAllButton(false);
-				// on ouvre la fenêtre
+				// on ouvre la fenÃªtre
 				fillSpecificTextFrame = new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_SPECIFIC_TITLE), getControler());
 				fillSpecificTextFrame.addActionOnClose(enableAllButton());
 			}
@@ -169,15 +169,15 @@ public class CreateText extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Consumer pour récativer les boutons
-	 * @return consumer pour réactiver les boutons
+	 * Consumer pour rÃ©cativer les boutons
+	 * @return consumer pour rÃ©activer les boutons
 	 */
 	private Consumer<Void> enableAllButton() {
 		return (v) -> setEnabledForAllButton(true);
 	}
 	
 	/**
-	 * Permet de gérer l'activation des boutons
+	 * Permet de gÃ©rer l'activation des boutons
 	 * @param isEnabled Vrai si actif, faux sinon
 	 */
 	private void setEnabledForAllButton(Boolean isEnabled) {
@@ -187,7 +187,7 @@ public class CreateText extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * Consumer pour rattacher la fermeture de la fenÃªtre fille si prÃ©sente
 	 * @return
 	 */
 	private Consumer<Void> closeAutomaticallySpecificText() {

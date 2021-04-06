@@ -6,7 +6,7 @@ import java.util.Objects;
 
 /**
  * 
- * Bean d�terminant une configuration sp�cifique
+ * Bean déterminant une configuration spécifique
  * 
  * @author jerem
  *
@@ -28,16 +28,16 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de se procurer le d�limiteur
-	 * @return le d�limiteur
+	 * Permet de se procurer le délimiteur
+	 * @return le délimiteur
 	 */
 	public String getDelimiter() {
 		return delimiter;
 	}
 
 	/**
-	 * Permet de d�finir le d�limiteur
-	 * @param delimiter d�limiteur
+	 * Permet de définir le délimiteur
+	 * @param delimiter délimiteur
 	 */
 	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
@@ -52,7 +52,7 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de d�finir le suffixe pour le nom du fichier excel
+	 * Permet de définir le suffixe pour le nom du fichier excel
 	 * @param nameFileSuffix le suffixe pour le nom du fichier excel
 	 */
 	public void setNameFileSuffix(String nameFileSuffix) {
@@ -60,8 +60,8 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de se procurer les champs � ignorer
-	 * @return les champs � ignorer
+	 * Permet de se procurer les champs à ignorer
+	 * @return les champs à ignorer
 	 */
 	public List<String> getIgnoredFieldList() {
 		if (null == ignoredFieldList) {
@@ -71,32 +71,32 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de d�finir les champs � ignorer
-	 * @param ignoredFieldList les champs � ignorer
+	 * Permet de d�finir les champs à ignorer
+	 * @param ignoredFieldList les champs à ignorer
 	 */
 	public void setIgnoredFieldList(List<String> ignoredFieldList) {
 		this.ignoredFieldList = ignoredFieldList;
 	}
 
 	/**
-	 * Permet de se procurer les champs � retraiter
-	 * @return les champs � retraiter
+	 * Permet de se procurer les champs à retraiter
+	 * @return les champs à retraiter
 	 */
 	public List<String> getTreatmentFieldList() {
 		return treatmentFieldList;
 	}
 
 	/**
-	 * Permet de d�finir les champs � retraiter
-	 * @param treatmentFieldList les champs � retraiter
+	 * Permet de définir les champs à retraiter
+	 * @param treatmentFieldList les champsà retraiter
 	 */
 	public void setTreatmentFieldList(List<String> treatmentFieldList) {
 		this.treatmentFieldList = treatmentFieldList;
 	}
 	
 	/**
-	 * Permet de se procurer les champs d'en t�te
-	 * @return les champs d'en t�te
+	 * Permet de se procurer les champs d'en tête
+	 * @return les champs d'en tête
 	 */
 	public List<String> getHeaderFieldList() {
 		if (null == headerFieldList) {
@@ -106,8 +106,8 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de d�finir les champs d'en t�te
-	 * @param headerFieldList les champs d'en t�te
+	 * Permet de définir les champs d'en tête
+	 * @param headerFieldList les champs d'en tête
 	 */
 	public void setHeaderFieldList(List<String> headerFieldList) {
 		this.headerFieldList = headerFieldList;
@@ -123,7 +123,7 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de d�finir l'order
+	 * Permet de définir l'order
 	 * @param order l'order
 	 */
 	public void setOrder(Integer order) {
@@ -139,8 +139,8 @@ public class SpecificConfiguration {
 	}
 
 	/**
-	 * Permet de d�finir le label
-	 * @param label label � d�finir
+	 * Permet de définir le label
+	 * @param label label à définir
 	 */
 	public void setLabel(String label) {
 		this.label = label;

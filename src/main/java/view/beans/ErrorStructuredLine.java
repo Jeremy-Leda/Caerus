@@ -2,7 +2,7 @@ package view.beans;
 
 /**
  * 
- * Bean pour l'affichage des informations sur les lignes mal strcuturé
+ * Bean pour l'affichage des informations sur les lignes mal strcuturÃ©
  * 
  * @author jerem
  *

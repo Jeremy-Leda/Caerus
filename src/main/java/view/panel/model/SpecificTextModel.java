@@ -25,8 +25,8 @@ import view.interfaces.ISpecificTextRefreshPanel;
 
 /**
  * 
- * Classe permettant de gérer le chargement des informations pour les IHM de
- * textes spécifiques
+ * Classe permettant de gÃ©rer le chargement des informations pour les IHM de
+ * textes spÃ©cifiques
  * 
  * @author jerem
  *
@@ -42,7 +42,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	// Cle = FieldName / Valeur = Label (string)
 	private final Map<String, String> mapTextLabelField;
 
-	// Liste des en-têtes
+	// Liste des en-tÃªtes
 	private final List<String> headerList;
 	// Liste des lignes
 	private final List<SpecificRow> specificRowList;
@@ -65,7 +65,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	/**
 	 * Constructeur
 	 * 
-	 * @param controler controler pour le chargment des données
+	 * @param controler controler pour le chargment des donnÃ©es
 	 */
 	public SpecificTextModel(IConfigurationControler controler, IModalFrameRepack modalFrameRepack) {
 		this.mapKeyIndex = new HashMap<String, Integer>();
@@ -86,9 +86,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de se procurer la map des headers (clé/valeur)
+	 * Permet de se procurer la map des headers (clÃ©/valeur)
 	 * 
-	 * @return la map des headers (clé/valeur)
+	 * @return la map des headers (clÃ©/valeur)
 	 */
 	@Override
 	public Map<String, String> getMapHeaderKeyFieldText() {
@@ -96,9 +96,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de se procurer la map des headers (clé/label)
+	 * Permet de se procurer la map des headers (clÃ©/label)
 	 * 
-	 * @return la map des headers (clé/label)
+	 * @return la map des headers (clÃ©/label)
 	 */
 	@Override
 	public Map<String, String> getMapHeaderFieldTextLabelField() {
@@ -106,10 +106,10 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de se procurer la map des liste de valeurs des champs spécifique
-	 * (clé/Liste valeur)
+	 * Permet de se procurer la map des liste de valeurs des champs spÃ©cifique
+	 * (clÃ©/Liste valeur)
 	 * 
-	 * @return la map des liste de valeurs des champs spécifique (clé/Liste valeur)
+	 * @return la map des liste de valeurs des champs spÃ©cifique (clÃ©/Liste valeur)
 	 */
 	@Override
 	public Map<String, List<String>> getMapKeyFieldListField() {
@@ -117,9 +117,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de se procurer la map des liste des champs spécifique (clé/label)
+	 * Permet de se procurer la map des liste des champs spÃ©cifique (clÃ©/label)
 	 * 
-	 * @return la map des liste des champs spécifique (clé/label)
+	 * @return la map des liste des champs spÃ©cifique (clÃ©/label)
 	 */
 	@Override
 	public Map<String, String> getMapTextLabelField() {
@@ -127,9 +127,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de charger les entêtes
+	 * Permet de charger les entÃªtes
 	 * 
-	 * @param index index du champ specifique à charger
+	 * @param index index du champ specifique Ã  charger
 	 */
 	private void loadHeader(Integer index) {
 		this.mapHeaderFieldTextLabelField.clear();
@@ -145,7 +145,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	/**
 	 * Permet de charger les listes de valeurs
 	 * 
-	 * @param index index du champ specifique à charger
+	 * @param index index du champ specifique Ã  charger
 	 */
 	private void loadSpecificFieldListValue(Integer index) {
 		this.mapKeyFieldListField.clear();
@@ -178,9 +178,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de charger les champs spécifiques
+	 * Permet de charger les champs spÃ©cifiques
 	 * 
-	 * @param index index du champ specifique à charger
+	 * @param index index du champ specifique Ã  charger
 	 */
 	private void loadSpecificField(Integer index) {
 		this.mapTextLabelField.clear();
@@ -192,9 +192,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de charger tous les champs spécifiques
+	 * Permet de charger tous les champs spÃ©cifiques
 	 * 
-	 * @param index index du champ specifique à charger
+	 * @param index index du champ specifique Ã  charger
 	 */
 	@Override
 	public void loadAllField(Integer index) {
@@ -219,9 +219,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de mettre à jour une valeur coté serveur
+	 * Permet de mettre Ã  jour une valeur cotÃ© serveur
 	 * 
-	 * @param key   Clé
+	 * @param key   ClÃ©
 	 * @param value Valeur
 	 */
 	@Override
@@ -262,7 +262,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de mettre à jour les informations dans la liste
+	 * Permet de mettre Ã  jour les informations dans la liste
 	 * 
 	 * @param mapKeyFieldTextField map des champs de l'interface
 	 */
@@ -279,7 +279,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de mettre à jour le modéle par rapport aux champs de l'interface
+	 * Permet de mettre Ã  jour le modÃ©le par rapport aux champs de l'interface
 	 * 
 	 * @param mapKeyFieldTextField map des champs de l'interface
 	 */
@@ -296,7 +296,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de décaler les valeurs pour un champ spécifié
+	 * Permet de dÃ©caler les valeurs pour un champ spÃ©cifiÃ©
 	 * 
 	 * @param key champ
 	 */
@@ -338,7 +338,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de supprimer les champs sélectionnés
+	 * Permet de supprimer les champs sÃ©lectionnÃ©s
 	 */
 	@Override
 	public void removeSpecificField() {
@@ -357,7 +357,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de mettre à jour tous les champs coté serveur
+	 * Permet de mettre Ã  jour tous les champs cotÃ© serveur
 	 */
 	private void updateSpecificFieldControler() {
 		// controler.updateSpecificFieldInEditingCorpus(currentIndex,
@@ -368,9 +368,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de construire la liste des spécfiques à destination du controler
+	 * Permet de construire la liste des spÃ©cfiques Ã  destination du controler
 	 * 
-	 * @return la liste des clé valeur
+	 * @return la liste des clÃ© valeur
 	 */
 	private Map<String, List<String>> constructMapKeyListValueForControler() {
 		Map<String, List<String>> mapKeyListValueForControler = new HashMap<>();
@@ -389,7 +389,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de vider la liste des sélections
+	 * Permet de vider la liste des sÃ©lections
 	 */
 	private void clearCurrentSelection() {
 		if (null != this.clearSelectionConsumer) {
@@ -400,7 +400,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 	}
 
 	/**
-	 * Permet de savoir si on a un index de slectionné
+	 * Permet de savoir si on a un index de slectionnÃ©
 	 * 
 	 * @return
 	 */

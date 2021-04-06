@@ -38,10 +38,10 @@ public class FilePickerPanel implements IFilePickerPanel {
 	private JFileChooser fileChooser;
 
 	/**
-	 * Permet de créer un filepicker
+	 * Permet de crÃ©er un filepicker
 	 * 
 	 * @param titlePanel     Titre du panel
-	 * @param dialogTitle    Titre de la fenêtre de dialogue
+	 * @param dialogTitle    Titre de la fenÃªtre de dialogue
 	 * @param filePickerType Type de filepicker
 	 */
 	public FilePickerPanel(String titlePanel, String dialogTitle, FilePickerTypeEnum filePickerType) {
@@ -49,11 +49,11 @@ public class FilePickerPanel implements IFilePickerPanel {
 	}
 
 	/**
-	 * Permet de créer un filepicker
+	 * Permet de crÃ©er un filepicker
 	 * 
 	 * @param titlePanel     Titre du panel
-	 * @param dialogTitle    Titre de la fenêtre de dialogue
-	 * @param label          Libellé devant la zone de texte
+	 * @param dialogTitle    Titre de la fenÃªtre de dialogue
+	 * @param label          LibellÃ© devant la zone de texte
 	 * @param filePickerType Type de filepicker
 	 */
 	public FilePickerPanel(String titlePanel, String dialogTitle, String label, FilePickerTypeEnum filePickerType) {
@@ -75,6 +75,14 @@ public class FilePickerPanel implements IFilePickerPanel {
 					.getDisplayMessage(Constants.WINDOW_LOAD_TEXT_CONFIGURATION_FOLDER_BUTTON_LABEL));
 			this.fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 			break;
+		case IMPORT_FILE:
+			this.label = new JLabel(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_IMPORT_FILE_PICKER_PANEL_LABEL));
+			this.button = new JButton(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_IMPORT_FILE_PICKER_PANEL_BUTTON));
+			this.fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			break;
+
 		}
 		if (StringUtils.isNotBlank(label)) {
 			this.label.setText(label);
@@ -109,17 +117,19 @@ public class FilePickerPanel implements IFilePickerPanel {
 	}
 
 	/**
-	 * Permet d'activer l'affichage de la fenêtre pour choisir le fichier
+	 * Permet d'activer l'affichage de la fenÃªtre pour choisir le fichier
 	 * 
 	 * @param filePickerType Type de filePicker choisis
 	 */
 	private void buttonActionPerformed(FilePickerTypeEnum filePickerType) {
 		switch (filePickerType) {
-		case SAVE_FILE:
-			processForSaveFile();
-			break;
-		case OPEN_FOLDER:
-			processForOpenFolder();
+			case SAVE_FILE:
+				processForSaveFile();
+				break;
+			case OPEN_FOLDER:
+				processForOpenFolder();
+			case IMPORT_FILE:
+				processForImportFolder();
 			break;
 		}
 		if (StringUtils.isNotBlank(getFile()) && null != this.consumerChooseFileOk) {
@@ -156,4 +166,18 @@ public class FilePickerPanel implements IFilePickerPanel {
 		}
 	}
 
+	/**
+	 * Permet d'effectuer le traitement pour le choix de l'import d'un fichier
+	 */
+	private void processForImportFolder() {
+		if (fileChooser.showOpenDialog(getJPanel()) == JFileChooser.APPROVE_OPTION) {
+			if (this.fileChooser.getSelectedFile().isFile()) {
+				String absolutePath = this.fileChooser.getSelectedFile().getAbsolutePath();
+				String extension = FilenameUtils.getExtension(absolutePath);
+				if ("xlsx".equals(extension)) {
+					textField.setText(absolutePath);
+				}
+			}
+		}
+	}
 }

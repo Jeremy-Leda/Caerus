@@ -18,7 +18,7 @@ import view.abstracts.ContentTextPanelAbstract;
 /**
  * 
  * Permet de se procurer un panel utiliser pour la gestion du contenu des textes
- * Permet la création de textfield
+ * Permet la crÃ©ation de textfield
  * 
  * @author jerem
  *
@@ -77,7 +77,7 @@ public class ContentTextFieldTextPanel extends ContentTextPanelAbstract<JTextFie
 	
 	/**
 	 * Permet de se procurer le listener pour l'enregistrement sur la perte du focus
-	 * @param key Clé
+	 * @param key ClÃ©
 	 * @return le focus listener
 	 */
 	private FocusListener saveValue(String key) {

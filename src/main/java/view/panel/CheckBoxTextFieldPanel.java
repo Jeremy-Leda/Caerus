@@ -17,7 +17,7 @@ import view.interfaces.ICheckBoxTextFieldPanel;
 
 /**
  * 
- * Permet de gérer un composant avec une check box et un champ texte associé
+ * Permet de gÃ©rer un composant avec une check box et un champ texte associÃ©
  * 
  * @author jerem
  *
@@ -30,9 +30,9 @@ public class CheckBoxTextFieldPanel implements ICheckBoxTextFieldPanel {
 	private final String titlePanel;
 	
 	/**
-	 * Permet de créer le composant
+	 * Permet de crÃ©er le composant
 	 * @param titlePanel Titre du panel
-	 * @param labelCheckBox Libellé du checkbox
+	 * @param labelCheckBox LibellÃ© du checkbox
 	 * @param textFieldText Contenu du champ texte
 	 */
 	public CheckBoxTextFieldPanel(String titlePanel, String labelCheckBox, String textFieldText) {

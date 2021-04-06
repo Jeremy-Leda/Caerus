@@ -14,7 +14,7 @@ import view.interfaces.IGenericAccessPanel;
 
 /**
  * 
- * Permet de créer un panel Générique sur mesure
+ * Permet de crÃ©er un panel GÃ©nÃ©rique sur mesure
  * 
  * @author jerem
  *

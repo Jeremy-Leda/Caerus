@@ -2,7 +2,7 @@ package view.interfaces;
 
 /**
  * 
- * Interface pour rafraichir les données du panel
+ * Interface pour rafraichir les donnÃ©es du panel
  * 
  * @author jerem
  *

@@ -5,7 +5,7 @@ import javax.swing.ImageIcon;
 import utils.RessourcesUtils;
 
 /**
- * Bean pour les erreurs d'incoh�rences dans l'IHM
+ * Bean pour les erreurs d'incohérences dans l'IHM
  * @author jerem
  *
  */
@@ -23,9 +23,9 @@ public class InconsistencyError {
 	 * Constructeur 
 	 * @param oldFieldName ancien champ
 	 * @param newFieldName nouveau champ
-	 * @param oldNumLine num�ro de la ligne de l'ancien champ
-	 * @param newNumLine num�ro de la ligne du nouveau champ
-	 * @param oldFieldIsMetaFile Permet de d�terminer si le champ est de type m�ta
+	 * @param oldNumLine numèro de la ligne de l'ancien champ
+	 * @param newNumLine numèro de la ligne du nouveau champ
+	 * @param oldFieldIsMetaFile Permet de déterminer si le champ est de type méta
 	 * @param nameFile Nom du fichier
 	 */
 	public InconsistencyError(String oldFieldName, String newFieldName, Integer oldNumLine, Integer newNumLine, Boolean oldFieldIsMetaFile, String nameFile) {
@@ -39,8 +39,8 @@ public class InconsistencyError {
 	}
 
 	/**
-	 * Permet de se procurer l'image � afficher
-	 * @return l'image � afficher
+	 * Permet de se procurer l'image à afficher
+	 * @return l'image à afficher
 	 */
 	public ImageIcon getImageIcon() {
 		return new ImageIcon(RessourcesUtils.getInstance().getImage(this.typeImage));
@@ -63,23 +63,23 @@ public class InconsistencyError {
 	}
 
 	/**
-	 * Permet de se procurer le num�ro de la ligne de l'ancienne balise
-	 * @return le num�ro de la ligne de l'ancienne balise
+	 * Permet de se procurer le numéro de la ligne de l'ancienne balise
+	 * @return le numéro de la ligne de l'ancienne balise
 	 */
 	public Integer getOldNumLine() {
 		return oldNumLine;
 	}
 	
 	/**
-	 * Permet de se procurer le num�ro de la ligne de la nouvelle balise
-	 * @return le num�ro de la ligne de la nouvelle balise
+	 * Permet de se procurer le numéro de la ligne de la nouvelle balise
+	 * @return le numéro de la ligne de la nouvelle balise
 	 */
 	public Integer getNewNumLine() {
 		return newNumLine;
 	}
 	
 	/**
-	 * Permet de d�terminer si l'ancienne balise est une balise de type m�ta
+	 * Permet de déterminer si l'ancienne balise est une balise de type méta
 	 * @return Vrai si c'est le cas
 	 */
 	public Boolean getOldFieldIsMetaFile() {

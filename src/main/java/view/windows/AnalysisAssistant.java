@@ -31,7 +31,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.wizardPanel = new WizardPanel(ConfigurationUtils.getInstance()
                 .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));
         this.wizardPanel.addConsumerOnChangeStep(changeConsumerForWizard());
-        this.checkBoxPanel = new CheckBoxPanel(3, false);
+        this.checkBoxPanel = new CheckBoxPanel(3, true);
 
         createCheckBox();
         createStep_0();

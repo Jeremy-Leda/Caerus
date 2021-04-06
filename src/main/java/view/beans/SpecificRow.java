@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * 
- * Contient une ligne d'affichage pour le spécifique
+ * Contient une ligne d'affichage pour le spÃ©cifique
  * 
  * @author jerem
  *
@@ -19,24 +19,24 @@ public class SpecificRow {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des champs spécifique
-	 * @return la liste des champs spécifique
+	 * Permet de se procurer la liste des champs spÃ©cifique
+	 * @return la liste des champs spÃ©cifique
 	 */
 	public List<String> getSpecificList() {
 		return specificList;
 	}
 	
 	/**
-	 * Permet d'ajouter un specifique à la ligne
-	 * @param specificToAdd specific à ajouter
+	 * Permet d'ajouter un specifique Ã  la ligne
+	 * @param specificToAdd specific Ã  ajouter
 	 */
 	public void addSpecific(String specificToAdd) {
 		this.specificList.add(specificToAdd);
 	}
 	
 	/**
-	 * Permet d'ajouter une liste de spécifique à la ligne
-	 * @param allSpecificToAdd liste de spécifique à ajouter
+	 * Permet d'ajouter une liste de spÃ©cifique Ã  la ligne
+	 * @param allSpecificToAdd liste de spÃ©cifique Ã  ajouter
 	 */
 	public void addAllSpecific(List<String> allSpecificToAdd) {
 		this.specificList.addAll(allSpecificToAdd);

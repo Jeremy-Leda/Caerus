@@ -38,7 +38,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Ihm pour sauvegarder les fichiers excel de référence
+ * Ihm pour sauvegarder les fichiers excel de rÃ©fÃ©rence
  * 
  * @author jerem
  *
@@ -62,7 +62,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 		String titlePanelAndFielPicker = ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FILE_PICKER_CLASSICAL_PANEL_TITLE);
 		this.filePickerPanel = new FilePickerPanel(titlePanelAndFielPicker, titlePanelAndFielPicker, FilePickerTypeEnum.SAVE_FILE);
 		this.filePickerPanel.addConsumerOnChooseFileOk(getConsumerUpdateInformation());
-		this.checkBoxPanel = new CheckBoxPanel(1, true);
+		this.checkBoxPanel = new CheckBoxPanel(3, true);
 		this.checkBoxTextFieldPanelList = new ArrayList<ICheckBoxTextFieldPanel>();
 		this.informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION,
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TITLE),
@@ -83,7 +83,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -96,13 +96,18 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le libellé des check box
+	 * Met Ã  jour le libellÃ© des check box
 	 */
 	private void refreshLabelCheckBox() {
 		Map<Integer, String> labelCheckBoxMap = new HashMap<>();
 		labelCheckBoxMap.put(0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_OPTIONS_HEADER_LABEL));
+		labelCheckBoxMap.put(1, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_OPTIONS_KEY_LABEL));
+		labelCheckBoxMap.put(2, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_OPTIONS_NUMBER_LABEL));
 		this.checkBoxPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_OPTIONS_TITLE_PANEL),
 				labelCheckBoxMap);
+		this.checkBoxPanel.setChecked(0, true);
+		this.checkBoxPanel.setChecked(1, true);
+		this.checkBoxPanel.setChecked(2, true);
 	}
 
 	/**
@@ -204,7 +209,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de créer la commande pour généré le fichier excel
+	 * Permet de crÃ©er la commande pour gÃ©nÃ©rÃ© le fichier excel
 	 * @return la commande
 	 */
 	private ExcelGenerateConfigurationCmd createExcelCmd() {
@@ -213,7 +218,9 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 		cmd.setHaveToGenerateReferenceText(Boolean.TRUE);
 		cmd.setIsSpecificGeneration(null);
 		cmd.setLabelSpecificChoose(null);
+		cmd.setAddUniqueKey(this.checkBoxPanel.getCheckBoxIsChecked(1));
 		cmd.setWithHeader(this.checkBoxPanel.getCheckBoxIsChecked(0));
+		cmd.setAddNumber(this.checkBoxPanel.getCheckBoxIsChecked(2));
 		this.checkBoxTextFieldPanelList.stream().filter(cb -> cb.getCheckBoxIsChecked()).forEach(checkBoxTextField -> {
 			cmd.addLabelSpecificFileName(checkBoxTextField.getTitlePanel(), getFileName(checkBoxTextField));
 		});

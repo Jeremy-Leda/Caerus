@@ -1,7 +1,7 @@
 package view.beans;
 
 /**
- * Enumération permettant de déterminer la direction pour naviguer
+ * EnumÃ©ration permettant de dÃ©terminer la direction pour naviguer
  * @author jerem
  *
  */

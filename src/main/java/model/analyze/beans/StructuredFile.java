@@ -1,12 +1,14 @@
 package model.analyze.beans;
 
+import utils.KeyGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * 
- * Bean contenant le fichier structurÈ
+ * Bean contenant le fichier structur√©
  * 
  * @author Jeremy
  *
@@ -16,26 +18,31 @@ public class StructuredFile {
 	private final List<StructuredText> listStructuredText = new ArrayList<StructuredText>();
 	private final List<StructuringError> listStructuringError = new ArrayList<StructuringError>();
 	private final MemoryFile memoryFile;
+	private final String key;
+	private final int number;
 	
 	/**
 	 * Constructeur
-	 * @param memoryFile Fichier mÈmoire
+	 * @param memoryFile Fichier m√©moire
+	 * @param number
 	 */
-	public StructuredFile(MemoryFile memoryFile) {
+	public StructuredFile(MemoryFile memoryFile, int number) {
 		this.memoryFile = memoryFile;
+		this.number = number;
+		this.key = KeyGenerator.generateKey(this.memoryFile.nameFile());
 	}
 	
 	/**
-	 * Permet de se procurer la liste des textes structurÈes
-	 * @return la liste des textes structurÈes
+	 * Permet de se procurer la liste des textes structur√©es
+	 * @return la liste des textes structur√©es
 	 */
 	public List<StructuredText> getListStructuredText() {
 		return this.listStructuredText;
 	}
 	
 	/**
-	 * Permet de se procurer le contenu pour un tag donnÈ
-	 * @param tag tag demandÈ
+	 * Permet de se procurer le contenu pour un tag donn√©
+	 * @param tag tag demand√©
 	 * @return la liste des contenu
 	 */
 	public List<String> getContent(String tag) {
@@ -66,5 +73,20 @@ public class StructuredFile {
 	public List<StructuringError> getListStructuringError() {
 		return listStructuringError;
 	}
-	
+
+	/**
+	 * Permet de se procurer le num√©ro affect√© au fichier
+	 * @return le num√©ro du fichier
+	 */
+	public int getNumber() {
+		return number;
+	}
+
+	/**
+	 * Permet de se procurer la cl√©
+	 * @return la cl√© du fichier
+	 */
+	public String getKey() {
+		return key;
+	}
 }

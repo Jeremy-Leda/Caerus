@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import model.analyze.beans.Configuration;
@@ -19,11 +20,12 @@ import model.analyze.beans.specific.ConfigurationStructuredText;
 import model.analyze.constants.ErrorTypeEnum;
 import model.analyze.constants.FolderSettingsEnum;
 import model.exceptions.StructuringException;
+import org.apache.commons.lang3.math.NumberUtils;
 import utils.KeyGenerator;
 
 /**
  * 
- * Classe en charge de structurer le fichier en mémoire
+ * Classe en charge de structurer le fichier en mÃ©moire
  * 
  * @author Jeremy
  *
@@ -32,13 +34,20 @@ public class Structuring {
 
 	private final StructuredFile structuredFile;
 	private final List<Content> lstMetaContent = new ArrayList<Content>();
+	private final int number;
 
-	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType) {
-		this(memoryFile, folderType, null);
+	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType, int number) {
+		this(memoryFile, folderType, null, number);
 	}
 
 	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType,
-			ConfigurationStructuredText beanConfiguration) {
+					   ConfigurationStructuredText beanConfiguration, int number) {
+		String nameWithoutExtension = FilenameUtils.removeExtension(memoryFile.nameFile());
+		if (NumberUtils.isCreatable(nameWithoutExtension)) {
+			this.number = NumberUtils.createInteger(nameWithoutExtension);
+		} else {
+			this.number = number;
+		}
 		this.structuredFile = construct(memoryFile, folderType, beanConfiguration);
 	}
 
@@ -47,15 +56,15 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de construirer les textes structurés au sein d'un même fichier
+	 * Permet de construirer les textes structurÃ©s au sein d'un mÃªme fichier
 	 * 
-	 * @param memoryFile        fichier en mémoire
-	 * @param beanConfiguration bean de configuration nécessaire pour le spécifique
-	 * @return le fichier structuré
+	 * @param memoryFile        fichier en mÃ©moire
+	 * @param beanConfiguration bean de configuration nÃ©cessaire pour le spÃ©cifique
+	 * @return le fichier structurÃ©
 	 */
 	private StructuredFile construct(MemoryFile memoryFile, FolderSettingsEnum folderType,
 			ConfigurationStructuredText beanConfiguration) {
-		final StructuredFile sf = new StructuredFile(memoryFile);
+		final StructuredFile sf = new StructuredFile(memoryFile, number);
 		final List<String> listLines = new ArrayList<String>();
 		final List<StructuredField> listStructuredField = new ArrayList<StructuredField>();
 		StructuredField structuredFieldNewText = null;
@@ -89,11 +98,11 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de vérifier et de sauvegarder les problèmes d'incohérences suite au
-	 * changement de balise de référence pour les nouveaux textes
+	 * Permet de vÃ©rifier et de sauvegarder les problÃ¨mes d'incohÃ©rences suite au
+	 * changement de balise de rÃ©fÃ©rence pour les nouveaux textes
 	 * 
-	 * @param oldStructuredField Ancien champ structuré
-	 * @param newStructuredField Nouveau champ structuré
+	 * @param oldStructuredField Ancien champ structurÃ©
+	 * @param newStructuredField Nouveau champ structurÃ©
 	 * @param oldLine            ligne de l'ancien champ
 	 * @param newLine            ligne du nouveau champ
 	 * @param nameFile           nom du fichier
@@ -111,19 +120,19 @@ public class Structuring {
 	/**
 	 * Permet de lancer l'analyse
 	 * 
-	 * @param memoryFile        fichier mémoire
+	 * @param memoryFile        fichier mÃ©moire
 	 * @param folderType        type de dossier
 	 * @param beanConfiguration bean de configurat
 	 * @param sf                fichier structurel
 	 * @param listLines         liste des lignes
-	 * @param number            numéro
-	 * @return le numéro
+	 * @param number            numÃ©ro
+	 * @return le numÃ©ro
 	 */
 	private Integer processStructuring(MemoryFile memoryFile, FolderSettingsEnum folderType,
 			ConfigurationStructuredText beanConfiguration, final StructuredFile sf, final List<String> listLines,
 			Integer number) {
 		try {
-			StructuredText structuredText = prepareStructuredText(listLines);
+			StructuredText structuredText = prepareStructuredText(listLines, number);
 			String keyStructuredText = StringUtils.EMPTY;
 			if (null != structuredText) {
 				StringBuilder keyTextBuilder = new StringBuilder();
@@ -172,12 +181,12 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de retraiter le texte structuré pour correspondre au spécifique
-	 * demandé
+	 * Permet de retraiter le texte structurÃ© pour correspondre au spÃ©cifique
+	 * demandÃ©
 	 * 
-	 * @param structuredText    text structuré
-	 * @param beanConfiguration bean de configuration pour le spécifique
-	 * @return la liste des textes structuré
+	 * @param structuredText    text structurÃ©
+	 * @param beanConfiguration bean de configuration pour le spÃ©cifique
+	 * @return la liste des textes structurÃ©
 	 */
 	private List<StructuredText> processingStructuredTextWithConfigurationBean(StructuredText structuredText,
 			ConfigurationStructuredText beanConfiguration, MemoryFile memoryFile, StructuredFile structuredFile)
@@ -198,17 +207,18 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de preparé le texte structuré
+	 * Permet de preparÃ© le texte structurÃ©
 	 * 
-	 * @param textLines les lignes à structurer pour le même texte
-	 * @return le texte structuré
+	 * @param textLines les lignes Ã  structurer pour le mÃªme texte
+	 * @param number NumÃ©ro du texte
+	 * @return le texte structurÃ©
 	 * @throws StructuringException
 	 */
-	private StructuredText prepareStructuredText(List<String> textLines) throws StructuringException {
+	private StructuredText prepareStructuredText(List<String> textLines, int number) throws StructuringException {
 		if (textLines.isEmpty()) {
 			return null;
 		}
-		StructuredText st = new StructuredText();
+		StructuredText st = new StructuredText(number);
 		Boolean listMetaToAddIsEmpty = lstMetaContent.isEmpty();
 		if (!listMetaToAddIsEmpty) {
 			st.getListContent().addAll(lstMetaContent);
@@ -222,10 +232,9 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de savoir si tous les champs de la configuration sont renseigné
+	 * Permet de savoir si tous les champs de la configuration sont renseignÃ©
 	 * 
-	 * @param structuredText texte structuré
-	 * @param configuration  configuration
+	 * @param structuredText texte structurÃ©
 	 * @param onlyMeta       Vrai : On inclut que les meta, Faux : on ignore les
 	 *                       meta
 	 * @return
@@ -246,10 +255,10 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet d'intégrer le contenu dans le texte structuré
+	 * Permet d'intÃ©grer le contenu dans le texte structurÃ©
 	 * 
-	 * @param st    le texte structuré à renseigner
-	 * @param lines les lignes à traiter
+	 * @param st    le texte structurÃ© Ã  renseigner
+	 * @param lines les lignes Ã  traiter
 	 * @throws StructuringException
 	 */
 	private void integrateContentToStructuredText(StructuredText st, List<String> lines) throws StructuringException {
@@ -262,14 +271,14 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet d'intégrer le contenu dans le texte structuré
+	 * Permet d'intÃ©grer le contenu dans le texte structurÃ©
 	 * 
-	 * @param st                   le texte structuré à renseigner
-	 * @param line                 la ligne à traiter
-	 * @param lastContent          le dernier contenu traité
+	 * @param st                   le texte structurÃ© Ã  renseigner
+	 * @param line                 la ligne Ã  traiter
+	 * @param lastContent          le dernier contenu traitÃ©
 	 * @param listStructuredFields La liste des structured fields qui doit ne
-	 *                             contenir que le dernier champ structuré traité
-	 * @return le contenu traité
+	 *                             contenir que le dernier champ structurÃ© traitÃ©
+	 * @return le contenu traitÃ©
 	 * @throws StructuringException
 	 */
 	private Content prepareAndIntegrateContent(StructuredText st, String line, Content lastContent,
@@ -308,16 +317,16 @@ public class Structuring {
 			return lastContent;
 
 		}
-		// Ne devrait jamais se produire à cause du contrôle CheckLine
+		// Ne devrait jamais se produire Ã  cause du contrÃ´le CheckLine
 		return lastContent;
 	}
 
 	/**
-	 * Permet de définir si il y a des lignes vides ou non
+	 * Permet de dÃ©finir si il y a des lignes vides ou non
 	 * 
-	 * @param st                  le texte structuré à renseigner
-	 * @param lastContent         le dernier contenu traité
-	 * @param lastStructuredField Le dernier champ structuré traité
+	 * @param st                  le texte structurÃ© Ã  renseigner
+	 * @param lastContent         le dernier contenu traitÃ©
+	 * @param lastStructuredField Le dernier champ structurÃ© traitÃ©
 	 */
 	private void setHaveBlankLine(StructuredText st, Content lastContent, StructuredField lastStructuredField) {
 		if (null != lastStructuredField) {
@@ -332,7 +341,7 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de vérifier la ligne et d'ajouter les erreurs si nécessaire
+	 * Permet de vÃ©rifier la ligne et d'ajouter les erreurs si nÃ©cessaire
 	 * 
 	 * @param line       ligne
 	 * @param memoryFile memory file
@@ -361,10 +370,10 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de se procurer le champ structuré si possible
+	 * Permet de se procurer le champ structurÃ© si possible
 	 * 
-	 * @param line ligne à analyser
-	 * @return le champ structuré ou null
+	 * @param line ligne Ã  analyser
+	 * @return le champ structurÃ© ou null
 	 */
 	private StructuredField getStructuredFieldIfPossible(String line) {
 		Configuration configuration = UserSettings.getInstance().getCurrentConfiguration();
@@ -380,11 +389,10 @@ public class Structuring {
 	}
 
 	/**
-	 * Permet de vérifier si la ligne détient des informations de balises
-	 * 
-	 * @param configuration      configuration
-	 * @param line               ligne à analyser
-	 * @param addMissingBaseCode permet de déterminer si on ajoute l'information de
+	 * Permet de vÃ©rifier si la ligne dÃ©tient des informations de balises
+	 *
+	 * @param line               ligne Ã  analyser
+	 * @param addMissingBaseCode permet de dÃ©terminer si on ajoute l'information de
 	 *                           code de base manquant
 	 * @param currentLine        Ligne courante
 	 * @param nameFile           Nom du fichier

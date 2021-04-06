@@ -13,19 +13,19 @@ public interface IManageFilterPanel extends IGetFiltersPanel {
 
 	/**
 	 * Permet d'ajouter un filtre
-	 * @param filterToAdd filtre à ajouter
+	 * @param filterToAdd filtre Ã  ajouter
 	 */
 	void addFilter(Filter filterToAdd);
 	
 	/**
-	 * Permet de se procurer le filtre sélectionné
-	 * @return le filtre séletionné
+	 * Permet de se procurer le filtre sÃ©lectionnÃ©
+	 * @return le filtre sÃ©letionnÃ©
 	 */
 	Filter getFilterSelected();
 	
 	/**
 	 * Permet de supprimer un filtre
-	 * @param filterToRemove Filtre à supprimer
+	 * @param filterToRemove Filtre Ã  supprimer
 	 */
 	void removeFilter(Filter filterToRemove);
 	

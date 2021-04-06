@@ -1,31 +1,26 @@
 package controler;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import model.analyze.beans.Configuration;
+import model.analyze.beans.FilesToAnalyzeInformation;
+import model.analyze.beans.StructuredFile;
+import model.excel.beans.ExcelGenerateConfigurationCmd;
+import model.excel.beans.ExcelImportConfigurationCmd;
+import model.exceptions.ImportExcelException;
+import model.exceptions.LoadTextException;
+import model.exceptions.MoveFileException;
+import view.beans.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import model.analyze.beans.Configuration;
-import model.analyze.beans.FilesToAnalyzeInformation;
-import model.analyze.beans.StructuredFile;
-import model.excel.beans.ExcelGenerateConfigurationCmd;
-import model.exceptions.LoadTextException;
-import model.exceptions.MoveFileException;
-import view.beans.BaseCodeError;
-import view.beans.DirectionTypeEnum;
-import view.beans.DisplayText;
-import view.beans.ErrorStructuredLine;
-import view.beans.ExportTypeEnum;
-import view.beans.Filter;
-import view.beans.InconsistencyError;
-
 /**
  * 
- * Interface du controller pour la jonction au modËle
+ * Interface du controller pour la jonction au mod√®le
  * 
  * @author jerem
  *
@@ -34,13 +29,13 @@ public interface IConfigurationControler {
 
 	/**
 	 * Permet de lancer l'analyse des textes
-	 * @param withSubFolder Permet de dÈterminer si on recherche dans les sous dossiers
-	 * @throws LoadTextException
+	 * @param withSubFolder Permet de d√©terminer si on recherche dans les sous dossiers
+	 * @throws LoadTextException Erreur de chargement du texte
 	 */
 	void launchAnalyze(Boolean withSubFolder) throws LoadTextException;
 	
 	/**
-	 * Permet de dÈfinir la configuration courante
+	 * Permet de d√©finir la configuration courante
 	 * 
 	 * @param configuration configuration
 	 */
@@ -48,22 +43,22 @@ public interface IConfigurationControler {
 	void setCurrentConfiguration(Configuration configuration);
 	
 	/**
-	 * Permet de se procurer la liste des fichiers structurÈs pour l'analyse
-	 * @return la liste des fichiers structurÈ
+	 * Permet de se procurer la liste des fichiers structur√©s pour l'analyse
+	 * @return la liste des fichiers structur√©
 	 */
 	List<StructuredFile> getListOfStructuredFileForAnalyze();
 	
 	/**
-	 * Permet de se procurer la liste des fichiers structurÈs pour la bibliothÈque
-	 * @return la liste des fichiers structurÈ
+	 * Permet de se procurer la liste des fichiers structur√©s pour la biblioth√®que
+	 * @return la liste des fichiers structur√©
 	 */
 	List<StructuredFile> getListOfStructuredFileForTexts();
 	
 	/**
-	 * Permet de dÈplacer tous les fichiers de l'analyse vers la library
-	 * @return le resultat du dÈplacement
-	 * @throws IOException Erreur d'entrÈe sorties
-	 * @throws MoveFileException Erreur de dÈplacement des fichiers
+	 * Permet de d√©placer tous les fichiers de l'analyse vers la library
+	 * @return le r√©sultat du d√©placement
+	 * @throws IOException Erreur d'entr√©e sorties
+	 * @throws MoveFileException Erreur de d√©placement des fichiers
 	 */
 	Map<Path, Path> moveAllFilesFromTextAnalyzeToLibrary() throws IOException, MoveFileException;
 	
@@ -106,23 +101,23 @@ public interface IConfigurationControler {
 	String getConfigurationName();
 	
 	/**
-	 * Permet de dÈfinir le dossier des textes
+	 * Permet de d√©finir le dossier des textes
 	 * 
 	 * @param textsFolder dossier des textes
 	 */
 	void setTextsFolder(File textsFolder);
 	
 	/**
-	 * Permet de dÈfinir le dossier d'analyse des textes
+	 * Permet de d√©finir le dossier d'analyse des textes
 	 * 
-	 * @param textsAnalyze dossier d'analyse des textes
+	 * @param analyzeFolder dossier d'analyse des textes
 	 */
 	void setAnalyzeFolder(File analyzeFolder);
 	
 	/**
-	 * Permet de fournir une liste des champs mÈta de la configuration courante
+	 * Permet de fournir une liste des champs m√©ta de la configuration courante
 	 * 
-	 * @return la liste des champs mÈta
+	 * @return la liste des champs m√©ta
 	 */
 	Map<String, String> getConfigurationFieldMetaFile();
 	
@@ -134,14 +129,14 @@ public interface IConfigurationControler {
 	Map<String, String> getConfigurationFieldCommonFile();
 	
 	/**
-	 * Permet de se procurer le nom du corpus en cours d'Èdition
+	 * Permet de se procurer le nom du corpus en cours d'√©dition
 	 * 
 	 * @return le nom du corpus
 	 */
 	String getEditingCorpusName();
 	
 	/**
-	 * Permet de crÈer un nouveau corpus
+	 * Permet de cr√©er un nouveau corpus
 	 * 
 	 * @param nameFile         nom du fichier
 	 * @param metaFileFieldMap map des champ metafile
@@ -149,83 +144,83 @@ public interface IConfigurationControler {
 	void createNewCorpus(String nameFile, Map<String, String> metaFileFieldMap);
 	
 	/**
-	 * Permet de dÈfinir si un corpus est en cours d'Èdition
+	 * Permet de d√©finir si un corpus est en cours d'√©dition
 	 * 
-	 * @return Vrai si un corpus est en cours d'Èdition
+	 * @return Vrai si un corpus est en cours d'√©dition
 	 */
 	Boolean haveEditingCorpus();
 	
 	/**
-	 * Permet de supprimer le corpus en cours d'Èdition (pas le fichier physique, suppression logique)
+	 * Permet de supprimer le corpus en cours d'√©dition (pas le fichier physique, suppression logique)
 	 */
 	void clearEditingCorpus();
 	
 	/**
-	 * Permet de se procurer les champs de la configuration spÈcifique dÈsirÈ
+	 * Permet de se procurer les champs de la configuration sp√©cifique d√©sir√©
 	 * 
 	 * @param index index de la configuration
-	 * @return les champs spÈcifiques
+	 * @return les champs sp√©cifiques
 	 */
 	Map<String, String> getListFieldSpecific(Integer index);
 	
 	/**
-	 * Permet de se procurer les champs en tÍte de la configuration spÈcifique
-	 * dÈsirÈ
+	 * Permet de se procurer les champs en t√™te de la configuration sp√©cifique
+	 * d√©sir√©
 	 * 
 	 * @param index index de la configuration
-	 * @return les champs spÈcifiques
+	 * @return les champs sp√©cifiques
 	 */
 	Map<String, String> getListFieldHeaderSpecific(Integer index);
 	
 	/**
-	 * Permet de connaitre le nombre maximum de configuration spÈcifique
+	 * Permet de connaitre le nombre maximum de configuration sp√©cifique
 	 * 
-	 * @return le nombre de configuration spÈcifique
+	 * @return le nombre de configuration sp√©cifique
 	 */
 	Integer getNbSpecificConfiguration();
 	
 	/**
-	 * Permet de mettre ‡ jour la liste des champs spÈcifique pour la configuration
+	 * Permet de mettre √† jour la liste des champs sp√©cifique pour la configuration
 	 * en cours
 	 * 
-	 * @param index            index de la configuration utilisÈ
-	 * @param specificFieldMap champ ‡ mettre ‡ jour
+	 * @param index            index de la configuration utilis√©
+	 * @param specificFieldMap champ √† mettre √† jour
 	 */
 	void updateSpecificFieldInEditingCorpus(Integer index, Map<String, List<String>> specificFieldMap);
 	
 	/**
-	 * Permet de se procurer la map des champs spÈcifique
+	 * Permet de se procurer la map des champs sp√©cifique
 	 * 
-	 * @param index index de la configuration utilisÈ
-	 * @return la map des champs spÈcifique
+	 * @param index index de la configuration utilis√©
+	 * @return la map des champs sp√©cifique
 	 */
 	Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index);
 	
 	/**
 	 * Permet de se procurer la valeur d'un champ
 	 * 
-	 * @param key ClÈ du champ ‡ rÈcupÈrer
+	 * @param key Cl√© du champ √† r√©cup√©rer
 	 * @return la valeur
 	 */
 	String getFieldInEditingCorpus(String key);
 	
 	/**
-	 * Permet de mettre ‡ jour un champ de le corpus en cours d'Èdition
+	 * Permet de mettre √† jour un champ de le corpus en cours d'√©dition
 	 * 
-	 * @param key   ClÈ (le champ)
+	 * @param key   Cl√© (le champ)
 	 * @param value Valeur (la valeur)
 	 */
 	void updateFieldInEditingCorpus(String key, String value);
 	
 	/**
-	 * Permet d'Ècrire le corpus
+	 * Permet d'√©crire le corpus
 	 * 
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void writeCorpus() throws IOException;
 	
 	/**
-	 * Permet d'ajouter le texte en cours d'Èdition au corpus courant
+	 * Permet d'ajouter le texte en cours d'√©dition au corpus courant
 	 */
 	void addEditingTextToCurrentCorpus();
 	
@@ -245,19 +240,19 @@ public interface IConfigurationControler {
 	ErrorStructuredLine getErrorLine(Integer index);
 	
 	/**
-	 * Permet de mettre ‡ jour une ligne en erreur
+	 * Permet de mettre √† jour une ligne en erreur
 	 * 
 	 * @param index     index de la ligne
-	 * @param lineError ligne erreur ‡ mettre ‡ jour
+	 * @param lineFixed ligne erreur √† mettre √† jour
 	 */
 	void updateLineError(Integer index, String lineFixed);
 	
 	/**
-	 * Permet de mettre ‡ jour les fichiers avec les lignes en erreur
+	 * Permet de mettre √† jour les fichiers avec les lignes en erreur
 	 * 
-	 * @throws IOException
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
-	void saveFileAfteFixedErrorLine() throws IOException;
+	void saveFileAfterFixedErrorLine() throws IOException;
 	
 	/**
 	 * Permet de se procurer le nombre de texte en erreur
@@ -267,7 +262,7 @@ public interface IConfigurationControler {
 	Integer getNbTextsError();
 	
 	/**
-	 * Permet de charger le texte en erreur suivant (depuis la liste des textes structurÈ utilisateur)
+	 * Permet de charger le texte en erreur suivant (depuis la liste des textes structur√© utilisateur)
 	 */
 	void loadNextErrorText();
 	
@@ -279,40 +274,40 @@ public interface IConfigurationControler {
 	Boolean haveTextsInErrorRemaining();
 	
 	/**
-	 * Permet d'appliquer la correction sur les textes structurÈs utilisateur ‡
+	 * Permet d'appliquer la correction sur les textes structur√©s utilisateur √†
 	 * partir du texte en cours
 	 */
 	void applyFixedErrorText();
 	
 	/**
-	 * Permet d'appliquer l'Èdition sur les textes structurÈs utilisateur ‡
+	 * Permet d'appliquer l'√©dition sur les textes structur√©s utilisateur √†
 	 * partir du texte en cours
 	 */
 	void applyEditText();
 	
 	/**
-	 * Permet de sauvegarder temporairement l'Ètat (permet la reprise en cas de fermeture de l'application)
+	 * Permet de sauvegarder temporairement l'√©tat (permet la reprise en cas de fermeture de l'application)
 	 */
 	void saveCurrentStateOfFixedText();
 	
 	/**
-	 * Permet d'Ècrire le corpus
+	 * Permet d'√©crire le corpus
 	 * 
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void writeFixedText() throws IOException;
 	
 	/**
-	 * Permet de connaitre l'existance d'un fichier d'Ètat
+	 * Permet de connaitre l'existence d'un fichier d'√©tat
 	 * 
-	 * @return Vrai si un fichier d'Ètat existe
+	 * @return Vrai si un fichier d'√©tat existe
 	 */
 	Boolean haveCurrentStateFile();
 	
 	/**
-	 * Permet de restaurer l'Ètat courant
+	 * Permet de restaurer l'√©tat courant
 	 * 
-	 * @throws IOException Erreur d'entrÈe sorties
+	 * @throws IOException Erreur d'entr√©e sorties
 	 * @throws JsonMappingException Erreur de mapping
 	 * @throws JsonParseException Erreur de parsing
 	 */
@@ -331,14 +326,14 @@ public interface IConfigurationControler {
 	void loadNextErrorBlankLine();
 	
 	/**
-	 * Permet de se procurer le nombre de textes chargÈs pour l'analyse
-	 * @return le nombre de textes chargÈs pour l'analyse
+	 * Permet de se procurer le nombre de textes charg√©s pour l'analyse
+	 * @return le nombre de textes charg√©s pour l'analyse
 	 */
 	Integer getNbTextLoadedForAnalyze();
 	
 	/**
-	 * Permet de se procurer le nombre de textes chargÈs depuis la bibliothÈque
-	 * @return le nombre de textes chargÈs depuis la bibliothÈque
+	 * Permet de se procurer le nombre de textes charg√©s depuis la biblioth√®que
+	 * @return le nombre de textes charg√©s depuis la biblioth√®que
 	 */
 	Integer getNbTextLoadedForTexts();
 	
@@ -350,7 +345,7 @@ public interface IConfigurationControler {
 	Boolean haveBlankLinesInErrorRemaining();
 	
 	/**
-	 * Permet de se procurer la map des configuration specifique (label, suffix du
+	 * Permet de se procurer la map des configuration sp√©cifique (label, suffix du
 	 * fichier)
 	 * 
 	 * @return la map
@@ -358,31 +353,31 @@ public interface IConfigurationControler {
 	Map<String, String> getConfigurationSpecificLabelNameFileMap();
 	
 	/**
-	 * Permet de gÈnÈrer le fichier excel ‡ partir des fichiers de l'analyse
+	 * Permet de g√©n√©rer le fichier excel √† partir des fichiers de l'analyse
 	 * 
-	 * @param cmd    commande de gÈnÈration
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @param cmd    commande de g√©n√©ration
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void generateExcelFromAnalyze(ExcelGenerateConfigurationCmd cmd) throws IOException;
 	
 	/**
-	 * Permet de gÈnÈrer le fichier excel ‡ partir des fichiers de la biliothÈque de textes
+	 * Permet de g√©n√©rer le fichier excel √† partir des fichiers de la biblioth√®que de textes
 	 * 
-	 * @param cmd    commande de gÈnÈration
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @param cmd    commande de g√©n√©ration
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException;
 	
 	/**
 	 * Permet de se procurer la configuration courante avec le champ et le label
-	 * associÈ
+	 * associ√©
 	 * 
 	 * @return la map
 	 */
 	Map<String, String> getFieldConfigurationNameLabelMap();
 	
 	/**
-	 * Permet de se procurer la liste des champs ‡ process
+	 * Permet de se procurer la liste des champs √† process
 	 * 
 	 * @param labelSpecificConfiguration label du specific dont on souhaite les
 	 *                                   champs
@@ -392,7 +387,7 @@ public interface IConfigurationControler {
 	
 	/**
 	 * Permet de se procurer la liste des champs que l'on ne peux pas afficher si on
-	 * selectionne le specifique en parametre
+	 * s√©lectionne le sp√©cifique en param√®tre
 	 * 
 	 * @param labelSpecificConfiguration label du specific dont on souhaite les
 	 *                                   champs
@@ -413,50 +408,50 @@ public interface IConfigurationControler {
 	Boolean haveMetaBlankLineInErrorRemaining();
 	
 	/**
-	 * Permet de savoir le nombre de corpus contenant des lignes vide meta ‡
+	 * Permet de savoir le nombre de corpus contenant des lignes vide meta √†
 	 * corriger.
 	 * 
-	 * @return Le nombre de corpus contenant des lignes vide meta ‡ corriger.
+	 * @return Le nombre de corpus contenant des lignes vide meta √† corriger.
 	 */
 	Integer getNbMetaBlankLineToFixed();
 	
 	/**
-	 * Permet de connaitre le nombre total de textes filtrÈs
-	 * @return Le nombre total de textes filtrÈs
+	 * Permet de connaitre le nombre total de textes filtr√©s
+	 * @return Le nombre total de textes filtr√©s
 	 */
 	Integer getNbDisplayTextListFromFilteredText();
 	
 	/**
-	 * Permet de fournir la liste des textes ‡ afficher en fonction des clÈs filtrÈs
+	 * Permet de fournir la liste des textes √† afficher en fonction des cl√©s filtr√©s
 	 * 
-	 * @param start Index de dÈbut (commence ‡ 0)
-	 * @param nbTextToLoad Nombre de texte ‡ charger par page
-	 * @return la liste des textes ‡ afficher
+	 * @param start Index de d√©but (commence √† 0)
+	 * @param nbTextToLoad Nombre de texte √† charger par page
+	 * @return la liste des textes √† afficher
 	 */
 	List<DisplayText> getDisplayTextListFromFilteredText(Integer start, Integer nbTextToLoad);
 	
 	/**
-	 * Permet de charger les textes de la bibliothÈque de textes
+	 * Permet de charger les textes de la biblioth√®que de textes
 	 * @throws LoadTextException exception lors du chargement des textes
 	 */
 	void loadTexts() throws LoadTextException;
 	
 	/**
-	 * Permet de charger un texte filtrÈ pour consultation/edition
-	 * @param key ClÈ du texte ‡ charger
+	 * Permet de charger un texte filtr√© pour consultation/edition
+	 * @param key Cl√© du texte √† charger
 	 */
 	void loadFilteredText(String key);
 	
 	/**
-	 * Permet d'Ècrire le fichier qui vient d'Ítre Èditer
-	 * @throws IOException
+	 * Permet d'√©crire le fichier qui vient d'√™tre √©diter
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void writeEditText() throws IOException;
 	
 	/**
-	 * Permet de supprimer un texte d'un corpus depuis la bibliothÈque de texte
-	 * @param key ClÈ du texte ‡ supprimer
-	 * @throws IOException
+	 * Permet de supprimer un texte d'un corpus depuis la biblioth√®que de texte
+	 * @param key Cl√© du texte √† supprimer
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void deleteTextAndWriteCorpusFromFolderText(String key) throws IOException;
 	
@@ -467,19 +462,19 @@ public interface IConfigurationControler {
 	List<String> getAllCorpusNameForFilteredText();
 	
 	/**
-	 * Permet d'appliquer tous les filtres sur les corpus de la bibliothÈque
+	 * Permet d'appliquer tous les filtres sur les corpus de la biblioth√®que
 	 * @param corpusName Nom du corpus sur lequel on souhaite filtrer, empty si on souhaite balayer tous les corpus
-	 * @param filtersList Liste des filtres ‡ appliquer
+	 * @param filtersList Liste des filtres √† appliquer
 	 */
 	void applyAllFiltersOnCorpusForFolderText(String corpusName, List<Filter> filtersList);
 	
 	/**
-	 * Permet d'ajouter un texte au corpus en cours d'Èdition
+	 * Permet d'ajouter un texte au corpus en cours d'√©dition
 	 */
 	void addTextToCurrentCorpusFromFolderText();
 	
 	/**
-	 * Permet de prÈparer pour l'ajout d'un texte
+	 * Permet de pr√©parer pour l'ajout d'un texte
 	 */
 	void cleanCurrentEditingCorpusForAddText();
 	
@@ -490,39 +485,39 @@ public interface IConfigurationControler {
 	List<String> getConfigurationNameList();
 	
 	/**
-	 * Permet de dÈfinir la configuration par son nom
+	 * Permet de d√©finir la configuration par son nom
 	 * @param name nom de la configuration
 	 */
 	void setCurrentConfiguration(String name);
 	
 	/**
-	 * Permet de dÈfinir si il reste des erreurs dans les structures spÈcifique du corpus en cours d'Èdition
+	 * Permet de d√©finir si il reste des erreurs dans les structures sp√©cifique du corpus en cours d'√©dition
 	 * @return retourne vrai si c'est le cas, faux sinon
 	 */
 	Boolean haveErrorInSpecificFieldInEditingCorpus();
 	
 	/**
-	 * MÈthode permettant de se procurer la liste des fichiers a traitÈ et la possibilitÈ de pouvoir les traiter
+	 * M√©thode permettant de se procurer la liste des fichiers a trait√© et la possibilit√© de pouvoir les traiter
 	 * 
-	 * @param pathFolderToAnalyze RÈpertoire ‡ analyser
-	 * @param withSubFolder Permet de dÈterminer si on recherche dans les sous dossiers
-	 * @return la liste des fichiers a traitÈ et la possibilitÈ de pouvoir les traiter
-	 * @throws IOException
+	 * @param pathFolderToAnalyze R√©pertoire √† analyser
+	 * @param withSubFolder Permet de d√©terminer si on recherche dans les sous dossiers
+	 * @return la liste des fichiers a trait√© et la possibilit√© de pouvoir les traiter
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	FilesToAnalyzeInformation getNameFileToAnalyzeList(File pathFolderToAnalyze, Boolean withSubFolder) throws IOException;
 	
 	/**
-	 * Permet de se procurer la totalitÈ des champs de la configuration
-	 * Celle ci sous forme de map (clÈ, libellÈ)
+	 * Permet de se procurer la totalit√© des champs de la configuration
+	 * Celle ci sous forme de map (cl√©, libell√©)
 	 * @return la liste de tous les champs
 	 */
 	Map<String, String> getAllField();
 	
 	/**
-	 * Permet de se procurer une ligne structurÈ avec les ÈlÈments en paramÈtre
+	 * Permet de se procurer une ligne structur√© avec les √©l√©ments en param√®tre
 	 * @param field Champ
 	 * @param content Contenu du champ
-	 * @return La ligne structurÈ
+	 * @return La ligne structur√©
 	 */
 	String getStructuredLine(String field, String content);
 	
@@ -535,20 +530,20 @@ public interface IConfigurationControler {
 	 * Permet d'exporter des documents en fonction du type
 	 * @param typeExport Type d'export
 	 * @param directory dossier d'export
-	 * @param file Nom du fichier
-	 * @throws IOException Erreur d'entrÈe sortie
+	 * @param nameFile Nom du fichier
+	 * @throws IOException Erreur d'entr√©e sortie
 	 */
 	void export(ExportTypeEnum typeExport, String directory, String nameFile) throws IOException;
 	
 	/**
-	 * Permet de savoir si il y a des erreurs potentielles au niveau du changement de textes (incohÈrence et risque de dÈcalage)
+	 * Permet de savoir si il y a des erreurs potentielles au niveau du changement de textes (incoh√©rence et risque de d√©calage)
 	 * @return Vrai si des erreurs existe
 	 */
 	Boolean haveInconsistencyError();
 	
 	/**
-	 * Permet de se procurer les erreurs potentielles d'incohÈrence
-	 * @return la liste des erreurs potentielles d'incohÈrence
+	 * Permet de se procurer les erreurs potentielles d'incoh√©rence
+	 * @return la liste des erreurs potentielles d'incoh√©rence
 	 */
 	List<InconsistencyError> getInconsistencyChangeTextErrorList();
 	
@@ -566,22 +561,22 @@ public interface IConfigurationControler {
 	List<BaseCodeError> getMissingBaseCodeErrorList();
 	
 	/**
-	 * Permet de savoir si un texte existe dans les textes filtrÈs en fonction de la direction
+	 * Permet de savoir si un texte existe dans les textes filtr√©s en fonction de la direction
 	 * @param direction sens de navigation
 	 * @return Vrai si il existe un texte, faux sinon
 	 */
 	Boolean haveTextInFilteredText(DirectionTypeEnum direction);
 	
 	/**
-	 * Permet de charger la clÈ suivante en fonction de la direction
+	 * Permet de charger la cl√© suivante en fonction de la direction
 	 * @param direction sens de navigation
 	 */
 	void loadFilteredText(DirectionTypeEnum direction);
 	
 	/**
-	 * Permet de se procurer le delimiteur pour la configuration
-	 * @param index index de la configuration spÈcifique
-	 * @return le dÈlimiteur
+	 * Permet de se procurer le d√©limiteur pour la configuration
+	 * @param index index de la configuration sp√©cifique
+	 * @return le d√©limiteur
 	 */
 	String getDelimiterSpecific(Integer index);
 	
@@ -592,7 +587,13 @@ public interface IConfigurationControler {
 	Integer getProgress();
 	
 	/**
-	 * Permet de remettre la barre de progression ‡ zÈro
+	 * Permet de remettre la barre de progression √† z√©ro
 	 */
 	void resetProgress();
+
+	/**
+	 * Permet d'effectuer un import excel
+	 * @param excelImportConfigurationCmd commande qui d√©termine comment l'import excel doit √™tre r√©alis√©
+	 */
+    void importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException;
 }

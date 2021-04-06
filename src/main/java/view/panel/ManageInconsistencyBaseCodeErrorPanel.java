@@ -16,7 +16,7 @@ import view.renders.InconsistencyBaseCodeErrorRenderer;
 
 /**
  * 
- * Panel pour l'affichage des erreus d'incohérence au niveau des balises de base
+ * Panel pour l'affichage des erreus d'incohÃ©rence au niveau des balises de base
  * code
  * 
  * @author jerem
@@ -32,7 +32,7 @@ public class ManageInconsistencyBaseCodeErrorPanel implements IManageInconsisten
 	/**
 	 * Constructeur
 	 * 
-	 * @param consumerToItemChange Consumer à appliquer en cas de changement de la
+	 * @param consumerToItemChange Consumer Ã  appliquer en cas de changement de la
 	 *                             liste
 	 */
 	public ManageInconsistencyBaseCodeErrorPanel() {
@@ -58,9 +58,9 @@ public class ManageInconsistencyBaseCodeErrorPanel implements IManageInconsisten
 	}
 
 	/**
-	 * Permet de se procurer la liste des filtre à afficher
+	 * Permet de se procurer la liste des filtre Ã  afficher
 	 * 
-	 * @return la liste des filtres à afficher
+	 * @return la liste des filtres Ã  afficher
 	 */
 	private DefaultListModel<BaseCodeError> getDisplayTextModel() {
 		DefaultListModel<BaseCodeError> dlm = new DefaultListModel<>();

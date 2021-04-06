@@ -38,7 +38,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Permet de sauvegarder un fichier excel personnalisé
+ * Permet de sauvegarder un fichier excel personnalisÃ©
  * 
  * @author jerem
  *
@@ -86,7 +86,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -101,7 +101,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de mettre à jour la combo box avec les informations
+	 * Permet de mettre Ã  jour la combo box avec les informations
 	 */
 	private void refreshComboBoxPanel() {
 		List<String> listLabels = new ArrayList<>();
@@ -111,7 +111,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le libellé des check box
+	 * Met Ã  jour le libellÃ© des check box
 	 */
 	private void refreshLabelCheckBoxOptions() {
 		Map<Integer, String> labelCheckBoxMap = new HashMap<>();
@@ -121,7 +121,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le libellé des check box
+	 * Met Ã  jour le libellÃ© des check box
 	 */
 	private void refreshLabelCheckBoxFields() {
 		Integer current = 0;
@@ -183,7 +183,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Consumer de mise à jour des informations
+	 * Consumer de mise Ã  jour des informations
 	 * 
 	 * @return
 	 */
@@ -203,7 +203,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de mettre à jour les actions pour les boutons de masses
+	 * Permet de mettre Ã  jour les actions pour les boutons de masses
 	 */
 	private void setActionSelectedField() {
 		this.actionSelectedFieldPanel.addAction(0, new ActionListener() {
@@ -223,7 +223,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Consumer permettant de générer le fichier excel
+	 * Consumer permettant de gÃ©nÃ©rer le fichier excel
 	 * 
 	 * @return consumer
 	 */
@@ -251,14 +251,15 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer la commande pour généré le fichier excel
+	 * Permet de crÃ©er la commande pour gÃ©nÃ©rÃ© le fichier excel
 	 * 
 	 * @return la commande
 	 */
 	private ExcelGenerateConfigurationCmd createExcelCmd() {
 		ExcelGenerateConfigurationCmd cmd = new ExcelGenerateConfigurationCmd();
 		cmd.setFileName(this.filePickerPanel.getFile());
-		cmd.setHaveToGenerateReferenceText(Boolean.FALSE);		
+		cmd.setHaveToGenerateReferenceText(Boolean.FALSE);
+		cmd.setAddUniqueKey(Boolean.TRUE);
 		cmd.setIsSpecificGeneration(!defaultLabelNothing.equals(comboBoxPanel.getLabelSelected()));
 		if (defaultLabelNothing.equals(comboBoxPanel.getLabelSelected())) {
 			cmd.setLabelSpecificChoose(null);
@@ -277,7 +278,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de mettre à jour l'état des cases à cocher en masse
+	 * Permet de mettre Ã  jour l'Ã©tat des cases Ã  cocher en masse
 	 * 
 	 * @param checked etat
 	 */
@@ -290,7 +291,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de se procurer le consumer pour la mise à jour
+	 * Permet de se procurer le consumer pour la mise Ã  jour
 	 * @return le consumer
 	 */
 	private Consumer<Void> getConsumerEnableAndCheckBoxFieldsFromLabelSpecific() {
@@ -300,7 +301,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de mettre à jour les case à cocher en fonction du traitement
+	 * Permet de mettre Ã  jour les case Ã  cocher en fonction du traitement
 	 * @param label label du traitement
 	 */
 	private void setEnableAndCheckBoxFieldsFromLabelSpecific(String label) {

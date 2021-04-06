@@ -11,16 +11,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import model.analyze.beans.*;
+import model.excel.ImportExcel;
+import model.excel.beans.ExcelImportConfigurationCmd;
+import model.excel.beans.StructuredTextExcel;
+import model.exceptions.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -29,21 +29,10 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import model.analyze.beans.Configuration;
-import model.analyze.beans.CurrentUserConfiguration;
-import model.analyze.beans.FilesToAnalyzeInformation;
-import model.analyze.beans.MemoryFile;
-import model.analyze.beans.Progress;
-import model.analyze.beans.SaveCurrentFixedText;
-import model.analyze.beans.SpecificConfiguration;
-import model.analyze.beans.StructuredField;
-import model.analyze.beans.StructuredText;
 import model.analyze.beans.specific.ConfigurationStructuredText;
 import model.analyze.constants.FolderSettingsEnum;
 import model.excel.CreateExcel;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
-import model.exceptions.LoadTextException;
-import model.exceptions.MoveFileException;
 import utils.JSonFactoryUtils;
 import utils.PathUtils;
 import utils.RessourcesUtils;
@@ -129,7 +118,7 @@ public class Dispatcher {
 		progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
 		for (int i = 0; i < memoryFiles.size(); i++) {
 			UserSettings.getInstance().addStructuredFile(folderType,
-					new Structuring(memoryFiles.get(i), folderType).getStructuredFile());
+					new Structuring(memoryFiles.get(i), folderType, i+1).getStructuredFile());
 
 			progressBean.setCurrentElementForCurrentIterate(i);
 		}
@@ -274,6 +263,7 @@ public class Dispatcher {
 						.collect(Collectors.toList());
 				cmd.clearFieldListGenerate();
 				listSf.forEach(sf -> cmd.addFieldToGenerate(sf.getFieldName()));
+				cmd.setConfigurationSpecificOrder(findFirstCst.get().getSpecificConfiguration().getOrder());
 				try {
 					createExcelSpecific(new File(entry.getValue()), findFirstCst.get(), cmd, progressBean);
 				} catch (IOException e) {
@@ -331,7 +321,7 @@ public class Dispatcher {
 			progressBean.setCurrentElementForCurrentIterate(i);
 			progressBean.getProgress();
 			configurationSpecific.getStructuredFileList()
-					.add(new Structuring(memoryFiles.get(i), folderType, configurationSpecific).getStructuredFile());
+					.add(new Structuring(memoryFiles.get(i), folderType, configurationSpecific, i+1).getStructuredFile());
 		}
 	}
 
@@ -346,6 +336,7 @@ public class Dispatcher {
 	 */
 	private void createExcelSpecific(File path, ConfigurationStructuredText configurationSpecific,
 			ExcelGenerateConfigurationCmd cmd, Progress progressBean) throws IOException {
+		cmd.setSpecificConfiguration(Boolean.TRUE);
 		ExcelStructuring es = new ExcelStructuring();
 		List<List<String>> rows = es.getStructuringRows(configurationSpecific.getStructuredFileList(),
 				UserSettings.getInstance().getCurrentConfiguration(), cmd);
@@ -730,4 +721,109 @@ public class Dispatcher {
 		this.progressBean = null;
 	}
 
+	/**
+	 * Permet de lancer l'import excel
+	 * @param excelImportConfigurationCmd commande pour effectuer l'import excel
+	 */
+    public Set<InformationException> importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws IOException, ImportExcelException, LoadTextException {
+
+    	Set<InformationException> informationExceptionSet = new HashSet<>();
+
+    	progressBean = new Progress(3);
+
+		// Check Excel
+		progressBean.setCurrentIterate(1);
+		progressBean.setNbMaxElementForCurrentIterate(1);
+		logger.debug("[IMPORT_EXCEL]Vérification du fichier excel");
+		Set<StructuredField> structuredFieldSet = excelImportConfigurationCmd.getFieldToImportList().stream().map(code ->
+				excelImportConfigurationCmd.getConfiguration().getStructuredFieldList().stream().filter(structuredField -> structuredField.getFieldName().equals(code)).findFirst().get())
+				.collect(Collectors.toSet());
+		Map<String, String> labelFieldMap = structuredFieldSet.stream().collect(Collectors.toMap(StructuredField::getLabel, StructuredField::getFieldName));
+
+		ImportExcel importExcel = new ImportExcel(excelImportConfigurationCmd.getFileToImport(), labelFieldMap, excelImportConfigurationCmd.getSheetName());
+		boolean checkExcelIsValid = importExcel.checkExcelIsValid();
+		if (!checkExcelIsValid) {
+			informationExceptionSet.add(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.INVALID_FILE_EXCEL)
+					.objectInError(excelImportConfigurationCmd)
+					.build());
+		}
+		progressBean.setCurrentElementForCurrentIterate(1);
+
+		progressBean.setCurrentIterate(2);
+		progressBean.setNbMaxElementForCurrentIterate(1);
+		// Charge le dossier et la configuration
+		Configuration oldConfiguration = UserSettings.getInstance().getCurrentConfiguration();
+		UserSettings.getInstance().setCurrentConfiguration(excelImportConfigurationCmd.getConfiguration());
+		this.loadTexts();
+
+		//Import le excel
+		logger.debug("[IMPORT_EXCEL]Création des textes structurés depuis le fichier excel");
+		Set<StructuredTextExcel> structuredTextSet = importExcel.readExcelForImport();
+
+
+
+		// Si c'est spécifique on retraite les informations
+		if (excelImportConfigurationCmd.getIsSpecificImport()) {
+			logger.debug("[IMPORT_EXCEL]Retraitement des textes structurés depuis le fichier excel");
+			Optional<SpecificConfiguration> specificConfigurationOptional = excelImportConfigurationCmd.getConfiguration().getSpecificConfigurationList().stream().filter(s -> s.getLabel().equals(excelImportConfigurationCmd.getLabelSpecificChoose())).findFirst();
+			if (!specificConfigurationOptional.isPresent()) {
+				informationExceptionSet.add(new InformationExceptionBuilder()
+						.errorCode(ErrorCode.INVALID_SPECIFIC_CONFIGURATION)
+						.objectInError(excelImportConfigurationCmd)
+						.build());
+			}
+			SpecificConfiguration specificConfiguration = specificConfigurationOptional.get();
+			boolean anyMatchDelimiterPresent = structuredTextSet.stream().anyMatch(structuredTextExcel ->
+					specificConfiguration.getTreatmentFieldList().stream().filter(field -> structuredTextExcel.getContent(field).contains(specificConfiguration.getDelimiter())).findFirst().isPresent());
+			if (anyMatchDelimiterPresent) {
+				informationExceptionSet.add(new InformationExceptionBuilder()
+						.errorCode(ErrorCode.INVALID_FILE_EXCEL_SPECIFIC_CONFIGURATION)
+						.objectInError(excelImportConfigurationCmd)
+						.build());
+			}
+
+			Map<String, List<StructuredTextExcel>> keyStructuredTextMap = structuredTextSet.stream().collect(Collectors.groupingBy(s -> s.getUniqueKey()));
+			AtomicInteger i = new AtomicInteger();
+			i.set(1);
+			structuredTextSet = keyStructuredTextMap.entrySet().stream().map(entry -> {
+				StructuredTextExcel st = new StructuredTextExcel(i.getAndIncrement());
+				st.setUniqueKey(entry.getKey());
+				specificConfiguration.getTreatmentFieldList().forEach(field -> {
+					st.modifyContent(field, entry.getValue().stream().map(structuredText -> structuredText.getContent(field)).collect(Collectors.joining(specificConfiguration.getDelimiter())));
+				});
+				return st;
+			}).collect(Collectors.toCollection(
+					() -> new TreeSet<>(Comparator.comparing(StructuredTextExcel::getNumber))
+			));
+		}
+		progressBean.setCurrentElementForCurrentIterate(1);
+
+
+		//On sauvegarde
+		progressBean.setCurrentIterate(3);
+		progressBean.setNbMaxElementForCurrentIterate(1);
+		logger.debug("[IMPORT_EXCEL]Mise à jour des informations dans le textes utilisateur en mémoire");
+		Set<UserStructuredText> modifyUserStructuredTextSet = new HashSet<>();
+		structuredTextSet.forEach(structuredText -> {
+			Optional<UserStructuredText> userStructuredTextByKey = UserSettings.getInstance().getUserStructuredTextByKey(FolderSettingsEnum.FOLDER_TEXTS, structuredText.getUniqueKey());
+			if (userStructuredTextByKey.isPresent()) {
+				structuredText.getListContent().forEach(content -> {
+					userStructuredTextByKey.get().getStructuredText().modifyContent(content.getKey(), content.getValue());
+				});
+				modifyUserStructuredTextSet.add(userStructuredTextByKey.get());
+			}
+		});
+		logger.debug("[IMPORT_EXCEL]Sauvegarde des textes sur le disque");
+		List<String> listFiles = modifyUserStructuredTextSet.stream().map(userStructuredText -> userStructuredText.getFileName()).distinct().collect(Collectors.toList());
+		writeText(FolderSettingsEnum.FOLDER_TEXTS, listFiles);
+
+		//On reset la configuration
+		UserSettings.getInstance().setCurrentConfiguration(oldConfiguration);
+		UserSettings.getInstance().clearAllSession(FolderSettingsEnum.FOLDER_TEXTS);
+		importExcel.closeAndClean();
+		progressBean.setCurrentElementForCurrentIterate(1);
+
+		return informationExceptionSet;
+    }
 }

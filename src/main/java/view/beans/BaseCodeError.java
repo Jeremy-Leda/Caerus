@@ -19,7 +19,7 @@ public class BaseCodeError {
 	/**
 	 * Constructeur 
 	 * @param fieldName Champ en erreur
-	 * @param numLine num�ro de la ligne
+	 * @param numLine numèro de la ligne
 	 * @param nameFile Nom du fichier
 	 */
 	public BaseCodeError(String fieldName, Integer numLine, String nameFile) {
@@ -30,8 +30,8 @@ public class BaseCodeError {
 	}
 
 	/**
-	 * Permet de se procurer l'image � afficher
-	 * @return l'image � afficher
+	 * Permet de se procurer l'image à afficher
+	 * @return l'image à afficher
 	 */
 	public ImageIcon getImageIcon() {
 		return new ImageIcon(RessourcesUtils.getInstance().getImage(this.typeImage));
@@ -46,8 +46,8 @@ public class BaseCodeError {
 	}
 
 	/**
-	 * Permet de se procurer le num�ro de la ligne
-	 * @return le num�ro de la ligne
+	 * Permet de se procurer le numèro de la ligne
+	 * @return le numèro de la ligne
 	 */
 	public Integer getNumLine() {
 		return numLine;

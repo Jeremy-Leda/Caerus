@@ -45,7 +45,7 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 /**
- * Interface pour corriger les erreurs de lignes mal format�
+ * Interface pour corriger les erreurs de lignes mal formaté
  * 
  * @author jerem
  *
@@ -175,7 +175,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de rafraichir apr�s le changement de mode
+	 * Permet de rafraichir après le changement de mode
 	 */
 	private void refreshAfterChangeMode() {
 		if (isModeExpert) {
@@ -210,7 +210,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de cr�er l'�tape 1 de l'assitant
+	 * Permet de créer l'étape 1 de l'assitant
 	 */
 	private void createStep_1() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -223,7 +223,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de cr�er l'�tape 2 de l'assitant
+	 * Permet de créer l'étape 2 de l'assitant
 	 */
 	private void createStep_2() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -269,7 +269,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de cr�er l'�tape 3 de l'assitant
+	 * Permet de créer l'étape 3 de l'assitant
 	 */
 	private void createStep_3() {
 		IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
@@ -354,7 +354,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Action a effectuer apr�s le changement dans la liste
+	 * Action a effectuer après le changement dans la liste
 	 * 
 	 * @return Le consumer
 	 */
@@ -368,7 +368,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de rafraichir le texte de la balise corrig�
+	 * Permet de rafraichir le texte de la balise corrigé
 	 */
 	private void refreshFixedText() {
 		if (StringUtils.isNotBlank(listPanel.getLabelSelected())) {
@@ -428,7 +428,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de sauvegarder la ligne et g�rer le passage � la suivante ou quitter
+	 * Permet de sauvegarder la ligne et gérer le passage à la suivante ou quitter
 	 * 
 	 * @return l'action
 	 */
@@ -453,7 +453,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	 */
 	private void saveFileAndQuit() {
 		try {
-			getControler().saveFileAfteFixedErrorLine();
+			getControler().saveFileAfterFixedErrorLine();
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
@@ -477,7 +477,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 	/**
 	 * Permet d'adapter le nombre de ligne pour le textarea
 	 * 
-	 * @param nbCharByLine Nombre de caract�re par ligne
+	 * @param nbCharByLine Nombre de caractére par ligne
 	 * @param component    composant text area
 	 */
 	private void refreshRowNum(Integer nbCharByLine, JTextArea component) {

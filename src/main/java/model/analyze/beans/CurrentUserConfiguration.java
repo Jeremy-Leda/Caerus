@@ -16,32 +16,32 @@ public class CurrentUserConfiguration {
 	private String defaultConfiguration;
 
 	/**
-	 * Permet de se procurer le chemin d'accés au configurations
-	 * @return le d'accés au configurations
+	 * Permet de se procurer le chemin d'accÃ©s au configurations
+	 * @return le d'accÃ©s au configurations
 	 */
 	public Path getConfigurationPath() {
 		return configurationPath;
 	}
 
 	/**
-	 * Permet de définir le chemi d'accés aux configurations
-	 * @param configurationPath chemin d'accés au configurations
+	 * Permet de dÃ©finir le chemi d'accÃ©s aux configurations
+	 * @param configurationPath chemin d'accÃ©s au configurations
 	 */
 	public void setConfigurationPath(Path configurationPath) {
 		this.configurationPath = configurationPath;
 	}
 
 	/**
-	 * Permet de se procurer la configuration par défaut
-	 * @return la configuration par défaut
+	 * Permet de se procurer la configuration par dÃ©faut
+	 * @return la configuration par dÃ©faut
 	 */
 	public String getDefaultConfiguration() {
 		return defaultConfiguration;
 	}
 
 	/**
-	 * Permet de définir le nom de la configuration par défaut
-	 * @param defaultConfiguration configuration par défaut
+	 * Permet de dÃ©finir le nom de la configuration par dÃ©faut
+	 * @param defaultConfiguration configuration par dÃ©faut
 	 */
 	public void setDefaultConfiguration(String defaultConfiguration) {
 		this.defaultConfiguration = defaultConfiguration;
@@ -56,7 +56,7 @@ public class CurrentUserConfiguration {
 	}
 
 	/**
-	 * Permet de définir le chemin de la librairie de texte
+	 * Permet de dÃ©finir le chemin de la librairie de texte
 	 * @param libraryPath Le chemin de la librairie
 	 */
 	public void setLibraryPath(Path libraryPath) {

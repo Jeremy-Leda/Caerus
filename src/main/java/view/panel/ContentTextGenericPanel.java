@@ -18,7 +18,7 @@ import view.panel.model.ConsumerAndFunctionTextModel;
 
 /**
  * 
- * Classe permettant de créer un panel contenant les informations pour
+ * Classe permettant de crÃ©er un panel contenant les informations pour
  * l'affichage des contenu de texte
  * 
  * @author jerem
@@ -34,7 +34,7 @@ public class ContentTextGenericPanel implements IContentTextGenericPanel {
 	 * 
 	 * @param controler controleur
 	 * @param typeIhm   type d'ihm
-	 * @param consumerType Type du consumer pour mettre à jour la valeur
+	 * @param consumerType Type du consumer pour mettre Ã  jour la valeur
 	 * @param functionType function du consumer pour se procurer la valeur
 	 */
 	public ContentTextGenericPanel(IConfigurationControler controler, TextIhmTypeEnum typeIhm, ConsumerTextTypeEnum consumerType,

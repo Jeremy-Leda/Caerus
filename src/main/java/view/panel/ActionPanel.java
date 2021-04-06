@@ -18,7 +18,7 @@ import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;
 
 /**
- * Permet de créer un panel action
+ * Permet de crÃ©er un panel action
  * @author jerem
  *
  */
@@ -31,8 +31,8 @@ public class ActionPanel implements IActionPanel {
 	private Function<Void, String> titleJpanelFunction;
 	
 	/**
-	 * Permet de créer un panel action
-	 * @param nbButton nb de boutons souhaités
+	 * Permet de crÃ©er un panel action
+	 * @param nbButton nb de boutons souhaitÃ©s
 	 */
 	public ActionPanel(Integer nbButton) {
 		for (int i = 0; i < nbButton; i++) {

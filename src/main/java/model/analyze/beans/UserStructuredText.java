@@ -4,7 +4,7 @@ import utils.KeyGenerator;
 
 /**
  * 
- * Bean permettant de stocker les informations traité par l'analyse et consultable par l'utilisateur
+ * Bean permettant de stocker les informations traitÃ© par l'analyse et consultable par l'utilisateur
  * 
  * @author jerem
  *
@@ -17,7 +17,7 @@ public class UserStructuredText {
 	private final String key;
 	
 	/**
-	 * Utilisé par le Json
+	 * UtilisÃ© par le Json
 	 */
 	@SuppressWarnings("unused")
 	private UserStructuredText() {
@@ -30,8 +30,8 @@ public class UserStructuredText {
 	/**
 	 * Constructeur
 	 * @param fileName Nom du fichier
-	 * @param number numéro 
-	 * @param structuredText text structuré
+	 * @param number numÃ©ro 
+	 * @param structuredText text structurÃ©
 	 */
 	public UserStructuredText(String fileName, Integer number, StructuredText structuredText) {
 		this.fileName = fileName;
@@ -49,24 +49,24 @@ public class UserStructuredText {
 	}
 	
 	/**
-	 * Permet de se procurer le numéro du texte
-	 * @return le numéro du texte
+	 * Permet de se procurer le numÃ©ro du texte
+	 * @return le numÃ©ro du texte
 	 */
 	public Integer getNumber() {
 		return number;
 	}
 
 	/**
-	 * Permet de se procurer le texte structuré
-	 * @return le texte structuré
+	 * Permet de se procurer le texte structurÃ©
+	 * @return le texte structurÃ©
 	 */
 	public StructuredText getStructuredText() {
 		return structuredText;
 	}
 
 	/**
-	 * Permet de se procurer la clé généré
-	 * @return la clé généré
+	 * Permet de se procurer la clÃ© gÃ©nÃ©rÃ©
+	 * @return la clÃ© gÃ©nÃ©rÃ©
 	 */
 	public String getKey() {
 		return key;

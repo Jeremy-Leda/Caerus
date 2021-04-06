@@ -27,9 +27,9 @@ public class ProgressBarView extends ModalJFrameAbstract {
 	 * Permet de construire une vue pour la progressBar
 	 * 
 	 * @param actionProgressBarConsumer action pour la progressBar
-	 * @param updateProgressBarConsumer consumer de mise à jour pour la progressBar
+	 * @param updateProgressBarConsumer consumer de mise Ã  jour pour la progressBar
 	 * @param maximumValue              valeur max de la porgressBar
-	 * @param label                     libellé a afficher dans la progressbar
+	 * @param label                     libellÃ© a afficher dans la progressbar
 	 */
 	public ProgressBarView(Consumer<Void> actionProgressBarConsumer,
 			Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue, String label) {
@@ -48,7 +48,7 @@ public class ProgressBarView extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);

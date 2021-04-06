@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 /**
  * 
- * Permet de gérer un composant contenant une check box associ à un champ texte
+ * Permet de gÃ©rer un composant contenant une check box associ Ã  un champ texte
  * 
  * @author jerem
  *
@@ -13,8 +13,8 @@ public interface ICheckBoxTextFieldPanel extends IAccessPanel {
 
 	
 	/**
-	 * Permet de savoir si la case à cocher est sélectionné
-	 * @param number numéro de la case à cocher
+	 * Permet de savoir si la case Ã  cocher est sÃ©lectionnÃ©
+	 * @param number numÃ©ro de la case Ã  cocher
 	 * @return Vrai si c'est le cas
 	 */
 	Boolean getCheckBoxIsChecked();
@@ -26,8 +26,8 @@ public interface ICheckBoxTextFieldPanel extends IAccessPanel {
 	String getText();
 	
 	/**
-	 * Permet de mettre à jour le texte
-	 * @param text texte à écrire
+	 * Permet de mettre Ã  jour le texte
+	 * @param text texte Ã  Ã©crire
 	 */
 	void setText(String text);
 	

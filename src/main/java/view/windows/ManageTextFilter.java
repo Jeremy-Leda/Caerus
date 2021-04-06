@@ -28,7 +28,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Fenêtre permettant de filtrer les textes lors de leur gestion
+ * FenÃªtre permettant de filtrer les textes lors de leur gestion
  * 
  * @author jerem
  *
@@ -70,7 +70,7 @@ public class ManageTextFilter extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -91,7 +91,7 @@ public class ManageTextFilter extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de rafraichir les libellés pour action
+	 * Permet de rafraichir les libellÃ©s pour action
 	 */
 	private void refreshActionPanelMessage() {
 		Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
@@ -100,7 +100,7 @@ public class ManageTextFilter extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de remplir la combobox pour le choix des champs à filtrer
+	 * Permet de remplir la combobox pour le choix des champs Ã  filtrer
 	 */
 	private void fillFieldsForFilterText() {
 		Map<String, String> fieldNameLabelMap = new LinkedHashMap<>();

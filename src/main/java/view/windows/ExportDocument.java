@@ -109,7 +109,7 @@ public class ExportDocument extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Créer le contenu
+	 * CrÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(this.content, BoxLayout.Y_AXIS);
@@ -186,7 +186,7 @@ public class ExportDocument extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le sous panel pour le choix du nom du fichier
+	 * Permet de crÃ©er le sous panel pour le choix du nom du fichier
 	 * 
 	 * @return le sous panel
 	 */
@@ -200,7 +200,7 @@ public class ExportDocument extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de gérer le changement de mode
+	 * Permet de gÃ©rer le changement de mode
 	 * 
 	 * @return l'action pour la gestion
 	 */
@@ -239,9 +239,9 @@ public class ExportDocument extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de se procurer le type d'export sélectionné
+	 * Permet de se procurer le type d'export sÃ©lectionnÃ©
 	 * 
-	 * @return le type d'export sélectionné
+	 * @return le type d'export sÃ©lectionnÃ©
 	 */
 	private ExportTypeEnum getExportTypeSelected() {
 		switch (this.modePanel.getSelectedRadioButtonNumber()) {
@@ -300,7 +300,7 @@ public class ExportDocument extends ModalJFrameAbstract {
 	/**
 	 * Permet d'effectuer l'export
 	 * 
-	 * @throws IOException Erreur d'entrée sortie
+	 * @throws IOException Erreur d'entrÃ©e sortie
 	 */
 	private void goForExport() throws IOException {
 		logger.debug("Go for export");

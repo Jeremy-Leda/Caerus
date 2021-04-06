@@ -4,7 +4,7 @@ import java.nio.file.Path;
 
 /**
  * 
- * Bean permettant de stocker les lignes non interprétables
+ * Bean permettant de stocker les lignes non interprÃ©tables
  * 
  * @author jerem
  *

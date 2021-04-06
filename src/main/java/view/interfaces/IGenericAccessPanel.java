@@ -4,7 +4,7 @@ import javax.swing.JComponent;
 
 /**
  * 
- * Permet de créer un accesPanel sur mesure
+ * Permet de crÃ©er un accesPanel sur mesure
  * 
  * @author jerem
  *
@@ -13,14 +13,14 @@ public interface IGenericAccessPanel extends IAccessPanel {
 
 	/**
 	 * 
-	 * Permet d'ajouter un composant (les composants seront ajoutés les uns en dessous des autres)
+	 * Permet d'ajouter un composant (les composants seront ajoutÃ©s les uns en dessous des autres)
 	 * 
-	 * @param component composant à ajouter
+	 * @param component composant Ã  ajouter
 	 */
 	void addComponent(JComponent component);
 	
 	/**
-	 * Permet de mettre à jour le titre du panel
+	 * Permet de mettre Ã  jour le titre du panel
 	 * @param title titre du panel
 	 */
 	void refreshTitle(String title);

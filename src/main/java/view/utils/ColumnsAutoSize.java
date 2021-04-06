@@ -12,7 +12,7 @@ import javax.swing.table.TableColumn;
 
 /**
  * 
- * Classe permettant de déterminer la taille des colonnes automatiquement
+ * Classe permettant de dÃ©terminer la taille des colonnes automatiquement
  * 
  * @author jerem
  *

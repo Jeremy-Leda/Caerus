@@ -16,7 +16,7 @@ import javax.swing.event.ChangeListener;
 import view.interfaces.ICheckBoxPanel;
 
 /**
- * Permet de créer un panel pour les case à cocher
+ * Permet de crÃ©er un panel pour les case Ã  cocher
  * 
  * @author jerem
  *
@@ -31,9 +31,9 @@ public class CheckBoxPanel implements ICheckBoxPanel {
 	private final Boolean enableScrollPane;
 	
 	/**
-	 * Permet de créer un panel pour les checkbox
+	 * Permet de crÃ©er un panel pour les checkbox
 	 * 
-	 * @param nbCheckbox nb de checkbox souhaités
+	 * @param nbCheckbox nb de checkbox souhaitÃ©s
 	 */
 	public CheckBoxPanel(Integer nbCheckbox, Boolean enableScrollPane) {
 		this.enableScrollPane = enableScrollPane;

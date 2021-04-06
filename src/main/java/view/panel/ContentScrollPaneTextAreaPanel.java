@@ -24,7 +24,7 @@ import view.abstracts.ContentTextPanelAbstract;
 /**
  * 
  * Permet de se procurer un panel utiliser pour la gestion du contenu des textes
- * Permet la création de textarea
+ * Permet la crÃ©ation de textarea
  * 
  * @author jerem
  *
@@ -92,7 +92,7 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 	/**
 	 * Permet de se procurer le listener pour l'enregistrement sur la perte du focus
 	 * 
-	 * @param key Clé
+	 * @param key ClÃ©
 	 * @return le focus listener
 	 */
 	private FocusListener saveValue(String key) {
@@ -117,7 +117,7 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 	}
 
 	/**
-	 * Permet de se procurer un key listener pour la mise à jour de l'affichage
+	 * Permet de se procurer un key listener pour la mise Ã  jour de l'affichage
 	 * 
 	 * @param textArea zone de texte
 	 * @return le key listener

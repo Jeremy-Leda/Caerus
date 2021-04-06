@@ -6,7 +6,7 @@ import utils.RessourcesUtils;
 
 /**
  * 
- * Bean permettant de gérer un filtre
+ * Bean permettant de gÃ©rer un filtre
  * 
  * @author jerem
  *
@@ -20,11 +20,11 @@ public class Filter {
 	private FilterTypeEnum type;
 	
 	/**
-	 * Constructeur pour créer un filtre
-	 * @param field Champ à filtrer
+	 * Constructeur pour crÃ©er un filtre
+	 * @param field Champ Ã  filtrer
 	 * @param label label pour le champ
 	 * @param value valeur du champ
-	 * @param type type d'opération
+	 * @param type type d'opÃ©ration
 	 */
 	public Filter(String field, String label, String value, FilterTypeEnum type) {
 		super();
@@ -36,8 +36,8 @@ public class Filter {
 	}
 
 	/**
-	 * Permet de se procurer l'image à afficher
-	 * @return l'image à afficher
+	 * Permet de se procurer l'image Ã  afficher
+	 * @return l'image Ã  afficher
 	 */
 	public ImageIcon getImageIcon() {
 		return new ImageIcon(RessourcesUtils.getInstance().getImage(this.typeImage));
@@ -52,8 +52,8 @@ public class Filter {
 	}
 
 	/**
-	 * Permet de se procurer le libellé
-	 * @return le libellé
+	 * Permet de se procurer le libellÃ©
+	 * @return le libellÃ©
 	 */
 	public String getLabel() {
 		return label;
@@ -68,8 +68,8 @@ public class Filter {
 	}
 
 	/**
-	 * Permet de se procurer le type d'opération
-	 * @return le type d'opération
+	 * Permet de se procurer le type d'opÃ©ration
+	 * @return le type d'opÃ©ration
 	 */
 	public FilterTypeEnum getType() {
 		return type;

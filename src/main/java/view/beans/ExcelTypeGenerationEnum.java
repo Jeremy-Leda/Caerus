@@ -2,7 +2,7 @@ package view.beans;
 
 /**
  * 
- * ENumération permettant de déterminer ce que la génération excel doit générer
+ * ENumÃ©ration permettant de dÃ©terminer ce que la gÃ©nÃ©ration excel doit gÃ©nÃ©rer
  * 
  * @author jerem
  *

@@ -31,7 +31,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Permet de créer la fenêtre de création du corpus
+ * Permet de crÃ©er la fenÃªtre de crÃ©ation du corpus
  * 
  * @author jerem
  *
@@ -81,7 +81,7 @@ public class CreateCorpus extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -92,7 +92,7 @@ public class CreateCorpus extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Met à jour le contenu du filePanel
+	 * Met Ã  jour le contenu du filePanel
 	 */
 	private void updateContentFilePanel() {
 		this.filePanel.refreshComponents(this.mapFilePanel);
@@ -100,7 +100,7 @@ public class CreateCorpus extends ModalJFrameAbstract {
 	}
 	
 	/**
-	 * Met à jour le contenu de l'information corpus panel
+	 * Met Ã  jour le contenu de l'information corpus panel
 	 */
 	private void updateContentInformationsCorpusPanel() {
 		this.informationsCorpusPanel.refreshComponents(getControler().getConfigurationFieldMetaFile());

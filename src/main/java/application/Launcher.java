@@ -33,7 +33,7 @@ public class Launcher {
 	}
 
 	/**
-	 * Permet de crÈer l'instance si elle n'est pas dÈj‡ lancÈ
+	 * Permet de cr√©er l'instance si elle n'est pas d√©j√† lanc√©
 	 */
 	private static void createInstanceIfAlreadyNotLaunch() {
 		if (SingleInstance.createInstance()) {
@@ -55,7 +55,7 @@ public class Launcher {
 	/**
 	 * Permet d'effectuer une action sur la fermeture de l'application
 	 * 
-	 * @return le consumer ‡ executer
+	 * @return le consumer √† executer
 	 */
 	private static Consumer<?> consumerForDeleteInstance() {
 		return v -> SingleInstance.closeAndDeleteLockFile();

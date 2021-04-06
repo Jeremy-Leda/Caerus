@@ -4,7 +4,7 @@ import javax.swing.JProgressBar;
 
 /**
  * 
- * Interface pour l'utilisation du modéle de la progressBar
+ * Interface pour l'utilisation du modÃ©le de la progressBar
  * 
  * @author jerem
  *
@@ -12,8 +12,8 @@ import javax.swing.JProgressBar;
 public interface IProgressBarModel {
 
 	/**
-	 * Permet de lancer le traitement sur la progressBar en paramétre
-	 * @param progressBar progressBar à définir
+	 * Permet de lancer le traitement sur la progressBar en paramÃ©tre
+	 * @param progressBar progressBar Ã  dÃ©finir
 	 */
 	void launchTreatment(JProgressBar progressBar);
 }

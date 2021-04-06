@@ -9,7 +9,7 @@ import view.interfaces.IFilePanel;
 
 /**
  * 
- * Permet de créer le panel pour le fichier
+ * Permet de crÃ©er le panel pour le fichier
  * 
  * @author jerem
  *

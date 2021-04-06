@@ -40,8 +40,8 @@ public class ConsumerAndFunctionTextModel implements IConsumerAndFunctionText {
 	}
 
 	/**
-	 * Permet de se procurer le consumer pour l'édition du corpus
-	 * @return le consumer pour l'édition du corpus
+	 * Permet de se procurer le consumer pour l'Ã©dition du corpus
+	 * @return le consumer pour l'Ã©dition du corpus
 	 */
 	private BiConsumer<String, String> getConsumerCorpusEditValue() {
 		return (key,value) -> {
@@ -50,7 +50,7 @@ public class ConsumerAndFunctionTextModel implements IConsumerAndFunctionText {
 	}
 
 	/**
-	 * Permet de se procurer la function pour récupérer la valeur dans le corpus en cours
+	 * Permet de se procurer la function pour rÃ©cupÃ©rer la valeur dans le corpus en cours
 	 * @return la function
 	 */
 	private Function<String, String> getFunctionCorpusToGetValue() {

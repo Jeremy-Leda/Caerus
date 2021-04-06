@@ -8,8 +8,8 @@ import model.analyze.beans.StructuredFile;
 
 /**
  * 
- * Bean permettant de configurer le retraitement afin de générer un
- * structuredText spécifique
+ * Bean permettant de configurer le retraitement afin de gÃ©nÃ©rer un
+ * structuredText spÃ©cifique
  * 
  * @author Jeremy
  *
@@ -22,7 +22,7 @@ public class ConfigurationStructuredText {
 
 	/**
 	 * Constructeur
-	 * @param delimiter delimiteur pour la configuration (utilisé pour les tag à traiter)
+	 * @param delimiter delimiteur pour la configuration (utilisÃ© pour les tag Ã  traiter)
 	 */
 	public ConfigurationStructuredText(SpecificConfiguration specificConfiguration) {
 		super();
@@ -30,8 +30,8 @@ public class ConfigurationStructuredText {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des fichiers structurés
-	 * @return la liste des fichiers structurés
+	 * Permet de se procurer la liste des fichiers structurÃ©s
+	 * @return la liste des fichiers structurÃ©s
 	 */
 	public List<StructuredFile> getStructuredFileList() {
 		return structuredFileList;

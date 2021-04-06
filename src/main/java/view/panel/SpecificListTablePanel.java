@@ -22,7 +22,7 @@ import view.utils.ColumnsAutoSize;
 
 /**
  * 
- * Panel pour l'affichage de la liste des spécifiques dans un tableau
+ * Panel pour l'affichage de la liste des spÃ©cifiques dans un tableau
  * 
  * @author jerem
  *
@@ -62,7 +62,7 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 	}
 
 	/**
-	 * Permet de charger l'affichage de la fenêtre
+	 * Permet de charger l'affichage de la fenÃªtre
 	 */
 	private void loadDisplayDetailsListPanel() {
 		addSelectionModelHandler();
@@ -76,7 +76,7 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
 				specificTextModel.clearAllSelectedIndexList();
 				specificTextModel.setCurrentSelectedIndexInList(lsm.getAnchorSelectionIndex());
-				// On ajoute la liste des index sélectionné
+				// On ajoute la liste des index sÃ©lectionnÃ©
 				int minIndex = lsm.getMinSelectionIndex();
 				int maxIndex = lsm.getMaxSelectionIndex();
 				for (int i = minIndex; i <= maxIndex; i++) {

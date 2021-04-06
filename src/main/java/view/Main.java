@@ -1,7 +1,6 @@
 package view;
 
-import java.awt.HeadlessException;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -37,6 +36,7 @@ import controler.IConfigurationControler;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import utils.RessourcesUtils;
+import view.abstracts.ModalJFrameAbstract;
 import view.beans.ActionOperationTypeEnum;
 import view.beans.ActionUserTypeEnum;
 import view.beans.ExcelTypeGenerationEnum;
@@ -83,7 +83,8 @@ public class Main extends JFrame {
 					.getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL1_TITLE)),
 			load_analysis = new JMenuItem(ConfigurationUtils.getInstance()
 					.getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL2_TITLE)),
-			openAbout = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT_OPEN));
+			openAbout = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT_OPEN)),
+			importExcel = new JMenuItem(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL1_SUBLEVEL5_TITLE));
 	private List<JMenuItem> languages = new ArrayList<JMenuItem>();
 	private JMenu fileMenu = new JMenu(
 			ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
@@ -168,15 +169,17 @@ public class Main extends JFrame {
 		} catch (IOException e1) {
 			logger.error(e1.getMessage(), e1);
 		}
+
 		analyzeConfiguration = null;
 
 		createWindow(consumerOnClose);
+
 	}
 
 	/**
-	 * Permet de cr�er la fenetre
+	 * Permet de créer la fenêtre
 	 * 
-	 * @param consumerOnClose consumer � executer sur la fermeture
+	 * @param consumerOnClose consumer à exécuter sur la fermeture
 	 * @throws IOException
 	 * @throws HeadlessException
 	 */
@@ -226,9 +229,9 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de se procurer la liste des icones possible (taille diff�rentes)
+	 * Permet de se procurer la liste des icônes possible (taille différentes)
 	 * 
-	 * @return la liste des icones
+	 * @return la liste des icônes
 	 */
 	private List<Image> getIconsListImage() {
 		List<Image> allImages = new ArrayList<>();
@@ -245,6 +248,7 @@ public class Main extends JFrame {
 		saveConfiguration.setEnabled(false);
 		saveCustomExcel.setEnabled(false);
 		fileMenu.add(createAnalyze);
+		fileMenu.add(importExcel);
 		fileMenu.add(saveConfiguration);
 		fileMenu.add(saveCustomExcel);
 //		fileMenu.addSeparator();
@@ -274,17 +278,19 @@ public class Main extends JFrame {
 			}
 		});
 
-		createAnalyze.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent event) {
-				analyzeConfiguration = new LoadTextConfigurationSelector(configurationControler);
-				try {
-					refreshDisplay();
-					repack();
-				} catch (HeadlessException | IOException e) {
-					logger.error(e.getMessage(), e);
-				}
-
+		createAnalyze.addActionListener(event -> {
+			analyzeConfiguration = new LoadTextConfigurationSelector(configurationControler);
+			try {
+				refreshDisplay();
+				repack();
+			} catch (HeadlessException | IOException e) {
+				logger.error(e.getMessage(), e);
 			}
+
+		});
+
+		importExcel.addActionListener(e -> {
+			new ImportExcel(configurationControler);
 		});
 
 		configurationLoadLibrary.addActionListener(new ActionListener() {
@@ -421,7 +427,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de repack la fen�tre Position centrer
+	 * Permet de repack la fenêtre Position centrer
 	 */
 	private void repack() {
 		this.pack();
@@ -463,7 +469,7 @@ public class Main extends JFrame {
 	}
 
 	/***
-	 * Permet de cr�er le panel pour les erreurs de ligne
+	 * Permet de créer le panel pour les erreurs de ligne
 	 */
 	private void createLineErrorPanel() {
 		panLineError.setLayout(new BoxLayout(panLineError, BoxLayout.Y_AXIS));
@@ -479,7 +485,7 @@ public class Main extends JFrame {
 	}
 
 	/***
-	 * Permet de cr�er le panel pour les erreurs de textes
+	 * Permet de créer le panel pour les erreurs de textes
 	 */
 	private void createTextErrorPanel() {
 		panTextError.setLayout(new BoxLayout(panTextError, BoxLayout.Y_AXIS));
@@ -495,7 +501,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de cr�er le panel pour transf�rer les textes vers la bibliotheque de
+	 * Permet de créer le panel pour transférer les textes vers la bibliothèque de
 	 * texte
 	 */
 	private void createMoveFileLibraryPanel() {
@@ -509,7 +515,7 @@ public class Main extends JFrame {
 	}
 
 	/***
-	 * Permet de cr�er le panel pour les erreurs de lignes vides
+	 * Permet de créer le panel pour les erreurs de lignes vides
 	 */
 	private void createBlankLineErrorPanel() {
 		panBlankLineError.setLayout(new BoxLayout(panBlankLineError, BoxLayout.Y_AXIS));
@@ -746,7 +752,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de construire l'erreur pour les fichiers d�j� existant
+	 * Permet de construire l'erreur pour les fichiers déjà existant
 	 * 
 	 * @param listErreur liste des fichiers en erreur
 	 * @return le message d'erreur
@@ -870,7 +876,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de rafraichir pour les activations et les valeurs suite � la pr�sence
+	 * Permet de rafraichir pour les activations et les valeurs suite à la présence
 	 * du chemin de la librairie des textes
 	 */
 	private void refreshEnabledAndValueWithTextsFolderLibrary() {
@@ -890,8 +896,8 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet de cr�er la fen�tre de s�lection du dossier et la d�finir en tant que
-	 * biblioth�que de textes
+	 * Permet de créer la fenêtre de sélection du dossier et la définir en tant que
+	 * bibliothèque de textes
 	 * 
 	 * @param parent JFrame parent
 	 * @return
@@ -917,7 +923,7 @@ public class Main extends JFrame {
 	}
 
 	/**
-	 * Permet cr�er le panel d'erreurs d'incoh�rences
+	 * Permet créer le panel d'erreurs d'incohérences
 	 */
 	private void createErrorInconsistencyPanel() {
 		openInconsistencyErrorsButton

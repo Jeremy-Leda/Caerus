@@ -14,35 +14,35 @@ import view.beans.PictureTypeEnum;
 public interface IActionPanel extends ISpecificTextRefreshPanel {
 
 	/**
-	 * Permet de définir les libellés statique
+	 * Permet de dÃ©finir les libellÃ©s statique
 	 * @param titlePanel Titre du panel
-	 * @param buttonIdTextMap Map numero du bouton et texte associé
+	 * @param buttonIdTextMap Map numero du bouton et texte associÃ©
 	 */
 	void setStaticLabel(String titlePanel, Map<Integer,String> buttonIdTextMap);
 	
 	/**
 	 * Ajoute une action au bouton
 	 * @param number numero du bouton
-	 * @param action action associé
+	 * @param action action associÃ©
 	 */
 	void addAction(Integer number, ActionListener action);
 	
 	/**
-	 * Permet de définir si le bouton est actif ou non
-	 * @param number numéro du bouton
+	 * Permet de dÃ©finir si le bouton est actif ou non
+	 * @param number numÃ©ro du bouton
 	 * @param enabled Actif ou non
 	 */
 	void setEnabled(Integer number, boolean enabled);
 	
 	/**
-	 * Permet de définir le fonction pour la mise à jour du titre du jpanel
+	 * Permet de dÃ©finir le fonction pour la mise Ã  jour du titre du jpanel
 	 * @param titleJpanelFunction fonction pour se procurer le titre du Jpanel
 	 */
 	void setFunctionRefreshLabelTitleDynamically(Function<Void, String> titleJpanelFunction);
 	
 	/**
-	 * Permet de définir une icone sur le bouton
-	 * @param number numéro du bouton
+	 * Permet de dÃ©finir une icone sur le bouton
+	 * @param number numÃ©ro du bouton
 	 * @param pictureType type d'image
 	 */
 	void setIconButton(Integer number, PictureTypeEnum pictureType);

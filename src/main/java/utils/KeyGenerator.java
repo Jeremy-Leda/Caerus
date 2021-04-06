@@ -7,7 +7,7 @@ import org.apache.commons.codec.binary.Hex;
 
 /**
  * 
- * Classe permettant de généré une clé unique pour un objet
+ * Classe permettant de gÃ©nÃ©rÃ© une clÃ© unique pour un objet
  * 
  * @author jerem
  *
@@ -15,7 +15,7 @@ import org.apache.commons.codec.binary.Hex;
 public final class KeyGenerator {
 
 	/**
-	 * Permet de généré uen clé unique
+	 * Permet de gÃ©nÃ©rÃ© uen clÃ© unique
 	 */
 	public static <T> String generateKey(T object) {
 		try {
@@ -25,7 +25,7 @@ public final class KeyGenerator {
 		    String myChecksum = Hex.encodeHexString(digest).toUpperCase();
 		    return myChecksum;
 		} catch (NoSuchAlgorithmException e) {
-			// Impossible de trouvé l'algorithme. On retourne le hashcode
+			// Impossible de trouvÃ© l'algorithme. On retourne le hashcode
 			return new StringBuilder("hash").append(object.hashCode()).toString();
 		}
 	}

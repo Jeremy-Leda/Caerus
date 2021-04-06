@@ -32,7 +32,7 @@ public class ListPanel implements IListPanel {
 	/**
 	 * Constructeur
 	 * @param titlePanel titre du panel
-	 * @param label libellé de la liste
+	 * @param label libellÃ© de la liste
 	 */
 	public ListPanel(String titlePanel, String label) {
 		this(label);
@@ -41,7 +41,7 @@ public class ListPanel implements IListPanel {
 
 	/**
 	 * Constructeur
-	 * @param label libellé de la liste
+	 * @param label libellÃ© de la liste
 	 */
 	public ListPanel(String label) {
 		this.listPanel = new JPanel();
@@ -56,7 +56,7 @@ public class ListPanel implements IListPanel {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		this.listPanel.add(labelList);

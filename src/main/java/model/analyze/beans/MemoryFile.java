@@ -12,7 +12,7 @@ import model.analyze.interfaces.IWriteText;
 
 /**
  * 
- * Bean contenant le fichier en mémoire
+ * Bean contenant le fichier en mÃ©moire
  * 
  * @author Jeremy
  *
@@ -37,8 +37,8 @@ public class MemoryFile {
 	}
 	
 	/**
-	 * Permet de se procurer la liste des lignes du fichier (ordre conservée)
-	 * @return Les lignes du fichier (ordre conservée)
+	 * Permet de se procurer la liste des lignes du fichier (ordre conservÃ©e)
+	 * @return Les lignes du fichier (ordre conservÃ©e)
 	 */
 	public List<String> getLinesOrdered() {
 		return this.linesOrdered;
@@ -53,8 +53,8 @@ public class MemoryFile {
 	}
 	
 	/**
-	 * Permet d'écrire le fichier en mémoire
-	 * @param writer writer pour l'écriture
+	 * Permet d'Ã©crire le fichier en mÃ©moire
+	 * @param writer writer pour l'Ã©criture
 	 * @throws IOException erreur IO
 	 */
 	public void writeLines(IWriteText writer) throws IOException {
@@ -64,7 +64,7 @@ public class MemoryFile {
 	}
 	
 	/**
-	 * Permet de mettre à jour une ligne
+	 * Permet de mettre Ã  jour une ligne
 	 * @param index index
 	 * @param newLine la nouvelle ligne
 	 */
@@ -81,7 +81,7 @@ public class MemoryFile {
 	}
 	
 	/**
-	 * Permet de créer l'itérateur
+	 * Permet de crÃ©er l'itÃ©rateur
 	 */
 	public void createIterator() {
 		iterableLine = this.linesOrdered.iterator();
@@ -117,7 +117,7 @@ public class MemoryFile {
 
 	/**
 	 * Permet de se procurer le chemin du fichier
-	 * @return le chemin du fichier en mémoire
+	 * @return le chemin du fichier en mÃ©moire
 	 */
 	public Path getPath() {
 		return path;

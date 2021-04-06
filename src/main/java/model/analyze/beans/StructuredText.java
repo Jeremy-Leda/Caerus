@@ -25,15 +25,20 @@ public class StructuredText {
 	private Boolean haveBlankLine = Boolean.FALSE;
 	private Boolean haveMetaBlankLine = Boolean.FALSE;
 	private String uniqueKey;
+	private final int number;
 	private static Logger logger = LoggerFactory.getLogger(StructuredText.class);
-	
+
+	public StructuredText(int number) {
+		this.number = number;
+	}
+
 	public List<Content> getListContent() {
 		return this.listContent;
 	}
 	
 	/**
-	 * Permet de se procurer le contenu pour un tag donnÈ
-	 * @param tag tag demandÈ
+	 * Permet de se procurer le contenu pour un tag donn√©
+	 * @param tag tag demand√©
 	 * @return la liste des contenu
 	 */
 	public String getContent(String tag) {
@@ -41,17 +46,17 @@ public class StructuredText {
 		if (optionalContent.isPresent()) {
 			return optionalContent.get().getValue();
 		}
-		logger.debug(String.format("Le champ %s n'a pas ÈtÈ trouvÈ", tag));
+		logger.debug(String.format("Le champ %s n'a pas √©t√© trouv√©", tag));
 		return StringUtils.EMPTY;
 	}
 	
 	/**
-	 * Permet de modifier le contenu d'une valeur pour un tag donnÈ
-	 * @param tag tag demandÈ
+	 * Permet de modifier le contenu d'une valeur pour un tag donn√©
+	 * @param tag tag demand√©
 	 * @param value la nouvelle valeur
 	 */
 	public void modifyContent(String tag, String value) {
-		logger.debug(String.format("Le champ %s a ÈtÈ settÈ avec la valeur %s", tag, value));
+		logger.debug(String.format("Le champ %s a √©t√© sett√© avec la valeur %s", tag, value));
 		Optional<Content> optionalContent = this.listContent.stream().filter(c -> tag.equals(c.getKey())).findFirst();
 		if (optionalContent.isPresent()) {
 			optionalContent.get().setValue(value);
@@ -61,16 +66,16 @@ public class StructuredText {
 	}
 	
 	/**
-	 * Permet de supprimer un contenu pour tag donnÈ
-	 * @param tag tag ‡ supprimer
+	 * Permet de supprimer un contenu pour tag donn√©
+	 * @param tag tag √† supprimer
 	 */
 	public void deleteContent(String tag) {
 		this.listContent.removeIf(c -> tag.equals(c.getKey()));
 	}
 	
 	/**
-	 * Permet de se procurer le contenu d'un tag donnÈ et de traiter son contenu pour subdiviser ses valeurs
-	 * @param tag tag demandÈ
+	 * Permet de se procurer le contenu d'un tag donn√© et de traiter son contenu pour subdiviser ses valeurs
+	 * @param tag tag demand√©
 	 * @param delimiter delimiteur pour la subdivision
 	 * @return la liste des valeurs du contenu
 	 */
@@ -81,11 +86,11 @@ public class StructuredText {
 	}
 	
 	/**
-	 * Permet de dupliquer le texte structurÈ
-	 * @return le texte structurÈ dupliquÈ
+	 * Permet de dupliquer le texte structur√©
+	 * @return le texte structur√© dupliqu√©
 	 */
 	public StructuredText duplicate() {
-		StructuredText duplicateStructuredText = new StructuredText();
+		StructuredText duplicateStructuredText = new StructuredText(number);
 		List<Content> collect = this.listContent.stream().map(c -> c.duplicate()).collect(Collectors.toList());
 		duplicateStructuredText.getListContent().addAll(collect);
 		duplicateStructuredText.setUniqueKey(new String(uniqueKey));
@@ -132,4 +137,11 @@ public class StructuredText {
 		return this.uniqueKey;
 	}
 
+	/**
+	 * Permet de se procurer le num√©ro du texte
+	 * @return le num√©ro du texte
+	 */
+	public int getNumber() {
+		return number;
+	}
 }

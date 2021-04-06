@@ -8,7 +8,7 @@ import view.interfaces.IProgressBarModel;
 
 /**
  * 
- * Permet de créer la partie modéle de la progressBar
+ * Permet de crÃ©er la partie modÃ©le de la progressBar
  * 
  * @author jerem
  *
@@ -45,7 +45,7 @@ public class ProgressBarModel implements IProgressBarModel {
 	}
 
 	/**
-	 * Permet de mettre à jour la valeur de la progress bar
+	 * Permet de mettre Ã  jour la valeur de la progress bar
 	 * 
 	 * @return le consumer
 	 */

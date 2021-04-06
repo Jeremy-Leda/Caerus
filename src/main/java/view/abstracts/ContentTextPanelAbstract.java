@@ -52,10 +52,10 @@ public abstract class ContentTextPanelAbstract<T extends JComponent> implements 
 	}
 
 	/**
-	 * Permet de créer le nouveau composant avec un text chargé
+	 * Permet de crÃ©er le nouveau composant avec un text chargÃ©
 	 * 
-	 * @param key Clé pour se procurer le texte associé
-	 * @return le composant créé et alimenté
+	 * @param key ClÃ© pour se procurer le texte associÃ©
+	 * @return le composant crÃ©Ã© et alimentÃ©
 	 */
 	public abstract T createNewComponentWithText(String key);
 
@@ -68,10 +68,10 @@ public abstract class ContentTextPanelAbstract<T extends JComponent> implements 
 	public abstract String getValueFromField(T field);
 	
 	/**
-	 * Permet de définir la valeur d'un champ
+	 * Permet de dÃ©finir la valeur d'un champ
 	 * 
-	 * @param field champ dont on veut définir la valeur
-	 * @param value valeur à définir
+	 * @param field champ dont on veut dÃ©finir la valeur
+	 * @param value valeur Ã  dÃ©finir
 	 */
 	public abstract void setValueToField(T field, String value);
 	

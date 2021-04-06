@@ -32,7 +32,7 @@ public class CurrentUserTexts {
 	
 	/**
 	 * Permet d'ajouter un structured file
-	 * @param structuredFile structured file à ajouter
+	 * @param structuredFile structured file Ã  ajouter
 	 */
 	public synchronized void addStructuredFile(StructuredFile structuredFile) {
 		this.structuredFileList.add(structuredFile);
@@ -47,30 +47,30 @@ public class CurrentUserTexts {
 	}
 	
 	/**
-	 * Permet de vider la liste des fichiers structurés
+	 * Permet de vider la liste des fichiers structurÃ©s
 	 */
 	public void clearStructuredFileList() {
 		this.structuredFileList.clear();
 	}
 	
 	/**
-	 * Permet d'ajouter une configuration structured text (spécifique text)
-	 * @param configurationStructuredText configuration structured text à ajouter
+	 * Permet d'ajouter une configuration structured text (spÃ©cifique text)
+	 * @param configurationStructuredText configuration structured text Ã  ajouter
 	 */
 	public void addConfigurationStructuredText(ConfigurationStructuredText configurationStructuredText) {
 		this.configurationStructuredTextList.add(configurationStructuredText);
 	}
 	
 	/**
-	 * Permet de se procurer la liste des configuration structured text (spécifique text)
-	 * @return la liste des configuration structured text (spécifique text)
+	 * Permet de se procurer la liste des configuration structured text (spÃ©cifique text)
+	 * @return la liste des configuration structured text (spÃ©cifique text)
 	 */
 	public List<ConfigurationStructuredText> getConfigurationStructuredTextList() {
 		return Collections.unmodifiableList(this.configurationStructuredTextList);
 	}
 	
 	/**
-	 * Permet de vider la liste des fichiers structurés spécifique
+	 * Permet de vider la liste des fichiers structurÃ©s spÃ©cifique
 	 */
 	public void clearConfigurationStructuredTextList() {
 		this.configurationStructuredTextList.clear();
@@ -78,7 +78,7 @@ public class CurrentUserTexts {
 	
 	/**
 	 * Permet d'ajouter un memory file
-	 * @param memoryFile structured file à ajouter
+	 * @param memoryFile structured file Ã  ajouter
 	 */
 	public void addMemoryFile(MemoryFile memoryFile) {
 		this.memoryFileList.add(memoryFile);
@@ -93,7 +93,7 @@ public class CurrentUserTexts {
 	}
 	
 	/**
-	 * Permet de vider la liste des fichiers en mémoire
+	 * Permet de vider la liste des fichiers en mÃ©moire
 	 */
 	public void clearMemoryFileList() {
 		this.memoryFileList.clear();
@@ -101,7 +101,7 @@ public class CurrentUserTexts {
 	
 	/**
 	 * Permet d'ajouter un user structured text
-	 * @param userStructuredText user structured text à ajouter
+	 * @param userStructuredText user structured text Ã  ajouter
 	 */
 	public void addUserStructuredText(UserStructuredText userStructuredText) {
 		this.userStructuredTextList.add(userStructuredText);
@@ -117,14 +117,14 @@ public class CurrentUserTexts {
 	
 	/**
 	 * Permet de supprimer un texte de la liste des textes
-	 * @param userStructuredText texte à supprimer
+	 * @param userStructuredText texte Ã  supprimer
 	 */
 	public void deleteTextOfUserStructuredTextList(UserStructuredText userStructuredText) {
 		this.userStructuredTextList.remove(userStructuredText);
 	}
 	
 	/**
-	 * Permet de vider la liste des textes structurés utilisateurs
+	 * Permet de vider la liste des textes structurÃ©s utilisateurs
 	 */
 	public void clearUserStructuredTextList() {
 		this.userStructuredTextList.clear();

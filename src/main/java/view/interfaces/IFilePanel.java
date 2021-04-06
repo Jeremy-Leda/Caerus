@@ -2,7 +2,7 @@ package view.interfaces;
 
 /**
  * 
- * Interface pour le panel qui affiche l'information sur le fichier enc ours
+ * Interface pour le panel qui affiche l'information sur le fichier en cours
  * 
  * @author jerem
  *

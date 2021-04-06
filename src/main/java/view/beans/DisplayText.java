@@ -22,11 +22,11 @@ public class DisplayText {
 	private final Integer index;
 	
 	/**
-	 * Constructeur d'un texte à afficher
+	 * Constructeur d'un texte Ã  afficher
 	 * @param corpusName Le nom du corpus
 	 * @param index Emplacement du texte (numero dans la liste)
-	 * @param mapKeyValueList map des clés et valeur
-	 * @param structuredKey Clé structurelle du texte
+	 * @param mapKeyValueList map des clÃ©s et valeur
+	 * @param structuredKey ClÃ© structurelle du texte
 	 */
 	public DisplayText(String corpusName, Integer index, Map<String, String> mapKeyValueList, String structuredKey) {
 		super();
@@ -46,16 +46,16 @@ public class DisplayText {
 	}
 
 	/**
-	 * Permet de se procurer la map des clés valeurs
-	 * @return la map clé valeur
+	 * Permet de se procurer la map des clÃ©s valeurs
+	 * @return la map clÃ© valeur
 	 */
 	public Map<String, String> getMapKeyValueList() {
 		return mapKeyValueList;
 	}
 
 	/**
-	 * Permet de se procurer la clé du texte structuré
-	 * @return la clé du texte structuré
+	 * Permet de se procurer la clÃ© du texte structurÃ©
+	 * @return la clÃ© du texte structurÃ©
 	 */
 	public String getStructuredKey() {
 		return structuredKey;
@@ -70,8 +70,8 @@ public class DisplayText {
 	}
 
 	/**
-	 * Permet de se procurer le numéro du texte (emplacement dans la liste)
-	 * @return Le numéro du texte
+	 * Permet de se procurer le numÃ©ro du texte (emplacement dans la liste)
+	 * @return Le numÃ©ro du texte
 	 */
 	public Integer getIndex() {
 		return index;

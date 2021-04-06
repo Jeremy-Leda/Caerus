@@ -24,15 +24,22 @@ public class ExcelGenerateConfigurationCmd {
 	private final Map<String, String> mapLabelSpecificFileName;
 	private String labelSpecificChoose;
 	private final Set<String> uniqueKeyList;
+	private Boolean addUniqueKey;
+	private Boolean isSpecificConfiguration;
+	private Integer configurationSpecificOrder;
+	private Boolean addNumber;
 
 	public ExcelGenerateConfigurationCmd() {
-		this.mapLabelSpecificFileName = new HashMap<String, String>();
-		this.fieldToGenerateList = new ArrayList<String>();
-		this.uniqueKeyList = new HashSet<String>();
+		this.mapLabelSpecificFileName = new HashMap<>();
+		this.fieldToGenerateList = new ArrayList<>();
+		this.uniqueKeyList = new HashSet<>();
+		this.addUniqueKey = Boolean.FALSE;
+		this.setSpecificConfiguration(Boolean.FALSE);
+		this.addNumber = Boolean.FALSE;
 	}
 
 	/**
-	 * Permet de se procurer si il s'agit d'une generation specifique
+	 * Permet de se procurer si il s'agit d'une generation sp√©cifique
 	 * 
 	 * @return Vrai si oui
 	 */
@@ -41,16 +48,16 @@ public class ExcelGenerateConfigurationCmd {
 	}
 
 	/**
-	 * Permet de dÈfinir si c'est une configuration spÈcifique
+	 * Permet de d√©finir si c'est une configuration sp√©cifique
 	 * 
-	 * @param isSpecificGeneration une configuration spÈcifique oui/non
+	 * @param isSpecificGeneration une configuration sp√©cifique oui/non
 	 */
 	public void setIsSpecificGeneration(Boolean isSpecificGeneration) {
 		this.isSpecificGeneration = isSpecificGeneration;
 	}
 
 	/**
-	 * Permet de se procurer si on souhaite les en tÍtes
+	 * Permet de se procurer si on souhaite les en t√™tes
 	 * 
 	 * @return Vrai si oui
 	 */
@@ -59,18 +66,18 @@ public class ExcelGenerateConfigurationCmd {
 	}
 
 	/**
-	 * Permet de dÈfinir si on souhaite les en tÍtes
+	 * Permet de d√©finir si on souhaite les en t√™tes
 	 * 
-	 * @param withHeader oui si on souhaite les en tÍte
+	 * @param withHeader oui si on souhaite les en t√™te
 	 */
 	public void setWithHeader(Boolean withHeader) {
 		this.withHeader = withHeader;
 	}
 
 	/**
-	 * Permet de se procurer la liste des champs ‡ gÈnÈrer
+	 * Permet de se procurer la liste des champs √† g√©n√©rer
 	 * 
-	 * @return Liste des champs ‡ gÈnÈrer
+	 * @return Liste des champs √† g√©n√©rer
 	 */
 	public List<String> getFieldToGenerateList() {
 		return Collections.unmodifiableList(fieldToGenerateList);
@@ -86,7 +93,7 @@ public class ExcelGenerateConfigurationCmd {
 	}
 
 	/**
-	 * Permet de dÈfinir le nom du fichier
+	 * Permet de d√©finir le nom du fichier
 	 * 
 	 * @param fileName le nom du fichier
 	 */
@@ -105,7 +112,7 @@ public class ExcelGenerateConfigurationCmd {
 	}
 
 	/**
-	 * Permet de dÈfinir le label specifique choisis
+	 * Permet de d√©finir le label sp√©cifique choisis
 	 * 
 	 * @param labelSpecificChoose le label specific choisis
 	 */
@@ -114,18 +121,18 @@ public class ExcelGenerateConfigurationCmd {
 	}
 
 	/**
-	 * Permet de se procurer la map des label specifique avec le nom associÈs
+	 * Permet de se procurer la map des label sp√©cifique avec le nom associ√©s
 	 * 
-	 * @return le label specifique et le nom associÈs
+	 * @return le label sp√©cifique et le nom associ√©s
 	 */
 	public Map<String, String> getMapLabelSpecificFileName() {
 		return Collections.unmodifiableMap(mapLabelSpecificFileName);
 	}
 
 	/**
-	 * Permet d'ajouter un champ ‡ gÈnÈrer
+	 * Permet d'ajouter un champ √† g√©n√©rer
 	 * 
-	 * @param field champ ‡ gÈnÈrer
+	 * @param field champ √† g√©n√©rer
 	 */
 	public void addFieldToGenerate(String field) {
 		if (!this.getFieldToGenerateList().contains(field)) {
@@ -136,7 +143,7 @@ public class ExcelGenerateConfigurationCmd {
 	/**
 	 * Permet d'ajouter le couple label et nom du fichier
 	 * 
-	 * @param label    label du specifique
+	 * @param label    label du sp√©cifique
 	 * @param fileName nom du fichier
 	 */
 	public void addLabelSpecificFileName(String label, String fileName) {
@@ -146,46 +153,102 @@ public class ExcelGenerateConfigurationCmd {
 	}
 
 	/**
-	 * Permet de dÈterminer si on doit gÈnÈrer les textes de rÈfÈrences
+	 * Permet de d√©terminer si on doit g√©n√©rer les textes de r√©f√©rences
 	 * 
-	 * @return Vrai si on doit gÈnÈrer les textes de rÈfÈrences
+	 * @return Vrai si on doit g√©n√©rer les textes de r√©f√©rences
 	 */
 	public Boolean getHaveToGenerateReferenceText() {
 		return haveToGenerateReferenceText;
 	}
 
 	/**
-	 * Permet de dÈfinir si on doit gÈnÈrer les textes de rÈfÈrences
+	 * Permet de d√©finir si on doit g√©n√©rer les textes de r√©f√©rences
 	 * 
-	 * @param haveToGenerateReferenceText vrai si on doit dÈfinir les textes de
-	 *                                    rÈfÈrences
+	 * @param haveToGenerateReferenceText vrai si on doit d√©finir les textes de
+	 *                                    r√©f√©rences
 	 */
 	public void setHaveToGenerateReferenceText(Boolean haveToGenerateReferenceText) {
 		this.haveToGenerateReferenceText = haveToGenerateReferenceText;
 	}
 
 	/**
-	 * Permet de vider la liste des champs gÈnÈrÈ
+	 * Permet de vider la liste des champs g√©n√©r√©s
 	 */
 	public void clearFieldListGenerate() {
 		this.fieldToGenerateList.clear();
 	}
 
 	/**
-	 * Permet de se procurer la liste des clÈs ‡ gÈnÈrer
+	 * Permet de se procurer la liste des cl√©s √† g√©n√©rer
 	 * 
-	 * @return la liste des clÈs ‡ gÈnÈrer
+	 * @return la liste des cl√©s √† g√©n√©rer
 	 */
 	public List<String> getUniqueKeyList() {
 		return Collections.unmodifiableList(new ArrayList<>(this.uniqueKeyList));
 	}
 
 	/**
-	 * Permet d'ajouter une clÈ unique ‡ la liste des clÈs
+	 * Permet d'ajouter une cl√© unique √† la liste des cl√©s
 	 * 
-	 * @param uniquekey ClÈ unique ‡ ajouter
+	 * @param uniquekey Cl√© unique √† ajouter
 	 */
 	public void addUniqueKey(String uniquekey) {
 		this.uniqueKeyList.add(uniquekey);
+	}
+
+	public Boolean getAddUniqueKey() {
+		return addUniqueKey;
+	}
+
+	public void setAddUniqueKey(Boolean addUniqueKey) {
+		this.addUniqueKey = addUniqueKey;
+	}
+
+	/**
+	 * Permet de d√©terminer si c'est une configuration sp√©cifique
+	 * @return Vrai si c'est une configuration sp√©cifique
+	 */
+	public Boolean getSpecificConfiguration() {
+		return isSpecificConfiguration;
+	}
+
+	/**
+	 * Permet de d√©finir que c'est une configuration sp√©cifique
+	 * @param specificConfiguration Vrai si c'est une configuration sp√©cifique
+	 */
+	public void setSpecificConfiguration(Boolean specificConfiguration) {
+		isSpecificConfiguration = specificConfiguration;
+	}
+
+	/**
+	 * Permet de se procurer l'ordre de la configuration sp√©cifique
+	 * @return l'ordre de la configuration sp√©cifique
+	 */
+	public Integer getConfigurationSpecificOrder() {
+		return configurationSpecificOrder;
+	}
+
+	/**
+	 * Permet de d√©finir l'ordre de la configuration sp√©cifique
+	 * @param configurationSpecificOrder l'ordre de la configuration sp√©cifique
+	 */
+	public void setConfigurationSpecificOrder(Integer configurationSpecificOrder) {
+		this.configurationSpecificOrder = configurationSpecificOrder;
+	}
+
+	/**
+	 * Permet de savoir si les num√©ros des textes doivent √™tre ajout√©s
+	 * @return Vrai si il faut ajouter les num√©ros
+	 */
+	public Boolean getAddNumber() {
+		return addNumber;
+	}
+
+	/**
+	 * Permet de d√©finir si on doit ajouter les num√©ros des textes
+	 * @param addNumber Vrai si on doit ajouter les num√©ros des textes
+	 */
+	public void setAddNumber(Boolean addNumber) {
+		this.addNumber = addNumber;
 	}
 }

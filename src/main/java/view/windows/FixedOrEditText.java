@@ -40,7 +40,7 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 /**
- * Permet de corriger ou d'éditer un texte, ou d'ajouter un text dans le cadre
+ * Permet de corriger ou d'Ã©diter un texte, ou d'ajouter un text dans le cadre
  * de la consultation d'un corpus
  * 
  * @author jerem
@@ -89,7 +89,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -154,7 +154,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Met à jour le contenu de l'information text panel
+	 * Met Ã  jour le contenu de l'information text panel
 	 */
 	private void updateContentInformationsTextPanel() {
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
@@ -205,7 +205,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 
 	/**
 	 * Permet d'afficher une icone de warning s'il y a une erreur dans les
-	 * structures spécifiques
+	 * structures spÃ©cifiques
 	 */
 	private void displayIconIfHaveErrorInSpecific() {
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
@@ -218,7 +218,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de gérer l'activation des boutons
+	 * Permet de gÃ©rer l'activation des boutons
 	 * 
 	 * @param isEnabled Vrai si actif, faux sinon
 	 */
@@ -234,7 +234,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * Consumer pour rattacher la fermeture de la fenÃªtre fille si prÃ©sente
 	 * 
 	 * @return
 	 */
@@ -296,7 +296,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de mettre à jour les boutons de navigation
+	 * Permet de mettre Ã  jour les boutons de navigation
 	 */
 	private void updateEnableNavigationPanel() {
 		actionNavigationPanel.setEnabled(0, getControler().haveTextInFilteredText(DirectionTypeEnum.PREVIOUS));
@@ -322,7 +322,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de sauvegarder un texte et de quitter (édition)
+	 * Permet de sauvegarder un texte et de quitter (Ã©dition)
 	 * 
 	 * @return
 	 */
@@ -346,7 +346,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet d'ajouter un texte et de quitter (édition du corpus)
+	 * Permet d'ajouter un texte et de quitter (Ã©dition du corpus)
 	 * 
 	 * @return
 	 */
@@ -369,7 +369,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 
 	/**
 	 * Execute l'action de sauvegarder un texte (correction) et de passer au suivant
-	 * ou de fermer la fenêtre
+	 * ou de fermer la fenÃªtre
 	 * 
 	 * @return
 	 */
@@ -400,8 +400,8 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet d'effectuer les actions nécessaires sur la fermeture de fenêtre des
-	 * spécifiques
+	 * Permet d'effectuer les actions nÃ©cessaires sur la fermeture de fenÃªtre des
+	 * spÃ©cifiques
 	 * 
 	 * @return le consumer
 	 */
@@ -415,7 +415,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	/**
 	 * Execute l'action d'ajouter un texte
 	 * 
-	 * @param Titre de la fenêtre
+	 * @param Titre de la fenÃªtre
 	 * @return
 	 */
 	private ActionListener openFixedSpecificText(String title) {
@@ -423,9 +423,9 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// on désactive les bouton
+				// on dÃ©sactive les bouton
 				setEnabledForAllButton(false);
-				// on ouvre la fenêtre
+				// on ouvre la fenÃªtre
 				fillSpecificTextFrame = new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(title),
 						getControler());
 				fillSpecificTextFrame.addActionOnClose(actionOnCloseSpecificFrame());

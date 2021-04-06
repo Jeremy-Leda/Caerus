@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * 
- * Permet de vÈrifier la prÈsence d'une seule instance de l'application
- * Utilise un lock sur un fichier dans un rÈpertoire temporaire
+ * Permet de v√©rifier la pr√©sence d'une seule instance de l'application
+ * Utilise un lock sur un fichier dans un r√©pertoire temporaire
  * 
  * @author jerem
  *
@@ -26,8 +26,8 @@ public class SingleInstance {
 	private static FileLock fileLock;
 
 	/**
-	 * Permet de crÈer l'instance
-	 * @return Vrai si l'instance est unique, Faux si une instance existe dÈj‡
+	 * Permet de cr√©er l'instance
+	 * @return Vrai si l'instance est unique, Faux si une instance existe d√©j√†
 	 */
 	public static Boolean createInstance() {
 		try {
@@ -40,9 +40,9 @@ public class SingleInstance {
 	}
 
 	/**
-	 * Permet de crÈer le fichier ‡ locker
+	 * Permet de cr√©er le fichier √† locker
 	 * @return le fichier
-	 * @throws IOException erreur ‡ la crÈation du fichier
+	 * @throws IOException erreur √† la cr√©ation du fichier
 	 */
 	private static File getAndCreateIfNecessaryLockFile() throws IOException {
 		StringBuilder sb = new StringBuilder();
@@ -57,8 +57,8 @@ public class SingleInstance {
 
 	/**
 	 * Permet de se procurer le lock sur le fichier
-	 * @param fileToLock le fichier a lockÈ
-	 * @return Vrai si le lock a ÈtÈ acquis, Faux sinon
+	 * @param fileToLock le fichier a lock√©
+	 * @return Vrai si le lock a √©t√© acquis, Faux sinon
 	 */
 	private static Boolean acquireLockOnFile(File fileToLock) {
 		try {
@@ -73,7 +73,7 @@ public class SingleInstance {
 	}
 	
 	/**
-	 * Permet de fermer et dÈtruire le fichier lockÈ
+	 * Permet de fermer et d√©truire le fichier lock√©
 	 */
 	public static void closeAndDeleteLockFile() {
 		try {

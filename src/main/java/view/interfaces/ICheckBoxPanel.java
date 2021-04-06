@@ -11,43 +11,43 @@ import java.util.function.Consumer;
 public interface ICheckBoxPanel extends IAccessPanel {
 
 	/**
-	 * Permet de définir les libellés statique
+	 * Permet de dÃ©finir les libellÃ©s statique
 	 * @param titlePanel Titre du panel
-	 * @param checkBoxIdTextMap Map numero de la checkbox et texte associé
+	 * @param checkBoxIdTextMap Map numero de la checkbox et texte associÃ©
 	 */
 	void setStaticLabel(String titlePanel, Map<Integer,String> checkBoxIdTextMap);
 	
 	/**
-	 * Permet de définir si la case à coché est actif ou non
-	 * @param number numéro de la case à cocher
+	 * Permet de dÃ©finir si la case Ã  cochÃ© est actif ou non
+	 * @param number numÃ©ro de la case Ã  cocher
 	 * @param enabled Actif ou non
 	 */
 	void setEnabled(Integer number, boolean enabled);
 	
 	/**
-	 * Permet de savoir si la case à cocher est sélectionné
-	 * @param number numéro de la case à cocher
+	 * Permet de savoir si la case Ã  cocher est sÃ©lectionnÃ©
+	 * @param number numÃ©ro de la case Ã  cocher
 	 * @return Vrai si c'est le cas
 	 */
 	Boolean getCheckBoxIsChecked(Integer number);
 	
 	/**
-	 * Permet de définir si la case à coché est coché ou non
-	 * @param number numéro de la case à cocher
-	 * @param checked coché ou non
+	 * Permet de dÃ©finir si la case Ã  cochÃ© est cochÃ© ou non
+	 * @param number numÃ©ro de la case Ã  cocher
+	 * @param checked cochÃ© ou non
 	 */
 	void setChecked(Integer number, boolean checked);
 	
 	/**
-	 * Permet de savoir si la case à cocher est activé
-	 * @param number numéro de la case à cocher
+	 * Permet de savoir si la case Ã  cocher est activÃ©
+	 * @param number numÃ©ro de la case Ã  cocher
 	 * @return Vrai si c'est le cas
 	 */
 	Boolean getCheckBoxIsEnabled(Integer number);
 	
 	/**
 	 * Permet d'ajouter un consumer sur le changement de la valeur
-	 * @param number numero de la case à cocher
+	 * @param number numero de la case Ã  cocher
 	 * @param consumer consumer
 	 */
 	void addConsumerOnChange(Integer number, Consumer<?> consumer);

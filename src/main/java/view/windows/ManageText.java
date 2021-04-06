@@ -25,7 +25,7 @@ import view.utils.Constants;
 
 /**
  * 
- * Permet d'afficher la fenêtre de gestion des textes
+ * Permet d'afficher la fenÃªtre de gestion des textes
  * 
  * @author jerem
  *
@@ -61,7 +61,7 @@ public class ManageText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de créer le contenu
+	 * Permet de crÃ©er le contenu
 	 */
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
@@ -134,7 +134,7 @@ public class ManageText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de se procurer le consumer sur l'ouverture de la fenêtre d'édition
+	 * Permet de se procurer le consumer sur l'ouverture de la fenÃªtre d'Ã©dition
 	 * 
 	 * @return le consumer
 	 */
@@ -145,7 +145,7 @@ public class ManageText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de se procurer le consumer sur la fermeture de la fenêtre d'édition
+	 * Permet de se procurer le consumer sur la fermeture de la fenÃªtre d'Ã©dition
 	 * 
 	 * @return le consumer
 	 */
@@ -156,7 +156,7 @@ public class ManageText extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+	 * Consumer pour rattacher la fermeture de la fenÃªtre fille si prÃ©sente
 	 * 
 	 * @return
 	 */

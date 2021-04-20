@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import model.analyze.beans.Configuration;
+import model.analyze.beans.LexicometricAnalysis;
 
 /**
  * 
@@ -69,6 +70,19 @@ public final class JSonFactoryUtils {
 	public static Configuration createConfigurationFromJsonFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(inputStream, Configuration.class);
+	}
+
+	/**
+	 * Permet de se procurer la configuration pour l'analyse à partir d'un fichier Json
+	 * @param inputStream Inputstream
+	 * @return la configuration pour l'analyse
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public static LexicometricAnalysis createAnalyseConfigurationFromJsonFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.readValue(inputStream, LexicometricAnalysis.class);
 	}
 	
 	/**

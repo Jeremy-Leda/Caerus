@@ -411,6 +411,30 @@ public final class Constants {
 	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_FILE_EXCEL="window.functional.error.invalid.file.excel";
 	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_SPECIFIC_CONFIGURATION="window.functional.error.invalid.specific.configuration";
 	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_FILE_EXCEL_SPECIFIC_CONFIGURATION="window.functional.error.invalid.file.excel.specific.configuration";
+	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_ANALYSIS_FOLDER="window.functional.error.invalid.analysis.folder";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE="window.start.analysis.token.panel.title";
+	public static final String WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL="window.start.analysis.edit.filter.label";
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN="window.start.analysis.information.message.token";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_LABEL="window.start.analysis.edit.profile.label";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL="window.start.analysis.edit.profile.new.button.label";
+	public static final String WINDOW_START_ANALYSIS_EDIT_FILTER_ADD_BUTTON_LABEL="window.start.analysis.edit.filter.add.button.label";
+	public static final String WINDOW_START_ANALYSIS_EDIT_FILTER_REMOVE_BUTTON_LABEL="window.start.analysis.edit.filter.remove.button.label";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL="window.start.analysis.token.table.header.label";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE="window.start.analysis.token.add.information.message";
+
+	public static final String WINDOW_OPERATION_VALIDATE="window.operation.validate";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL="window.start.analysis.token.add.text.label";
+	public static final String WINDOW_INFORMATION_ANSWER_USER_PANEL_TITLE="window.information.answer.user.panel.title";
+
+	public static final String WINDOW_INFORMATION_QUESTION_USER_PANEL_TITLE="window.information.question.user.panel.title";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE="window.start.analysis.token.table.panel.title";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_LABEL="window.start.analysis.edit.profile.remove.button.label";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_SAVE_BUTTON_LABEL="window.start.analysis.edit.profile.save.button.label";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_CONFIRMATION_MESSAGE="window.start.analysis.edit.profile.remove.button.confirmation.message";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE="window.start.analysis.edit.profile.new.button.copy.or.new.message";
+	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE="window.start.analysis.edit.profile.new.button.new.name.message";
+
+
 
 
 

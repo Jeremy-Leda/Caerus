@@ -1,5 +1,7 @@
 package view.panel;
 
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -111,14 +113,15 @@ public class CheckBoxPanel implements ICheckBoxPanel {
 	@Override
 	public void addConsumerOnChange(Integer number, Consumer<?> consumer) {
 		if (checkBoxMap.containsKey(number) && null != consumer) {
-			 checkBoxMap.get(number).addChangeListener(new ChangeListener() {
-				
-				@Override
-				public void stateChanged(ChangeEvent e) {
-					consumer.accept(null);
-				}
+			checkBoxMap.get(number).addItemListener(e -> {
+				consumer.accept(null);
 			});
 		}
 	}
+
+    @Override
+    public long getNumberOfCheckedBox() {
+        return checkBoxMap.values().stream().filter(jCheckBox -> jCheckBox.isSelected()).count();
+    }
 
 }

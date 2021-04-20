@@ -38,7 +38,7 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 	public SpecificListTablePanel(ISpecificTextModel specificTextModel) {
 		this.specificTextModel = specificTextModel;
 		this.detailsListPanel = new JPanel();
-		this.tableModel = new SpecificTableModel(this.specificTextModel, this.detailsListPanel.getGraphics());
+		this.tableModel = new SpecificTableModel(this.specificTextModel);
 		this.table = new JTable(this.tableModel);
 		this.specificTextModel.setClearSelectionConsumer(v -> this.table.clearSelection());
 		this.scrollPanel = new JScrollPane(table);

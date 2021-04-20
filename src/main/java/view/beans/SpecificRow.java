@@ -2,6 +2,7 @@ package view.beans;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 
@@ -41,5 +42,17 @@ public class SpecificRow {
 	public void addAllSpecific(List<String> allSpecificToAdd) {
 		this.specificList.addAll(allSpecificToAdd);
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SpecificRow that = (SpecificRow) o;
+		return Objects.equals(specificList, that.specificList);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(specificList);
+	}
 }

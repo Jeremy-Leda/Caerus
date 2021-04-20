@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -36,6 +37,7 @@ public class WizardPanel implements IWizardPanel {
 	private Integer nbStep;
 	private final List<Consumer<?>> consumerOnChangeStepList;
 	private Integer currentStep;
+	private Integer oldCurrentStep;
 
 	/**
 	 * Constructeur
@@ -44,12 +46,12 @@ public class WizardPanel implements IWizardPanel {
 	 */
 	public WizardPanel(String title) {
 		this.wizardStepMap = new LinkedHashMap<Integer, List<IAccessPanel>>();
-		this.content = new JPanel();
-		this.content.setBorder(BorderFactory.createTitledBorder(title));
 		this.actionPanel = new ActionPanel(2);
-		this.nbStep = -1;
 		this.currentStep = 0;
 		this.consumerOnChangeStepList = new ArrayList<Consumer<?>>();
+		this.content = new JPanel();
+		this.nbStep = -1;
+		this.content.setBorder(BorderFactory.createTitledBorder(title));
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
 		initActionContent();
@@ -123,13 +125,9 @@ public class WizardPanel implements IWizardPanel {
 	 * @return l'action
 	 */
 	private ActionListener previousStepAction() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				currentStep--;
-				refreshCurrentStep();
-			}
+		return e -> {
+			currentStep--;
+			refreshCurrentStep();
 		};
 	}
 
@@ -139,13 +137,9 @@ public class WizardPanel implements IWizardPanel {
 	 * @return l'action
 	 */
 	private ActionListener nextStepAction() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				currentStep++;
-				refreshCurrentStep();
-			}
+		return e -> {
+			currentStep++;
+			refreshCurrentStep();
 		};
 	}
 
@@ -168,6 +162,45 @@ public class WizardPanel implements IWizardPanel {
 			currentStep = numStep;
 			refreshCurrentStep();
 		}
+	}
+
+	@Override
+	public void removeStep(Integer number) {
+		this.wizardStepMap.remove(number);
+	}
+
+	@Override
+	public void editStep(Integer number, List<IAccessPanel> panelList) {
+		this.wizardStepMap.put(number, panelList);
+	}
+
+	@Override
+	public Boolean existStep(Integer number) {
+		return this.wizardStepMap.containsKey(number);
+	}
+
+	@Override
+	public void reconstructWizard() {
+//		AtomicInteger number = new AtomicInteger();
+//		number.set(0);
+//		Map<Integer, List<IAccessPanel>> wizardStepMapFinal = new HashMap<>();
+//		this.wizardStepMap.values().forEach(v -> {
+//			wizardStepMapFinal.put(number.getAndIncrement(), v);
+//		});
+//		this.wizardStepMap.clear();
+//		this.wizardStepMap.putAll(wizardStepMapFinal);
+//		this.nbStep = number.get();
+		//refreshCurrentStep();
+		this.currentStep = this.oldCurrentStep;
+		refreshCurrentStep();
+	}
+
+	@Override
+	public void removeAll() {
+		this.nbStep = -1;
+		this.oldCurrentStep = currentStep;
+		this.currentStep = 0;
+		this.wizardStepMap.clear();
 	}
 
 }

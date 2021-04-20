@@ -51,6 +51,12 @@ public interface ICheckBoxPanel extends IAccessPanel {
 	 * @param consumer consumer
 	 */
 	void addConsumerOnChange(Integer number, Consumer<?> consumer);
+
+	/**
+	 * Permet de connaitre le nombre de case à cocher qui ont été coché.
+	 * @return Le nombre de case à cocher qui ont été coché.
+	 */
+	long getNumberOfCheckedBox();
 	
 	
 }

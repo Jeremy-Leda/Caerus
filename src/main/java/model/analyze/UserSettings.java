@@ -54,7 +54,6 @@ public class UserSettings {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserSettings.class);
 	private static UserSettings _instance;
-	private final Map<FolderSettingsEnum, File> FOLDER_SETTINGS = new HashMap<>();
 	private final List<LinkedHashMap<String, String>> EDITING_CORPUS_TEXTS_LIST = new LinkedList<>();
 	private final Map<String, String> EDITING_METAFIELD_MAP = new HashMap<>();
 	private final Map<String, String> EDITING_FIELD_MAP = new HashMap<>();
@@ -237,28 +236,28 @@ public class UserSettings {
 				.findFirst();
 	}
 
-	/**
-	 * Permet de se procurer le dossier
-	 * 
-	 * @param setting Réglage dont on souhaite le dossier
-	 * @return le dossier
-	 */
-	public File getFolder(FolderSettingsEnum setting) {
-		if (FOLDER_SETTINGS.containsKey(setting)) {
-			return FOLDER_SETTINGS.get(setting);
-		}
-		return null;
-	}
-
-	/**
-	 * Permet de définir un dossier de réglages
-	 * 
-	 * @param setting type de dossier
-	 * @param folder  dossier
-	 */
-	public void setFolder(FolderSettingsEnum setting, File folder) {
-		FOLDER_SETTINGS.put(setting, folder);
-	}
+//	/**
+//	 * Permet de se procurer le dossier
+//	 *
+//	 * @param setting Réglage dont on souhaite le dossier
+//	 * @return le dossier
+//	 */
+//	public File getFolder(FolderSettingsEnum setting) {
+//		if (FOLDER_SETTINGS.containsKey(setting)) {
+//			return FOLDER_SETTINGS.get(setting);
+//		}
+//		return null;
+//	}
+//
+//	/**
+//	 * Permet de définir un dossier de réglages
+//	 *
+//	 * @param setting type de dossier
+//	 * @param folder  dossier
+//	 */
+//	public void setFolder(FolderSettingsEnum setting, File folder) {
+//		FOLDER_SETTINGS.put(setting, folder);
+//	}
 
 	/**
 	 * Permet de se procurer la configuration courante
@@ -852,7 +851,7 @@ public class UserSettings {
 	 */
 	public SaveCurrentFixedText getSaveCurrentFixedText() {
 		SaveCurrentFixedText save = new SaveCurrentFixedText();
-		save.setPath(getFolder(FolderSettingsEnum.FOLDER_ANALYZE));
+		save.setPath(UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE).orElseGet(null));
 		save.setKeysStructuredTextErrorSet(
 				Collections.unmodifiableSet(this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.STRUCTURED_TEXT)));
 		save.setUserStructuredTextList(
@@ -871,13 +870,13 @@ public class UserSettings {
 	 */
 	public CurrentUserConfiguration getUserConfiguration() {
 		CurrentUserConfiguration save = new CurrentUserConfiguration();
-		File folderTexts = getFolder(FolderSettingsEnum.FOLDER_TEXTS);
-		if (null != folderTexts) {
-			save.setLibraryPath(folderTexts.toPath());
+		Optional<File> folderTexts = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS);
+		if (folderTexts.isPresent()) {
+			save.setLibraryPath(folderTexts.get().toPath());
 		}
-		File folderConfigurations = getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
-		if (null != folderConfigurations) {
-			save.setConfigurationPath(folderConfigurations.toPath());
+		Optional<File> folderConfigurations = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
+		if (folderConfigurations.isPresent()) {
+			save.setConfigurationPath(folderConfigurations.get().toPath());
 		}
 		Configuration currentConfiguration = getCurrentConfiguration();
 		if (null != currentConfiguration) {
@@ -893,10 +892,10 @@ public class UserSettings {
 	 */
 	public void restoreUserConfiguration(CurrentUserConfiguration save) {
 		if (null != save.getLibraryPath()) {
-			setFolder(FolderSettingsEnum.FOLDER_TEXTS, save.getLibraryPath().toFile());
+			UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_TEXTS, save.getLibraryPath().toFile());
 		}
 		if (null != save.getConfigurationPath()) {
-			setFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS, save.getConfigurationPath().toFile());
+			UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS, save.getConfigurationPath().toFile());
 		}
 		try {
 			loadConfigurationsList();
@@ -919,7 +918,7 @@ public class UserSettings {
 	 * @param save sauvegarde a restaurer
 	 */
 	public void restoreCurrentFixedTest(SaveCurrentFixedText save) {
-		setFolder(FolderSettingsEnum.FOLDER_ANALYZE, save.getPath());
+		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_ANALYZE, save.getPath());
 		this.MAP_TYPE_ERROR_KEYS_LIST.get(ErrorTypeEnum.STRUCTURED_TEXT).addAll(save.getKeysStructuredTextErrorSet());
 		save.getUserStructuredTextList().stream().forEach(ust -> this.CURRENT_FOLDER_USER_TEXTS_MAP
 				.get(FolderSettingsEnum.FOLDER_ANALYZE).addUserStructuredText(ust));
@@ -1030,9 +1029,9 @@ public class UserSettings {
 	 * @return le repertoire complet pour sauvegarder les textes
 	 */
 	public File getDirectoryForSaveTextsInLibrary() {
-		File folderTexts = getFolder(FolderSettingsEnum.FOLDER_TEXTS);
-		if (null != folderTexts && null != this.currentConfiguration) {
-			File newDirectory = new File(folderTexts.getAbsolutePath(), this.currentConfiguration.getName());
+		Optional<File> folderTexts = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS);
+		if (folderTexts.isPresent() && null != this.currentConfiguration) {
+			File newDirectory = new File(folderTexts.get().getAbsolutePath(), this.currentConfiguration.getName());
 			if (!newDirectory.exists()) {
 				newDirectory.mkdirs();
 			}
@@ -1335,9 +1334,9 @@ public class UserSettings {
 	 * @throws IOException erreur d'entrée sortie
 	 */
 	private void loadConfigurationsList() throws IOException {
-		File configurationFolder = getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
-		if (null != configurationFolder && configurationFolder.exists()) {
-			Files.walkFileTree(Paths.get(configurationFolder.toURI()), new SimpleFileVisitor<>() {
+		Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
+		if (configurationFolder.isPresent() && configurationFolder.get().exists()) {
+			Files.walkFileTree(Paths.get(configurationFolder.get().toURI()), new SimpleFileVisitor<>() {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					if (!Files.isDirectory(file)) {

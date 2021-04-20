@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import static view.utils.Constants.WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL;
+
 /**
  * 
  * Permet d'importer un fichier excel
@@ -220,7 +222,7 @@ public class ImportExcel extends ModalJFrameAbstract {
 	 * @return consumer
 	 */
 	private ActionListener getImportExcelAction() {
-		return e-> executeOnServerWithProgressView(() -> getControler().importExcel(importExcelCmd()), Boolean.TRUE);
+		return e-> executeOnServerWithProgressView(() -> getControler().importExcel(importExcelCmd()), Boolean.TRUE, WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL, Boolean.TRUE);
 
 		//return e -> executeOnServerWithCloseCurrentFrame(() -> getControler().importExcel(importExcelCmd()));
 

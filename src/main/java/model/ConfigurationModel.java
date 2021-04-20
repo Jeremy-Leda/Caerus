@@ -1,5 +1,26 @@
 package model;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import model.analyze.Dispatcher;
+import model.analyze.UserFolder;
+import model.analyze.UserLexicometricAnalysisSettings;
+import model.analyze.UserSettings;
+import model.analyze.beans.*;
+import model.analyze.constants.ErrorTypeEnum;
+import model.analyze.constants.FolderSettingsEnum;
+import model.analyze.edit.LexicometricEditTableService;
+import model.excel.beans.ExcelGenerateConfigurationCmd;
+import model.excel.beans.ExcelImportConfigurationCmd;
+import model.exceptions.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import view.beans.EditTable;
+import view.beans.EditTableElement;
+import view.beans.ExportTypeEnum;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -7,37 +28,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import model.excel.beans.ExcelImportConfigurationCmd;
-import model.exceptions.*;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.time.StopWatch;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import model.analyze.Dispatcher;
-import model.analyze.UserSettings;
-import model.analyze.beans.Configuration;
-import model.analyze.beans.FilesToAnalyzeInformation;
-import model.analyze.beans.FilterCorpus;
-import model.analyze.beans.InconsistencyChangeText;
-import model.analyze.beans.LineError;
-import model.analyze.beans.MissingBaseCode;
-import model.analyze.beans.SpecificConfiguration;
-import model.analyze.beans.StructuredField;
-import model.analyze.beans.StructuredFile;
-import model.analyze.beans.UserStructuredText;
-import model.analyze.constants.ErrorTypeEnum;
-import model.analyze.constants.FolderSettingsEnum;
-import model.excel.beans.ExcelGenerateConfigurationCmd;
-import view.beans.ExportTypeEnum;
-
 /**
  * 
- * Cette classe permet d'int�ragir avec les informations stock�s et effectuer
- * des actions Il fait des appels au dispatcher et � la configuration
+ * Cette classe permet d'intéragir avec les informations stockés et effectuer
+ * des actions Il fait des appels au dispatcher et à la configuration
  * utilisateur
  * 
  * @author jerem
@@ -47,6 +41,7 @@ public class ConfigurationModel implements IConfigurationModel {
 
 	private Logger logger = LoggerFactory.getLogger(ConfigurationModel.class);
 	private Dispatcher dispatcher = new Dispatcher();
+	private LexicometricEditTableService lexicometricEditTableService = new LexicometricEditTableService();
 
 	@Override
 	public void launchAnalyze(Integer depth) throws LoadTextException {
@@ -94,15 +89,15 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public File getTextsFolder() {
+	public Optional<File> getTextsFolder() {
 		logger.debug("CALL getTextsFolder");
-		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS);
+		return UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_TEXTS);
 	}
 
 	@Override
-	public File getAnalyzeFolder() {
+	public Optional<File> getAnalyzeFolder() {
 		logger.debug("CALL getAnalyzeFolder");
-		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE);
+		return UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE);
 	}
 
 	@Override
@@ -123,7 +118,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void setAnalyzeFolder(File folderAnalyze) {
 		logger.debug(String.format("CALL setAnalyzeFolder : Folder %s", folderAnalyze));
-		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_ANALYZE, folderAnalyze);
+		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_ANALYZE, folderAnalyze);
 	}
 
 	@Override
@@ -498,9 +493,9 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public File getConfigurationFolder() {
+	public Optional<File> getConfigurationFolder() {
 		logger.debug("CALL getConfigurationFolder");
-		return UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
+		return UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS);
 	}
 
 	@Override
@@ -610,5 +605,38 @@ public class ConfigurationModel implements IConfigurationModel {
 			informationExceptionSet.addAll(this.dispatcher.importExcel(excelImportConfigurationCmd));
 		}
 		return informationExceptionSet;
+	}
+
+	@Override
+	public LexicometricAnalysis getLexicometricAnalysis() {
+		logger.debug("CALL getLexicometricAnalysis");
+		return UserLexicometricAnalysisSettings.getInstance().getLexicometricAnalysis();
+	}
+
+	@Override
+	public String getLexicometricDefaultProfile() {
+		logger.debug("CALL getLexicometricDefaultProfile");
+		return UserLexicometricAnalysisSettings.getInstance().getUserProfile();
+	}
+
+	@Override
+	public void saveTokenization(EditTable editTable) {
+
+	}
+
+	@Override
+	public void saveLemmatization(EditTable editTable) {
+		logger.debug("CALL saveLemmatization");
+		logger.debug(editTable.toString());
+		Optional<Lemmatization> lemmatizationOptional = getLexicometricAnalysis().getLemmatizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(editTable.getProfil())).findFirst();
+		if (lemmatizationOptional.isEmpty()) {
+			return;
+		}
+		Map<String, Set<String>> baseListWordsMap = lemmatizationOptional.get().getBaseListWordsMap();
+		EditTableElement editTableElement = editTable.getEditTableElement();
+		Map<String, Set<String>> result = (Map<String, Set<String>>) editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, baseListWordsMap);
+		Set<String> keyForValueNotInitializedSet = result.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
+		keyForValueNotInitializedSet.forEach(key -> result.put(key, new HashSet<>()));
+		lemmatizationOptional.get().setBaseListWordsMap(result);
 	}
 }

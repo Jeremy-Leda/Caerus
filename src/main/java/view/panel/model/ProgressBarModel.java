@@ -8,7 +8,7 @@ import view.interfaces.IProgressBarModel;
 
 /**
  * 
- * Permet de créer la partie modéle de la progressBar
+ * Permet de créer la partie modèle de la progressBar
  * 
  * @author jerem
  *

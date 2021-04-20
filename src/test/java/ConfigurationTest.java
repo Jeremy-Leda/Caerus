@@ -172,7 +172,7 @@ public class ConfigurationTest {
      */
     @Test
     public void checkGetConfigurationFolder() {
-        File configurationFolder = configurationControler.getConfigurationFolder();
+        File configurationFolder = configurationControler.getConfigurationFolder().get();
         File expected = new File(PathUtils.getCaerusFolder() + "/configurations");
         assertEquals(expected, configurationFolder);
     }

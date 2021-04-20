@@ -5,19 +5,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-import model.analyze.beans.Configuration;
-import model.analyze.beans.FilesToAnalyzeInformation;
-import model.analyze.beans.FilterCorpus;
-import model.analyze.beans.InconsistencyChangeText;
-import model.analyze.beans.LineError;
-import model.analyze.beans.MissingBaseCode;
-import model.analyze.beans.StructuredFile;
-import model.analyze.beans.UserStructuredText;
+import model.analyze.beans.*;
 import model.analyze.constants.FolderSettingsEnum;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.excel.beans.ExcelImportConfigurationCmd;
@@ -25,6 +19,7 @@ import model.exceptions.ImportExcelException;
 import model.exceptions.InformationException;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.beans.EditTable;
 import view.beans.ExportTypeEnum;
 
 /**
@@ -86,21 +81,21 @@ public interface IConfigurationModel {
 	 * 
 	 * @return le dossier des textes
 	 */
-	File getTextsFolder();
+	Optional<File> getTextsFolder();
 	
 	/**
 	 * Permet de se procurer le dossier d'analyse des textes
 	 * 
 	 * @return le dossier d'analyse des textes
 	 */
-	File getAnalyzeFolder();
+	Optional<File> getAnalyzeFolder();
 	
 	/**
 	 * Permet de se procurer le dossier contenant les configuration
 	 * 
 	 * @return le dossier contenants les configurations
 	 */
-	File getConfigurationFolder();
+	Optional<File> getConfigurationFolder();
 	
 	/**
 	 * Permet de se procurer le nom de la configuration
@@ -587,4 +582,28 @@ public interface IConfigurationModel {
 	 * @param excelImportConfigurationCmd commande qui détermine comment l'import excel doit être réalisé
 	 */
     Set<InformationException> importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException;
+
+	/**
+	 * Permet de se procurer le bean pour l'analyse lexicométrique
+	 * @return le bean pour l'analyse lexicométrique
+	 */
+	LexicometricAnalysis getLexicometricAnalysis();
+
+	/**
+	 * Permet de se procurer le profile par défaut pour les analyses lexicométrique
+	 * @return le profile par défaut pour les analyses lexicométrique
+	 */
+	String getLexicometricDefaultProfile();
+
+	/**
+	 * Permet de sauvegarder la tokenisation en mémoire
+	 * @param editTable {@link EditTable} pour la sauvegarde
+	 */
+	void saveTokenization(EditTable editTable);
+
+	/**
+	 * Permet de sauvegarder la lemmatisation en mémoire
+	 * @param editTable {@link EditTable} pour la sauvegarde
+	 */
+	void saveLemmatization(EditTable editTable);
 }

@@ -1,5 +1,6 @@
 package view.panel;
 
+import org.apache.commons.lang3.StringUtils;
 import view.interfaces.ITextBoxPanel;
 
 import javax.swing.*;
@@ -79,7 +80,9 @@ public class TextBoxPanel implements ITextBoxPanel {
 	 * Permet de rafraichir l'affichage
 	 */
 	public void refresh() {
-		this.textBoxPanel.setBorder(BorderFactory.createTitledBorder(titlePanel));
+		if (StringUtils.isNotBlank(titlePanel)) {
+			this.textBoxPanel.setBorder(BorderFactory.createTitledBorder(titlePanel));
+		}
 		textBoxIdTextMap.entrySet().forEach(es -> {
 			if (labelBoxMap.containsKey(es.getKey())) {
 				labelBoxMap.get(es.getKey()).setText(es.getValue());

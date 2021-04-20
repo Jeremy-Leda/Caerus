@@ -1,5 +1,6 @@
 package view.interfaces;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -28,11 +29,11 @@ public interface IComboBoxPanel extends IAccessPanel {
 	 * Permet de mettre à jour la combobox avec les labels suivants
 	 * @param labels labels
 	 */
-	void refresh(List<String> labels);
+	void refresh(Collection<String> labels);
 	
 	/**
 	 * Permet de de sélectionner un item
-	 * @param itemToSelect item à selectionner
+	 * @param itemToSelect item à sélectionner
 	 */
 	void selectItem(String itemToSelect);
 	
@@ -41,5 +42,24 @@ public interface IComboBoxPanel extends IAccessPanel {
 	 * @return
 	 */
 	int getItemCount();
+
+	/**
+	 * Permet de savoir si l'item existe
+	 * @param item item à vérifier
+	 * @return Vrai si l'item existe
+	 */
+	Boolean itemExist(String item);
+
+	/**
+	 * Permet d'ajouter un item et de le sélectionner
+	 * @param newItem nouvel item
+	 */
+	void addAndSelectItem(String newItem);
+
+	/**
+	 * Permet de supprimer l'item passer en paramètre
+	 * @param itemToDelete l'item passer en paramètre à supprimer
+	 */
+	void delete(String itemToDelete);
 	
 }

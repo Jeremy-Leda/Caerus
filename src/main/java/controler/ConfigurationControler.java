@@ -35,13 +35,8 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public void launchAnalyze(Boolean withSubFolder) throws LoadTextException {
-		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())
-				&& null != this.configurationModel.getAnalyzeFolder()
-				&& this.configurationModel.getAnalyzeFolder().isDirectory()) {
-			configurationModel.launchAnalyze(withSubFolder ? Integer.MAX_VALUE : 1);
-		} else {
-			logger.error("Configuration or path is not compatible");
-		}
+		checkConfigurationAndFolder(this.configurationModel.getAnalyzeFolder());
+		configurationModel.launchAnalyze(withSubFolder ? Integer.MAX_VALUE : 1);
 	}
 
 	@Override
@@ -52,12 +47,12 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public File getTextsFolder() {
+	public Optional<File> getTextsFolder() {
 		return this.configurationModel.getTextsFolder();
 	}
 
 	@Override
-	public File getAnalyzeFolder() {
+	public Optional<File> getAnalyzeFolder() {
 		return this.configurationModel.getAnalyzeFolder();
 	}
 
@@ -416,12 +411,27 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public void loadTexts() throws LoadTextException {
-		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())
-				&& null != this.configurationModel.getTextsFolder()
-				&& this.configurationModel.getTextsFolder().isDirectory()) {
-			configurationModel.loadTexts();
-		} else {
-			logger.error("Configuration or path is not compatible");
+		checkConfigurationAndFolder(this.configurationModel.getTextsFolder());
+		configurationModel.loadTexts();
+	}
+
+	/**
+	 * Permet de vérifier que la configuration et le dossier d'analyse existe
+	 */
+	private void checkConfigurationAndFolder(Optional<File> folder) {
+		ServerException serverException = new ServerException();
+		if (StringUtils.isBlank(this.configurationModel.getConfigurationName())) {
+			serverException.addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.ERROR_CONFIGURATION)
+					.build());
+		}
+		if (folder.isEmpty()) {
+			serverException.addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.ERROR_ANALYZE_FOLDER)
+					.build());
+		}
+		if (!serverException.getInformationExceptionSet().isEmpty()) {
+			throw serverException;
 		}
 	}
 
@@ -499,7 +509,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public File getConfigurationFolder() {
+	public Optional<File> getConfigurationFolder() {
 		return this.configurationModel.getConfigurationFolder();
 	}
 
@@ -642,4 +652,45 @@ public class ConfigurationControler implements IConfigurationControler {
 			throw serverException;
 		}
 	}
+
+    @Override
+    public LexicometricConfigurationView getLexicometricAnalysis() {
+        return getLexicometricAnalysis(Optional.empty());
+    }
+
+	@Override
+	public LexicometricConfigurationView getLexicometricAnalysis(String profile) {
+		return getLexicometricAnalysis(Optional.ofNullable(profile));
+	}
+
+	@Override
+	public String getLexicometricDefaultProfile() {
+		return this.configurationModel.getLexicometricDefaultProfile();
+	}
+
+	@Override
+	public void saveLexicometricAnalysis(EditTable editTable) {
+		editTable.getLexicometricAnalysisType().getSaveConsumer().accept(this.configurationModel, editTable);
+	}
+
+
+	/**
+	 * Permet de se procurer la vue pour l'affichage des informations d'analyse lexicométrique
+	 * @param optionalProfile le profile optionnel
+	 * @return la vue pour l'affichage des informations d'analyse lexicométrique
+	 */
+	private LexicometricConfigurationView getLexicometricAnalysis(Optional<String> optionalProfile) {
+		String profile = optionalProfile.orElse(getLexicometricDefaultProfile());
+		Optional<Tokenization> optionalTokenization = this.configurationModel.getLexicometricAnalysis().getTokenizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
+		Optional<Lemmatization> optionalLemmatization = this.configurationModel.getLexicometricAnalysis().getLemmatizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
+		Tokenization tokenization = new Tokenization();
+		tokenization.setProfile(profile);
+		tokenization.setWords(Set.copyOf(optionalTokenization.orElse(new Tokenization()).getWords()));
+		Lemmatization lemmatization = new Lemmatization();
+		lemmatization.setProfile(profile);
+		lemmatization.setBaseListWordsMap(Map.copyOf(optionalLemmatization.orElse(new Lemmatization()).getBaseListWordsMap()));
+		return new LexicometricConfigurationView(tokenization, lemmatization);
+
+	}
+
 }

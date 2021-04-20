@@ -17,15 +17,11 @@ import view.interfaces.ISpecificTextModel;
  */
 public class SpecificTableModel extends AbstractTableModel implements IRefreshPanel {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 505483651198604683L;
 	private final ISpecificTextModel specificTextModel;
 	private final List<String> headersList;
 	private final List<SpecificRow> rowsList;
 
-	public SpecificTableModel(ISpecificTextModel specificTextModel, Graphics graphic) {
+	public SpecificTableModel(ISpecificTextModel specificTextModel) {
 		this.specificTextModel = specificTextModel;
 		this.headersList = new LinkedList<String>();
 		this.rowsList = new LinkedList<SpecificRow>();

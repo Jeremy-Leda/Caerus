@@ -41,7 +41,7 @@ import static view.utils.Constants.*;
  * @author jerem
  *
  */
-public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameRepack, IActionOnClose {
+public abstract class ModalJFrameAbstract extends ExecuteServerAbstract implements IModalFrameRepack, IActionOnClose {
 
 	/**
 	 * 
@@ -69,6 +69,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	 * @param title titre de la fenêtre
 	 */
 	public ModalJFrameAbstract(String title, IConfigurationControler configurationControler, Boolean isModal) {
+		super(configurationControler);
 		logger.debug("Open " + getWindowName());
 		this.isModal = isModal;
 		this.screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -169,21 +170,13 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	}
 	
 	/**
-	 * Permet de se procurer le controler
-	 * @return le controler
-	 */
-	protected IConfigurationControler getControler() {
-		return this.configurationControler;
-	}
-	
-	/**
 	 * Permet de fermer la fenêtre
 	 */
 	@Override
 	public void closeFrame() {
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
-	
+
 	/**
 	 * Permet de se procurer le consumer pour fermer automatiquement la fenêtre
 	 * @return le consumer
@@ -196,14 +189,7 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 			}
 		};
 	}
-	
-	
-	/**
-	 * Fournis le nom de la fenêtre utilisé dans le code
-	 * @return
-	 */
-	public abstract String getWindowName();
-	
+
 	/**
 	 * Permet de créer un consumer pour logger la fermeture
 	 * @return le consumer
@@ -211,7 +197,13 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	private Consumer<Void> getConsumerOnCloseForLog() {
 		return (v) -> logger.debug("Close " + getWindowName());
 	}
-	
+
+	/**
+	 * Fournis le nom de la fenêtre utilisé dans le code
+	 * @return
+	 */
+	public abstract String getWindowName();
+
 	private void checkLimitSize(Boolean changeLocation) {
 		Double limitHeight = screenSize.getHeight() * 0.95;
 		if (this.frame.getHeight() > limitHeight.intValue()) {
@@ -246,94 +238,8 @@ public abstract class ModalJFrameAbstract extends JFrame implements IModalFrameR
 	public void addOptionalFrame(JComponent component) {
 		this.optionalComponents.add(component);
 	}
-	
-	/**
-	 * Permet de se procurer le progress consumer
-	 * 
-	 * @param progressMaxValue le maximum de la valeur
-	 * @return le progressConsumer
-	 */
-	public Consumer<Consumer<Integer>> getProgressConsumer(Integer progressMaxValue) {
-		return valueProgressSetter -> {
-			while (this.configurationControler.getProgress() < progressMaxValue) {
-				valueProgressSetter.accept(this.configurationControler.getProgress());
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					logger.error(e.getMessage(), e);
-				}
-			}
-		};
-	}
-
-	public <R extends Object> Option<R> executeOnServer(CheckedFunction0<R> function) {
-		 return Try.of(function::apply)
-				 .onFailure(ServerException.class, this::logAndCreateErrorInterface)
-				 .toOption();
-	}
 
 
-	public void executeOnServer(CheckedRunnable runnable) {
-		executeOnServer(runnable, Boolean.FALSE);
-	}
-
-	public void executeOnServerWithProgressView(CheckedRunnable runnable, Boolean closeCurrentFrameOnSucceed) {
-		Try.run(() -> {
-			new ProgressBarView(r -> {
-				if (closeCurrentFrameOnSucceed) {
-					executeOnServerWithCloseCurrentFrame(runnable, Boolean.TRUE);
-				} else {
-					executeOnServer(runnable, Boolean.TRUE);
-				}
-			}, getProgressConsumer(100), 100, ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL));
-			getControler().resetProgress();
-		});
-	}
-
-	public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable) {
-		executeOnServerWithCloseCurrentFrame(runnable, Boolean.FALSE);
-	}
-
-	public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable, Boolean showSucceedPanel) {
-		Try.run(() -> runnable.run())
-				.onFailure(ServerException.class, this::logAndCreateErrorInterface)
-				.onSuccess(x -> { if (showSucceedPanel) { createSucceedInterface(); } })
-				.onSuccess(x -> closeFrame());
-	}
-
-
-	public void executeOnServer(CheckedRunnable runnable, Boolean showSucceedPanel) {
-		Try.run(() -> runnable.run())
-				.onFailure(ServerException.class, this::logAndCreateErrorInterface)
-				.onSuccess(x -> { if (showSucceedPanel) { createSucceedInterface(); } });
-	}
-
-	private void logAndCreateErrorInterface(ServerException serverException) {
-		logger.error(serverException.toString(), serverException);
-		if (serverException.getInformationExceptionSet().stream().anyMatch(informationException -> informationException.getErrorCode().equals(ErrorCode.TECHNICAL_ERROR))) {
-			new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_FAILURE_TECHNICAL_PANEL_TITLE),
-					getControler(),
-					PictureTypeEnum.WARNING,
-					ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_FAILURE_TECHNICAL_LABEL));
-		} else {
-			String functionalErrors = serverException.getInformationExceptionSet().stream()
-					.map(informationException -> "<li>" + informationException.getErrorCode().getErrorLabel() + "</li>")
-					.collect(Collectors.joining("\n"));
-			String errorLabel = String.format(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_FUNCTIONAL_ERROR_LIST_LABEL), functionalErrors);
-			new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_FUNCTIONAL_ERROR_PANEL_TITLE),
-					getControler(),
-					PictureTypeEnum.WARNING,
-					errorLabel);
-		}
-	}
-
-
-	private void createSucceedInterface() {
-		new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_SUCCEED_PANEL_TITLE),
-				getControler(),
-				PictureTypeEnum.INFORMATION,
-				ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_SUCCEED_LABEL));
-	}
 
 
 }

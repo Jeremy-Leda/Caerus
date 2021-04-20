@@ -14,6 +14,7 @@ public class CurrentUserConfiguration {
 	private Path libraryPath;
 	private Path configurationPath;
 	private String defaultConfiguration;
+	private String defaultLexicometricAnalysisConfiguration;
 
 	/**
 	 * Permet de se procurer le chemin d'accés au configurations
@@ -62,5 +63,20 @@ public class CurrentUserConfiguration {
 	public void setLibraryPath(Path libraryPath) {
 		this.libraryPath = libraryPath;
 	}
-	
+
+	/**
+	 * Permet de se procurer le nom du profile choisi par l'utilisateur pour les analyses lexicométrique
+	 * @return Le nom du profile choisis par l'utilisateur pour les analyses lexicométrique
+	 */
+	public String getDefaultLexicometricAnalysisConfiguration() {
+		return defaultLexicometricAnalysisConfiguration;
+	}
+
+	/**
+	 * Permet de définir le nom du profile par défaut choisi par l'utilisateur pour les analyses lexicométrique
+	 * @param defaultLexicometricAnalysisConfiguration le nom du profile par défaut choisi par l'utilisateur pour les analyses lexicométrique
+	 */
+	public void setDefaultLexicometricAnalysisConfiguration(String defaultLexicometricAnalysisConfiguration) {
+		this.defaultLexicometricAnalysisConfiguration = defaultLexicometricAnalysisConfiguration;
+	}
 }

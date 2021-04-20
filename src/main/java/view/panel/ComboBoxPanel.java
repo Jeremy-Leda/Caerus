@@ -2,8 +2,11 @@ package view.panel;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -11,6 +14,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.apache.commons.lang3.StringUtils;
 import view.interfaces.IComboBoxPanel;
 
 /**
@@ -28,9 +32,11 @@ public class ComboBoxPanel implements IComboBoxPanel{
 	
 	public ComboBoxPanel(String titlePanel, String label) {
 		this.comboBoxPanel = new JPanel();
-		this.comboBoxPanel.setBorder(BorderFactory.createTitledBorder(titlePanel));
+		if (StringUtils.isNotBlank(titlePanel)) {
+			this.comboBoxPanel.setBorder(BorderFactory.createTitledBorder(titlePanel));
+		}
 		this.labelCombo = new JLabel(label);
-		this.comboBox = new JComboBox<String>();
+		this.comboBox = new JComboBox<>();
 		createContent();
 	}
 	
@@ -46,22 +52,16 @@ public class ComboBoxPanel implements IComboBoxPanel{
 
 	@Override
 	public String getLabelSelected() {
-		return this.comboBox.getSelectedItem().toString();
+		return Optional.ofNullable(this.comboBox.getSelectedItem()).orElse(StringUtils.EMPTY).toString();
 	}
 
 	@Override
 	public void addConsumerOnSelectChange(Consumer<?> consumer) {
-		this.comboBox.addItemListener(new ItemListener() {
-			
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				consumer.accept(null);
-			}
-		});
+		this.comboBox.addItemListener(e -> consumer.accept(null));
 	}
 
 	@Override
-	public void refresh(List<String> labels) {
+	public void refresh(Collection<String> labels) {
 		this.comboBox.removeAllItems();
 		labels.forEach(l -> this.comboBox.addItem(l));
 	}
@@ -75,5 +75,22 @@ public class ComboBoxPanel implements IComboBoxPanel{
 	public int getItemCount() {
 		return this.comboBox.getItemCount();
 	}
-	
+
+	@Override
+	public Boolean itemExist(String item) {
+		return IntStream.range(0, this.comboBox.getItemCount())
+				.anyMatch(i -> item.equals(this.comboBox.getItemAt(i)));
+	}
+
+	@Override
+	public void addAndSelectItem(String newItem) {
+		this.comboBox.addItem(newItem);
+		this.selectItem(newItem);
+	}
+
+	@Override
+	public void delete(String itemToDelete) {
+		this.comboBox.removeItem(itemToDelete);
+	}
+
 }

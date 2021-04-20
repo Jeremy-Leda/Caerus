@@ -5,12 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -27,15 +26,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import controler.ConfigurationControler;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controler.ConfigurationControler;
-import controler.IConfigurationControler;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import utils.RessourcesUtils;
+import view.abstracts.ExecuteServerAbstract;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.ActionOperationTypeEnum;
 import view.beans.ActionUserTypeEnum;
@@ -56,7 +55,7 @@ import view.windows.*;
  * @author Jeremy
  *
  */
-public class Main extends JFrame {
+public class Main extends ExecuteServerAbstract {
 
 	/**
 	 * 
@@ -131,9 +130,7 @@ public class Main extends JFrame {
 	private final JButton fixedTextErrorButton = new JButton();
 	private final JButton fixedBlankLineErrorButton = new JButton();
 	private final JButton fixedMetaBlankLineErrorButton = new JButton();
-	// private final JButton stateAnalyzeButton = new JButton();
 	private final JButton moveFileLibraryButton = new JButton();
-	private final IConfigurationControler configurationControler = new ConfigurationControler();
 	private IAnalyzeConfiguration analyzeConfiguration;
 	private IGenericAccessPanel errorInconsistencyPanel = new GenericAccessPanel();
 	private JButton openInconsistencyErrorsButton = new JButton();
@@ -147,24 +144,25 @@ public class Main extends JFrame {
 	 * @throws HeadlessException
 	 */
 	public Main(Consumer<?> consumerOnClose) throws HeadlessException, IOException {
-		// On regarde l'existence d'un �tat pr�c�dent
-		if (this.configurationControler.haveCurrentStateFile()) {
+		super(new ConfigurationControler());
+		// On regarde l'existence d'un état précédent
+		if (getControler().haveCurrentStateFile()) {
 			// on demande
 			YesNoQuestion yesNoQuestion = new YesNoQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_TITLE),
-					configurationControler,
+					getControler(),
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_ANSWER));
 //			Integer result = JOptionPane.showConfirmDialog(null,
 //					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_ANSWER),
 //					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RECOVERY_ERROR_STATE_TITLE), 0);
 			if (JOptionPane.YES_OPTION == yesNoQuestion.getAnswer()) {
-				this.configurationControler.restoreCurrentState();
+				getControler().restoreCurrentState();
 			} else {
-				this.configurationControler.removeCurrentStateFile();
+				getControler().removeCurrentStateFile();
 			}
 		}
 		try {
-			if (StringUtils.isBlank(configurationControler.getConfigurationName())) {
-				configurationControler.setCurrentConfiguration(RessourcesUtils.getInstance().getBasicalConfiguration());
+			if (StringUtils.isBlank(getControler().getConfigurationName())) {
+				getControler().setCurrentConfiguration(RessourcesUtils.getInstance().getBasicalConfiguration());
 			}
 		} catch (IOException e1) {
 			logger.error(e1.getMessage(), e1);
@@ -254,7 +252,7 @@ public class Main extends JFrame {
 //		fileMenu.addSeparator();
 //		fileMenu.add(exit);
 
-		stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
+		stateCurrentConfigurationValue.setText(getControler().getConfigurationName());
 		panContent.setLayout(new BoxLayout(panContent, BoxLayout.Y_AXIS));
 
 		languages.addAll(ConfigurationUtils.getInstance().getMapLanguages().keySet().stream().map(s -> {
@@ -279,7 +277,7 @@ public class Main extends JFrame {
 		});
 
 		createAnalyze.addActionListener(event -> {
-			analyzeConfiguration = new LoadTextConfigurationSelector(configurationControler);
+			analyzeConfiguration = new LoadTextConfigurationSelector(getControler());
 			try {
 				refreshDisplay();
 				repack();
@@ -290,29 +288,29 @@ public class Main extends JFrame {
 		});
 
 		importExcel.addActionListener(e -> {
-			new ImportExcel(configurationControler);
+			new ImportExcel(getControler());
 		});
 
 		configurationLoadLibrary.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new ChooseConfiguration(configurationControler);
-				stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
+				new ChooseConfiguration(getControler());
+				stateCurrentConfigurationValue.setText(getControler().getConfigurationName());
 			}
 		});
 
 		saveConfiguration.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new SaveReferenceExcels(configurationControler, ExcelTypeGenerationEnum.ANALYZE_TEXTS);
+				new SaveReferenceExcels(getControler(), ExcelTypeGenerationEnum.ANALYZE_TEXTS);
 			}
 		});
 
 		saveCustomExcel.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new SaveCustomExcel(configurationControler, ExcelTypeGenerationEnum.ANALYZE_TEXTS);
+				new SaveCustomExcel(getControler(), ExcelTypeGenerationEnum.ANALYZE_TEXTS);
 			}
 		});
 
@@ -322,7 +320,7 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ABOUT_TITLE),
-						configurationControler, PictureTypeEnum.INFORMATION,
+						getControler(), PictureTypeEnum.INFORMATION,
 						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_ABOUT_MESSAGE_CONTENT));
 			}
 		});
@@ -342,36 +340,41 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				configurationControler.clearTexts();
-				new CreateCorpus(configurationControler);
-				if (configurationControler.haveEditingCorpus()) {
-					IActionOnClose createText = new CreateText(configurationControler);
+				getControler().clearTexts();
+				new CreateCorpus(getControler());
+				if (getControler().haveEditingCorpus()) {
+					IActionOnClose createText = new CreateText(getControler());
 					createText.addActionOnClose((v) -> setEnabled(true));
 					setEnabled(false);
 				}
 			}
 		});
-		manageTextLibrary.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new ProgressBarView(r -> {
-					try {
-
-						configurationControler.loadTexts();
-						ManageText manageText = new ManageText(configurationControler);
-						manageText.addActionOnClose((v) -> {
-							setEnabled(true);
-						});
-						setEnabled(false);
-					} catch (LoadTextException e1) {
-						logger.error(e1.getMessage(), e);
-					}
-				}, getProgressConsumer(), progressMaxValue,
-						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL));
-				configurationControler.resetProgress();
-			}
-		});
+		manageTextLibrary.addActionListener(e -> super.executeOnServerWithProgressView(() -> {
+			getControler().loadTexts();
+			ManageText manageText = new ManageText(getControler());
+			manageText.addActionOnClose((v) -> {
+				setEnabled(true);
+			});
+			setEnabled(false);
+		}, false, Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL, Boolean.FALSE));
+//		manageTextLibrary.addActionListener(e -> {
+//			new ProgressBarView(r -> {
+//				try {
+//
+//					getControler().loadTexts();
+//					ManageText manageText = new ManageText(getControler());
+//					manageText.addActionOnClose((v) -> {
+//						setEnabled(true);
+//					});
+//					setEnabled(false);
+//				} catch (LoadTextException e1) {
+//					logger.error(e1.getMessage(), e);
+//				}
+//			}, getProgressConsumer(), progressMaxValue,
+//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL));
+//			getControler().resetProgress();
+//		});
 
 		menuBar.add(textLibrary);
 
@@ -381,7 +384,7 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				AnalysisAssistant analysisAssistant = new AnalysisAssistant(
-						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), configurationControler);
+						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
 			}
 		});
 
@@ -415,8 +418,8 @@ public class Main extends JFrame {
 	 */
 	private Consumer<Consumer<Integer>> getProgressConsumer() {
 		return valueProgressSetter -> {
-			while (this.configurationControler.getProgress() < progressMaxValue) {
-				valueProgressSetter.accept(this.configurationControler.getProgress());
+			while (getControler().getProgress() < progressMaxValue) {
+				valueProgressSetter.accept(getControler().getProgress());
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -621,10 +624,10 @@ public class Main extends JFrame {
 	}
 
 	private void refreshDisplay() throws HeadlessException, IOException {
-		stateCurrentConfigurationValue.setText(configurationControler.getConfigurationName());
+		stateCurrentConfigurationValue.setText(getControler().getConfigurationName());
 		errorInconsistencyPanel.getJPanel().setVisible(Boolean.FALSE);
-		if (configurationControler.getNbTextsError() == 0 && configurationControler.getNbBlankLinesError() == 0
-				&& configurationControler.getListOfStructuredFileForAnalyze().isEmpty()) {
+		if (getControler().getNbTextsError() == 0 && getControler().getNbBlankLinesError() == 0
+				&& getControler().getListOfStructuredFileForAnalyze().isEmpty()) {
 			panLineError.setVisible(false);
 			panTextError.setVisible(false);
 
@@ -637,20 +640,20 @@ public class Main extends JFrame {
 					.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_NONE));
 		} else {
 
-			stateNbTextLoadedValue.setText(configurationControler.getNbTextLoadedForAnalyze().toString());
+			stateNbTextLoadedValue.setText(getControler().getNbTextLoadedForAnalyze().toString());
 
-			if (configurationControler.getNbLinesError() > 0) {
+			if (getControler().getNbLinesError() > 0) {
 				fixedLineErrorButton.setEnabled(true);
 				saveConfiguration.setEnabled(false);
 				saveCustomExcel.setEnabled(false);
 			} else {
 				errorInconsistencyPanel.getJPanel().setVisible(Boolean.TRUE);
-				openInconsistencyErrorsButton.setEnabled(configurationControler.haveInconsistencyError());
-				openBaseCodeErrorsButton.setEnabled(configurationControler.haveMissingBaseCodeError());
+				openInconsistencyErrorsButton.setEnabled(getControler().haveInconsistencyError());
+				openBaseCodeErrorsButton.setEnabled(getControler().haveMissingBaseCodeError());
 				saveConfiguration.setEnabled(true);
 				saveCustomExcel.setEnabled(true);
 				fixedLineErrorButton.setEnabled(false);
-				if (configurationControler.getNbTextsError() > 0) {
+				if (getControler().getNbTextsError() > 0) {
 					fixedTextErrorButton.setEnabled(true);
 					saveConfiguration.setEnabled(false);
 					saveCustomExcel.setEnabled(false);
@@ -662,32 +665,35 @@ public class Main extends JFrame {
 					fixedMetaBlankLineErrorButton.setEnabled(false);
 					haveMetaBlankLineErrorValue
 							.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_NO_LABEL));
-					if (configurationControler.getNbBlankLinesError() > 0) {
+					if (getControler().getNbBlankLinesError() > 0) {
 						fixedBlankLineErrorButton.setEnabled(true);
 					}
-					if (configurationControler.haveMetaBlankLineInErrorRemaining()) {
+					if (getControler().haveMetaBlankLineInErrorRemaining()) {
 						fixedMetaBlankLineErrorButton.setEnabled(true);
 						haveMetaBlankLineErrorValue.setText(
 								ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_YES_LABEL));
 					}
-					nbBlankLineErrorValue.setText(configurationControler.getNbBlankLinesError().toString());
+					nbBlankLineErrorValue.setText(getControler().getNbBlankLinesError().toString());
 					panBlankLineError.setVisible(true);
 					panMoveFileLibrary.setVisible(true);
-					if (null != configurationControler.getTextsFolder()) {
+					if (getControler().getTextsFolder().isPresent()) {
 						moveFileLibraryButton.setEnabled(true);
 					}
 				}
-				nbTextErrorValue.setText(configurationControler.getNbTextsError().toString());
+				nbTextErrorValue.setText(getControler().getNbTextsError().toString());
 				panTextError.setVisible(true);
 
 			}
-			nbLineErrorValue.setText(configurationControler.getNbLinesError().toString());
+			nbLineErrorValue.setText(getControler().getNbLinesError().toString());
 			panLineError.setVisible(true);
 
 			stateAnalyzeValue.setText(ConfigurationUtils.getInstance()
 					.getDisplayMessage(Constants.WINDOW_MAIN_ANALYZE_PANEL_STATE_VALUE_SUCCESS));
-			stateAnalyzeFolderValue.setText(configurationControler.getAnalyzeFolder().toString());
-			stateAnalyzeConfigurationValue.setText(configurationControler.getConfigurationName());
+			Optional<File> analyzeFolder = getControler().getAnalyzeFolder();
+			if (analyzeFolder.isPresent()) {
+				stateAnalyzeFolderValue.setText(analyzeFolder.get().toString());
+			}
+			stateAnalyzeConfigurationValue.setText(getControler().getConfigurationName());
 			subPanAnalyzeState.setVisible(true);
 		}
 	}
@@ -698,14 +704,14 @@ public class Main extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Map<Path, Path> moveAllFilesFromTextAnalyzeToLibraryResultMap = configurationControler
+					Map<Path, Path> moveAllFilesFromTextAnalyzeToLibraryResultMap = getControler()
 							.moveAllFilesFromTextAnalyzeToLibrary();
 					String message = constructInformationFileMessage(moveAllFilesFromTextAnalyzeToLibraryResultMap);
 					new UserInformation(
 							ConfigurationUtils.getInstance()
 									.getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
-							configurationControler, PictureTypeEnum.INFORMATION, message);
-					configurationControler.clearAnalyze();
+							getControler(), PictureTypeEnum.INFORMATION, message);
+					getControler().clearAnalyze();
 					refreshDisplay();
 					repack();
 				} catch (IOException e1) {
@@ -713,7 +719,7 @@ public class Main extends JFrame {
 					new UserInformation(
 							ConfigurationUtils.getInstance().getDisplayMessage(
 									Constants.WINDOW_INFORMATION_PANEL_LABEL),
-							configurationControler, PictureTypeEnum.WARNING,
+							getControler(), PictureTypeEnum.WARNING,
 							String.format(ConfigurationUtils.getInstance()
 									.getDisplayMessage(Constants.WINDOW_MESSAGE_UNKNOW_ERROR), e1.getMessage()));
 				} catch (MoveFileException e1) {
@@ -722,7 +728,7 @@ public class Main extends JFrame {
 					new UserInformation(
 							ConfigurationUtils.getInstance()
 									.getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
-							configurationControler, PictureTypeEnum.WARNING, message);
+							getControler(), PictureTypeEnum.WARNING, message);
 				}
 			}
 		};
@@ -771,7 +777,7 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new FixedErrorLine(configurationControler);
+				new FixedErrorLine(getControler());
 				launchAnalyze();
 			}
 		};
@@ -784,7 +790,7 @@ public class Main extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				IActionOnClose fixedText = new FixedOrEditText(
 						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE),
-						configurationControler, ActionUserTypeEnum.FOLDER_ANALYZE, ActionOperationTypeEnum.EDIT);
+						getControler(), ActionUserTypeEnum.FOLDER_ANALYZE, ActionOperationTypeEnum.EDIT);
 				fixedText.addActionOnClose((v) -> {
 					setEnabled(true);
 					launchAnalyze();
@@ -799,7 +805,7 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				IActionOnClose fixedBlankLine = new FixedBlankLine(configurationControler);
+				IActionOnClose fixedBlankLine = new FixedBlankLine(getControler());
 				fixedBlankLine.addActionOnClose((v) -> {
 					setEnabled(true);
 					launchAnalyze();
@@ -817,7 +823,7 @@ public class Main extends JFrame {
 				new FixedOrEditCorpus(
 						ConfigurationUtils.getInstance()
 								.getDisplayMessage(Constants.WINDOW_FIXED_ERROR_META_BLANK_LINE_PANEL_TITLE),
-						configurationControler, true, ActionUserTypeEnum.FOLDER_ANALYZE);
+						getControler(), true, ActionUserTypeEnum.FOLDER_ANALYZE);
 				launchAnalyze();
 			}
 		};
@@ -841,9 +847,9 @@ public class Main extends JFrame {
 //				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 //				chooser.setAcceptAllFileFilterUsed(false);
 //				if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-//					configurationControler.setAnalyzeFolder(chooser.getSelectedFile());
+//					getControler().setAnalyzeFolder(chooser.getSelectedFile());
 //					try {
-//						configurationControler
+//						getControler()
 //								.setCurrentConfiguration(ConfigurationUtils.getInstance().getClassicalConfiguration());
 //					} catch (IOException e1) {
 //						logger.error(e1.getMessage(), e1);
@@ -859,13 +865,13 @@ public class Main extends JFrame {
 	 */
 	private void launchAnalyze() {
 		try {
-			configurationControler.clearAnalyze();
+			getControler().clearAnalyze();
 			refreshDisplay();
 			Boolean withSubFolder = Boolean.FALSE;
 			if (null != analyzeConfiguration) {
 				withSubFolder = analyzeConfiguration.getWithSubFolderAnalyze();
 			}
-			configurationControler.launchAnalyze(withSubFolder);
+			getControler().launchAnalyze(withSubFolder);
 			refreshDisplay();
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
@@ -880,12 +886,12 @@ public class Main extends JFrame {
 	 * du chemin de la librairie des textes
 	 */
 	private void refreshEnabledAndValueWithTextsFolderLibrary() {
-		if (null != configurationControler.getTextsFolder()) {
+		if (getControler().getTextsFolder().isPresent()) {
 			subPanConfigurationState.setVisible(true);
 			createTextLibrary.setEnabled(true);
 			manageTextLibrary.setEnabled(true);
 			moveFileLibraryButton.setEnabled(true);
-			stateConfigurationLibrayValue.setText(this.configurationControler.getTextsFolder().toString());
+			stateConfigurationLibrayValue.setText(getControler().getTextsFolder().get().toString());
 		} else {
 			subPanConfigurationState.setVisible(false);
 			createTextLibrary.setEnabled(false);
@@ -914,7 +920,7 @@ public class Main extends JFrame {
 				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 				chooser.setAcceptAllFileFilterUsed(false);
 				if (chooser.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
-					configurationControler.setTextsFolder(chooser.getSelectedFile());
+					getControler().setTextsFolder(chooser.getSelectedFile());
 					refreshEnabledAndValueWithTextsFolderLibrary();
 					repack();
 				}
@@ -932,7 +938,7 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new InconsistencyErrorView(configurationControler);
+				new InconsistencyErrorView(getControler());
 				launchAnalyze();
 			}
 		});
@@ -942,7 +948,7 @@ public class Main extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new BaseCodeErrorView(configurationControler);
+				new BaseCodeErrorView(getControler());
 				launchAnalyze();
 			}
 		});
@@ -953,4 +959,8 @@ public class Main extends JFrame {
 		errorInconsistencyPanel.addComponent(subPanButtonError);
 	}
 
+	@Override
+	public void closeFrame() {
+
+	}
 }

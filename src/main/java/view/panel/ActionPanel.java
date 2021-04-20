@@ -34,7 +34,7 @@ public class ActionPanel implements IActionPanel {
 	 * Permet de créer un panel action
 	 * @param nbButton nb de boutons souhaités
 	 */
-	public ActionPanel(Integer nbButton) {
+	public ActionPanel(long nbButton) {
 		for (int i = 0; i < nbButton; i++) {
 			JButton jButton = new JButton();
 			buttonMap.put(i, jButton);

@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * 
@@ -77,21 +79,21 @@ public interface IConfigurationControler {
 	 * 
 	 * @return le dossier des textes
 	 */
-	File getTextsFolder();
+	Optional<File> getTextsFolder();
 	
 	/**
 	 * Permet de se procurer le dossier d'analyse des textes
 	 * 
 	 * @return le dossier d'analyse des textes
 	 */
-	File getAnalyzeFolder();
+	Optional<File> getAnalyzeFolder();
 	
 	/**
 	 * Permet de se procurer le dossier contenant les configuration
 	 * 
 	 * @return le dossier contenants les configurations
 	 */
-	File getConfigurationFolder();
+	Optional<File> getConfigurationFolder();
 	
 	/**
 	 * Permet de se procurer le nom de la configuration
@@ -596,4 +598,30 @@ public interface IConfigurationControler {
 	 * @param excelImportConfigurationCmd commande qui détermine comment l'import excel doit être réalisé
 	 */
     void importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException;
+
+	/**
+	 * Permet de se procurer le bean pour l'analyse lexicométrique
+	 * @return le bean pour l'analyse lexicométrique
+	 */
+	LexicometricConfigurationView getLexicometricAnalysis();
+
+	/**
+	 * Permet de se procurer le bean pour l'analyse lexicométrique
+	 * @param profile profile recherché
+	 * @return le bean pour l'analyse lexicométrique
+	 */
+	LexicometricConfigurationView getLexicometricAnalysis(String profile);
+
+	/**
+	 * Permet de se procurer le profile par défaut pour les analyses lexicométrique
+	 * @return le profile par défaut pour les analyses lexicométrique
+	 */
+	String getLexicometricDefaultProfile();
+
+	/**
+	 * Permet de sauvegarder les données en mémoire
+	 * @param editTable Information à enregistrer
+	 */
+	void saveLexicometricAnalysis(EditTable editTable);
+
 }

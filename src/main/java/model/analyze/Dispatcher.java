@@ -51,6 +51,8 @@ public class Dispatcher {
 	private static final String FOLDER_CONTEXT = "context";
 	private static final String FOLDER_TEXTS = "library";
 	private static final String FOLDER_CONFIGURATIONS = "configurations";
+	private static final String FOLDER_ANALYZE_CONFIGURATIONS = "configurations_analysis";
+	private static final String ANALYZE_CONFIGURATION_DEFAULT_NAME = "LexicometricAnalyze";
 	private static final String CONFIGURATION_CLASSIC_NAME = "Configuración básica";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
@@ -64,6 +66,7 @@ public class Dispatcher {
 	public Dispatcher() {
 		try {
 			createDefaultConfigurationIfFolderIsEmpty();
+			createDefaultAnalyzeConfigurationIfFolderIsEmpty();
 			loadContextFromUserConfiguration();
 			UserSettings.getInstance().clearCurrentFolderUserTextsMap();
 		} catch (IOException e) {
@@ -110,7 +113,12 @@ public class Dispatcher {
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
 			pathToProcess = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
 		} else {
-			pathToProcess = UserSettings.getInstance().getFolder(folderType);
+			Optional<File> folder = UserFolder.getInstance().getFolder(folderType);
+			pathToProcess = folder.orElseThrow(() -> new ServerException().addInformationException(
+					new InformationExceptionBuilder()
+							.errorCode(ErrorCode.TECHNICAL_ERROR)
+							.parameters(Set.of("processAndLoadTexts", folderType.name()))
+							.build()));
 		}
 		List<MemoryFile> memoryFiles = getMemoryFiles(pathToProcess.toString(), depth);
 		UserSettings.getInstance().clearAllSession(folderType);
@@ -202,7 +210,7 @@ public class Dispatcher {
 	 * @param textsFolder dossier des textes
 	 */
 	public void setTextsFolder(File textsFolder) {
-		UserSettings.getInstance().setFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
+		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_TEXTS, textsFolder);
 		saveUserConfiguration();
 	}
 
@@ -411,17 +419,23 @@ public class Dispatcher {
 	 * @throws IOException
 	 */
 	private void writeText(FolderSettingsEnum folderType, List<String> filesList) throws IOException {
-		File directory = UserSettings.getInstance().getFolder(folderType);
+		Optional<File> directory = UserFolder.getInstance().getFolder(folderType);
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
-			directory = UserSettings.getInstance().getDirectoryForSaveTextsInLibrary();
+			directory = Optional.ofNullable(UserSettings.getInstance().getDirectoryForSaveTextsInLibrary());
 		}
+		File realDirectory = directory.orElseThrow(() -> new ServerException().addInformationException(
+				new InformationExceptionBuilder()
+				.errorCode(ErrorCode.TECHNICAL_ERROR)
+				.parameters(Set.of("writeText", folderType.name(), filesList.toString()))
+				.build()
+				));
 		for (String file : filesList) {
-			Boolean haveText = null;
-			try (Writer writer = new Writer(directory, file)) {
+			Boolean haveText;
+			try (Writer writer = new Writer(realDirectory, file)) {
 				haveText = UserSettings.getInstance().writeText(folderType, writer, file);
 			}
-			if (null != haveText && !haveText) {
-				PathUtils.deleteFile(new File(directory, file));
+			if (Boolean.FALSE.equals(haveText)) {
+				PathUtils.deleteFile(new File(realDirectory, file));
 			}
 		}
 	}
@@ -511,6 +525,7 @@ public class Dispatcher {
 			currentUserConfiguration.setDefaultConfiguration(CONFIGURATION_CLASSIC_NAME);
 		}
 		UserSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
+		UserLexicometricAnalysisSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
 		saveUserConfiguration();
 	}
 
@@ -572,8 +587,15 @@ public class Dispatcher {
 				.stream().map(ust -> ust.getFileName()).distinct().collect(Collectors.toList());
 		List<String> filesExistList = new ArrayList<>();
 		Map<Path, Path> resultMapForMoveFiles = new HashMap<>();
+		File directory = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE)
+							.orElseThrow(() -> new ServerException().addInformationException(
+									new InformationExceptionBuilder()
+									.errorCode(ErrorCode.TECHNICAL_ERROR)
+									.parameters(Set.of("moveAllFilesFromTextAnalyzeToLibrary", FolderSettingsEnum.FOLDER_ANALYZE.name()))
+									.build()
+							));
 		for (String file : filesList) {
-			File oldFile = new File(UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE), file);
+			File oldFile = new File(directory, file);
 			if (oldFile.exists()) {
 				if (checkIfFileExistInFolderText(oldFile)) {
 					filesExistList.add(oldFile.toPath().toString());
@@ -584,7 +606,7 @@ public class Dispatcher {
 			throw new MoveFileException(StringUtils.join(filesExistList, ","));
 		}
 		for (String file : filesList) {
-			File oldFile = new File(UserSettings.getInstance().getFolder(FolderSettingsEnum.FOLDER_ANALYZE), file);
+			File oldFile = new File(directory, file);
 			Path newFile = moveFileInFolderText(oldFile);
 			resultMapForMoveFiles.put(oldFile.toPath(), newFile);
 		}
@@ -639,6 +661,26 @@ public class Dispatcher {
 			Configuration basicalConfiguration = RessourcesUtils.getInstance().getBasicalConfiguration();
 			JSonFactoryUtils.createJsonInFile(basicalConfiguration,
 					new File(configurationsPath, CONFIGURATION_CLASSIC_NAME + ".json"));
+		}
+	}
+
+	/**
+	 * Permet d'ajouter la configuration pour l'analyse par défaut si le dossier des configurations
+	 * est vide
+	 *
+	 * @throws IOException          Exception d'entrée sortie
+	 * @throws JsonMappingException Json mapping exception
+	 * @throws JsonParseException   Json parse exception
+	 */
+	private void createDefaultAnalyzeConfigurationIfFolderIsEmpty()
+			throws JsonParseException, JsonMappingException, IOException {
+		String rootPath = PathUtils.getCaerusFolder();
+		File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_ANALYZE_CONFIGURATIONS);
+		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS, configurationsPath);
+		if (configurationsPath.isDirectory() && configurationsPath.list().length == 0) {
+			LexicometricAnalysis analyzeConfiguration = RessourcesUtils.getInstance().getAnalyzeConfiguration();
+			JSonFactoryUtils.createJsonInFile(analyzeConfiguration,
+					new File(configurationsPath, ANALYZE_CONFIGURATION_DEFAULT_NAME + ".json"));
 		}
 	}
 

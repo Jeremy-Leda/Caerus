@@ -2,8 +2,10 @@ package view.windows;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -11,6 +13,10 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationException;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
 import org.apache.commons.lang3.StringUtils;
 
 import controler.IConfigurationControler;
@@ -50,10 +56,14 @@ public class ChooseConfiguration extends ModalJFrameAbstract {
 		this.configurationListComboBox = new JComboBox<String>();
 		this.actionPanel = new ActionPanel(2);
 		this.content = new JPanel();
+		File configurationFolder = configurationControler.getConfigurationFolder().orElseThrow(() ->
+				new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.ERROR_CONFIGURATION)
+					.build()));
 		this.textInformationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CHANGE_CONFIGURATION_MESSAGE_PANEL_TITLE),
 				String.format(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CHANGE_CONFIGURATION_MESSAGE_CONTENT),
-						configurationControler.getConfigurationFolder()), true, false);
+						configurationFolder), true, false);
 		createWindow();
 	}
 

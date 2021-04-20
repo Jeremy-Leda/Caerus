@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
+import model.analyze.beans.LexicometricAnalysis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ public class RessourcesUtils {
 	
 	private static RessourcesUtils _instance;
 	private static final String DEFAULT_CONFIGURATION = "ConfiguraciónBásica.json";
+	private static final String DEFAULT_ANALYZE_CONFIGURATION = "LexicometricAnalyze.json";
 	private static Logger logger = LoggerFactory.getLogger(RessourcesUtils.class);
 	
 	/**
@@ -76,6 +78,18 @@ public class RessourcesUtils {
 	 */
 	public Configuration getBasicalConfiguration() throws JsonParseException, JsonMappingException, IOException {
 		return JSonFactoryUtils.createConfigurationFromJsonFile(getFileFromResources(DEFAULT_CONFIGURATION));
+	}
+
+	/**
+	 * Permet de se procurer la configuration pour les analyses
+	 *
+	 * @return la configuration pour l'analyse
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public LexicometricAnalysis getAnalyzeConfiguration() throws JsonParseException, JsonMappingException, IOException {
+		return JSonFactoryUtils.createAnalyseConfigurationFromJsonFile(getFileFromResources(DEFAULT_ANALYZE_CONFIGURATION));
 	}
 
 

@@ -9,16 +9,9 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.swing.*;
 
-import io.vavr.CheckedFunction0;
-import io.vavr.CheckedRunnable;
-import io.vavr.control.Option;
-import io.vavr.control.Try;
-import model.exceptions.ErrorCode;
-import model.exceptions.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,11 +20,6 @@ import utils.RessourcesUtils;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IModalFrameRepack;
-import view.utils.ConfigurationUtils;
-import view.windows.ProgressBarView;
-import view.windows.UserInformation;
-
-import static view.utils.Constants.*;
 
 /**
  * 
@@ -41,7 +29,7 @@ import static view.utils.Constants.*;
  * @author jerem
  *
  */
-public abstract class ModalJFrameAbstract extends ExecuteServerAbstract implements IModalFrameRepack, IActionOnClose {
+public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract implements IModalFrameRepack, IActionOnClose {
 
 	/**
 	 * 

@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -14,7 +13,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import model.exceptions.ErrorCode;
-import model.exceptions.InformationException;
 import model.exceptions.InformationExceptionBuilder;
 import model.exceptions.ServerException;
 import org.apache.commons.lang3.StringUtils;

@@ -1,8 +1,6 @@
 package view.windows;
 
-import controler.IConfigurationControler;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.formula.functions.T;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;

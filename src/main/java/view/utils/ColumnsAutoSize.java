@@ -20,10 +20,14 @@ import javax.swing.table.TableColumn;
 public class ColumnsAutoSize {
 
 	public static void sizeColumnsToFit(JTable table) {
-		sizeColumnsToFit(table, 5);
+		sizeColumnsToFit(table, 5, -1);
 	}
 
-	public static void sizeColumnsToFit(JTable table, int columnMargin) {
+	public static void sizeColumnsToFitForUpdate(JTable table, int rowIndex) {
+		sizeColumnsToFit(table, 5, rowIndex);
+	}
+
+	public static void sizeColumnsToFit(JTable table, int columnMargin, int rowIndex) {
 		JTableHeader tableHeader = table.getTableHeader();
 
 		if (tableHeader == null) {
@@ -39,9 +43,12 @@ public class ColumnsAutoSize {
 
 		int headerWidth = headerFontMetrics.stringWidth(table.getColumnName(0));
 
-		minWidths[0] = headerWidth + columnMargin;
-
-		int maxWidth = getMaximalRequiredColumnWidth(table, 0, headerWidth);
+		if (rowIndex > -1) {
+			minWidths[0] = table.getColumnModel().getColumn(0).getMinWidth();
+		} else {
+			minWidths[0] = headerWidth + columnMargin;
+		}
+		int maxWidth = getMaximalRequiredColumnWidth(table, 0, headerWidth, rowIndex);
 
 		maxWidths[0] = Math.max(maxWidth, minWidths[0]) + columnMargin;
 
@@ -85,7 +92,7 @@ public class ColumnsAutoSize {
 		}
 	}
 
-	private static int getMaximalRequiredColumnWidth(JTable table, int columnIndex, int headerWidth) {
+	private static int getMaximalRequiredColumnWidth(JTable table, int columnIndex, int headerWidth, int rowIndex) {
 		int maxWidth = headerWidth;
 
 		TableColumn column = table.getColumnModel().getColumn(columnIndex);
@@ -95,14 +102,21 @@ public class ColumnsAutoSize {
 		if (cellRenderer == null) {
 			cellRenderer = new DefaultTableCellRenderer();
 		}
-
-		for (int row = 0; row < table.getModel().getRowCount(); row++) {
+		if (rowIndex > -1) {
 			Component rendererComponent = cellRenderer.getTableCellRendererComponent(table,
-					table.getModel().getValueAt(row, columnIndex), false, false, row, columnIndex);
-
+					table.getModel().getValueAt(rowIndex, columnIndex), false, false, rowIndex, columnIndex);
 			double valueWidth = rendererComponent.getPreferredSize().getWidth();
 
 			maxWidth = (int) Math.max(maxWidth, valueWidth);
+		} else {
+			for (int row = 0; row < table.getModel().getRowCount(); row++) {
+				Component rendererComponent = cellRenderer.getTableCellRendererComponent(table,
+						table.getModel().getValueAt(row, columnIndex), false, false, row, columnIndex);
+
+				double valueWidth = rendererComponent.getPreferredSize().getWidth();
+
+				maxWidth = (int) Math.max(maxWidth, valueWidth);
+			}
 		}
 
 		return maxWidth;

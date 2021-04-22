@@ -34,8 +34,7 @@ import org.slf4j.LoggerFactory;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import utils.RessourcesUtils;
-import view.abstracts.ExecuteServerAbstract;
-import view.abstracts.ModalJFrameAbstract;
+import view.abstracts.ExecuteServerJFrameAbstract;
 import view.beans.ActionOperationTypeEnum;
 import view.beans.ActionUserTypeEnum;
 import view.beans.ExcelTypeGenerationEnum;
@@ -55,7 +54,7 @@ import view.windows.*;
  * @author Jeremy
  *
  */
-public class Main extends ExecuteServerAbstract {
+public class Main extends ExecuteServerJFrameAbstract {
 
 	/**
 	 * 

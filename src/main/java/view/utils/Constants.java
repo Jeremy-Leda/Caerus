@@ -434,6 +434,7 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE="window.start.analysis.edit.profile.new.button.copy.or.new.message";
 	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE="window.start.analysis.edit.profile.new.button.new.name.message";
 
+	public static final String WINDOW_FUNCTIONAL_ERROR_VALUE_EXIST="window.functional.error.value.exist";
 
 
 

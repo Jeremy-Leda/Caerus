@@ -1,6 +1,5 @@
 package view.abstracts;
 
-import controler.ConfigurationControler;
 import controler.IConfigurationControler;
 import io.vavr.CheckedFunction0;
 import io.vavr.CheckedRunnable;
@@ -11,13 +10,12 @@ import model.exceptions.ServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.beans.PictureTypeEnum;
-import view.interfaces.IActionOnClose;
+import view.services.ExecutionService;
 import view.utils.ConfigurationUtils;
 import view.windows.ProgressBarView;
 import view.windows.UserInformation;
 
 import javax.swing.*;
-import java.awt.event.WindowEvent;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,23 +26,22 @@ import static view.utils.Constants.*;
  * Classe d'abstraction pour gérer les actions coté serveur
  *
  */
-public abstract class ExecuteServerAbstract extends JFrame {
+public abstract class ExecuteServerJFrameAbstract extends JFrame {
 
-    private static Logger logger = LoggerFactory.getLogger(ExecuteServerAbstract.class);
+    private static Logger logger = LoggerFactory.getLogger(ExecuteServerJFrameAbstract.class);
     IConfigurationControler configurationControler;
+    private final ExecutionService executionService = new ExecutionService();
 
     /**
      * Constructeur
      * @param configurationControler controller
      */
-    public ExecuteServerAbstract(IConfigurationControler configurationControler) {
+    public ExecuteServerJFrameAbstract(IConfigurationControler configurationControler) {
         this.configurationControler = configurationControler;
     }
 
     public <R extends Object> Option<R> executeOnServer(CheckedFunction0<R> function) {
-        return Try.of(function::apply)
-                .onFailure(ServerException.class, this::logAndCreateErrorInterface)
-                .toOption();
+        return executionService.executeOnServer(function);
     }
 
 
@@ -78,9 +75,7 @@ public abstract class ExecuteServerAbstract extends JFrame {
 
 
     public void executeOnServer(CheckedRunnable runnable, Boolean showSucceedPanel) {
-        Try.run(() -> runnable.run())
-                .onFailure(ServerException.class, this::logAndCreateErrorInterface)
-                .onSuccess(x -> { if (showSucceedPanel) { createSucceedInterface(); } });
+        this.executionService.executeOnServer(runnable, showSucceedPanel);
     }
 
     private void logAndCreateErrorInterface(ServerException serverException) {

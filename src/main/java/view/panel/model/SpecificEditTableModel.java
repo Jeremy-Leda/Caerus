@@ -1,25 +1,26 @@
 package view.panel.model;
 
-import io.vavr.Tuple2;
-import io.vavr.collection.Stream;
-import io.vavr.control.Option;
 import io.vavr.control.Try;
-import model.ConfigurationModel;
+import model.analyze.constants.ActionEditTableEnum;
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationException;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
-import model.analyze.constants.ActionEditTableEnum;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import view.beans.EditTableElement;
 import view.beans.EditTableElementBuilder;
-import view.beans.SpecificRow;
 import view.interfaces.ISpecificEditTableModel;
+import view.services.ExecutionService;
 
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  *
@@ -28,29 +29,41 @@ import java.util.stream.IntStream;
  */
 public class SpecificEditTableModel implements ISpecificEditTableModel {
 
+    // La liste d'origine
     private Collection<String> originList;
-    private LinkedList<SpecificRow> specificRowList;
+
+    // La liste trié et sans doublon
+    private final SortedSet<String> sortedSet = new TreeSet<>(Comparator.comparing(StringUtils::stripAccents));
+
+    // La liste pour afficher
+    private final List<String> filteredList = new LinkedList<>();
+
+    //private LinkedList<SpecificRow> specificRowList;
     private String filterValue;
-    private final LinkedList<SpecificRow> filteredList = new LinkedList<>();
+
     private final Consumer<?> refreshConsumer;
     private final Consumer<?> saveInMemory;
+    private final Consumer<Integer> consumerForAutoSize;
     private Optional<EditTableElement> editTableElementOptional = Optional.empty();
-    private Logger logger = LoggerFactory.getLogger(SpecificEditTableModel.class);
-    private Stream<Tuple2<SpecificRow, Integer>> cacheStream;
+    private BiConsumer<Integer, Integer> fireTableInserted;
+    private BiConsumer<Integer, Integer> fireTableUpdated;
+    private BiConsumer<Integer, Integer> fireTableDeleted;
+    private final ExecutionService executionService = new ExecutionService();
 
-    public SpecificEditTableModel(Consumer<?> refreshConsumer, Consumer<?> saveInMemory) {
+    public SpecificEditTableModel(Consumer<?> refreshConsumer, Consumer<?> saveInMemory, Consumer<Integer> consumerForAutoSize) {
         this.refreshConsumer = refreshConsumer;
         this.saveInMemory = saveInMemory;
+        this.consumerForAutoSize = consumerForAutoSize;
     }
 
     @Override
-    public LinkedList<SpecificRow> getRows() {
+    public Collection<String> getRows() {
         return this.filteredList;
     }
 
     @Override
-    public SpecificRow getSpecificRow(Integer index) {
-        return cacheStream.find(sr -> sr._2().equals(index)).get()._1();
+    public String getRow(Integer rowIndex) {
+        return this.filteredList.get(rowIndex);
     }
 
     @Override
@@ -59,66 +72,52 @@ public class SpecificEditTableModel implements ISpecificEditTableModel {
     }
 
     @Override
-    public void update(Integer id, String newValue) {
-        if (Optional.ofNullable(id).isPresent()) {
-            Optional<SpecificRow> optionalSpecificRow = this.specificRowList.stream().filter(specificRow -> id.equals(Integer.valueOf(specificRow.getSpecificList().get(0)))).findFirst();
-            if (optionalSpecificRow.isPresent()) {
-                String oldValue = optionalSpecificRow.get().getSpecificList().get(1);
-                optionalSpecificRow.get().getSpecificList().set(1, newValue);
-                this.editTableElementOptional = Optional.of(createEditTableElementForUpdate(oldValue, newValue));
-                saveMemoryInBackground();
-            }
-            optionalSpecificRow.ifPresent(specificRow -> specificRow.getSpecificList().set(1, newValue));
-            this.originList = this.specificRowList.parallelStream().map(this::mapSpecificRowToString).collect(Collectors.toSet());
-            //filter(this.filterValue);
-        }
+    public void update(String oldValue, String newValue) {
+        executionService.executeOnServer(() -> {
+            checkedValue(newValue);
+            this.originList.remove(oldValue);
+            this.originList.add(newValue);
+            int indexValue = this.filteredList.indexOf(oldValue);
+            this.filteredList.remove(oldValue);
+            this.filteredList.add(indexValue, newValue);
+            this.sortedSet.remove(oldValue);
+            this.sortedSet.add(newValue);
+            this.fireTableUpdated.accept(indexValue, indexValue);
+            autoSizeRow(indexValue);
+            this.editTableElementOptional = Optional.of(createEditTableElementForUpdate(oldValue, newValue));
+            saveMemoryInBackground();
+        });
     }
 
     @Override
-    public void remove(Integer id) {
-        if (Optional.ofNullable(id).isPresent()) {
-            Optional<SpecificRow> specificRowOptional = this.specificRowList.stream().filter(specificRow -> id.equals(Integer.valueOf(specificRow.getSpecificList().get(0)))).findFirst();
-            if (specificRowOptional.isPresent()) {
-                this.editTableElementOptional = Optional.of(createEditTableElementForRemove(specificRowOptional.get().getSpecificList().get(1)));
-                this.specificRowList.remove(specificRowOptional.get());
-                this.filteredList.remove(specificRowOptional.get());
-                this.originList = this.specificRowList.parallelStream().map(this::mapSpecificRowToString).collect(Collectors.toSet());
-                //createSpecificRowList(this.originList);
-                saveMemoryInBackground();
-            }
-        }
-    }
-
-    @Override
-    public void add(String value) {
-        SortedSet<String> stringSortedSet = this.specificRowList.stream().map(this::mapSpecificRowToString).collect(Collectors.toCollection(TreeSet::new));
-        stringSortedSet.add(value);
-        this.originList = stringSortedSet;
-        this.specificRowList = convertSortedSetToSpecificRowList(stringSortedSet);
-        filter(this.filterValue);
-        this.editTableElementOptional = Optional.of(createEditTableElementForAdd(value));
-
-//        Option<Tuple2<String, Integer>> addedElementOptional = Stream.ofAll(stringSortedSet).zipWithIndex(). find(tuple -> tuple._1().equals(value));
-//        this.editTableElementOptional = Optional.of(createEditTableElementForAdd(value));
-//        if (addedElementOptional.isDefined()) {
-//            Tuple2<String, Integer> addedRow = addedElementOptional.get();
-//            SpecificRow specificRowToAdd = mapStringToSpecificRow(addedRow._2() + 1, addedRow._1());
-//            this.filteredList.add(addedRow._2(), specificRowToAdd);
-//            logger.info("CALL REFRESH");
-//            refreshConsumer.accept(null);
-//            logger.info("FIN CALL REFRESH");
-//            this.specificRowList.add(addedRow._2(), specificRowToAdd);
-//        } else {
-//            createSpecificRowList(this.originList);
-//        }
-//        this.originList = stringSortedSet;
+    public void remove(String value) {
+        this.originList.remove(value);
+        int indexValue = this.filteredList.indexOf(value);
+        this.filteredList.remove(value);
+        this.sortedSet.remove(value);
+        this.fireTableDeleted.accept(indexValue, indexValue);
+        this.editTableElementOptional = Optional.of(createEditTableElementForRemove(value));
         saveMemoryInBackground();
     }
 
     @Override
+    public void add(String value) {
+        executionService.executeOnServer(() -> {
+            checkedValue(value);
+            this.originList.add(value);
+            this.sortedSet.add(value);
+            Integer index = new LinkedList<>(sortedSet).indexOf(value);
+            this.filteredList.add(index, value);
+            this.fireTableInserted.accept(index, index);
+            autoSizeRow(index);
+            this.editTableElementOptional = Optional.of(createEditTableElementForAdd(value));
+            saveMemoryInBackground();
+        });
+    }
+
+    @Override
     public void createSpecificRowList(Collection<String> collection) {
-        this.originList = collection;
-        this.specificRowList = convertValueCollectionToSpecificRowList(collection);
+        this.originList = new HashSet<>(collection);
         filter(this.filterValue);
     }
 
@@ -130,87 +129,33 @@ public class SpecificEditTableModel implements ISpecificEditTableModel {
     }
 
     /**
-     * Permet de mapper les valeurs avec leur numéro de ligne dans une {@link SpecificRow}
-     * @param index index pour le mapping
-     * @param value valeur à mapper
-     * @return la ligne spécifique
-     */
-    private SpecificRow mapStringToSpecificRow(int index, String value) {
-        SpecificRow specificRow = new SpecificRow();
-        specificRow.addSpecific(String.valueOf(index));
-        specificRow.addSpecific(value);
-        return specificRow;
-    }
-
-    /**
-     * Permet de mapper une {@link SpecificRow} en valeur
-     * @param specificRow {@link SpecificRow} à mapper
-     * @return la valeur
-     */
-    private String mapSpecificRowToString(SpecificRow specificRow) {
-        return specificRow.getSpecificList().get(1);
-    }
-
-    /**
-     * Permet de convertir la collection de valeur en liste de {@link SpecificRow}
-     * @param collection collection de valeurs
-     * @return la liste de {@link SpecificRow}
-     */
-    private LinkedList<SpecificRow> convertValueCollectionToSpecificRowList(Collection<String> collection) {
-        SortedSet<String> sortedRowSet = new TreeSet<>(Comparator.comparing(StringUtils::stripAccents));
-        sortedRowSet.addAll(collection);
-        return convertSortedSetToSpecificRowList(sortedRowSet);
-
-
-        //List<String> orderRow = collection.stream().sorted(Comparator.comparing(StringUtils::stripAccents)).collect(Collectors.toList());
-
-//
-//        return IntStream.range(0, orderRow.size())
-//                .boxed()
-//                .map(i -> mapStringToSpecificRow(i+1, orderRow.get(i)))
-//                .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-    /**
-     * Permet de convertir un {@link SortedSet} de valeur en liste de {@link SpecificRow}
-     * @param sortedRowSet les valeurs à convertir
-     * @return la liste de {@link SpecificRow}
-     */
-    private LinkedList<SpecificRow> convertSortedSetToSpecificRowList(SortedSet<String> sortedRowSet) {
-        return Stream.ofAll(sortedRowSet)
-                .zipWithIndex()
-                .map(tuple -> mapStringToSpecificRow(tuple._2()+1, tuple._1()))
-                .collect(Collectors.toCollection(LinkedList::new));
-    }
-
-
-    /**
      * Permet de filtrer les valeurs en arriére plan
      */
-    private void filterInBackground() {
+    private synchronized void filterInBackground() {
         boolean haveFilter = StringUtils.isNotBlank(this.filterValue);
-        LinkedList<SpecificRow> resultList = new LinkedList<>();
+        this.filteredList.clear();
+        this.sortedSet.clear();
+
         if (haveFilter) {
-            List<List<SpecificRow>> partition = ListUtils.partition(this.specificRowList, 5000);
+            List<List<String>> partition = ListUtils.partition(new ArrayList<>(this.originList), 5000);
 
             ExecutorService executorService = Executors.newFixedThreadPool(partition.size());
 
-            Queue<Future<List<SpecificRow>>> taskQueue = new LinkedList<>();
+            Queue<Future<List<String>>> taskQueue = new LinkedList<>();
             for (int i = 0; i < partition.size(); i++) {
                 taskQueue.add(executorService.submit(getCallable(partition.get(i), this.filterValue)));
             }
 
             while (!taskQueue.isEmpty()) {
-                Future<List<SpecificRow>> loadTask = taskQueue.remove();
-                Try.run(() -> resultList.addAll(loadTask.get()));
+                Future<List<String>> loadTask = taskQueue.remove();
+                Try.run(() -> this.sortedSet.addAll(loadTask.get()));
             }
+
             executorService.shutdown();
         } else {
-            resultList.addAll(this.specificRowList);
+            this.sortedSet.addAll(this.originList);
         }
-        this.filteredList.clear();
-        this.filteredList.addAll(resultList);
-        refreshStream();
+        this.filteredList.addAll(this.sortedSet);
     }
 
     /**
@@ -219,8 +164,8 @@ public class SpecificEditTableModel implements ISpecificEditTableModel {
      * @param filter filtre à appliquer
      * @return la liste des lignes filtrés
      */
-    private Callable<List<SpecificRow>> getCallable(List<SpecificRow> rows, String filter) {
-        return () -> rows.stream().filter(specificRow -> specificRow.getSpecificList().get(1).toLowerCase(Locale.ROOT).contains(filter)).collect(Collectors.toCollection(LinkedList::new));
+    private Callable<List<String>> getCallable(List<String> rows, String filter) {
+        return () -> rows.stream().filter(row -> row.toLowerCase(Locale.ROOT).contains(filter)).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**
@@ -275,17 +220,59 @@ public class SpecificEditTableModel implements ISpecificEditTableModel {
         this.editTableElementOptional = editTableElement;
     }
 
+    @Override
+    public void setConsumerForFireTableInserted(BiConsumer<Integer, Integer> consumer) {
+        this.fireTableInserted = consumer;
+    }
+
+    @Override
+    public void setConsumerForFireTableUpdated(BiConsumer<Integer, Integer> consumer) {
+        this.fireTableUpdated = consumer;
+    }
+
+    @Override
+    public void setConsumerForFireTableDeleted(BiConsumer<Integer, Integer> consumer) {
+        this.fireTableDeleted = consumer;
+    }
+
+    /**
+     * Permet de sauvegarder en arrière plan
+     */
     private void saveMemoryInBackground() {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
-            refreshStream();
             this.saveInMemory.accept(null);
             this.editTableElementOptional = Optional.empty();
         });
         executorService.shutdown();
     }
 
-    private void refreshStream() {
-        this.cacheStream = Stream.ofAll(this.filteredList).zipWithIndex();
+    /**
+     * Permet de mettre à jour la taille par rapport à une ligne
+     * @param index index de la ligne à utiliser
+     */
+    private void autoSizeRow(Integer index) {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        executorService.submit(() -> {
+            consumerForAutoSize.accept(index);
+        });
+        executorService.shutdown();
     }
+
+    /**
+     * Permet de vérifier que la valeur n'est pas déjà présente dans la liste.
+     * Si c'est le cas une exception est levé
+     * @param value valeur à vérifier
+     */
+    private void checkedValue(String value) {
+        if (this.originList.contains(value)) {
+            InformationException informationException = new InformationExceptionBuilder()
+                    .errorCode(ErrorCode.VALUE_EXIST)
+                    .parameters(Set.of(value))
+                    .objectInError(value)
+                    .build();
+            throw new ServerException().addInformationException(informationException);
+        }
+    }
+
 }

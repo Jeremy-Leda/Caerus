@@ -10,6 +10,7 @@ import view.panel.model.SpecificEditTableModel;
 import view.utils.ColumnsAutoSize;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
+import view.utils.RowNumberTable;
 import view.windows.UserQuestion;
 
 import javax.swing.*;
@@ -45,12 +46,16 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
         }
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxlayout);
-        this.specificEditTableModel = new SpecificEditTableModel(e -> refresh(), saveInMemory);
+        this.specificEditTableModel = new SpecificEditTableModel(e -> refreshDataAndColumnSize(), saveInMemory, getConsumerForAutoSizeColumn());
         this.textBoxPanel = new TextBoxPanel(1, false);
         this.editTableModel = new EditTableModel(header, this.specificEditTableModel);
         this.table = new JTable(this.editTableModel);
         configureTable();
         this.scrollPane = new JScrollPane(this.table);
+        JTable rowTable = new RowNumberTable(this.table);
+        scrollPane.setRowHeaderView(rowTable);
+        scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER,
+                rowTable.getTableHeader());
         this.textBoxPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
                 .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL)));
         this.textBoxPanel.addConsumerOnChange(0, getConsumerFilter());
@@ -151,9 +156,9 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
      */
     private void removeSelectedRow(JTable tableSource) {
         if (tableSource.getSelectedRow() > -1) {
-            String id = (String) tableSource.getModel().getValueAt(tableSource.getSelectedRow(), 0);
+            String value = (String) tableSource.getModel().getValueAt(tableSource.getSelectedRow(), 0);
             tableSource.getSelectionModel().clearSelection();
-            specificEditTableModel.remove(Integer.valueOf(id));
+            specificEditTableModel.remove(value);
         }
     }
 
@@ -166,8 +171,8 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
         UserQuestion userQuestion = new UserQuestion(informationMessage, label);
         if (StringUtils.isNotBlank(userQuestion.getAnswer())) {
             specificEditTableModel.add(userQuestion.getAnswer());
-            this.editTableModel.fireTableDataChanged();
-            ColumnsAutoSize.sizeColumnsToFit(this.table);
+            //this.editTableModel.fireTableDataChanged();
+            //ColumnsAutoSize.sizeColumnsToFit(this.table);
         }
     }
 
@@ -196,7 +201,22 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
      */
     private void refreshDataAndColumnSize() {
         this.editTableModel.fireTableDataChanged();
+        autoSizeColumn();
+    }
+
+    /**
+     * Permet de mettre à jour la taille des colonnes
+     */
+    private void autoSizeColumn() {
         ColumnsAutoSize.sizeColumnsToFit(this.table);
+    }
+
+    /**
+     * Permet de se procurer le consumer pour redimensionner une colonne suite à la modification d'une ligne
+     * @return le consumer
+     */
+    private Consumer<Integer> getConsumerForAutoSizeColumn() {
+        return id -> ColumnsAutoSize.sizeColumnsToFitForUpdate(this.table, id);
     }
 
 }

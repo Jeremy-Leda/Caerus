@@ -1,10 +1,11 @@
 package view.interfaces;
 
 import view.beans.EditTableElement;
-import view.beans.SpecificRow;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  *
@@ -17,10 +18,14 @@ public interface ISpecificEditTableModel {
      * Permet de se procurer la liste des lignes à afficher
      * @return la liste des lignes
      */
-    LinkedList<SpecificRow> getRows();
+    Collection<String> getRows();
 
-
-    SpecificRow getSpecificRow(Integer index);
+    /**
+     * Permet de se procurer la valeur de la ligne par son index
+     * @param rowIndex index de la ligne
+     * @return la valeur
+     */
+    String getRow(Integer rowIndex);
 
     /**
      * Permet de se procurer les valeurs du model
@@ -30,16 +35,16 @@ public interface ISpecificEditTableModel {
 
     /**
      * Permet de mettre à jour la valeur d'une ligne
-     * @param id identifiant
+     * @param oldValue l'ancienne valeur
      * @param newValue la nouvelle valeur
      */
-    void update(Integer id, String newValue);
+    void update(String oldValue, String newValue);
 
     /**
      * Permet de supprimer une valeur
-     * @param id identifiant
+     * @param value la valeur à supprimer
      */
-    void remove(Integer id);
+    void remove(String value);
 
     /**
      * Permet d'ajouter une valeur à la liste
@@ -70,5 +75,23 @@ public interface ISpecificEditTableModel {
      * @param editTableElement {@link EditTableElement} en cours
      */
     void setEditTableElement(Optional<EditTableElement> editTableElement);
+
+    /**
+     * Permet de définir le consumer pour mettre à jour la table après une insertion
+     * @param consumer consumer pour mettre à jour la table après une insertion
+     */
+    void setConsumerForFireTableInserted(BiConsumer<Integer, Integer> consumer);
+
+    /**
+     * Permet de définir le consumer pour mettre à jour la table après une mise à jour
+     * @param consumer consumer pour mettre à jour la table après une mise à jour
+     */
+    void setConsumerForFireTableUpdated(BiConsumer<Integer, Integer> consumer);
+
+    /**
+     * Permet de définir le consumer pour mettre à jour la table après une suppression
+     * @param consumer consumer pour mettre à jour la table après une suppression
+     */
+    void setConsumerForFireTableDeleted(BiConsumer<Integer, Integer> consumer);
 
 }

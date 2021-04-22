@@ -19,7 +19,7 @@ import java.util.Map;
  * Classe permettant de poser une question Oui ou non à l'utilisateur
  *
  */
-public class YesNoQuestion extends ModalJFrameAbstract  {
+public class YesNoQuestion extends ModalJFrameAbstract {
 
     private final JPanel content;
     private final InformationPanel infoPanel;

@@ -22,9 +22,8 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
     // WIZARD
     private final IWizardPanel wizardPanel;
     private final ICheckBoxPanel checkBoxPanel;
-    private IActionPanel actionPanel;
     private JPanel content = new JPanel();
-    private Boolean reconstructInProgress;
+    private final Map<Integer, Long> checkBoxIdStepMap = new HashMap<>();
 
     public AnalysisAssistant(String title, IConfigurationControler configurationControler) {
         super(title, configurationControler);
@@ -32,12 +31,25 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));
         this.wizardPanel.addConsumerOnChangeStep(changeConsumerForWizard());
         this.checkBoxPanel = new CheckBoxPanel(3, true);
-        this.reconstructInProgress = Boolean.FALSE;
 
+        fillCheckBoxIdStepMap();
         createCheckBox();
         createStep_0();
         createStep_1();
+        createStepTokenization();
+        createStepLemmatization();
+        createStepFrequency();
+        disableStepOnStart();
         createWindow();
+    }
+
+    /**
+     * Permet de remplir la map permettant de connecter les étapes avec les boutons radio
+     */
+    private void fillCheckBoxIdStepMap() {
+        this.checkBoxIdStepMap.put(0, 2L);
+        this.checkBoxIdStepMap.put(1, 3L);
+        this.checkBoxIdStepMap.put(2, 4L);
     }
 
     @Override
@@ -84,6 +96,87 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.wizardPanel.addStep(Arrays.asList(informationStep, this.checkBoxPanel));
     }
 
+    /**
+     * Permet de créer l'étape des stopWords
+     */
+    private void createStepTokenization() {
+        IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
+                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE));
+        profileWithTable.createTable(Map.of(0, ConfigurationUtils.getInstance()
+                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL)));
+        profileWithTable.setGetListFromProfileFunction(getTokenizationFunction());
+        profileWithTable.fillProfileSet(LexicometricAnalysisType.TOKENIZATION.getProfileSet(), getControler().getLexicometricDefaultProfile());
+        profileWithTable.setInterfaceForTableAndAddButton(0,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
+        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
+                false, true);
+        this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
+    }
+
+    /**
+     * Permet de créer l'étape pour la lemmatization
+     */
+    private void createStepLemmatization() {
+        IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
+                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE));
+        profileWithTable.createTable(Map.of(0, ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL),
+                1, ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL)));
+        profileWithTable.setGetListFromProfileFunction(getBaseLemmeFunction());
+        profileWithTable.fillProfileSet(LexicometricAnalysisType.LEMMATIZATION.getProfileSet(), getControler().getLexicometricDefaultProfile());
+        profileWithTable.setReferenceFromSourceFunction(0,1, getLemmeFromBaseFunction());
+        profileWithTable.setSaveDataInMemory(getSaveDataConsumer(LexicometricAnalysisType.LEMMATIZATION), List.of(0,1).stream().collect(Collectors.toCollection(LinkedList::new)));
+        profileWithTable.setInterfaceForTableAndAddButton(0,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
+        profileWithTable.setInterfaceForTableAndAddButton(1,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
+        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
+                false, true);
+        this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
+    }
+
+    /**
+     * Permet de créer l'étape pour la configuration des fréquences
+     */
+    private void createStepFrequency() {
+        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE1),
+                true, true);
+
+        IActionPanel actionPanel = new ActionPanel(1);
+        actionPanel.setStaticLabel("Fréquence", Map.of(0, "Fréquence"));
+
+        this.wizardPanel.addStep(Arrays.asList(informationStep, actionPanel));
+    }
+
+    /**
+     * Permet de créer les radio boutons
+     */
     private void createCheckBox() {
         Map<Integer, String> mapCheckBox = new HashMap<>();
         mapCheckBox.put(0, ConfigurationUtils.getInstance()
@@ -94,9 +187,28 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_OPTION_FREQUENCY));
         this.checkBoxPanel.setStaticLabel(ConfigurationUtils.getInstance()
                 .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_OPTION_PANEL_TITLE), mapCheckBox);
-        this.checkBoxPanel.addConsumerOnChange(0, e -> constructEditDataForAnalyze());
-        this.checkBoxPanel.addConsumerOnChange(1, e -> constructEditDataForAnalyze());
-        this.checkBoxPanel.addConsumerOnChange(2, e -> constructEditDataForAnalyze());
+        this.checkBoxPanel.addConsumerOnChange(0, e -> updateStateOfStep(0));
+        this.checkBoxPanel.addConsumerOnChange(1, e -> updateStateOfStep(1));
+        this.checkBoxPanel.addConsumerOnChange(2, e -> updateStateOfStep(2));
+    }
+
+    /**
+     * Permet de mettre à jour l'état d'une étape en fonction d'un radio bouton
+     * @param idButton identifiant du radio bouton
+     */
+    private void updateStateOfStep(Integer idButton) {
+        Long idStep = this.checkBoxIdStepMap.get(idButton);
+        Boolean state = this.checkBoxPanel.getCheckBoxIsChecked(idButton);
+        this.wizardPanel.setStateOfStep(idStep, state);
+    }
+
+    /**
+     * Permet de désactiver les étapes non coché par défaut
+     */
+    private void disableStepOnStart() {
+        updateStateOfStep(0);
+        updateStateOfStep(1);
+        updateStateOfStep(2);
     }
 
     /**
@@ -108,91 +220,6 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         return v -> {
             repack();
         };
-    }
-
-    private void constructEditDataForAnalyze() {
-        if (!reconstructInProgress) {
-            reconstructInProgress = Boolean.TRUE;
-            this.wizardPanel.removeAll();
-            createStep_0();
-            createStep_1();
-            if (this.checkBoxPanel.getCheckBoxIsChecked(0)) {
-                //LexicometricConfigurationView lexicometricAnalysis = getControler().getLexicometricAnalysis();
-                IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE));
-                profileWithTable.createTable(Map.of(0, ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL)));
-
-
-
-                //profileWithTable.fillTable(0, lexicometricAnalysis.getTokenization().getWords());
-                profileWithTable.setGetListFromProfileFunction(getTokenizationFunction());
-                profileWithTable.fillProfileSet(LexicometricAnalysisType.TOKENIZATION.getProfileSet(), getControler().getLexicometricDefaultProfile());
-                profileWithTable.setInterfaceForTableAndAddButton(0,
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-
-//                ITableWithFilterAndEditPanel tableWithFilterAndEditPanel = new TableWithFilterAndEditPanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
-//                        ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL));
-//                tableWithFilterAndEditPanel.fillTable(lexicometricAnalysis.getTokenization().getWords());
-//                tableWithFilterAndEditPanel.fillProfileSet(LexicometricAnalysisType.TOKENIZATION.getProfileSet());
-//                tableWithFilterAndEditPanel.setInterfaceForAddButton(
-//                        ConfigurationUtils.getInstance()
-//                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                        ConfigurationUtils.getInstance()
-//                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL)
-//                );
-                //IEditListConfiguration editListConfiguration = new EditListConfiguration("Editer les token", "Token", lexicometricAnalysis.getTokenization().getWords(), 1);
-
-                addStepEditData(
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
-                        profileWithTable);
-            }
-            if (this.checkBoxPanel.getCheckBoxIsChecked(1)) {
-                //LexicometricConfigurationView lexicometricAnalysis = getControler().getLexicometricAnalysis();
-                IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE));
-                profileWithTable.createTable(Map.of(0, ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL),
-                        1, ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL)));
-                profileWithTable.setGetListFromProfileFunction(getBaseLemmeFunction());
-                profileWithTable.fillProfileSet(LexicometricAnalysisType.LEMMATIZATION.getProfileSet(), getControler().getLexicometricDefaultProfile());
-                profileWithTable.setReferenceFromSourceFunction(0,1, getLemmeFromBaseFunction());
-                profileWithTable.setSaveDataInMemory(getSaveDataConsumer(LexicometricAnalysisType.LEMMATIZATION), List.of(0,1).stream().collect(Collectors.toCollection(LinkedList::new)));
-//                profileWithTable.fillTable(0, lexicometricAnalysis.getTokenization().getWords());
-//                profileWithTable.fillTable(1, Collections.emptyList());
-                profileWithTable.setInterfaceForTableAndAddButton(0,
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-                profileWithTable.setInterfaceForTableAndAddButton(1,
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-                addStepEditData(
-                        ConfigurationUtils.getInstance()
-                                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
-                        profileWithTable);
-                //addStepEditData("Panel Lemmatisations", "Editer les lemmes");
-            }
-            if (this.checkBoxPanel.getCheckBoxIsChecked(2)) {
-                addStepEditData("Panel Fréquence", "Configurer les fréquences");
-            }
-            this.wizardPanel.reconstructWizard();
-        }
-        reconstructInProgress = Boolean.FALSE;
     }
 
     /**
@@ -230,32 +257,5 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
             getControler().saveLexicometricAnalysis(editTable);
         };
     }
-
-
-    private void addStepEditData(String titlePanel, String buttonLabel) {
-        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-                ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-                ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE1),
-                true, true);
-
-        IActionPanel actionPanel = new ActionPanel(1);
-        actionPanel.setStaticLabel(titlePanel, Map.of(0, buttonLabel));
-
-        this.wizardPanel.addStep(Arrays.asList(informationStep, actionPanel));
-    }
-
-    private void addStepEditData(String information, IProfileWithTable profileWithTable) {
-        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-                ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-                information,
-                false, true);
-
-        this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
-    }
-
-
 
 }

@@ -191,7 +191,7 @@ public class FixedErrorLine extends ModalJFrameAbstract {
 			wizardPanel.getJPanel().setVisible(Boolean.TRUE);
 			this.textFixedLine.setEditable(Boolean.FALSE);
 			this.textFixedLine.setText(StringUtils.EMPTY);
-			this.wizardPanel.setStep(0);
+			this.wizardPanel.setStep(0L);
 		}
 		repack();
 	}

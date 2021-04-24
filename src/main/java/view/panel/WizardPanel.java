@@ -1,26 +1,19 @@
 package view.panel;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
-import java.util.function.Function;
-
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-
+import io.vavr.collection.Stream;
 import view.interfaces.IAccessPanel;
 import view.interfaces.IActionPanel;
 import view.interfaces.IWizardPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
+
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /**
  * 
@@ -31,13 +24,12 @@ import view.utils.Constants;
  */
 public class WizardPanel implements IWizardPanel {
 
-	private final Map<Integer, List<IAccessPanel>> wizardStepMap;
+	private final Map<Long, List<IAccessPanel>> wizardStepMap;
+	private final SortedMap<Long, Boolean> wizardStepEnabledMap;
 	private final JPanel content;
 	private final IActionPanel actionPanel;
-	private Integer nbStep;
 	private final List<Consumer<?>> consumerOnChangeStepList;
-	private Integer currentStep;
-	private Integer oldCurrentStep;
+	private Long currentStep;
 
 	/**
 	 * Constructeur
@@ -45,12 +37,12 @@ public class WizardPanel implements IWizardPanel {
 	 * @param title Titre
 	 */
 	public WizardPanel(String title) {
-		this.wizardStepMap = new LinkedHashMap<Integer, List<IAccessPanel>>();
+		this.wizardStepMap = new LinkedHashMap<>();
+		this.wizardStepEnabledMap = new TreeMap<>(Comparator.naturalOrder());
 		this.actionPanel = new ActionPanel(2);
-		this.currentStep = 0;
+		this.currentStep = 0L;
 		this.consumerOnChangeStepList = new ArrayList<Consumer<?>>();
 		this.content = new JPanel();
-		this.nbStep = -1;
 		this.content.setBorder(BorderFactory.createTitledBorder(title));
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
@@ -84,7 +76,7 @@ public class WizardPanel implements IWizardPanel {
 	}
 
 	/**
-	 * Permet de se produire la fonction pour la mise à jour du titre du Jpanel
+	 * Permet de se procurer la fonction pour la mise à jour du titre du Jpanel
 	 * Action
 	 * 
 	 * @return la fonction
@@ -92,7 +84,7 @@ public class WizardPanel implements IWizardPanel {
 	private Function<Void, String> getFunctionTitleJPanelActionRefresh() {
 		return (v) -> String.format(
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_WIZARD_NAVIGATION_PANEL_TITLE),
-				this.currentStep + 1, this.nbStep + 1);
+				this.currentStep + 1, getNbStepEnabled() + 1);
 	}
 
 	@Override
@@ -102,9 +94,13 @@ public class WizardPanel implements IWizardPanel {
 
 	@Override
 	public void addStep(List<IAccessPanel> panelList) {
-		this.nbStep++;
-		this.wizardStepMap.put(nbStep, panelList);
-		refreshCurrentStep();
+		Long nextIdStep = getNextIdStep();
+		this.wizardStepEnabledMap.put(nextIdStep, Boolean.TRUE);
+		this.wizardStepMap.put(nextIdStep, panelList);
+		refreshActionPanel();
+		if (nextIdStep == 0L) {
+			refreshCurrentStep();
+		}
 	}
 
 	@Override
@@ -116,7 +112,7 @@ public class WizardPanel implements IWizardPanel {
 
 	@Override
 	public Boolean isLastPage() {
-		return this.currentStep == this.nbStep;
+		return this.currentStep == getNbStepEnabled();
 	}
 
 	/**
@@ -147,60 +143,67 @@ public class WizardPanel implements IWizardPanel {
 	 * Permet de mettre à jour l'affichage pour l'étape en cours
 	 */
 	private void refreshCurrentStep() {
-		this.wizardStepMap.forEach(
-				(key, value) -> value.stream().forEach(panel -> panel.getJPanel().setVisible(currentStep == key)));
-		this.actionPanel.setEnabled(0, currentStep > 0);
-		this.actionPanel.setEnabled(1, currentStep < nbStep);
-		this.actionPanel.refresh();
+		List<Long> stepIdList = this.wizardStepEnabledMap.entrySet().stream().filter(Map.Entry::getValue).map(Map.Entry::getKey).collect(Collectors.toList());
+		Optional<Long> idStep = LongStream.range(0, stepIdList.size())
+				.boxed()
+				.filter(i -> i == currentStep)
+				.map(i -> stepIdList.get(Math.toIntExact(i)))
+				.findFirst();
+		idStep.ifPresent(this::displayStep);
+	}
+
+	/**
+	 * Permet d'afficher l'étape en fonction de son identifiant
+	 * @param idStep identifiant de l'étape
+	 */
+	private void displayStep(Long idStep) {
+		this.wizardStepMap.forEach((id, value) -> value.stream().forEach(panel -> panel.getJPanel().setVisible(id == idStep)));
+		refreshActionPanel();
 		refreshContent();
 		this.consumerOnChangeStepList.forEach(v -> v.accept(null));
 	}
 
+	/**
+	 * Permet de rafraichir le bloc action pour prendre en compte l'ensemble des modifications d'étapes
+	 */
+	private void refreshActionPanel() {
+		this.actionPanel.setEnabled(0, currentStep > 0);
+		this.actionPanel.setEnabled(1, currentStep < getNbStepEnabled());
+		this.actionPanel.refresh();
+	}
+
 	@Override
-	public void setStep(Integer numStep) {
-		if (numStep >= 0 && numStep <= nbStep) {
+	public void setStep(Long numStep) {
+		if (numStep >= 0 && numStep <= getNbStepEnabled()) {
 			currentStep = numStep;
 			refreshCurrentStep();
 		}
 	}
 
 	@Override
-	public void removeStep(Integer number) {
-		this.wizardStepMap.remove(number);
+	public void setStateOfStep(Long numStep, Boolean enabled) {
+		if (wizardStepEnabledMap.containsKey(numStep)) {
+			this.wizardStepEnabledMap.put(numStep, enabled);
+			refreshActionPanel();
+		}
 	}
 
-	@Override
-	public void editStep(Integer number, List<IAccessPanel> panelList) {
-		this.wizardStepMap.put(number, panelList);
+	/**
+	 * Permet de rafraichir le nb d'étape
+	 */
+	private Long getNbStepEnabled() {
+		return this.wizardStepEnabledMap.values().stream().filter(Boolean::booleanValue).count() - 1;
 	}
 
-	@Override
-	public Boolean existStep(Integer number) {
-		return this.wizardStepMap.containsKey(number);
-	}
-
-	@Override
-	public void reconstructWizard() {
-//		AtomicInteger number = new AtomicInteger();
-//		number.set(0);
-//		Map<Integer, List<IAccessPanel>> wizardStepMapFinal = new HashMap<>();
-//		this.wizardStepMap.values().forEach(v -> {
-//			wizardStepMapFinal.put(number.getAndIncrement(), v);
-//		});
-//		this.wizardStepMap.clear();
-//		this.wizardStepMap.putAll(wizardStepMapFinal);
-//		this.nbStep = number.get();
-		//refreshCurrentStep();
-		this.currentStep = this.oldCurrentStep;
-		refreshCurrentStep();
-	}
-
-	@Override
-	public void removeAll() {
-		this.nbStep = -1;
-		this.oldCurrentStep = currentStep;
-		this.currentStep = 0;
-		this.wizardStepMap.clear();
+	/**
+	 * Permet de se procurer le prochain id de l'étape
+	 * @return le prochain id de l'étape
+	 */
+	private Long getNextIdStep() {
+		if (this.wizardStepEnabledMap.isEmpty()) {
+			return 0L;
+		}
+		return Stream.ofAll(this.wizardStepEnabledMap.keySet()).last() + 1;
 	}
 
 }

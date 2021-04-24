@@ -36,38 +36,14 @@ public interface IWizardPanel extends IAccessPanel {
 	 * Permet de définir le retour à une étape
 	 * @param numStep Numéro de l'étape
 	 */
-	void setStep(Integer numStep);
+	void setStep(Long numStep);
 
 	/**
-	 * Permet de supprimer une étape
-	 * @param number étape à supprimer
+	 * Permet d'activer ou désactiver une étape de l'assistant
+	 * Permettra de faire comme si l'étape n'avait jamais existé
+	 * @param numStep Numéro de l'étape
+	 * @param enabled état de l'étape
 	 */
-	void removeStep(Integer number);
-
-	/**
-	 * Permet de modifier une étape à l'assistant
-	 *
-	 * @param number étape à éditer
-	 * @param panelList liste des panels pour l'étapes (seront affichés les uns en
-	 *                  dessous des autres)
-	 */
-	void editStep(Integer number, List<IAccessPanel> panelList);
-
-	/**
-	 * Permet de savoir si l'étape existe
-	 * @param number numéro de l'étape
-	 * @return Vrai si l'étape existe
-	 */
-	Boolean existStep(Integer number);
-
-	/**
-	 * Méthode permettant de reconstruire le wizard en live
-	 */
-	void reconstructWizard();
-
-	/**
-	 * Permet de supprimer tous le contenu du wizard
-	 */
-	void removeAll();
+	void setStateOfStep(Long numStep, Boolean enabled);
 
 }

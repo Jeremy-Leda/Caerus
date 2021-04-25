@@ -1,7 +1,7 @@
 package view.beans;
 
-import model.analyze.beans.Lemmatization;
-import model.analyze.beans.Tokenization;
+import model.analyze.lexicometric.beans.Lemmatization;
+import model.analyze.lexicometric.beans.Tokenization;
 
 /**
  * Bean contenant la vue de la configuration pour les analyses lexicométrique

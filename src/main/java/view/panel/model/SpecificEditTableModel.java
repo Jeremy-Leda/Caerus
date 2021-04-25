@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  * Classe pour la gestion du modèle des données d'une table éditable
  *
  */
-public class SpecificEditTableModel implements ISpecificEditTableModel {
+public class SpecificEditTableModel implements ISpecificEditTableModel<String, String> {
 
     // La liste d'origine
     private Collection<String> originList;

@@ -1,11 +1,9 @@
-package model.analyze.beans;
+package model.analyze.lexicometric.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import model.analyze.lexicometric.interfaces.ILexicometricData;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  *
@@ -13,13 +11,18 @@ import java.util.Set;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Lemmatization {
+public class Lemmatization implements ILexicometricData<Map<String, Set<String>>> {
 
     private String profile;
     private Map<String, Set<String>> baseListWordsMap = new HashMap<>();
 
     public String getProfile() {
         return profile;
+    }
+
+    @Override
+    public Map<String, Set<String>> getData() {
+        return Collections.unmodifiableMap(baseListWordsMap);
     }
 
     public void setProfile(String profile) {

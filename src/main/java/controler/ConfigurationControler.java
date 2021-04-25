@@ -3,8 +3,11 @@ package controler;
 import model.ConfigurationModel;
 import model.IConfigurationModel;
 import model.analyze.beans.*;
+import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.constants.TypeFilterTextEnum;
+import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
+import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.excel.beans.ExcelImportConfigurationCmd;
 import model.exceptions.*;
@@ -653,15 +656,15 @@ public class ConfigurationControler implements IConfigurationControler {
 		}
 	}
 
-    @Override
-    public LexicometricConfigurationView getLexicometricAnalysis() {
-        return getLexicometricAnalysis(Optional.empty());
-    }
-
-	@Override
-	public LexicometricConfigurationView getLexicometricAnalysis(String profile) {
-		return getLexicometricAnalysis(Optional.ofNullable(profile));
-	}
+//    @Override
+//    public LexicometricConfigurationView getLexicometricAnalysis() {
+//        return getLexicometricAnalysis(Optional.empty());
+//    }
+//
+//	@Override
+//	public LexicometricConfigurationView getLexicometricAnalysis(String profile) {
+//		return getLexicometricAnalysis(Optional.ofNullable(profile));
+//	}
 
 	@Override
 	public String getLexicometricDefaultProfile() {
@@ -669,28 +672,35 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public void saveLexicometricAnalysis(EditTable editTable) {
-		editTable.getLexicometricAnalysisType().getSaveConsumer().accept(this.configurationModel, editTable);
+	public ILexicometricConfiguration getLexicometricConfiguration(LexicometricEditEnum lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical) {
+		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
+		ILexicometricHierarchical lexicometricHierarchicalServer = lexicometricConfigurationEnumFromViewEnum.getLexicometricHierarchicalViewToLexicometricHierarchicalServer().apply(lexicometricHierarchical);
+		return lexicometricConfigurationEnumFromViewEnum.getLexicometricHierarchicalILexicometricConfigurationFunction().apply(lexicometricHierarchicalServer);
 	}
 
-
-	/**
-	 * Permet de se procurer la vue pour l'affichage des informations d'analyse lexicométrique
-	 * @param optionalProfile le profile optionnel
-	 * @return la vue pour l'affichage des informations d'analyse lexicométrique
-	 */
-	private LexicometricConfigurationView getLexicometricAnalysis(Optional<String> optionalProfile) {
-		String profile = optionalProfile.orElse(getLexicometricDefaultProfile());
-		Optional<Tokenization> optionalTokenization = this.configurationModel.getLexicometricAnalysis().getTokenizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
-		Optional<Lemmatization> optionalLemmatization = this.configurationModel.getLexicometricAnalysis().getLemmatizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
-		Tokenization tokenization = new Tokenization();
-		tokenization.setProfile(profile);
-		tokenization.setWords(Set.copyOf(optionalTokenization.orElse(new Tokenization()).getWords()));
-		Lemmatization lemmatization = new Lemmatization();
-		lemmatization.setProfile(profile);
-		lemmatization.setBaseListWordsMap(Map.copyOf(optionalLemmatization.orElse(new Lemmatization()).getBaseListWordsMap()));
-		return new LexicometricConfigurationView(tokenization, lemmatization);
-
-	}
+//	@Override
+//	public void saveLexicometricAnalysis(EditTable editTable) {
+//		editTable.getLexicometricAnalysisType().getSaveConsumer().accept(this.configurationModel, editTable);
+//	}
+//
+//
+//	/**
+//	 * Permet de se procurer la vue pour l'affichage des informations d'analyse lexicométrique
+//	 * @param optionalProfile le profile optionnel
+//	 * @return la vue pour l'affichage des informations d'analyse lexicométrique
+//	 */
+//	private LexicometricConfigurationView getLexicometricAnalysis(Optional<String> optionalProfile) {
+//		String profile = optionalProfile.orElse(getLexicometricDefaultProfile());
+//		Optional<Tokenization> optionalTokenization = this.configurationModel.getLexicometricAnalysis().getTokenizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
+//		Optional<Lemmatization> optionalLemmatization = this.configurationModel.getLexicometricAnalysis().getLemmatizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
+//		Tokenization tokenization = new Tokenization();
+//		tokenization.setProfile(profile);
+//		tokenization.setWords(Set.copyOf(optionalTokenization.orElse(new Tokenization()).getWords()));
+//		Lemmatization lemmatization = new Lemmatization();
+//		lemmatization.setProfile(profile);
+//		lemmatization.setBaseListWordsMap(Map.copyOf(optionalLemmatization.orElse(new Lemmatization()).getBaseListWordsMap()));
+//		return new LexicometricConfigurationView(tokenization, lemmatization);
+//
+//	}
 
 }

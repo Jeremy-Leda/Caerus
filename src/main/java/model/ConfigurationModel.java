@@ -9,7 +9,7 @@ import model.analyze.UserSettings;
 import model.analyze.beans.*;
 import model.analyze.constants.ErrorTypeEnum;
 import model.analyze.constants.FolderSettingsEnum;
-import model.analyze.edit.LexicometricEditTableService;
+import model.analyze.lexicometric.services.LexicometricEditTableService;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.excel.beans.ExcelImportConfigurationCmd;
 import model.exceptions.*;
@@ -17,8 +17,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import view.beans.EditTable;
-import view.beans.EditTableElement;
 import view.beans.ExportTypeEnum;
 
 import java.io.File;
@@ -607,36 +605,36 @@ public class ConfigurationModel implements IConfigurationModel {
 		return informationExceptionSet;
 	}
 
-	@Override
-	public LexicometricAnalysis getLexicometricAnalysis() {
-		logger.debug("CALL getLexicometricAnalysis");
-		return UserLexicometricAnalysisSettings.getInstance().getLexicometricAnalysis();
-	}
+//	@Override
+//	public LexicometricAnalysis getLexicometricAnalysis() {
+//		logger.debug("CALL getLexicometricAnalysis");
+//		return UserLexicometricAnalysisSettings.getInstance().getLexicometricAnalysis();
+//	}
 
 	@Override
 	public String getLexicometricDefaultProfile() {
 		logger.debug("CALL getLexicometricDefaultProfile");
 		return UserLexicometricAnalysisSettings.getInstance().getUserProfile();
 	}
+//
+//	@Override
+//	public void saveTokenization(EditTable editTable) {
+//
+//	}
 
-	@Override
-	public void saveTokenization(EditTable editTable) {
-
-	}
-
-	@Override
-	public void saveLemmatization(EditTable editTable) {
-		logger.debug("CALL saveLemmatization");
-		logger.debug(editTable.toString());
-		Optional<Lemmatization> lemmatizationOptional = getLexicometricAnalysis().getLemmatizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(editTable.getProfil())).findFirst();
-		if (lemmatizationOptional.isEmpty()) {
-			return;
-		}
-		Map<String, Set<String>> baseListWordsMap = lemmatizationOptional.get().getBaseListWordsMap();
-		EditTableElement editTableElement = editTable.getEditTableElement();
-		Map<String, Set<String>> result = (Map<String, Set<String>>) editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, baseListWordsMap);
-		Set<String> keyForValueNotInitializedSet = result.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
-		keyForValueNotInitializedSet.forEach(key -> result.put(key, new HashSet<>()));
-		lemmatizationOptional.get().setBaseListWordsMap(result);
-	}
+//	@Override
+//	public void saveLemmatization(EditTable editTable) {
+//		logger.debug("CALL saveLemmatization");
+//		logger.debug(editTable.toString());
+//		Optional<Lemmatization> lemmatizationOptional = getLexicometricAnalysis().getLemmatizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(editTable.getProfil())).findFirst();
+//		if (lemmatizationOptional.isEmpty()) {
+//			return;
+//		}
+//		Map<String, Set<String>> baseListWordsMap = lemmatizationOptional.get().getBaseListWordsMap();
+//		EditTableElement editTableElement = editTable.getEditTableElement();
+//		Map<String, Set<String>> result = (Map<String, Set<String>>) editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, baseListWordsMap);
+//		Set<String> keyForValueNotInitializedSet = result.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
+//		keyForValueNotInitializedSet.forEach(key -> result.put(key, new HashSet<>()));
+//		lemmatizationOptional.get().setBaseListWordsMap(result);
+//	}
 }

@@ -14,13 +14,13 @@ import java.util.function.Function;
  * Interface pour l'utilisation des tables avec filtre et édition
  *
  */
-public interface ITableWithFilterAndEditPanel extends IAccessPanel, IRefreshPanel {
+public interface ITableWithFilterAndEditPanel<T extends Object> extends IAccessPanel, IRefreshPanel {
 
     /**
      * Permet de remplir la table
      * @param collection collection pour la table
      */
-    void fillTable(Collection<String> collection);
+    void fillTable(Collection<T> collection);
 
     /**
      * Permet de configurer le consumer pour le bouton ajouter
@@ -33,13 +33,13 @@ public interface ITableWithFilterAndEditPanel extends IAccessPanel, IRefreshPane
      * Permet de se procurer les valeurs de la table
      * @return les valeurs de la table
      */
-    Set<String> getValues();
+    Set<T> getValues();
 
     /**
      * Permet de définir un consumer à appliquer lors du changement de la ligne
      * @param consumer consumer à appliquer lors du changement de la ligne
      */
-    void setConsumerForRowChanged(Consumer<String> consumer);
+    void setConsumerForRowChanged(Consumer<T> consumer);
 
     /**
      * Permet de se procurer le {@link EditTableElement} en cours

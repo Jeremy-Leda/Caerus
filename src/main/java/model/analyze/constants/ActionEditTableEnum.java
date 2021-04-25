@@ -1,10 +1,8 @@
 package model.analyze.constants;
 
 import io.vavr.Function3;
-import model.analyze.edit.LexicometricEditTableService;
+import model.analyze.lexicometric.services.LexicometricEditTableService;
 import view.beans.EditTableElement;
-
-import java.util.Set;
 
 /**
  *

@@ -1,7 +1,9 @@
-package model.analyze.beans;
+package model.analyze.lexicometric.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import model.analyze.lexicometric.interfaces.ILexicometricData;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -12,13 +14,18 @@ import java.util.Set;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Tokenization {
+public class Tokenization implements ILexicometricData<Set<String>> {
 
     private String profile;
     private Set<String> words = new HashSet<>();
 
     public String getProfile() {
         return profile;
+    }
+
+    @Override
+    public Set<String> getData() {
+        return Collections.unmodifiableSet(this.words);
     }
 
     public void setProfile(String profile) {

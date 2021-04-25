@@ -1,7 +1,11 @@
 package model.analyze;
 
 import model.analyze.beans.*;
+import model.analyze.lexicometric.beans.Lemmatization;
+import model.analyze.lexicometric.beans.LexicometricAnalysis;
 import model.analyze.constants.FolderSettingsEnum;
+import model.analyze.lexicometric.beans.Tokenization;
+import model.analyze.lexicometric.interfaces.ILexicometricData;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -23,6 +28,8 @@ public class UserLexicometricAnalysisSettings {
     private static final Logger logger = LoggerFactory.getLogger(UserLexicometricAnalysisSettings.class);
     private static UserLexicometricAnalysisSettings _instance;
     private final LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
+    private final Set<ILexicometricData<Set<String>>> tokenizationSet = new HashSet<>();
+    private final Set<ILexicometricData<Map<String, Set<String>>>> lemmatizationSet = new HashSet<>();
     private String userProfile;
 
 
@@ -81,15 +88,17 @@ public class UserLexicometricAnalysisSettings {
                 }
             });
         }
+        tokenizationSet.addAll(lexicometricAnalysis.getTokenizationSet());
+        lemmatizationSet.addAll(lexicometricAnalysis.getLemmatizationSet());
     }
 
-    /**
-     * Permet de se procurer la configuration pour les analyses lexicométriques
-     * @return la configuration pour les analyses lexicométriques
-     */
-    public LexicometricAnalysis getLexicometricAnalysis() {
-        return lexicometricAnalysis;
-    }
+//    /**
+//     * Permet de se procurer la configuration pour les analyses lexicométriques
+//     * @return la configuration pour les analyses lexicométriques
+//     */
+//    public LexicometricAnalysis getLexicometricAnalysis() {
+//        return lexicometricAnalysis;
+//    }
 
     /**
      * Permet de se procurer le profile par défaut
@@ -99,6 +108,35 @@ public class UserLexicometricAnalysisSettings {
         return userProfile;
     }
 
+    /**
+     * Permet de se procurer la liste des tokenization disponibles
+     * @return la liste des tokenization disponibles
+     */
+    public Set<ILexicometricData<Set<String>>> getTokenizationSet() {
+        return this.tokenizationSet;
+    }
+
+    /**
+     * Permet de se procurer la liste des lemmatisations disponibles
+     * @return la liste des lemmatisations disponibles
+     */
+    public Set<ILexicometricData<Map<String, Set<String>>>> getLemmatizationSet() {
+        return this.lemmatizationSet;
+    }
+
+    public void saveTokenization(String userProfile, Set<String> words) {
+        Optional<Tokenization> optionalTokenization = this.lexicometricAnalysis.getTokenizationSet().stream().filter(tokenization -> tokenization.getProfile().equals(userProfile)).findFirst();
+        optionalTokenization.ifPresent(tokenization -> tokenization.setWords(words));
+    }
+
+    public void saveLemmatization(String userProfile, Map<String, Set<String>> words) {
+        // On vérifie qu'il n'y a pas de liste à null, sinon on les set
+        Set<String> keyForValueNotInitializedSet = words.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
+        keyForValueNotInitializedSet.forEach(key -> words.put(key, new HashSet<>()));
+        // On sauvegarde
+        Optional<Lemmatization> lemmatizationOptional = this.lexicometricAnalysis.getLemmatizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(userProfile)).findFirst();
+        lemmatizationOptional.ifPresent(lemmatization -> lemmatization.setBaseListWordsMap(words));
+    }
 
 
 }

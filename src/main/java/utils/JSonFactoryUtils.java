@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import model.analyze.beans.Configuration;
-import model.analyze.beans.LexicometricAnalysis;
+import model.analyze.lexicometric.beans.LexicometricAnalysis;
 
 /**
  * 

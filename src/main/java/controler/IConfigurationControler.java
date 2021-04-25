@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import model.analyze.beans.Configuration;
 import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.StructuredFile;
+import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
+import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
 import model.excel.beans.ExcelImportConfigurationCmd;
 import model.exceptions.ImportExcelException;
@@ -599,18 +601,18 @@ public interface IConfigurationControler {
 	 */
     void importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException;
 
-	/**
-	 * Permet de se procurer le bean pour l'analyse lexicométrique
-	 * @return le bean pour l'analyse lexicométrique
-	 */
-	LexicometricConfigurationView getLexicometricAnalysis();
-
-	/**
-	 * Permet de se procurer le bean pour l'analyse lexicométrique
-	 * @param profile profile recherché
-	 * @return le bean pour l'analyse lexicométrique
-	 */
-	LexicometricConfigurationView getLexicometricAnalysis(String profile);
+//	/**
+//	 * Permet de se procurer le bean pour l'analyse lexicométrique
+//	 * @return le bean pour l'analyse lexicométrique
+//	 */
+//	LexicometricConfigurationView getLexicometricAnalysis();
+//
+//	/**
+//	 * Permet de se procurer le bean pour l'analyse lexicométrique
+//	 * @param profile profile recherché
+//	 * @return le bean pour l'analyse lexicométrique
+//	 */
+//	LexicometricConfigurationView getLexicometricAnalysis(String profile);
 
 	/**
 	 * Permet de se procurer le profile par défaut pour les analyses lexicométrique
@@ -618,10 +620,18 @@ public interface IConfigurationControler {
 	 */
 	String getLexicometricDefaultProfile();
 
+//	/**
+//	 * Permet de sauvegarder les données en mémoire
+//	 * @param editTable Information à enregistrer
+//	 */
+//	void saveLexicometricAnalysis(EditTable editTable);
+
 	/**
-	 * Permet de sauvegarder les données en mémoire
-	 * @param editTable Information à enregistrer
+	 * Permet de se procurer la configuration lexicométrique
+	 * @param lexicometricEditEnum enumeration déterminant la configuration lexicométrique
+	 * @param lexicometricHierarchical information sur la hierarchies en provenance de la vue
+	 * @return la configuration lexicométrique
 	 */
-	void saveLexicometricAnalysis(EditTable editTable);
+	ILexicometricConfiguration getLexicometricConfiguration(LexicometricEditEnum lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical);
 
 }

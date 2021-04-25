@@ -1,4 +1,4 @@
-package model.analyze.beans;
+package model.analyze.lexicometric.beans;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

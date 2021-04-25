@@ -19,7 +19,6 @@ import model.exceptions.ImportExcelException;
 import model.exceptions.InformationException;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
-import view.beans.EditTable;
 import view.beans.ExportTypeEnum;
 
 /**
@@ -583,11 +582,11 @@ public interface IConfigurationModel {
 	 */
     Set<InformationException> importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException;
 
-	/**
-	 * Permet de se procurer le bean pour l'analyse lexicométrique
-	 * @return le bean pour l'analyse lexicométrique
-	 */
-	LexicometricAnalysis getLexicometricAnalysis();
+//	/**
+//	 * Permet de se procurer le bean pour l'analyse lexicométrique
+//	 * @return le bean pour l'analyse lexicométrique
+//	 */
+//	LexicometricAnalysis getLexicometricAnalysis();
 
 	/**
 	 * Permet de se procurer le profile par défaut pour les analyses lexicométrique
@@ -595,15 +594,18 @@ public interface IConfigurationModel {
 	 */
 	String getLexicometricDefaultProfile();
 
-	/**
-	 * Permet de sauvegarder la tokenisation en mémoire
-	 * @param editTable {@link EditTable} pour la sauvegarde
-	 */
-	void saveTokenization(EditTable editTable);
+//	/**
+//	 * Permet de sauvegarder la tokenisation en mémoire
+//	 * @param editTable {@link EditTable} pour la sauvegarde
+//	 */
+//	@Deprecated
+//	void saveTokenization(EditTable editTable);
+//
+//	/**
+//	 * Permet de sauvegarder la lemmatisation en mémoire
+//	 * @param editTable {@link EditTable} pour la sauvegarde
+//	 */
+//	@Deprecated
+//	void saveLemmatization(EditTable editTable);
 
-	/**
-	 * Permet de sauvegarder la lemmatisation en mémoire
-	 * @param editTable {@link EditTable} pour la sauvegarde
-	 */
-	void saveLemmatization(EditTable editTable);
 }

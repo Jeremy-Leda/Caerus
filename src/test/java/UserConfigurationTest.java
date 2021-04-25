@@ -1,7 +1,7 @@
 import controler.ConfigurationControler;
-import model.analyze.beans.Lemmatization;
-import model.analyze.beans.LexicometricAnalysis;
-import model.analyze.beans.Tokenization;
+import model.analyze.lexicometric.beans.Lemmatization;
+import model.analyze.lexicometric.beans.LexicometricAnalysis;
+import model.analyze.lexicometric.beans.Tokenization;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

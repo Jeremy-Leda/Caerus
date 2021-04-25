@@ -11,58 +11,60 @@ import java.util.function.BiConsumer;
  *
  * Interface pour la gestion du modèle des données d'une table éditable
  *
+ * @param <T> Type d'objet utilisé pour la liste
+ * @param <F> Type d'objet pour le filtre
  */
-public interface ISpecificEditTableModel {
+public interface ISpecificEditTableModel<T extends Object, F extends Object> {
 
     /**
      * Permet de se procurer la liste des lignes à afficher
      * @return la liste des lignes
      */
-    Collection<String> getRows();
+    Collection<T> getRows();
 
     /**
      * Permet de se procurer la valeur de la ligne par son index
      * @param rowIndex index de la ligne
      * @return la valeur
      */
-    String getRow(Integer rowIndex);
+    T getRow(Integer rowIndex);
 
     /**
      * Permet de se procurer les valeurs du model
      * @return les valeurs
      */
-    Set<String> getModelValues();
+    Set<T> getModelValues();
 
     /**
      * Permet de mettre à jour la valeur d'une ligne
      * @param oldValue l'ancienne valeur
      * @param newValue la nouvelle valeur
      */
-    void update(String oldValue, String newValue);
+    void update(T oldValue, T newValue);
 
     /**
      * Permet de supprimer une valeur
      * @param value la valeur à supprimer
      */
-    void remove(String value);
+    void remove(T value);
 
     /**
      * Permet d'ajouter une valeur à la liste
      * @param value valeur à ajouter
      */
-    void add(String value);
+    void add(T value);
 
     /**
      * Permet de créer de manière automatique la liste des lignes à afficher dans la table
      * @param collection collection contenant la liste des valeur
      */
-    void createSpecificRowList(Collection<String> collection);
+    void createSpecificRowList(Collection<T> collection);
 
     /**
      * Permet de filtrer la liste
      * @param value Le filtre à appliquer
      */
-    void filter(String value);
+    void filter(F value);
 
     /**
      * Permet de se procurer le {@link EditTableElement} en cours

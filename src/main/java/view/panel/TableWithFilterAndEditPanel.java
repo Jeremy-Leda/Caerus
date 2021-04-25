@@ -30,7 +30,7 @@ import java.util.function.Consumer;
  * Classe pour l'affichage d'une table avec édition et recherche par filtres
  *
  */
-public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel {
+public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel<String> {
     private final JPanel panel;
     private final EditTableModel editTableModel;
     private final JTable table;

@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import model.analyze.beans.*;
+import model.analyze.lexicometric.beans.LexicometricAnalysis;
 import model.excel.ImportExcel;
 import model.excel.beans.ExcelImportConfigurationCmd;
 import model.excel.beans.StructuredTextExcel;

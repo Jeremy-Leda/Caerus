@@ -6,7 +6,7 @@ import java.io.InputStream;
 
 import javax.imageio.ImageIO;
 
-import model.analyze.beans.LexicometricAnalysis;
+import model.analyze.lexicometric.beans.LexicometricAnalysis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

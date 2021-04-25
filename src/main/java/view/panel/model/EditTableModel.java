@@ -53,7 +53,7 @@ public class EditTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        this.specificEditTableModel.update(this.specificEditTableModel.getRow(rowIndex), (String)aValue);
+        this.specificEditTableModel.update(this.specificEditTableModel.getRow(rowIndex), aValue);
     }
 
     @Override

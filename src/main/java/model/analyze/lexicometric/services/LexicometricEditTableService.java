@@ -1,4 +1,4 @@
-package model.analyze.edit;
+package model.analyze.lexicometric.services;
 
 import view.beans.EditTableElement;
 

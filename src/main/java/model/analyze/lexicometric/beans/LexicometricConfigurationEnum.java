@@ -15,6 +15,8 @@ import view.beans.EditTableElement;
 import view.beans.LemmatizationHierarchicalEditEnum;
 import view.beans.LexicometricEditEnum;
 import view.beans.TokenizationHierarchicalEditEnum;
+import view.interfaces.IHierarchicalTable;
+import view.interfaces.IRootTable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -32,17 +34,17 @@ public enum LexicometricConfigurationEnum {
 
     TOKENIZATION(LexicometricConfigurationEnum::editTokenization, LexicometricEditEnum.TOKENIZATION,
             iLexicometricHierarchical -> new TokenizationHierarchicalService((ILexicometricHierarchical<TokenizationHierarchicalEditEnum>) iLexicometricHierarchical),
-            iLexicometricHierarchical -> new TokenizationConfiguration((ILexicometricHierarchical<TokenizationHierarchicalEnum>) iLexicometricHierarchical)),
+            LexicometricConfigurationEnum::getTokenizationConfiguration),
     LEMMATIZATION(LexicometricConfigurationEnum::editLemmatization, LexicometricEditEnum.LEMMATIZATION,
             iLexicometricHierarchical -> new LemmatizationHierarchicalService((ILexicometricHierarchical<LemmatizationHierarchicalEditEnum>) iLexicometricHierarchical),
-            iLexicometricHierarchical -> new LemmatizationConfiguration((ILexicometricHierarchical<LemmatizationHierarchicalEnum>) iLexicometricHierarchical));
+            LexicometricConfigurationEnum::getLemmatisationConfiguration);
 
     private static final LexicometricEditTableService lexicometricEditTableService = new LexicometricEditTableService();
     private final BiConsumer<String, EditTableElement> editTableElementBiConsumer;
     private final LexicometricEditEnum lexicometricEditEnum;
-    //private final ILexicometricConfiguration lexicometricConfiguration;
     private final Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer;
     private final Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction;
+    private static Set<IRootTable> hierarchicalTableSet = null;
 
     /**
      * Constructeur
@@ -109,6 +111,14 @@ public enum LexicometricConfigurationEnum {
     }
 
     /**
+     * Permet de déterminer les tables hiérarchiques en provenance de l'IHM
+     * @return Les tables hiérarchiques en provenance de l'IHM
+     */
+    public void setHierarchicalTableSet(Set<IRootTable> hierarchicalTableSet) {
+        this.hierarchicalTableSet = hierarchicalTableSet;
+    }
+
+    /**
      * Permet d'éditer les données serveur concernant la lemmatisation
      * @param profil profil de recherche
      * @param editTableElement données nécessaire à l'édition
@@ -137,17 +147,37 @@ public enum LexicometricConfigurationEnum {
     }
 
     /**
+     * Permet de se procurer la configuration pour la tokenization
+     * @param lexicometricHierarchical interface contenant les informations des datas
+     * @return La configuration pour la tokenization
+     */
+    private static ILexicometricConfiguration getTokenizationConfiguration(ILexicometricHierarchical<?> lexicometricHierarchical) {
+        return new TokenizationConfiguration((ILexicometricHierarchical<TokenizationHierarchicalEnum>) lexicometricHierarchical, hierarchicalTableSet);
+    }
+
+    /**
+     * Permet de se procurer la configuration pour la tokenization
+     * @param lexicometricHierarchical interface contenant les informations des datas
+     * @return La configuration pour la tokenization
+     */
+    private static ILexicometricConfiguration getLemmatisationConfiguration(ILexicometricHierarchical<?> lexicometricHierarchical) {
+        return new LemmatizationConfiguration((ILexicometricHierarchical<LemmatizationHierarchicalEnum>) lexicometricHierarchical, hierarchicalTableSet);
+    }
+
+    /**
      * Permet de se procurer la configuration lexicometric serveur en fonction de l'énumération de la vue
      * @param lexicometricEditEnum énumération en provenance de la vue
      * @return la configuration lexicometric serveur
      */
-    public static LexicometricConfigurationEnum getLexicometricConfigurationEnumFromViewEnum(LexicometricEditEnum lexicometricEditEnum) {
-        return Arrays.stream(values()).filter(lexicometricConfigurationEnum -> lexicometricConfigurationEnum.getLexicometricEditEnum().equals(lexicometricEditEnum)).findFirst().orElseThrow(() -> {
+    public static LexicometricConfigurationEnum getLexicometricConfigurationEnumFromViewEnum(IHierarchicalTable lexicometricEditEnum) {
+        LexicometricConfigurationEnum lexicometricConfigurationEnumServer = Arrays.stream(values()).filter(lexicometricConfigurationEnum -> lexicometricConfigurationEnum.getLexicometricEditEnum().equals(lexicometricEditEnum)).findFirst().orElseThrow(() -> {
             InformationException informationException = new InformationExceptionBuilder()
                     .errorCode(ErrorCode.TECHNICAL_ERROR)
                     .objectInError(lexicometricEditEnum)
                     .build();
             throw new ServerException().addInformationException(informationException);
         });
+        lexicometricConfigurationEnumServer.setHierarchicalTableSet(lexicometricEditEnum.getHierarchicalTableSet());
+        return lexicometricConfigurationEnumServer;
     }
 }

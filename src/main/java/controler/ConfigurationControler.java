@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.beans.*;
+import view.interfaces.IHierarchicalTable;
 
 import java.io.File;
 import java.io.IOException;
@@ -672,7 +673,7 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public ILexicometricConfiguration getLexicometricConfiguration(LexicometricEditEnum lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical) {
+	public ILexicometricConfiguration getLexicometricConfiguration(IHierarchicalTable lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical) {
 		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
 		ILexicometricHierarchical lexicometricHierarchicalServer = lexicometricConfigurationEnumFromViewEnum.getLexicometricHierarchicalViewToLexicometricHierarchicalServer().apply(lexicometricHierarchical);
 		return lexicometricConfigurationEnumFromViewEnum.getLexicometricHierarchicalILexicometricConfigurationFunction().apply(lexicometricHierarchicalServer);

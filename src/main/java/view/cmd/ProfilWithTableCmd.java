@@ -23,9 +23,6 @@ public class ProfilWithTableCmd {
     @NotNull
     private ILexicometricConfiguration lexicometricConfiguration;
 
-    @NotEmpty
-    private Set<IRootTable> iRootTableSet;
-
     public String getTitlePanel() {
         return titlePanel;
     }
@@ -56,13 +53,5 @@ public class ProfilWithTableCmd {
 
     public void setLexicometricConfiguration(ILexicometricConfiguration lexicometricConfiguration) {
         this.lexicometricConfiguration = lexicometricConfiguration;
-    }
-
-    public Set<IRootTable> getiRootTableSet() {
-        return iRootTableSet;
-    }
-
-    public void setiRootTableSet(Set<IRootTable> iRootTableSet) {
-        this.iRootTableSet = iRootTableSet;
     }
 }

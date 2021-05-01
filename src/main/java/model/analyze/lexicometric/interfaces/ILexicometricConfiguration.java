@@ -2,6 +2,7 @@ package model.analyze.lexicometric.interfaces;
 
 import model.analyze.lexicometric.beans.FillTableConfiguration;
 import view.beans.EditTableElement;
+import view.interfaces.IRootTable;
 
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,12 @@ public interface ILexicometricConfiguration<T extends Object> {
      * @return le consumer d'édition permettant de mettre à jour les listes coté serveur
      */
     BiConsumer<String, EditTableElement> getEditConsumer();
+
+    /**
+     * Permet de se procurer les tables hiérarchique
+     * @return le set des tables hiérarchique
+     */
+    Set<IRootTable> getHierarchicalTableSet();
 
 //    /**
 //     * Permet de se procurer l'ordre hiérarchique de sauvegarde des données sur le serveur

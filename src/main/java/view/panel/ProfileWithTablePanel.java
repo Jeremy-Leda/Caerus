@@ -39,7 +39,6 @@ public class ProfileWithTablePanel implements IProfileWithTable {
     private final Map<Integer, BiFunction<String, String, Collection<String>>> functionIdTableMap;
 
     private final ILexicometricConfiguration lexicometricConfiguration;
-    private final Set<IRootTable> rootTableSet;
 
     /**
      *
@@ -56,7 +55,6 @@ public class ProfileWithTablePanel implements IProfileWithTable {
         this.functionIdTableMap = new HashMap<>();
         this.actionPanel = new ActionPanel(3);
         this.lexicometricConfiguration = profilWithTableCmd.getLexicometricConfiguration();
-        this.rootTableSet = profilWithTableCmd.getiRootTableSet();
         init(profilWithTableCmd);
     }
 
@@ -96,6 +94,7 @@ public class ProfileWithTablePanel implements IProfileWithTable {
      */
     private void createTables(ProfilWithTableCmd profilWithTableCmd) {
         tableWithFilterAndEditPanelMap.clear();
+        Set<IRootTable> rootTableSet = profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
         rootTableSet.stream().forEach(iRootTable ->
                 tableWithFilterAndEditPanelMap.put(iRootTable.displayOrder(), new TableWithFilterAndEditPanel(StringUtils.EMPTY, iRootTable.getHeaderLabel(), getConsumerForSaveData(profilWithTableCmd))));
         this.tablePanel.removeAll();
@@ -104,6 +103,7 @@ public class ProfileWithTablePanel implements IProfileWithTable {
 
     private void fillRootTable(String profile) {
         // TODO Clear toutes les tables
+        Set<IRootTable> rootTableSet = lexicometricConfiguration.getHierarchicalTableSet();
         Integer id = rootTableSet.stream().filter(IRootTable::isRoot).findFirst().get().displayOrder();
         ILexicometricConfiguration<String> lexicometricConfigurationString = lexicometricConfiguration;
         Optional<FillTableConfiguration<String>> tableConfiguration = lexicometricConfigurationString.getFillTableConfigurationList().stream().filter(table -> table.getDest().equals(id)).findFirst();
@@ -264,7 +264,8 @@ public class ProfileWithTablePanel implements IProfileWithTable {
         return e -> {
             Optional<EditTableElement> parent = Optional.empty();
             EditTableElement lastEditTableElement = null;
-            Set<Integer> saveOrderSet = rootTableSet.stream().sorted(Comparator.comparing(IRootTable::hierarchicalOrder)).map(IRootTable::displayOrder).collect(Collectors.toSet());
+            Set<IRootTable> rootTableSet = lexicometricConfiguration.getHierarchicalTableSet();
+            List<Integer> saveOrderSet = rootTableSet.stream().sorted(Comparator.comparing(IRootTable::hierarchicalOrder)).map(IRootTable::displayOrder).collect(Collectors.toList());
             for (Integer id : saveOrderSet) {
                 ITableWithFilterAndEditPanel tableWithFilterAndEditPanel = this.tableWithFilterAndEditPanelMap.get(id);
                 Optional<EditTableElement> editTableElementOptional = tableWithFilterAndEditPanel.getEditTableElement();
@@ -279,10 +280,6 @@ public class ProfileWithTablePanel implements IProfileWithTable {
                 }
             }
             parent.ifPresent(x -> profilWithTableCmd.getLexicometricConfiguration().getEditConsumer().accept(this.comboBoxPanel.getLabelSelected(), x));
-//            parent.ifPresent(x -> this.saveDataConsumer.accept(new EditTableBuilder()
-//                    .editTableElement(x)
-//                    .profil(getProfile())
-//                    .build()));
         };
     }
 

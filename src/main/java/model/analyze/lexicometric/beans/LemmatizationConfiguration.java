@@ -6,6 +6,7 @@ import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import view.beans.EditTableElement;
+import view.interfaces.IRootTable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -19,9 +20,11 @@ import java.util.stream.Collectors;
 public class LemmatizationConfiguration implements ILexicometricConfiguration<String> {
 
     private final Map<LemmatizationHierarchicalEnum, Integer> lemmatizationHierarchicalEnumIntegerMap;
+    private final Set<IRootTable> hierarchicalTableSet;
 
-    public LemmatizationConfiguration(ILexicometricHierarchical<LemmatizationHierarchicalEnum> lexicometricHierarchical) {
+    public LemmatizationConfiguration(ILexicometricHierarchical<LemmatizationHierarchicalEnum> lexicometricHierarchical, Set<IRootTable> hierarchicalTableSet) {
         this.lemmatizationHierarchicalEnumIntegerMap = lexicometricHierarchical.getHierarchicalIntegerMap();
+        this.hierarchicalTableSet = hierarchicalTableSet;
     }
 
     @Override
@@ -37,6 +40,11 @@ public class LemmatizationConfiguration implements ILexicometricConfiguration<St
     @Override
     public BiConsumer<String, EditTableElement> getEditConsumer() {
         return LexicometricConfigurationEnum.LEMMATIZATION.getEditTableElementBiConsumer();
+    }
+
+    @Override
+    public Set<IRootTable> getHierarchicalTableSet() {
+        return this.hierarchicalTableSet;
     }
 //
 //    @Override

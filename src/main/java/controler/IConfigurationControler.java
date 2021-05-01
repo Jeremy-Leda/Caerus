@@ -13,6 +13,7 @@ import model.exceptions.ImportExcelException;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import view.beans.*;
+import view.interfaces.IHierarchicalTable;
 
 import java.io.File;
 import java.io.IOException;
@@ -632,6 +633,6 @@ public interface IConfigurationControler {
 	 * @param lexicometricHierarchical information sur la hierarchies en provenance de la vue
 	 * @return la configuration lexicométrique
 	 */
-	ILexicometricConfiguration getLexicometricConfiguration(LexicometricEditEnum lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical);
+	ILexicometricConfiguration getLexicometricConfiguration(IHierarchicalTable lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical);
 
 }

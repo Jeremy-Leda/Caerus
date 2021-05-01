@@ -13,6 +13,8 @@ import java.util.function.Function;
  *
  * Interface pour l'utilisation des tables avec filtre et édition
  *
+ * @param <T> Type d'objet à alimenter dans le tableau
+ *
  */
 public interface ITableWithFilterAndEditPanel<T extends Object> extends IAccessPanel, IRefreshPanel {
 

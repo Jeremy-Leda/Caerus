@@ -1,6 +1,10 @@
 package view.windows;
 
 import controler.IConfigurationControler;
+import io.vavr.Function2;
+import io.vavr.Function3;
+import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.LemmatizationHierarchicalEditEnum;
 import view.beans.LexicometricEditEnum;
@@ -110,6 +114,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .titleTablePanel(ConfigurationUtils.getInstance()
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
                 .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.TOKENIZATION, TokenizationHierarchicalEditEnum.BASE))
+                .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
                 .build();
         IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd);
 
@@ -146,6 +151,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .titleTablePanel(ConfigurationUtils.getInstance()
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
                 .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.LEMMATIZATION, LemmatizationHierarchicalEditEnum.BASE))
+                .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
                 .build();
         IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd);
 //        IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
@@ -177,6 +183,20 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
                 false, true);
         this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
+    }
+
+    private Function2<IRootTable, Consumer<?>, ITableWithFilterAndEditPanel> getTableWithTextFilterAndEditPanelFunction() {
+        return (x, v) -> new TableWithFilterAndEditPanel<String>(StringUtils.EMPTY, x.getHeaderLabel(), v,
+                Comparator.comparing(StringUtils::stripAccents),
+                s -> StringUtils.isNotBlank(s.getStringValue()),
+                (s, f) -> s.toLowerCase(Locale.ROOT).contains(f.getStringValue()), getTableTextFilterPanel());
+    }
+
+    private ITableFilterPanel getTableTextFilterPanel() {
+        TableFilterTextPanel tableFilterPanel = new TableFilterTextPanel();
+        tableFilterPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
+                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL)));
+        return tableFilterPanel;
     }
 
     /**

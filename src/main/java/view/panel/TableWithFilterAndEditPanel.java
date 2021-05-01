@@ -1,5 +1,6 @@
 package view.panel;
 
+import io.vavr.Function2;
 import org.apache.commons.lang3.StringUtils;
 import model.analyze.constants.ActionEditTableEnum;
 import view.beans.EditTableElement;
@@ -15,33 +16,33 @@ import view.windows.UserQuestion;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  *
  * Classe pour l'affichage d'une table avec édition et recherche par filtres
  *
  */
-public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel<String> {
+public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPanel<T> {
     private final JPanel panel;
     private final EditTableModel editTableModel;
     private final JTable table;
     private final JScrollPane scrollPane;
-    private final ITextBoxPanel textBoxPanel;
-    private Optional<Consumer<String>> loadSelectedRowConsumerOptional = Optional.empty();
+    private final ITableFilterPanel tableFilterPanel;
+    private Optional<Consumer<T>> loadSelectedRowConsumerOptional = Optional.empty();
 
     private IActionPanel actionPanel;
-    private ISpecificEditTableModel specificEditTableModel;
+    private ISpecificEditTableModel<T, ITableFilterObject> specificEditTableModel;
 
-    public TableWithFilterAndEditPanel(String titlePanel, String header, Consumer<?> saveInMemory) {
+    public TableWithFilterAndEditPanel(String titlePanel, String header, Consumer<?> saveInMemory,
+                                       Comparator comparator, Function<ITableFilterObject, Boolean> checkFilterIsPresentFunction, Function2<T, ITableFilterObject, Boolean> applyFilterFunction,
+                                       ITableFilterPanel tableFilterPanel) {
         this.panel = new JPanel();
         if (StringUtils.isNotBlank(titlePanel)) {
             this.panel.setBorder(
@@ -49,8 +50,10 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
         }
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxlayout);
-        this.specificEditTableModel = new SpecificEditTableModel(e -> refreshDataAndColumnSize(), saveInMemory, getConsumerForAutoSizeColumn());
-        this.textBoxPanel = new TextBoxPanel(1, false);
+        this.specificEditTableModel = new SpecificEditTableModel(e -> refreshDataAndColumnSize(), saveInMemory, getConsumerForAutoSizeColumn(), comparator, checkFilterIsPresentFunction, applyFilterFunction);
+        //this.tableFilterPanel = new TextBoxPanel(1, false);
+        this.tableFilterPanel = tableFilterPanel;
+        this.tableFilterPanel.addConsumerOnChange(getConsumerFilter());
         this.editTableModel = new EditTableModel(header, this.specificEditTableModel);
         this.table = new JTable(this.editTableModel);
         configureTable();
@@ -59,10 +62,10 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
         scrollPane.setRowHeaderView(rowTable);
         scrollPane.setCorner(JScrollPane.UPPER_LEFT_CORNER,
                 rowTable.getTableHeader());
-        this.textBoxPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
-                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL)));
-        this.textBoxPanel.addConsumerOnChange(0, getConsumerFilter());
-        this.panel.add(this.textBoxPanel.getJPanel());
+//        this.tableFilterPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
+//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL)));
+//        this.tableFilterPanel.addConsumerOnChange(0, getConsumerFilter());
+        this.panel.add(this.tableFilterPanel.getJPanel());
         this.panel.add(this.scrollPane);
         createAndAddButtonEditAndRemove();
     }
@@ -111,7 +114,7 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
     }
 
     @Override
-    public void fillTable(Collection<String> collection) {
+    public void fillTable(Collection<T> collection) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
             this.specificEditTableModel.createSpecificRowList(collection);
@@ -125,12 +128,12 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
     }
 
     @Override
-    public Set<String> getValues() {
+    public Set<T> getValues() {
         return this.specificEditTableModel.getModelValues();
     }
 
     @Override
-    public void setConsumerForRowChanged(Consumer<String> consumer) {
+    public void setConsumerForRowChanged(Consumer<T> consumer) {
         this.loadSelectedRowConsumerOptional = Optional.of(consumer);
     }
 
@@ -147,7 +150,7 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
         return e -> {
             ExecutorService executorService = Executors.newSingleThreadExecutor();
             executorService.submit(() -> {
-                this.specificEditTableModel.filter(this.textBoxPanel.getValueOfTextBox(0));
+                this.specificEditTableModel.filter(Optional.ofNullable(this.tableFilterPanel.getFilter()));
             });
             executorService.shutdown();
         };
@@ -159,9 +162,9 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
      */
     private void removeSelectedRow(JTable tableSource) {
         if (tableSource.getSelectedRow() > -1) {
-            String value = (String) tableSource.getModel().getValueAt(tableSource.getSelectedRow(), 0);
+            Object value = tableSource.getModel().getValueAt(tableSource.getSelectedRow(), 0);
             tableSource.getSelectionModel().clearSelection();
-            specificEditTableModel.remove(value);
+            specificEditTableModel.remove((T) value);
         }
     }
 
@@ -173,7 +176,7 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
     private void addRow(String informationMessage, String label) {
         UserQuestion userQuestion = new UserQuestion(informationMessage, label);
         if (StringUtils.isNotBlank(userQuestion.getAnswer())) {
-            specificEditTableModel.add(userQuestion.getAnswer());
+            specificEditTableModel.add((T) userQuestion.getAnswer());
             //this.editTableModel.fireTableDataChanged();
             //ColumnsAutoSize.sizeColumnsToFit(this.table);
         }
@@ -186,14 +189,14 @@ public class TableWithFilterAndEditPanel implements ITableWithFilterAndEditPanel
     private ListSelectionListener getDefaultListSelectionListener() {
         return e -> {
             if (table.getSelectedRow() > -1) {
-                String valeur = (String) table.getModel().getValueAt(table.getSelectedRow(), 1);
+                Object valeur = table.getModel().getValueAt(table.getSelectedRow(), 1);
                 this.specificEditTableModel.setEditTableElement(Optional.of(new EditTableElementBuilder()
                     .actionEditTableEnum(ActionEditTableEnum.UPDATE)
                     .oldValue(valeur)
                     .value(valeur)
                     .build()));
                 if (loadSelectedRowConsumerOptional.isPresent()) {
-                    loadSelectedRowConsumerOptional.get().accept(valeur);
+                    loadSelectedRowConsumerOptional.get().accept((T) valeur);
                 }
             }
         };

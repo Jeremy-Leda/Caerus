@@ -95,8 +95,9 @@ public class ProfileWithTablePanel implements IProfileWithTable {
     private void createTables(ProfilWithTableCmd profilWithTableCmd) {
         tableWithFilterAndEditPanelMap.clear();
         Set<IRootTable> rootTableSet = profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
+        //new TableWithFilterAndEditPanel(StringUtils.EMPTY, iRootTable.getHeaderLabel(), getConsumerForSaveData(profilWithTableCmd))
         rootTableSet.stream().forEach(iRootTable ->
-                tableWithFilterAndEditPanelMap.put(iRootTable.displayOrder(), new TableWithFilterAndEditPanel(StringUtils.EMPTY, iRootTable.getHeaderLabel(), getConsumerForSaveData(profilWithTableCmd))));
+                tableWithFilterAndEditPanelMap.put(iRootTable.displayOrder(), profilWithTableCmd.getTableWithFilterAndEditPanelFunction().apply(iRootTable, getConsumerForSaveData(profilWithTableCmd))));
         this.tablePanel.removeAll();
         tableWithFilterAndEditPanelMap.values().forEach(v -> this.tablePanel.add(v.getJPanel()));
     }

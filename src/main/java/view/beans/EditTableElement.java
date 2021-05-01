@@ -12,12 +12,12 @@ import java.util.Optional;
  *
  */
 @PojoBuilder
-public class EditTableElement {
+public class EditTableElement<T> {
 
-    private String oldValue;
+    private T oldValue;
 
     @NotNull
-    private String value;
+    private T value;
 
     @NotNull
     private ActionEditTableEnum actionEditTableEnum;
@@ -28,7 +28,7 @@ public class EditTableElement {
      * Permet de se procurer la valeur de la liste
      * @return la valeur de la liste
      */
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 
@@ -36,7 +36,7 @@ public class EditTableElement {
      * Permet de définir la valeur de la liste
      * @return la valeur de la liste
      */
-    public void setValue(String value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
@@ -60,7 +60,7 @@ public class EditTableElement {
      * Permet de se procurer l'ancienne valeur de la liste
      * @return l'ancienne valeur de la liste
      */
-    public String getOldValue() {
+    public T getOldValue() {
         return oldValue;
     }
 
@@ -68,7 +68,7 @@ public class EditTableElement {
      * Permet de définir l'ancienne valeur de la liste
      * @param oldValue l'ancienne valeur de la liste
      */
-    public void setOldValue(String oldValue) {
+    public void setOldValue(T oldValue) {
         this.oldValue = oldValue;
     }
 

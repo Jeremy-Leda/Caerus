@@ -1,5 +1,6 @@
 package view.panel.model;
 
+import io.vavr.Function2;
 import io.vavr.control.Try;
 import model.analyze.constants.ActionEditTableEnum;
 import model.exceptions.ErrorCode;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import view.beans.EditTableElement;
 import view.beans.EditTableElementBuilder;
 import view.interfaces.ISpecificEditTableModel;
+import view.interfaces.ITableFilterObject;
 import view.services.ExecutionService;
 
 import java.util.*;
@@ -20,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -27,19 +30,19 @@ import java.util.stream.Collectors;
  * Classe pour la gestion du modèle des données d'une table éditable
  *
  */
-public class SpecificEditTableModel implements ISpecificEditTableModel<String, String> {
+public class SpecificEditTableModel<T, F extends ITableFilterObject> implements ISpecificEditTableModel<T, F> {
 
     // La liste d'origine
-    private Collection<String> originList;
+    private Collection<T> originList;
 
     // La liste trié et sans doublon
-    private final SortedSet<String> sortedSet = new TreeSet<>(Comparator.comparing(StringUtils::stripAccents));
+    private final SortedSet<T> sortedSet;
 
     // La liste pour afficher
-    private final List<String> filteredList = new LinkedList<>();
+    private final List<T> filteredList = new LinkedList<>();
 
     //private LinkedList<SpecificRow> specificRowList;
-    private String filterValue;
+    private Optional<F> filterValue = Optional.empty();
 
     private final Consumer<?> refreshConsumer;
     private final Consumer<?> saveInMemory;
@@ -49,30 +52,37 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
     private BiConsumer<Integer, Integer> fireTableUpdated;
     private BiConsumer<Integer, Integer> fireTableDeleted;
     private final ExecutionService executionService = new ExecutionService();
+    private final Function<F, Boolean> checkFilterIsPresentFunction;
+    private final Function2<T, F, Boolean> applyFilterFunction;
 
-    public SpecificEditTableModel(Consumer<?> refreshConsumer, Consumer<?> saveInMemory, Consumer<Integer> consumerForAutoSize) {
+    public SpecificEditTableModel(Consumer<?> refreshConsumer, Consumer<?> saveInMemory, Consumer<Integer> consumerForAutoSize,
+                                  Comparator comparator, Function<F, Boolean> checkFilterIsPresentFunction, Function2<T, F, Boolean> applyFilterFunction) {
         this.refreshConsumer = refreshConsumer;
         this.saveInMemory = saveInMemory;
         this.consumerForAutoSize = consumerForAutoSize;
+        this.sortedSet = new TreeSet<>(comparator);
+        //this.sortedSet = new TreeSet<>(Comparator.comparing(StringUtils::stripAccents));
+        this.checkFilterIsPresentFunction = checkFilterIsPresentFunction;
+        this.applyFilterFunction = applyFilterFunction;
     }
 
     @Override
-    public Collection<String> getRows() {
+    public Collection<T> getRows() {
         return this.filteredList;
     }
 
     @Override
-    public String getRow(Integer rowIndex) {
+    public T getRow(Integer rowIndex) {
         return this.filteredList.get(rowIndex);
     }
 
     @Override
-    public Set<String> getModelValues() {
+    public Set<T> getModelValues() {
         return originList.stream().collect(Collectors.toSet());
     }
 
     @Override
-    public void update(String oldValue, String newValue) {
+    public void update(T oldValue, T newValue) {
         executionService.executeOnServer(() -> {
             checkedValue(newValue);
             this.originList.remove(oldValue);
@@ -90,7 +100,7 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
     }
 
     @Override
-    public void remove(String value) {
+    public void remove(T value) {
         this.originList.remove(value);
         int indexValue = this.filteredList.indexOf(value);
         this.filteredList.remove(value);
@@ -101,7 +111,7 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
     }
 
     @Override
-    public void add(String value) {
+    public void add(T value) {
         executionService.executeOnServer(() -> {
             checkedValue(value);
             this.originList.add(value);
@@ -116,13 +126,13 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
     }
 
     @Override
-    public void createSpecificRowList(Collection<String> collection) {
+    public void createSpecificRowList(Collection<T> collection) {
         this.originList = new HashSet<>(collection);
         filter(this.filterValue);
     }
 
     @Override
-    public void filter(String value) {
+    public void filter(Optional<F> value) {
         this.filterValue = value;
         filterInBackground();
         refreshConsumer.accept(null);
@@ -132,22 +142,21 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
      * Permet de filtrer les valeurs en arriére plan
      */
     private synchronized void filterInBackground() {
-        boolean haveFilter = StringUtils.isNotBlank(this.filterValue);
         this.filteredList.clear();
         this.sortedSet.clear();
 
-        if (haveFilter) {
-            List<List<String>> partition = ListUtils.partition(new ArrayList<>(this.originList), 5000);
+        if (this.filterValue.isPresent() && checkFilterIsPresentFunction.apply(this.filterValue.get())) {
+            List<List<T>> partition = ListUtils.partition(new ArrayList<>(this.originList), 5000);
 
             ExecutorService executorService = Executors.newFixedThreadPool(partition.size());
 
-            Queue<Future<List<String>>> taskQueue = new LinkedList<>();
+            Queue<Future<List<T>>> taskQueue = new LinkedList<>();
             for (int i = 0; i < partition.size(); i++) {
-                taskQueue.add(executorService.submit(getCallable(partition.get(i), this.filterValue)));
+                taskQueue.add(executorService.submit(getCallable(partition.get(i), this.filterValue.get())));
             }
 
             while (!taskQueue.isEmpty()) {
-                Future<List<String>> loadTask = taskQueue.remove();
+                Future<List<T>> loadTask = taskQueue.remove();
                 Try.run(() -> this.sortedSet.addAll(loadTask.get()));
             }
 
@@ -164,8 +173,9 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
      * @param filter filtre à appliquer
      * @return la liste des lignes filtrés
      */
-    private Callable<List<String>> getCallable(List<String> rows, String filter) {
-        return () -> rows.stream().filter(row -> row.toLowerCase(Locale.ROOT).contains(filter)).collect(Collectors.toCollection(LinkedList::new));
+    private Callable<List<T>> getCallable(List<T> rows, F filter) {
+        return () -> rows.stream().filter(row -> applyFilterFunction.apply(row, filter)).collect(Collectors.toCollection(LinkedList::new));
+        //return () -> rows.stream().filter(row -> row.toLowerCase(Locale.ROOT).contains(filter)).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**
@@ -173,8 +183,8 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
      * @param value valeur à ajouter
      * @return L'élément d'édition pour l'ajout dans la liste
      */
-    private EditTableElement createEditTableElementForAdd(String value) {
-        return new EditTableElementBuilder()
+    private EditTableElement createEditTableElementForAdd(T value) {
+        return new EditTableElementBuilder<T>()
                 .actionEditTableEnum(ActionEditTableEnum.ADD)
                 .value(value)
                 .build();
@@ -185,8 +195,8 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
      * @param value valeur à supprimer
      * @return L'élément d'édition pour la suppression dans la liste
      */
-    private EditTableElement createEditTableElementForRemove(String value) {
-        return new EditTableElementBuilder()
+    private EditTableElement createEditTableElementForRemove(T value) {
+        return new EditTableElementBuilder<T>()
                 .actionEditTableEnum(ActionEditTableEnum.REMOVE)
                 .value(value)
                 .build();
@@ -198,8 +208,8 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
      * @param value Nouvelle valeur
      * @return L'élément d'édition pour la mise à jour dans la liste
      */
-    private EditTableElement createEditTableElementForUpdate(String oldValue, String value) {
-        return new EditTableElementBuilder()
+    private EditTableElement createEditTableElementForUpdate(T oldValue, T value) {
+        return new EditTableElementBuilder<T>()
                 .actionEditTableEnum(ActionEditTableEnum.UPDATE)
                 .oldValue(oldValue)
                 .value(value)
@@ -264,11 +274,11 @@ public class SpecificEditTableModel implements ISpecificEditTableModel<String, S
      * Si c'est le cas une exception est levé
      * @param value valeur à vérifier
      */
-    private void checkedValue(String value) {
+    private void checkedValue(T value) {
         if (this.originList.contains(value)) {
             InformationException informationException = new InformationExceptionBuilder()
                     .errorCode(ErrorCode.VALUE_EXIST)
-                    .parameters(Set.of(value))
+                    .parameters(Set.of(value.toString()))
                     .objectInError(value)
                     .build();
             throw new ServerException().addInformationException(informationException);

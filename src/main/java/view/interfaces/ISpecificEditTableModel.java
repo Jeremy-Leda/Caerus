@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
  * @param <T> Type d'objet utilisé pour la liste
  * @param <F> Type d'objet pour le filtre
  */
-public interface ISpecificEditTableModel<T extends Object, F extends Object> {
+public interface ISpecificEditTableModel<T extends Object, F extends ITableFilterObject> {
 
     /**
      * Permet de se procurer la liste des lignes à afficher
@@ -64,7 +64,7 @@ public interface ISpecificEditTableModel<T extends Object, F extends Object> {
      * Permet de filtrer la liste
      * @param value Le filtre à appliquer
      */
-    void filter(F value);
+    void filter(Optional<F> value);
 
     /**
      * Permet de se procurer le {@link EditTableElement} en cours

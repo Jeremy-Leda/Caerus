@@ -1,7 +1,8 @@
 package model.analyze.lexicometric.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import model.analyze.lexicometric.interfaces.ILexicometricData;
+import model.analyze.lexicometric.interfaces.ILexicometricCopyData;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,7 +15,7 @@ import java.util.Set;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Tokenization implements ILexicometricData<Set<String>> {
+public class Tokenization implements ILexicometricCopyData<Set<String>> {
 
     private String profile;
     private Set<String> words = new HashSet<>();
@@ -23,6 +24,7 @@ public class Tokenization implements ILexicometricData<Set<String>> {
         return profile;
     }
 
+    @JsonIgnore
     @Override
     public Set<String> getData() {
         return Collections.unmodifiableSet(this.words);
@@ -32,6 +34,7 @@ public class Tokenization implements ILexicometricData<Set<String>> {
         this.profile = profile;
     }
 
+    // ---- UTILISER PAR JSON ------
     public Set<String> getWords() {
         return words;
     }
@@ -39,6 +42,7 @@ public class Tokenization implements ILexicometricData<Set<String>> {
     public void setWords(Set<String> words) {
         this.words = words;
     }
+    // -----------------------------
 
     @Override
     public boolean equals(Object o) {
@@ -51,5 +55,15 @@ public class Tokenization implements ILexicometricData<Set<String>> {
     @Override
     public int hashCode() {
         return Objects.hash(profile, words);
+    }
+
+    @Override
+    public void setData(Set<String> data) {
+        this.words = data;
+    }
+
+    @Override
+    public Set<String> clone() {
+        return Set.copyOf(this.words);
     }
 }

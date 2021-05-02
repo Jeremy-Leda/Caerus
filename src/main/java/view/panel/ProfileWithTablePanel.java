@@ -1,8 +1,10 @@
 package view.panel;
 
+import controler.IConfigurationControler;
 import model.analyze.lexicometric.beans.FillTableConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import view.abstracts.ExecuteServerJFrameAbstract;
 import view.beans.EditTableElement;
 import view.beans.PictureTypeEnum;
 import view.cmd.ProfilWithTableCmd;
@@ -17,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -25,20 +26,17 @@ import java.util.stream.Collectors;
  * Classe pour la gestion des profiles et des tableaux
  *
  */
-public class ProfileWithTablePanel implements IProfileWithTable {
+public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implements IProfileWithTable {
 
     private final JPanel panel;
     private final IComboBoxPanel comboBoxPanel;
     private final Map<Integer, ITableWithFilterAndEditPanel> tableWithFilterAndEditPanelMap;
     private final IActionPanel actionPanel;
     private final JPanel tablePanel;
-    private Consumer<?> saveProfileConsumer;
-//    private Consumer<EditTable> saveDataConsumer;
-//    private LinkedList<Integer> saveDataTableOrder;
-    private Function<String, Collection<String>> functionProfileElements;
     private final Map<Integer, BiFunction<String, String, Collection<String>>> functionIdTableMap;
 
-    private final ILexicometricConfiguration lexicometricConfiguration;
+    private final ProfilWithTableCmd profilWithTableCmd;
+    private final IConfigurationControler controler;
 
     /**
      *
@@ -46,7 +44,8 @@ public class ProfileWithTablePanel implements IProfileWithTable {
      *
      * @param profilWithTableCmd Cmd
      */
-    public ProfileWithTablePanel(ProfilWithTableCmd profilWithTableCmd) {
+    public ProfileWithTablePanel(ProfilWithTableCmd profilWithTableCmd, IConfigurationControler configurationControler) {
+        super(configurationControler);
         this.panel = new JPanel();
         this.tablePanel = new JPanel();
         this.comboBoxPanel = new ComboBoxPanel(StringUtils.EMPTY, ConfigurationUtils.getInstance()
@@ -54,7 +53,8 @@ public class ProfileWithTablePanel implements IProfileWithTable {
         this.tableWithFilterAndEditPanelMap = new TreeMap<>(Comparator.naturalOrder());
         this.functionIdTableMap = new HashMap<>();
         this.actionPanel = new ActionPanel(3);
-        this.lexicometricConfiguration = profilWithTableCmd.getLexicometricConfiguration();
+        this.controler = configurationControler;
+        this.profilWithTableCmd = profilWithTableCmd;
         init(profilWithTableCmd);
     }
 
@@ -95,22 +95,33 @@ public class ProfileWithTablePanel implements IProfileWithTable {
     private void createTables(ProfilWithTableCmd profilWithTableCmd) {
         tableWithFilterAndEditPanelMap.clear();
         Set<IRootTable> rootTableSet = profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
-        //new TableWithFilterAndEditPanel(StringUtils.EMPTY, iRootTable.getHeaderLabel(), getConsumerForSaveData(profilWithTableCmd))
         rootTableSet.stream().forEach(iRootTable ->
                 tableWithFilterAndEditPanelMap.put(iRootTable.displayOrder(), profilWithTableCmd.getTableWithFilterAndEditPanelFunction().apply(iRootTable, getConsumerForSaveData(profilWithTableCmd))));
         this.tablePanel.removeAll();
         tableWithFilterAndEditPanelMap.values().forEach(v -> this.tablePanel.add(v.getJPanel()));
     }
 
+    /**
+     * Permet de remplir la table root et de vider les autres tables
+     * @param profile profile à utiliser
+     */
     private void fillRootTable(String profile) {
-        // TODO Clear toutes les tables
-        Set<IRootTable> rootTableSet = lexicometricConfiguration.getHierarchicalTableSet();
+        Set<IRootTable> rootTableSet = this.profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
         Integer id = rootTableSet.stream().filter(IRootTable::isRoot).findFirst().get().displayOrder();
-        ILexicometricConfiguration<String> lexicometricConfigurationString = lexicometricConfiguration;
-        Optional<FillTableConfiguration<String>> tableConfiguration = lexicometricConfigurationString.getFillTableConfigurationList().stream().filter(table -> table.getDest().equals(id)).findFirst();
-        tableConfiguration.ifPresent(table ->  fillTable(id, table.getBiFunction().apply(profile, null)));
+        ILexicometricConfiguration<String> lexicometricConfigurationString = this.profilWithTableCmd.getLexicometricConfiguration();
+        lexicometricConfigurationString.getFillTableConfigurationList().forEach(table -> {
+            Collection<?> newCollection = Collections.EMPTY_LIST;
+            if (table.getDest().equals(id)) {
+                newCollection = table.getBiFunction().apply(profile, null);
+            }
+            fillTable(table.getDest(), newCollection);
+        });
     }
 
+    /**
+     * Permet d'ajouter un liaison à une table
+     * @param profilWithTableCmd la commande qui permet de gérer les liaisons
+     */
     private void addTableLink(ProfilWithTableCmd profilWithTableCmd) {
         profilWithTableCmd.getLexicometricConfiguration().getFillTableConfigurationList().forEach(tableConf -> {
             FillTableConfiguration<String> tableConfiguration = (FillTableConfiguration<String>) tableConf;
@@ -126,7 +137,7 @@ public class ProfileWithTablePanel implements IProfileWithTable {
      * @param id Identifiant de la table
      * @param collection collection pour la table
      */
-    private void fillTable(Integer id, Collection<String> collection) {
+    private void fillTable(Integer id, Collection<?> collection) {
         tableWithFilterAndEditPanelMap.get(id).fillTable(collection);
     }
 
@@ -141,29 +152,6 @@ public class ProfileWithTablePanel implements IProfileWithTable {
         tableWithFilterAndEditPanelMap.get(id).setInterfaceForAddButton(informationMessage, label);
     }
 
-//    @Override
-//    public void setSaveDataInMemory(Consumer<EditTable> consumer, LinkedList<Integer> order) {
-//        this.saveDataConsumer = consumer;
-//        this.saveDataTableOrder = order;
-//    }
-
-//    @Override
-//    public void setGetListFromProfileFunction(Function<String, Collection<String>> function) {
-//        this.functionProfileElements = function;
-//    }
-//
-//    @Override
-//    public void setReferenceFromSourceFunction(Integer idSource, Integer idDest, BiFunction<String, String, Collection<String>> function) {
-//        //this.functionIdTableMap.put(id, function);
-//        this.tableWithFilterAndEditPanelMap.get(idSource).setConsumerForRowChanged(rowValue -> fillTable(idDest, function.apply(this.comboBoxPanel.getLabelSelected(), rowValue)));
-//        this.fillTable(idDest, Collections.emptyList());
-//    }
-
-//    @Override
-//    public String getProfile() {
-//        return this.comboBoxPanel.getLabelSelected();
-//    }
-
     /**
      * permet de définir le profile sélectionné
      * @param profile profile à sélectionner
@@ -171,8 +159,6 @@ public class ProfileWithTablePanel implements IProfileWithTable {
     private void setProfile(String profile) {
         this.comboBoxPanel.selectItem(profile);
         fillRootTable(profile);
-//        Collection<String> elementCollection = functionProfileElements.apply(profile);
-//        fillTable(0, elementCollection);
     }
 
 
@@ -186,6 +172,11 @@ public class ProfileWithTablePanel implements IProfileWithTable {
 
     }
 
+    /**
+     * Permet de remplir la liste des profiles
+     * @param profiles liste des profiles
+     * @param defaultProfile profiles par défaut
+     */
     private void fillProfileSet(Collection<String> profiles, String defaultProfile) {
         this.comboBoxPanel.refresh(profiles);
         setProfile(defaultProfile);
@@ -210,21 +201,16 @@ public class ProfileWithTablePanel implements IProfileWithTable {
                     null,
                     ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE));
             int result = yesNoQuestion.getAnswer();
-            String newProfileName = this.comboBoxPanel.getLabelSelected();
-            Boolean noneItems = this.comboBoxPanel.getItemCount() == 0;
-            while (noneItems || StringUtils.isNotBlank(newProfileName) && this.comboBoxPanel.itemExist(newProfileName)) {
-                UserQuestion userQuestion = new UserQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE),
-                        ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL));
-                newProfileName = userQuestion.getAnswer();
-                noneItems = false;
+            UserQuestion userQuestion = new UserQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE),
+                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL));
+            String newProfileName = userQuestion.getAnswer();
+            if (StringUtils.isNotBlank(newProfileName)) {
+                executeOnServer(() -> {
+                    this.controler.addConfigurationLexicometricProfile(newProfileName, this.profilWithTableCmd.getLexicometricEditEnum(), result == 0);
+                    fillProfileSet(profilWithTableCmd.getLexicometricConfiguration().getProfilesSet(), newProfileName);
+                    getControler().saveLexicometricProfilInDisk(this.profilWithTableCmd.getLexicometricEditEnum(), newProfileName);
+                }, true);
             }
-            if (StringUtils.isBlank(newProfileName)) {
-                return;
-            }
-            if (result != 0) {
-                tableWithFilterAndEditPanelMap.values().forEach(t -> t.fillTable(Collections.EMPTY_LIST));
-            }
-            this.comboBoxPanel.addAndSelectItem(newProfileName);
         };
     }
 
@@ -238,12 +224,15 @@ public class ProfileWithTablePanel implements IProfileWithTable {
                     null,
                     ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_CONFIRMATION_MESSAGE));
             int result = yesNoQuestion.getAnswer();
-            if (result == 0) {
-                this.comboBoxPanel.delete(this.comboBoxPanel.getLabelSelected());
-            }
-            if (StringUtils.isBlank(this.comboBoxPanel.getLabelSelected())) {
-                this.tableWithFilterAndEditPanelMap.values().forEach(t -> t.fillTable(Collections.EMPTY_LIST));
-            }
+            String profilToRemove = this.comboBoxPanel.getLabelSelected();
+            executeOnServer(() -> {
+                if (result == 0) {
+                    this.controler.removeConfigurationLexicometricProfile(profilToRemove, this.profilWithTableCmd.getLexicometricEditEnum());
+                }
+                Set<String> profilesSet = profilWithTableCmd.getLexicometricConfiguration().getProfilesSet();
+                fillProfileSet(profilesSet, profilesSet.stream().findFirst().orElse(StringUtils.EMPTY));
+                getControler().saveLexicometricProfilInDisk(this.profilWithTableCmd.getLexicometricEditEnum(), profilToRemove);
+            }, true);
         };
     }
 
@@ -252,9 +241,7 @@ public class ProfileWithTablePanel implements IProfileWithTable {
      * @return Le consumer pour sauvegarder
      */
     private ActionListener getConsumerForSaveListe() {
-        return e -> {
-            saveProfileConsumer.accept(null);
-        };
+       return x -> executeOnServer(() -> getControler().saveLexicometricProfilInDisk(this.profilWithTableCmd.getLexicometricEditEnum(), this.comboBoxPanel.getLabelSelected()), true);
     }
 
     /**
@@ -265,7 +252,7 @@ public class ProfileWithTablePanel implements IProfileWithTable {
         return e -> {
             Optional<EditTableElement> parent = Optional.empty();
             EditTableElement lastEditTableElement = null;
-            Set<IRootTable> rootTableSet = lexicometricConfiguration.getHierarchicalTableSet();
+            Set<IRootTable> rootTableSet = this.profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
             List<Integer> saveOrderSet = rootTableSet.stream().sorted(Comparator.comparing(IRootTable::hierarchicalOrder)).map(IRootTable::displayOrder).collect(Collectors.toList());
             for (Integer id : saveOrderSet) {
                 ITableWithFilterAndEditPanel tableWithFilterAndEditPanel = this.tableWithFilterAndEditPanelMap.get(id);
@@ -290,6 +277,10 @@ public class ProfileWithTablePanel implements IProfileWithTable {
      */
     private Consumer<String> getConsumerOnProfileChange() {
         return e -> fillRootTable(this.comboBoxPanel.getLabelSelected());
-        //return e -> this.fillTable(0, functionProfileElements.apply(this.comboBoxPanel.getLabelSelected()));
+    }
+
+    @Override
+    public void closeFrame() {
+
     }
 }

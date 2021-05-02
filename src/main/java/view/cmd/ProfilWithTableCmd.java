@@ -3,13 +3,12 @@ package view.cmd;
 import io.vavr.Function2;
 import model.PojoBuilder;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
+import view.beans.LexicometricEditEnum;
 import view.interfaces.IRootTable;
 import view.interfaces.ITableWithFilterAndEditPanel;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 import java.util.function.Consumer;
 
 @PojoBuilder
@@ -28,6 +27,9 @@ public class ProfilWithTableCmd {
 
     @NotNull
     private Function2<IRootTable, Consumer<?>, ITableWithFilterAndEditPanel> tableWithFilterAndEditPanelFunction;
+
+    @NotNull
+    private LexicometricEditEnum lexicometricEditEnum;
 
     public String getTitlePanel() {
         return titlePanel;
@@ -67,5 +69,13 @@ public class ProfilWithTableCmd {
 
     public void setTableWithFilterAndEditPanelFunction(Function2<IRootTable, Consumer<?>, ITableWithFilterAndEditPanel> tableWithFilterAndEditPanelFunction) {
         this.tableWithFilterAndEditPanelFunction = tableWithFilterAndEditPanelFunction;
+    }
+
+    public LexicometricEditEnum getLexicometricEditEnum() {
+        return lexicometricEditEnum;
+    }
+
+    public void setLexicometricEditEnum(LexicometricEditEnum lexicometricEditEnum) {
+        this.lexicometricEditEnum = lexicometricEditEnum;
     }
 }

@@ -3,6 +3,7 @@ package model.analyze.lexicometric.beans;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 /**

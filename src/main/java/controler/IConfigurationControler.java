@@ -602,30 +602,11 @@ public interface IConfigurationControler {
 	 */
     void importExcel(ExcelImportConfigurationCmd excelImportConfigurationCmd) throws ImportExcelException, IOException, LoadTextException;
 
-//	/**
-//	 * Permet de se procurer le bean pour l'analyse lexicométrique
-//	 * @return le bean pour l'analyse lexicométrique
-//	 */
-//	LexicometricConfigurationView getLexicometricAnalysis();
-//
-//	/**
-//	 * Permet de se procurer le bean pour l'analyse lexicométrique
-//	 * @param profile profile recherché
-//	 * @return le bean pour l'analyse lexicométrique
-//	 */
-//	LexicometricConfigurationView getLexicometricAnalysis(String profile);
-
 	/**
 	 * Permet de se procurer le profile par défaut pour les analyses lexicométrique
 	 * @return le profile par défaut pour les analyses lexicométrique
 	 */
 	String getLexicometricDefaultProfile();
-
-//	/**
-//	 * Permet de sauvegarder les données en mémoire
-//	 * @param editTable Information à enregistrer
-//	 */
-//	void saveLexicometricAnalysis(EditTable editTable);
 
 	/**
 	 * Permet de se procurer la configuration lexicométrique
@@ -634,5 +615,27 @@ public interface IConfigurationControler {
 	 * @return la configuration lexicométrique
 	 */
 	ILexicometricConfiguration getLexicometricConfiguration(IHierarchicalTable lexicometricEditEnum, ILexicometricHierarchical lexicometricHierarchical);
+
+	/**
+	 * Permet de créer un nouveau profil pour une configuration lexicométrique
+	 * @param newProfileName nouveau nom du profil
+	 * @param lexicometricEditEnum type de configuration lexicométrique
+	 * @param isCopy Vrai si l'on souhaite dupliquer la liste du profil existant dans la nouvelle liste
+	 */
+	void addConfigurationLexicometricProfile(String newProfileName, LexicometricEditEnum lexicometricEditEnum, Boolean isCopy);
+
+	/**
+	 * Permet de supprimer un profil pour une configuration lexicométrique
+	 * @param profileName nom du profil
+	 * @param lexicometricEditEnum type de configuration lexicométrique
+	 */
+	void removeConfigurationLexicometricProfile(String profileName, LexicometricEditEnum lexicometricEditEnum);
+
+	/**
+	 * Permet de sauvegarder la configuration lexicométrique sur le disque dur
+	 * @param lexicometricEditEnum Type de configuration lexicométrique
+	 * @param profileToSave profile à sauvegarder
+	 */
+	void saveLexicometricProfilInDisk(LexicometricEditEnum lexicometricEditEnum, String profileToSave);
 
 }

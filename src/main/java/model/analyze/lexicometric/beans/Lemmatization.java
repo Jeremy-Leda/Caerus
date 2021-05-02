@@ -1,6 +1,8 @@
 package model.analyze.lexicometric.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import model.analyze.lexicometric.interfaces.ILexicometricCopyData;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
 
 import java.util.*;
@@ -11,7 +13,7 @@ import java.util.*;
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Lemmatization implements ILexicometricData<Map<String, Set<String>>> {
+public class Lemmatization implements ILexicometricCopyData<Map<String, Set<String>>> {
 
     private String profile;
     private Map<String, Set<String>> baseListWordsMap = new HashMap<>();
@@ -20,6 +22,7 @@ public class Lemmatization implements ILexicometricData<Map<String, Set<String>>
         return profile;
     }
 
+    @JsonIgnore
     @Override
     public Map<String, Set<String>> getData() {
         return Collections.unmodifiableMap(baseListWordsMap);
@@ -29,6 +32,7 @@ public class Lemmatization implements ILexicometricData<Map<String, Set<String>>
         this.profile = profile;
     }
 
+    // ---- UTILISER PAR JSON ------
     public Map<String, Set<String>> getBaseListWordsMap() {
         return baseListWordsMap;
     }
@@ -36,6 +40,7 @@ public class Lemmatization implements ILexicometricData<Map<String, Set<String>>
     public void setBaseListWordsMap(Map<String, Set<String>> baseListWordsMap) {
         this.baseListWordsMap = baseListWordsMap;
     }
+    // -----------------------------
 
     @Override
     public boolean equals(Object o) {
@@ -48,5 +53,15 @@ public class Lemmatization implements ILexicometricData<Map<String, Set<String>>
     @Override
     public int hashCode() {
         return Objects.hash(profile, baseListWordsMap);
+    }
+
+    @Override
+    public void setData(Map<String, Set<String>> data) {
+        this.baseListWordsMap = data;
+    }
+
+    @Override
+    public Map<String, Set<String>> clone() {
+        return Map.copyOf(this.baseListWordsMap);
     }
 }

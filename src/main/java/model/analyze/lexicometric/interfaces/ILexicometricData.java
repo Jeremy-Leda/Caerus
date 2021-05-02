@@ -17,4 +17,5 @@ public interface ILexicometricData<T extends Object> {
      * @return les données
      */
     T getData();
+
 }

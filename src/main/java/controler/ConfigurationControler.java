@@ -2,10 +2,11 @@ package controler;
 
 import model.ConfigurationModel;
 import model.IConfigurationModel;
+import model.analyze.UserLexicometricAnalysisSettings;
 import model.analyze.beans.*;
-import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.constants.TypeFilterTextEnum;
+import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
@@ -652,20 +653,10 @@ public class ConfigurationControler implements IConfigurationControler {
 
 		if (!informationExceptionSet.isEmpty()) {
 			ServerException serverException = new ServerException();
-			informationExceptionSet.forEach(informationException -> serverException.addInformationException(informationException));
+			informationExceptionSet.forEach(serverException::addInformationException);
 			throw serverException;
 		}
 	}
-
-//    @Override
-//    public LexicometricConfigurationView getLexicometricAnalysis() {
-//        return getLexicometricAnalysis(Optional.empty());
-//    }
-//
-//	@Override
-//	public LexicometricConfigurationView getLexicometricAnalysis(String profile) {
-//		return getLexicometricAnalysis(Optional.ofNullable(profile));
-//	}
 
 	@Override
 	public String getLexicometricDefaultProfile() {
@@ -679,29 +670,26 @@ public class ConfigurationControler implements IConfigurationControler {
 		return lexicometricConfigurationEnumFromViewEnum.getLexicometricHierarchicalILexicometricConfigurationFunction().apply(lexicometricHierarchicalServer);
 	}
 
-//	@Override
-//	public void saveLexicometricAnalysis(EditTable editTable) {
-//		editTable.getLexicometricAnalysisType().getSaveConsumer().accept(this.configurationModel, editTable);
-//	}
-//
-//
-//	/**
-//	 * Permet de se procurer la vue pour l'affichage des informations d'analyse lexicométrique
-//	 * @param optionalProfile le profile optionnel
-//	 * @return la vue pour l'affichage des informations d'analyse lexicométrique
-//	 */
-//	private LexicometricConfigurationView getLexicometricAnalysis(Optional<String> optionalProfile) {
-//		String profile = optionalProfile.orElse(getLexicometricDefaultProfile());
-//		Optional<Tokenization> optionalTokenization = this.configurationModel.getLexicometricAnalysis().getTokenizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
-//		Optional<Lemmatization> optionalLemmatization = this.configurationModel.getLexicometricAnalysis().getLemmatizationSet().stream().filter(d -> d.getProfile().equals(profile)).findFirst();
-//		Tokenization tokenization = new Tokenization();
-//		tokenization.setProfile(profile);
-//		tokenization.setWords(Set.copyOf(optionalTokenization.orElse(new Tokenization()).getWords()));
-//		Lemmatization lemmatization = new Lemmatization();
-//		lemmatization.setProfile(profile);
-//		lemmatization.setBaseListWordsMap(Map.copyOf(optionalLemmatization.orElse(new Lemmatization()).getBaseListWordsMap()));
-//		return new LexicometricConfigurationView(tokenization, lemmatization);
-//
-//	}
+	@Override
+	public void addConfigurationLexicometricProfile(String newProfileName, LexicometricEditEnum lexicometricEditEnum, Boolean isCopy) {
+		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
+		lexicometricConfigurationEnumFromViewEnum.getAddProfilConsumer().accept(newProfileName);
+		if (isCopy) {
+			String lexicometricDefaultProfile = getLexicometricDefaultProfile();
+			lexicometricConfigurationEnumFromViewEnum.getCopyConsumer().accept(lexicometricDefaultProfile, newProfileName);
+		}
+	}
+
+	@Override
+	public void removeConfigurationLexicometricProfile(String profileName, LexicometricEditEnum lexicometricEditEnum) {
+		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
+		lexicometricConfigurationEnumFromViewEnum.getRemoveProfilConsumer().accept(profileName);
+	}
+
+	@Override
+	public void saveLexicometricProfilInDisk(LexicometricEditEnum lexicometricEditEnum, String profileToSave) {
+		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
+		lexicometricConfigurationEnumFromViewEnum.getSaveInDiskConsumer().accept(profileToSave);
+	}
 
 }

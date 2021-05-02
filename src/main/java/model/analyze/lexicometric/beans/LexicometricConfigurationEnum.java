@@ -2,6 +2,7 @@ package model.analyze.lexicometric.beans;
 
 import model.analyze.UserLexicometricAnalysisSettings;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
+import model.analyze.lexicometric.interfaces.ILexicometricCopyData;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import model.analyze.lexicometric.services.LemmatizationHierarchicalService;
@@ -11,6 +12,7 @@ import model.exceptions.ErrorCode;
 import model.exceptions.InformationException;
 import model.exceptions.InformationExceptionBuilder;
 import model.exceptions.ServerException;
+import org.apache.commons.lang3.StringUtils;
 import view.beans.EditTableElement;
 import view.beans.LemmatizationHierarchicalEditEnum;
 import view.beans.LexicometricEditEnum;
@@ -18,11 +20,9 @@ import view.beans.TokenizationHierarchicalEditEnum;
 import view.interfaces.IHierarchicalTable;
 import view.interfaces.IRootTable;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -34,16 +34,22 @@ public enum LexicometricConfigurationEnum {
 
     TOKENIZATION(LexicometricConfigurationEnum::editTokenization, LexicometricEditEnum.TOKENIZATION,
             iLexicometricHierarchical -> new TokenizationHierarchicalService((ILexicometricHierarchical<TokenizationHierarchicalEditEnum>) iLexicometricHierarchical),
-            LexicometricConfigurationEnum::getTokenizationConfiguration),
+            LexicometricConfigurationEnum::getTokenizationConfiguration, getTokenizationCopyConsumer(),
+            getAddProfilTokenizationConsumer(), getRemoveProfilTokenizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveTokenizationConfigurationInFile(x)),
     LEMMATIZATION(LexicometricConfigurationEnum::editLemmatization, LexicometricEditEnum.LEMMATIZATION,
             iLexicometricHierarchical -> new LemmatizationHierarchicalService((ILexicometricHierarchical<LemmatizationHierarchicalEditEnum>) iLexicometricHierarchical),
-            LexicometricConfigurationEnum::getLemmatisationConfiguration);
+            LexicometricConfigurationEnum::getLemmatisationConfiguration, getLemmatisationCopyConsumer(),
+            getAddProfilLemmatizationConsumer(), getRemoveProfilLemmatizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationConfigurationInFile(x));
 
     private static final LexicometricEditTableService lexicometricEditTableService = new LexicometricEditTableService();
     private final BiConsumer<String, EditTableElement> editTableElementBiConsumer;
     private final LexicometricEditEnum lexicometricEditEnum;
     private final Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer;
     private final Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction;
+    private final BiConsumer<String, String> copyConsumer;
+    private final Consumer<String> addProfilConsumer;
+    private final Consumer<String> removeProfilConsumer;
+    private final Consumer<String> saveInDiskConsumer;
     private static Set<IRootTable> hierarchicalTableSet = null;
 
     /**
@@ -52,12 +58,20 @@ public enum LexicometricConfigurationEnum {
      * @param lexicometricEditEnum Enumeration provenant de l'ihm
      * @param lexicometricHierarchicalViewToLexicometricHierarchicalServer
      * @param lexicometricHierarchicalILexicometricConfigurationFunction la configuration lexicometric
+     * @param copyConsumer
+     * @param addProfilConsumer
+     * @param removeProfilConsumer
+     * @param saveInDiskConsumer
      */
-    LexicometricConfigurationEnum(BiConsumer<String, EditTableElement> editTableElementBiConsumer, LexicometricEditEnum lexicometricEditEnum, Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer, Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction) {
+    LexicometricConfigurationEnum(BiConsumer<String, EditTableElement> editTableElementBiConsumer, LexicometricEditEnum lexicometricEditEnum, Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer, Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction, BiConsumer<String, String> copyConsumer, Consumer<String> addProfilConsumer, Consumer<String> removeProfilConsumer, Consumer<String> saveInDiskConsumer) {
         this.editTableElementBiConsumer = editTableElementBiConsumer;
         this.lexicometricEditEnum = lexicometricEditEnum;
         this.lexicometricHierarchicalViewToLexicometricHierarchicalServer = lexicometricHierarchicalViewToLexicometricHierarchicalServer;
         this.lexicometricHierarchicalILexicometricConfigurationFunction = lexicometricHierarchicalILexicometricConfigurationFunction;
+        this.copyConsumer = copyConsumer;
+        this.addProfilConsumer = addProfilConsumer;
+        this.removeProfilConsumer = removeProfilConsumer;
+        this.saveInDiskConsumer = saveInDiskConsumer;
     }
 
     /**
@@ -165,6 +179,43 @@ public enum LexicometricConfigurationEnum {
     }
 
     /**
+     * Permet de se procurer un consumer de copie pour la lemmatisation
+     * @return le consumer de copie pour la lemmatisation
+     */
+    private static BiConsumer<String, String> getLemmatisationCopyConsumer() {
+        return (x,v) -> {
+            Optional<ILexicometricData> lemmatizationDataOrigin = getLemmatizationData(x);
+            Optional<ILexicometricData> lemmatizationDataDest = getLemmatizationData(v);
+            if (lemmatizationDataOrigin.isPresent() && lemmatizationDataDest.isPresent()) {
+                copyLexicometricData((ILexicometricCopyData) lemmatizationDataOrigin.get(), (ILexicometricCopyData) lemmatizationDataDest.get());
+            }
+        };
+    }
+
+    /**
+     * Permet de se procurer un consumer de copie pour la tokenization
+     * @return le consumer de copie pour la tokenization
+     */
+    private static BiConsumer<String, String> getTokenizationCopyConsumer() {
+        return (x,v) -> {
+            Optional<ILexicometricData> tokenizationDataOrigin = getTokenizationData(x);
+            Optional<ILexicometricData> tokenizationDataDest = getTokenizationData(v);
+            if (tokenizationDataOrigin.isPresent() && tokenizationDataDest.isPresent()) {
+                copyLexicometricData((ILexicometricCopyData) tokenizationDataOrigin.get(), (ILexicometricCopyData) tokenizationDataDest.get());
+            }
+        };
+    }
+
+    /**
+     * Permet de copier des données lexicométrique
+     * @param origin origine des données
+     * @param dest destination des données
+     */
+    private static void copyLexicometricData(ILexicometricCopyData origin, ILexicometricCopyData dest) {
+        dest.setData(origin.clone());
+    }
+
+    /**
      * Permet de se procurer la configuration lexicometric serveur en fonction de l'énumération de la vue
      * @param lexicometricEditEnum énumération en provenance de la vue
      * @return la configuration lexicometric serveur
@@ -179,5 +230,105 @@ public enum LexicometricConfigurationEnum {
         });
         lexicometricConfigurationEnumServer.setHierarchicalTableSet(lexicometricEditEnum.getHierarchicalTableSet());
         return lexicometricConfigurationEnumServer;
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la copie
+     * Param 1 : profil d'origine
+     * Param 2 : profil de dest
+     * @return le consumer
+     */
+    public BiConsumer<String, String> getCopyConsumer() {
+        return copyConsumer;
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la création de profil pour la lemmatization
+     * @return le consumer pour la création de profil pour la lemmatization
+     */
+    private static Consumer<String> getAddProfilLemmatizationConsumer() {
+        return x -> {
+            if (StringUtils.isBlank(x)) {
+                return;
+            }
+            Boolean exist = UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().anyMatch(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
+            if (exist) {
+                throw new ServerException().addInformationException(new InformationExceptionBuilder()
+                        .errorCode(ErrorCode.VALUE_EXIST)
+                        .objectInError(x)
+                        .build());
+            }
+            Lemmatization lemmatization = new Lemmatization();
+            lemmatization.setProfile(x);
+            UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().add(lemmatization);
+        };
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la création de profil pour la tokenization
+     * @return le consumer pour la création de profil pour la tokenization
+     */
+    private static Consumer<String> getAddProfilTokenizationConsumer() {
+        return x -> {
+            if (StringUtils.isBlank(x)) {
+                return;
+            }
+            Boolean exist = UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().stream().anyMatch(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
+            if (exist) {
+                throw new ServerException().addInformationException(new InformationExceptionBuilder()
+                        .errorCode(ErrorCode.VALUE_EXIST)
+                        .objectInError(x)
+                        .build());
+            }
+            Tokenization tokenization = new Tokenization();
+            tokenization.setProfile(x);
+            UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().add(tokenization);
+        };
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la suppression d'un profil pour la lemmatization
+     * @return le consumer pour la suppression d'un profil pour la lemmatization
+     */
+    private static Consumer<String> getRemoveProfilLemmatizationConsumer() {
+        return x -> {
+            UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().removeIf(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
+            UserLexicometricAnalysisSettings.getInstance().setRemoveLemmatizationProfil(x);
+        };
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la suppression d'un profil pour la tokenization
+     * @return le consumer pour la suppression d'un profil pour la tokenization
+     */
+    private static Consumer<String> getRemoveProfilTokenizationConsumer() {
+        return x -> {
+            UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().removeIf(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
+            UserLexicometricAnalysisSettings.getInstance().setRemoveTokenizationProfil(x);
+        };
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la création de profil
+     * @return le consumer pour la création de profil
+     */
+    public Consumer<String> getAddProfilConsumer() {
+        return addProfilConsumer;
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la suppression de profil
+     * @return le consumer pour la suppression de profil
+     */
+    public Consumer<String> getRemoveProfilConsumer() {
+        return removeProfilConsumer;
+    }
+
+    /**
+     * Permet de se procurer le consumer pour la sauvegarde
+     * @return le consumer pour la sauvegarde
+     */
+    public Consumer<String> getSaveInDiskConsumer() {
+        return saveInDiskConsumer;
     }
 }

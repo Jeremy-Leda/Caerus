@@ -1,15 +1,25 @@
 package model.analyze;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import model.analyze.beans.*;
 import model.analyze.lexicometric.beans.Lemmatization;
 import model.analyze.lexicometric.beans.LexicometricAnalysis;
 import model.analyze.constants.FolderSettingsEnum;
+import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.beans.Tokenization;
+import model.analyze.lexicometric.interfaces.ILexicometricCopyData;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationException;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.JSonFactoryUtils;
+import utils.PathUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,6 +40,10 @@ public class UserLexicometricAnalysisSettings {
     private final LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
     private final Set<ILexicometricData<Set<String>>> tokenizationSet = new HashSet<>();
     private final Set<ILexicometricData<Map<String, Set<String>>>> lemmatizationSet = new HashSet<>();
+    private final Map<String, Path> tokenizationFileMap = new HashMap<>();
+    private final Map<String, Path> lemmatizationFileMap = new HashMap<>();
+    private Optional<Tuple2<String, Path>> removeTokenizationProfil = Optional.empty();
+    private Optional<Tuple2<String, Path>> removeLemmatizationProfil = Optional.empty();
     private String userProfile;
 
 
@@ -78,11 +92,13 @@ public class UserLexicometricAnalysisSettings {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (!Files.isDirectory(file)) {
-                        logger.debug(String.format("Loading Configuration Lexicometric %s", file.toString()));
+                        logger.debug(String.format("Loading Configuration Lexicometric %s", file));
                         LexicometricAnalysis configurationFromJsonFile = JSonFactoryUtils
                                 .createAnalyseConfigurationFromJsonFile(FileUtils.openInputStream(file.toFile()));
                         lexicometricAnalysis.getLemmatizationSet().addAll(configurationFromJsonFile.getLemmatizationSet());
                         lexicometricAnalysis.getTokenizationSet().addAll(configurationFromJsonFile.getTokenizationSet());
+                        configurationFromJsonFile.getLemmatizationSet().stream().map(p -> p.getProfile()).distinct().forEach(p -> lemmatizationFileMap.put(p, file));
+                        configurationFromJsonFile.getTokenizationSet().stream().map(p -> p.getProfile()).distinct().forEach(p -> tokenizationFileMap.put(p, file));
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -91,14 +107,6 @@ public class UserLexicometricAnalysisSettings {
         tokenizationSet.addAll(lexicometricAnalysis.getTokenizationSet());
         lemmatizationSet.addAll(lexicometricAnalysis.getLemmatizationSet());
     }
-
-//    /**
-//     * Permet de se procurer la configuration pour les analyses lexicométriques
-//     * @return la configuration pour les analyses lexicométriques
-//     */
-//    public LexicometricAnalysis getLexicometricAnalysis() {
-//        return lexicometricAnalysis;
-//    }
 
     /**
      * Permet de se procurer le profile par défaut
@@ -124,19 +132,157 @@ public class UserLexicometricAnalysisSettings {
         return this.lemmatizationSet;
     }
 
+    /**
+     * Permet de sauvegarder les éléments de tokenization en mémoire
+     * @param userProfile profil utilisateur
+     * @param words liste des mots à sauvegarder
+     */
     public void saveTokenization(String userProfile, Set<String> words) {
-        Optional<Tokenization> optionalTokenization = this.lexicometricAnalysis.getTokenizationSet().stream().filter(tokenization -> tokenization.getProfile().equals(userProfile)).findFirst();
-        optionalTokenization.ifPresent(tokenization -> tokenization.setWords(words));
+        Optional<ILexicometricData<Set<String>>> optionalTokenization = this.tokenizationSet.stream().filter(tokenization -> tokenization.getProfile().equals(userProfile)).findFirst();
+        optionalTokenization.ifPresent(tokenization -> ((Tokenization)tokenization).setData(words));
     }
 
+    /**
+     * Permet de sauvegarder les éléments de lemmatisation en mémoire
+     * @param userProfile profil utilisateur
+     * @param words map des mots à sauvegarder
+     */
     public void saveLemmatization(String userProfile, Map<String, Set<String>> words) {
         // On vérifie qu'il n'y a pas de liste à null, sinon on les set
         Set<String> keyForValueNotInitializedSet = words.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
         keyForValueNotInitializedSet.forEach(key -> words.put(key, new HashSet<>()));
         // On sauvegarde
-        Optional<Lemmatization> lemmatizationOptional = this.lexicometricAnalysis.getLemmatizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(userProfile)).findFirst();
-        lemmatizationOptional.ifPresent(lemmatization -> lemmatization.setBaseListWordsMap(words));
+        Optional<ILexicometricData<Map<String, Set<String>>>> lemmatizationOptional = this.lemmatizationSet.stream().filter(lemmatization -> lemmatization.getProfile().equals(userProfile)).findFirst();
+        lemmatizationOptional.ifPresent(lemmatization -> ((Lemmatization)lemmatization).setData(words));
     }
 
+    /**
+     * Permet de sauvegarder la tokenization sur le disque
+     * @param profilToSave profil à sauvegarder
+     */
+    public void saveTokenizationConfigurationInFile(String profilToSave) {
+        if (this.removeTokenizationProfil.isPresent() && this.removeTokenizationProfil.get()._1().equals(profilToSave)) {
+            Path path = this.removeTokenizationProfil.get()._2();
+            LexicometricAnalysis lexicometricAnalysis = constructLexicometricAnalysisForSave(path);
+            saveConfigurationInFile(lexicometricAnalysis, path);
+            this.removeTokenizationProfil = Optional.empty();
+            return;
+        }
+        if (!saveConfigurationInFileIfUpdate(this.tokenizationFileMap, profilToSave)) {
+            LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
+            Optional<ILexicometricData<Set<String>>> tokenization = this.tokenizationSet.stream().filter(t -> t.getProfile().equals(profilToSave)).findFirst();
+            tokenization.ifPresent(t -> lexicometricAnalysis.setTokenizationSet(Set.of((Tokenization) t)));
+            lexicometricAnalysis.setLemmatizationSet(new HashSet<>());
+            Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
+            configurationFolder.ifPresent(f -> {
+                Path path = new File(f, "stopwords_" + profilToSave + ".json").toPath();
+                this.tokenizationFileMap.put(profilToSave, path);
+                saveConfigurationInFile(lexicometricAnalysis, path);
+            });
+        }
+    }
 
+    /**
+     * Permet de sauvegarder la lemmatization sur le disque
+     * @param profilToSave profil à sauvegarder
+     */
+    public void saveLemmatizationConfigurationInFile(String profilToSave) {
+        if (this.removeLemmatizationProfil.isPresent() && this.removeLemmatizationProfil.get()._1().equals(profilToSave)) {
+            Path path = this.removeLemmatizationProfil.get()._2();
+            LexicometricAnalysis lexicometricAnalysis = constructLexicometricAnalysisForSave(path);
+            saveConfigurationInFile(lexicometricAnalysis, path);
+            this.removeLemmatizationProfil = Optional.empty();
+            return;
+        }
+        if (!saveConfigurationInFileIfUpdate(this.lemmatizationFileMap, profilToSave)) {
+            LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
+            Optional<ILexicometricData<Map<String, Set<String>>>> lemmatization = this.lemmatizationSet.stream().filter(t -> t.getProfile().equals(profilToSave)).findFirst();
+            lemmatization.ifPresent(t -> lexicometricAnalysis.setLemmatizationSet(Set.of((Lemmatization) t)));
+            lexicometricAnalysis.setTokenizationSet(new HashSet<>());
+            Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
+            configurationFolder.ifPresent(f -> {
+                Path path = new File(f, "lemmatization_" + profilToSave + ".json").toPath();
+                this.lemmatizationFileMap.put(profilToSave, path);
+                saveConfigurationInFile(lexicometricAnalysis, path);
+            });
+        }
+    }
+
+    /**
+     * Permet de sauvegarder la configuration dans le cadre d'une mise à jour ou
+     * @param stringPathMap
+     * @param profilToSave
+     * @return
+     */
+    private Boolean saveConfigurationInFileIfUpdate(Map<String, Path> stringPathMap, String profilToSave) {
+        if (stringPathMap.containsKey(profilToSave)) {
+            Path path = stringPathMap.get(profilToSave);
+            LexicometricAnalysis lexicometricAnalysis = constructLexicometricAnalysisForSave(path);
+            saveConfigurationInFile(lexicometricAnalysis, path);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Permet de se procurer le lexicometric analysis à sauvegarder
+     * @param file fichier pour la sauvegarde
+     * @return le lexicometric analysis à sauvegarder
+     */
+    private LexicometricAnalysis constructLexicometricAnalysisForSave(Path file) {
+        LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
+        Set<String> tokenizationProfileSet = tokenizationFileMap.entrySet().stream().filter(entry -> entry.getValue().equals(file)).map(entry -> entry.getKey()).collect(Collectors.toSet());
+        Set<Tokenization> tokenizationSet = this.tokenizationSet.stream().filter(f -> tokenizationProfileSet.contains(f.getProfile())).map(t -> (Tokenization) t).collect(Collectors.toSet());
+        lexicometricAnalysis.setTokenizationSet(tokenizationSet);
+        Set<String> lemmatizationProfileSet = lemmatizationFileMap.entrySet().stream().filter(entry -> entry.getValue().equals(file)).map(entry -> entry.getKey()).collect(Collectors.toSet());
+        Set<Lemmatization> lemmatizationSet = this.lemmatizationSet.stream().filter(f -> lemmatizationProfileSet.contains(f.getProfile())).map(t -> (Lemmatization) t).collect(Collectors.toSet());
+        lexicometricAnalysis.setLemmatizationSet(lemmatizationSet);
+        return lexicometricAnalysis;
+    }
+
+    /**
+     * Permet de sauvegarder le lexicométrique analysis dans un fichier
+     * @param lexicometricAnalysis le lexicométrique analysis
+     * @param file le fichier
+     */
+    private void saveConfigurationInFile(LexicometricAnalysis lexicometricAnalysis, Path file) {
+        try {
+            if (lexicometricAnalysis.getTokenizationSet().isEmpty() && lexicometricAnalysis.getLemmatizationSet().isEmpty()) {
+                if (file.toFile().exists()) {
+                    PathUtils.deleteFile(file.toFile());
+                    return;
+                }
+            }
+            if (!JSonFactoryUtils.createJsonInFile(lexicometricAnalysis, file.toFile())) {
+                throw new ServerException().addInformationException(new InformationExceptionBuilder()
+                        .errorCode(ErrorCode.TECHNICAL_ERROR)
+                        .objectInError(Set.of(lexicometricAnalysis, file))
+                        .build());
+            }
+        } catch (IOException e) {
+            throw new ServerException().addInformationException(new InformationExceptionBuilder()
+                    .errorCode(ErrorCode.TECHNICAL_ERROR)
+                    .objectInError(e)
+                    .stackTraceElements(e.getStackTrace())
+                    .build());
+        }
+    }
+
+    /**
+     * Permet de définir le profil à supprimer de la tokenization
+     * @param profilToRemove le profil à supprimer de la tokenization
+     */
+    public void setRemoveTokenizationProfil(String profilToRemove) {
+        Path path = this.tokenizationFileMap.get(profilToRemove);
+        this.removeTokenizationProfil = Optional.of(Tuple.of(profilToRemove, path));
+    }
+
+    /**
+     * Permet de définir le profil à supprimer de la lemmatization
+     * @param profilToRemove profil à supprimer
+     */
+    public void setRemoveLemmatizationProfil(String profilToRemove) {
+        Path path = this.lemmatizationFileMap.get(profilToRemove);
+        this.removeLemmatizationProfil = Optional.of(Tuple.of(profilToRemove, path));
+    }
 }

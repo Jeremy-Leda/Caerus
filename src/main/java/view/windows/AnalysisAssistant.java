@@ -114,18 +114,10 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .titleTablePanel(ConfigurationUtils.getInstance()
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
                 .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.TOKENIZATION, TokenizationHierarchicalEditEnum.BASE))
+                .lexicometricEditEnum(LexicometricEditEnum.TOKENIZATION)
                 .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
                 .build();
-        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd);
-
-//        IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE));
-//        profileWithTable.createTable(Map.of(0, ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL)));
-//        profileWithTable.setGetListFromProfileFunction(getTokenizationFunction());
-//        profileWithTable.fillProfileSet(LexicometricAnalysisType.TOKENIZATION.getProfileSet(), getControler().getLexicometricDefaultProfile());
+        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd, getControler());
         profileWithTable.setInterfaceForTableAndAddButton(0,
                 ConfigurationUtils.getInstance()
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
@@ -151,21 +143,10 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .titleTablePanel(ConfigurationUtils.getInstance()
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
                 .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.LEMMATIZATION, LemmatizationHierarchicalEditEnum.BASE))
+                .lexicometricEditEnum(LexicometricEditEnum.LEMMATIZATION)
                 .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
                 .build();
-        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd);
-//        IProfileWithTable profileWithTable = new ProfileWithTablePanel(ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE));
-//        profileWithTable.createTable(Map.of(0, ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL),
-//                1, ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL)));
-//        profileWithTable.setGetListFromProfileFunction(getBaseLemmeFunction());
-//        profileWithTable.fillProfileSet(LexicometricAnalysisType.LEMMATIZATION.getProfileSet(), getControler().getLexicometricDefaultProfile());
-//        profileWithTable.setReferenceFromSourceFunction(0,1, getLemmeFromBaseFunction());
-//        profileWithTable.setSaveDataInMemory(getSaveDataConsumer(LexicometricAnalysisType.LEMMATIZATION), List.of(0,1).stream().collect(Collectors.toCollection(LinkedList::new)));
+        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd, getControler());
         profileWithTable.setInterfaceForTableAndAddButton(0,
                 ConfigurationUtils.getInstance()
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
@@ -185,6 +166,10 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
     }
 
+    /**
+     * Permet de se procurer le tableau d'édition préparer pour la gestion avec des mots et recherche avec filtre sur contains en text
+     * @return le tableau d'édition préparer pour la gestion avec des mots et recherche avec filtre sur contains en text
+     */
     private Function2<IRootTable, Consumer<?>, ITableWithFilterAndEditPanel> getTableWithTextFilterAndEditPanelFunction() {
         return (x, v) -> new TableWithFilterAndEditPanel<String>(StringUtils.EMPTY, x.getHeaderLabel(), v,
                 Comparator.comparing(StringUtils::stripAccents),
@@ -192,6 +177,10 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 (s, f) -> s.toLowerCase(Locale.ROOT).contains(f.getStringValue()), getTableTextFilterPanel());
     }
 
+    /**
+     * Permet de se procurer le table filter pour filtrer par rapport à une chaine de caractère
+     * @return le table filter pour filtrer par rapport à une chaine de caractère
+     */
     private ITableFilterPanel getTableTextFilterPanel() {
         TableFilterTextPanel tableFilterPanel = new TableFilterTextPanel();
         tableFilterPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
@@ -264,41 +253,5 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
             repack();
         };
     }
-
-//    /**
-//     * Permet de se procurer la fonction qui retourne la liste des token en fonction du profile
-//     * @return La fonction qui retourne la liste des token en fonction du profile
-//     */
-//    private Function<String, Collection<String>> getTokenizationFunction() {
-//        return profile -> getControler().getLexicometricAnalysis(profile).getTokenization().getWords();
-//    }
-//
-//    /**
-//     * Permet de se procurer la fonction qui retourne la liste des bases de lemme en fonction du profile
-//     * @return La fonction qui retourne la liste des des bases de lemme en fonction du profile
-//     */
-//    private Function<String, Collection<String>> getBaseLemmeFunction() {
-//        return profile -> getControler().getLexicometricAnalysis(profile).getLemmatization().getBaseListWordsMap().keySet();
-//    }
-//
-//    /**
-//     * Permet de se procurer la fonction qui retourne la liste des lemmes en fonction de la base
-//     * @return La fonction qui retourne la liste des lemmes en fonction de la base
-//     */
-//    private BiFunction<String, String, Collection<String>> getLemmeFromBaseFunction() {
-//        return (profile,base) -> getControler().getLexicometricAnalysis(profile).getLemmatization().getBaseListWordsMap().get(base);
-//    }
-//
-//    /**
-//     * Permet de se procurer le consumer pour sauvegarder les datas en mémoire
-//     * @param lexicometricAnalysisType le type d'analyse
-//     * @return le consumer
-//     */
-//    private Consumer<EditTable> getSaveDataConsumer(LexicometricAnalysisType lexicometricAnalysisType) {
-//        return editTable -> {
-//            editTable.setLexicometricAnalysisType(lexicometricAnalysisType);
-//            getControler().saveLexicometricAnalysis(editTable);
-//        };
-//    }
 
 }

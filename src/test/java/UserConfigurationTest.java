@@ -76,11 +76,11 @@ public class UserConfigurationTest {
         LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
         Lemmatization lemmatization = new Lemmatization();
         lemmatization.setProfile("Español");
-        lemmatization.setBaseListWordsMap(getLem());
+        lemmatization.setData(getLem());
         lexicometricAnalysis.setLemmatizationSet(Set.of(lemmatization));
         Tokenization tokenization = new Tokenization();
         tokenization.setProfile("Español");
-        tokenization.setWords(getToken());
+        tokenization.setData(getToken());
         lexicometricAnalysis.setTokenizationSet(Set.of(tokenization));
 
         JSonFactoryUtils.createJsonInFile(lexicometricAnalysis, new File("C:\\Users\\jerem\\Documents\\R\\temp.json"));

@@ -41,7 +41,7 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
     private ISpecificEditTableModel<T, ITableFilterObject> specificEditTableModel;
 
     public TableWithFilterAndEditPanel(String titlePanel, String header, Consumer<?> saveInMemory,
-                                       Comparator comparator, Function<ITableFilterObject, Boolean> checkFilterIsPresentFunction, Function2<T, ITableFilterObject, Boolean> applyFilterFunction,
+                                       Comparator comparator, Comparator viewComparator, Function<ITableFilterObject, Boolean> checkFilterIsPresentFunction, Function2<T, ITableFilterObject, Boolean> applyFilterFunction,
                                        ITableFilterPanel tableFilterPanel) {
         this.panel = new JPanel();
         if (StringUtils.isNotBlank(titlePanel)) {
@@ -50,7 +50,7 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
         }
         BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxlayout);
-        this.specificEditTableModel = new SpecificEditTableModel(e -> refreshDataAndColumnSize(), saveInMemory, getConsumerForAutoSizeColumn(), comparator, checkFilterIsPresentFunction, applyFilterFunction);
+        this.specificEditTableModel = new SpecificEditTableModel(e -> refreshDataAndColumnSize(), saveInMemory, getConsumerForAutoSizeColumn(), comparator, viewComparator, checkFilterIsPresentFunction, applyFilterFunction);
         //this.tableFilterPanel = new TextBoxPanel(1, false);
         this.tableFilterPanel = tableFilterPanel;
         this.tableFilterPanel.addConsumerOnChange(getConsumerFilter());

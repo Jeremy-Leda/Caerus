@@ -57,6 +57,7 @@ public abstract class ManageListAbstract extends ModalJFrameAbstract {
     public Function2<IRootTable, Consumer<?>, ITableWithFilterAndEditPanel> getTableWithTextFilterAndEditPanelFunction() {
         return (x, v) -> new TableWithFilterAndEditPanel<String>(StringUtils.EMPTY, x.getHeaderLabel(), v,
                 Comparator.naturalOrder(),
+                Comparator.comparing(StringUtils::stripAccents),
                 s -> StringUtils.isNotBlank(s.getStringValue()),
                 (s, f) -> s.toLowerCase(Locale.ROOT).contains(f.getStringValue()), getTableTextFilterPanel(x.getFilterLabel()));
     }

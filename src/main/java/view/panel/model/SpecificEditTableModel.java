@@ -39,7 +39,7 @@ public class SpecificEditTableModel<T, F extends ITableFilterObject> implements 
     private final SortedSet<T> sortedSet;
 
     // La liste pour afficher
-    private final List<T> filteredList = new LinkedList<>();
+    private final List<T> filteredList;
 
     //private LinkedList<SpecificRow> specificRowList;
     private Optional<F> filterValue = Optional.empty();
@@ -54,13 +54,16 @@ public class SpecificEditTableModel<T, F extends ITableFilterObject> implements 
     private final ExecutionService executionService = new ExecutionService();
     private final Function<F, Boolean> checkFilterIsPresentFunction;
     private final Function2<T, F, Boolean> applyFilterFunction;
+    private final Comparator<T> viewComparator;
 
     public SpecificEditTableModel(Consumer<?> refreshConsumer, Consumer<?> saveInMemory, Consumer<Integer> consumerForAutoSize,
-                                  Comparator comparator, Function<F, Boolean> checkFilterIsPresentFunction, Function2<T, F, Boolean> applyFilterFunction) {
+                                  Comparator comparator, Comparator<T> viewComparator, Function<F, Boolean> checkFilterIsPresentFunction, Function2<T, F, Boolean> applyFilterFunction) {
         this.refreshConsumer = refreshConsumer;
         this.saveInMemory = saveInMemory;
         this.consumerForAutoSize = consumerForAutoSize;
         this.sortedSet = new TreeSet<>(comparator);
+        this.viewComparator = viewComparator;
+        this.filteredList = new LinkedList<T>();
         //this.sortedSet = new TreeSet<>(Comparator.comparing(StringUtils::stripAccents));
         this.checkFilterIsPresentFunction = checkFilterIsPresentFunction;
         this.applyFilterFunction = applyFilterFunction;
@@ -93,6 +96,7 @@ public class SpecificEditTableModel<T, F extends ITableFilterObject> implements 
             this.sortedSet.remove(oldValue);
             this.sortedSet.add(newValue);
             this.fireTableUpdated.accept(indexValue, indexValue);
+            filter(filterValue);
             autoSizeRow(indexValue);
             this.editTableElementOptional = Optional.of(createEditTableElementForUpdate(oldValue, newValue));
             saveMemoryInBackground();
@@ -119,6 +123,7 @@ public class SpecificEditTableModel<T, F extends ITableFilterObject> implements 
             Integer index = new LinkedList<>(sortedSet).indexOf(value);
             this.filteredList.add(index, value);
             this.fireTableInserted.accept(index, index);
+            filter(filterValue);
             autoSizeRow(index);
             this.editTableElementOptional = Optional.of(createEditTableElementForAdd(value));
             saveMemoryInBackground();
@@ -164,7 +169,7 @@ public class SpecificEditTableModel<T, F extends ITableFilterObject> implements 
         } else {
             this.sortedSet.addAll(this.originList);
         }
-        this.filteredList.addAll(this.sortedSet);
+        this.filteredList.addAll(this.sortedSet.stream().sorted(viewComparator).collect(Collectors.toCollection(LinkedList::new)));
     }
 
     /**

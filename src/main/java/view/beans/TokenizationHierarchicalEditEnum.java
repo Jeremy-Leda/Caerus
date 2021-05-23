@@ -14,16 +14,19 @@ import java.util.stream.Collectors;
  * Utilise l'ordre naturel pour l'affichage (Haut -> Bas = Gauche -> Droite)
  */
 public enum TokenizationHierarchicalEditEnum implements ILexicometricHierarchical<TokenizationHierarchicalEditEnum>, IRootTable {
-    BASE(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL), true, 0);
+    BASE(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_STOPWORDS_TABLE_HEADER_LABEL), true, 0,
+            ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_STOPWORDS_FILTER_LABEL));
 
     private final String label;
     private final Boolean isRoot;
     private final Integer hiearchicalOrder;
+    private final String labelFilter;
 
-    TokenizationHierarchicalEditEnum(String label, Boolean isRoot, Integer hiearchicalOrder) {
+    TokenizationHierarchicalEditEnum(String label, Boolean isRoot, Integer hiearchicalOrder, String labelFilter) {
         this.label = label;
         this.isRoot = isRoot;
         this.hiearchicalOrder = hiearchicalOrder;
+        this.labelFilter = labelFilter;
     }
 
     @Override
@@ -34,6 +37,11 @@ public enum TokenizationHierarchicalEditEnum implements ILexicometricHierarchica
     @Override
     public String getHeaderLabel() {
         return this.label;
+    }
+
+    @Override
+    public String getFilterLabel() {
+        return this.labelFilter;
     }
 
     @Override

@@ -16,6 +16,7 @@ public class LexicometricAnalysis {
 
     private Set<Lemmatization> lemmatizationSet;
     private Set<Tokenization> tokenizationSet;
+    private Set<LemmatizationByGrammaticalCategory> lemmatizationByGrammaticalCategorySet;
 
     public Set<Lemmatization> getLemmatizationSet() {
         return lemmatizationSet;
@@ -31,6 +32,14 @@ public class LexicometricAnalysis {
 
     public void setTokenizationSet(Set<Tokenization> tokenizationSet) {
         this.tokenizationSet = tokenizationSet;
+    }
+
+    public Set<LemmatizationByGrammaticalCategory> getLemmatizationByGrammaticalCategorySet() {
+        return lemmatizationByGrammaticalCategorySet;
+    }
+
+    public void setLemmatizationByGrammaticalCategorySet(Set<LemmatizationByGrammaticalCategory> lemmatizationByGrammaticalCategorySet) {
+        this.lemmatizationByGrammaticalCategorySet = lemmatizationByGrammaticalCategorySet;
     }
 
     @Override

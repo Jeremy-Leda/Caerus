@@ -12,7 +12,9 @@ import java.util.Set;
  */
 public enum LexicometricEditEnum implements IHierarchicalTable {
     TOKENIZATION(Set.of(TokenizationHierarchicalEditEnum.BASE)),
-    LEMMATIZATION(Set.of(LemmatizationHierarchicalEditEnum.BASE, LemmatizationHierarchicalEditEnum.LEMME));
+    LEMMATIZATION(Set.of(LemmatizationHierarchicalEditEnum.BASE, LemmatizationHierarchicalEditEnum.LEMME)),
+    LEMMATIZATION_BY_GRAMMATICAL_CATEGORY(Set.of(LemmatizationByGrammaticalCategoryHierarchicalEditEnum.CATEGORY,
+            LemmatizationByGrammaticalCategoryHierarchicalEditEnum.BASE, LemmatizationByGrammaticalCategoryHierarchicalEditEnum.LEMME));
 
     private final Set<IRootTable> hierarchicalTableSet;
 

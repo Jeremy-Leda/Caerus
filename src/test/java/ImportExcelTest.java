@@ -6,6 +6,7 @@ import model.analyze.constants.FolderSettingsEnum;
 import model.excel.beans.ExcelImportConfigurationCmd;
 import model.exceptions.ImportExcelException;
 import model.exceptions.LoadTextException;
+import model.exceptions.ServerException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -76,7 +77,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             fail(ERROR);
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             assertTrue(!e.getMessage().isBlank());
         }
 
@@ -95,7 +96,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             fail(ERROR);
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             assertTrue(!e.getMessage().isBlank());
         }
 
@@ -114,7 +115,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             fail(ERROR);
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             assertTrue(!e.getMessage().isBlank());
         }
 
@@ -134,7 +135,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             fail(ERROR);
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             assertTrue(!e.getMessage().isBlank());
         }
 
@@ -155,7 +156,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             fail(ERROR);
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             assertTrue(!e.getMessage().isBlank());
         }
 
@@ -177,7 +178,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             configurationControler.loadTexts();
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             fail(NO_ERROR);
         }
 
@@ -220,7 +221,7 @@ public class ImportExcelTest {
         try {
             configurationControler.importExcel(excelImportConfigurationCmd);
             configurationControler.loadTexts();
-        } catch (ImportExcelException | IOException | LoadTextException e) {
+        } catch (ServerException | ImportExcelException | IOException | LoadTextException e) {
             fail(NO_ERROR);
         }
 

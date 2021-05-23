@@ -638,4 +638,10 @@ public interface IConfigurationControler {
 	 */
 	void saveLexicometricProfilInDisk(LexicometricEditEnum lexicometricEditEnum, String profileToSave);
 
+	/**
+	 * Permet de sauvegarder la configuration lexicométrique sur le disque dur
+	 * @param lexicometricEditEnum Type de configuration lexicométrique
+	 */
+	void saveLexicometricAllProfilInDisk(LexicometricEditEnum lexicometricEditEnum);
+
 }

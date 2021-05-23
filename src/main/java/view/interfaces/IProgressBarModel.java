@@ -1,6 +1,6 @@
 package view.interfaces;
 
-import javax.swing.JProgressBar;
+import javax.swing.*;
 
 /**
  * 
@@ -12,8 +12,9 @@ import javax.swing.JProgressBar;
 public interface IProgressBarModel {
 
 	/**
-	 * Permet de lancer le traitement sur la progressBar en paramétre
+	 * Permet de lancer le traitement sur la progressBar en paramètre
 	 * @param progressBar progressBar à définir
+	 * @param labelProgress Le label avec l'animation pour la progression
 	 */
-	void launchTreatment(JProgressBar progressBar);
+	void launchTreatment(JProgressBar progressBar, JLabel labelProgress);
 }

@@ -2,17 +2,14 @@ package model.analyze;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.Tuple3;
-import model.analyze.beans.*;
-import model.analyze.lexicometric.beans.Lemmatization;
-import model.analyze.lexicometric.beans.LexicometricAnalysis;
+import model.analyze.beans.CurrentUserConfiguration;
 import model.analyze.constants.FolderSettingsEnum;
-import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
+import model.analyze.lexicometric.beans.Lemmatization;
+import model.analyze.lexicometric.beans.LemmatizationByGrammaticalCategory;
+import model.analyze.lexicometric.beans.LexicometricAnalysis;
 import model.analyze.lexicometric.beans.Tokenization;
-import model.analyze.lexicometric.interfaces.ILexicometricCopyData;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
 import model.exceptions.ErrorCode;
-import model.exceptions.InformationException;
 import model.exceptions.InformationExceptionBuilder;
 import model.exceptions.ServerException;
 import org.apache.commons.io.FileUtils;
@@ -40,10 +37,13 @@ public class UserLexicometricAnalysisSettings {
     private final LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
     private final Set<ILexicometricData<Set<String>>> tokenizationSet = new HashSet<>();
     private final Set<ILexicometricData<Map<String, Set<String>>>> lemmatizationSet = new HashSet<>();
+    private final Set<ILexicometricData<Map<String, Map<String, Set<String>>>>> lemmatizationByGrammaticalCategorySet = new HashSet<>();
     private final Map<String, Path> tokenizationFileMap = new HashMap<>();
     private final Map<String, Path> lemmatizationFileMap = new HashMap<>();
+    private final Map<String, Path> lemmatizationByGrammaticalCategoryFileMap = new HashMap<>();
     private Optional<Tuple2<String, Path>> removeTokenizationProfil = Optional.empty();
     private Optional<Tuple2<String, Path>> removeLemmatizationProfil = Optional.empty();
+    private Optional<Tuple2<String, Path>> removeLemmatizationByGrammaticalCategoryProfil = Optional.empty();
     private String userProfile;
 
 
@@ -87,6 +87,7 @@ public class UserLexicometricAnalysisSettings {
         Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
         lexicometricAnalysis.setLemmatizationSet(new HashSet<>());
         lexicometricAnalysis.setTokenizationSet(new HashSet<>());
+        lexicometricAnalysis.setLemmatizationByGrammaticalCategorySet(new HashSet<>());
         if (configurationFolder.isPresent() && configurationFolder.get().exists()) {
             Files.walkFileTree(Paths.get(configurationFolder.get().toURI()), new SimpleFileVisitor<>() {
                 @Override
@@ -97,8 +98,10 @@ public class UserLexicometricAnalysisSettings {
                                 .createAnalyseConfigurationFromJsonFile(FileUtils.openInputStream(file.toFile()));
                         lexicometricAnalysis.getLemmatizationSet().addAll(configurationFromJsonFile.getLemmatizationSet());
                         lexicometricAnalysis.getTokenizationSet().addAll(configurationFromJsonFile.getTokenizationSet());
+                        lexicometricAnalysis.getLemmatizationByGrammaticalCategorySet().addAll(configurationFromJsonFile.getLemmatizationByGrammaticalCategorySet());
                         configurationFromJsonFile.getLemmatizationSet().stream().map(p -> p.getProfile()).distinct().forEach(p -> lemmatizationFileMap.put(p, file));
                         configurationFromJsonFile.getTokenizationSet().stream().map(p -> p.getProfile()).distinct().forEach(p -> tokenizationFileMap.put(p, file));
+                        configurationFromJsonFile.getLemmatizationByGrammaticalCategorySet().stream().map(p -> p.getProfile()).distinct().forEach(p -> lemmatizationByGrammaticalCategoryFileMap.put(p, file));
                     }
                     return FileVisitResult.CONTINUE;
                 }
@@ -106,6 +109,7 @@ public class UserLexicometricAnalysisSettings {
         }
         tokenizationSet.addAll(lexicometricAnalysis.getTokenizationSet());
         lemmatizationSet.addAll(lexicometricAnalysis.getLemmatizationSet());
+        lemmatizationByGrammaticalCategorySet.addAll(lexicometricAnalysis.getLemmatizationByGrammaticalCategorySet());
     }
 
     /**
@@ -133,6 +137,14 @@ public class UserLexicometricAnalysisSettings {
     }
 
     /**
+     * Permet de se procurer la liste des lemmatisations par catégorie grammatical
+     * @return la liste des lemmatisations par catégorie grammatical
+     */
+    public Set<ILexicometricData<Map<String, Map<String, Set<String>>>>> getLemmatizationByGrammaticalCategorySet() {
+        return lemmatizationByGrammaticalCategorySet;
+    }
+
+    /**
      * Permet de sauvegarder les éléments de tokenization en mémoire
      * @param userProfile profil utilisateur
      * @param words liste des mots à sauvegarder
@@ -149,11 +161,46 @@ public class UserLexicometricAnalysisSettings {
      */
     public void saveLemmatization(String userProfile, Map<String, Set<String>> words) {
         // On vérifie qu'il n'y a pas de liste à null, sinon on les set
-        Set<String> keyForValueNotInitializedSet = words.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
-        keyForValueNotInitializedSet.forEach(key -> words.put(key, new HashSet<>()));
+        mapSetNullableTreatment(words);
         // On sauvegarde
         Optional<ILexicometricData<Map<String, Set<String>>>> lemmatizationOptional = this.lemmatizationSet.stream().filter(lemmatization -> lemmatization.getProfile().equals(userProfile)).findFirst();
         lemmatizationOptional.ifPresent(lemmatization -> ((Lemmatization)lemmatization).setData(words));
+    }
+
+    /**
+     * Permet de sauvegarder les éléments de lemmatisation par catégorie grammatical en mémoire
+     * @param userProfile profil utilisateur
+     * @param words map des mots à sauvegarder
+     */
+    public void saveLemmatizationByGrammaticalCategory(String userProfile, Map<String, Map<String, Set<String>>> words) {
+        // On vérifie qu'il n'y a pas de liste à null, sinon on les set
+        mapNullableTreatment(words);
+        words.values().forEach(v -> mapSetNullableTreatment(v));
+
+        // On sauvegarde
+        Optional<ILexicometricData<Map<String, Map<String, Set<String>>>>> lemmatizationOptional = this.lemmatizationByGrammaticalCategorySet.stream()
+                .filter(lemmatization -> lemmatization.getProfile().equals(userProfile)).findFirst();
+        lemmatizationOptional.ifPresent(lemmatization -> ((LemmatizationByGrammaticalCategory)lemmatization).setData(words));
+    }
+
+    /**
+     * Permet de traiter une map de map pour gérer les nulls
+     * @param map map
+     * @param <T> Type d'objet
+     */
+    private <T> void mapNullableTreatment(Map<String, Map<String,T>> map) {
+        Set<String> keyForValueNotInitializedSet = map.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
+        keyForValueNotInitializedSet.forEach(key -> map.put(key, new HashMap<>()));
+    }
+
+    /**
+     * Permet de traiter une map de set pour gérer les nulls
+     * @param map map
+     * @param <T> Type d'objet
+     */
+    private <T> void mapSetNullableTreatment(Map<String, Set<T>> map) {
+        Set<String> keyForValueNotInitializedSet = map.entrySet().stream().filter(entry -> Objects.isNull(entry.getValue())).map(entry -> entry.getKey()).collect(Collectors.toSet());
+        keyForValueNotInitializedSet.forEach(key -> map.put(key, new HashSet<>()));
     }
 
     /**
@@ -173,6 +220,7 @@ public class UserLexicometricAnalysisSettings {
             Optional<ILexicometricData<Set<String>>> tokenization = this.tokenizationSet.stream().filter(t -> t.getProfile().equals(profilToSave)).findFirst();
             tokenization.ifPresent(t -> lexicometricAnalysis.setTokenizationSet(Set.of((Tokenization) t)));
             lexicometricAnalysis.setLemmatizationSet(new HashSet<>());
+            lexicometricAnalysis.setLemmatizationByGrammaticalCategorySet(new HashSet<>());
             Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
             configurationFolder.ifPresent(f -> {
                 Path path = new File(f, "stopwords_" + profilToSave + ".json").toPath();
@@ -199,10 +247,38 @@ public class UserLexicometricAnalysisSettings {
             Optional<ILexicometricData<Map<String, Set<String>>>> lemmatization = this.lemmatizationSet.stream().filter(t -> t.getProfile().equals(profilToSave)).findFirst();
             lemmatization.ifPresent(t -> lexicometricAnalysis.setLemmatizationSet(Set.of((Lemmatization) t)));
             lexicometricAnalysis.setTokenizationSet(new HashSet<>());
+            lexicometricAnalysis.setLemmatizationByGrammaticalCategorySet(new HashSet<>());
             Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
             configurationFolder.ifPresent(f -> {
                 Path path = new File(f, "lemmatization_" + profilToSave + ".json").toPath();
                 this.lemmatizationFileMap.put(profilToSave, path);
+                saveConfigurationInFile(lexicometricAnalysis, path);
+            });
+        }
+    }
+
+    /**
+     * Permet de sauvegarder la lemmatization par catégorie grammatical sur le disque
+     * @param profilToSave profil à sauvegarder
+     */
+    public void saveLemmatizationByGrammaticalCategoryConfigurationInFile(String profilToSave) {
+        if (this.removeLemmatizationByGrammaticalCategoryProfil.isPresent() && this.removeLemmatizationByGrammaticalCategoryProfil.get()._1().equals(profilToSave)) {
+            Path path = this.removeLemmatizationByGrammaticalCategoryProfil.get()._2();
+            LexicometricAnalysis lexicometricAnalysis = constructLexicometricAnalysisForSave(path);
+            saveConfigurationInFile(lexicometricAnalysis, path);
+            this.removeLemmatizationByGrammaticalCategoryProfil = Optional.empty();
+            return;
+        }
+        if (!saveConfigurationInFileIfUpdate(this.lemmatizationByGrammaticalCategoryFileMap, profilToSave)) {
+            LexicometricAnalysis lexicometricAnalysis = new LexicometricAnalysis();
+            Optional<ILexicometricData<Map<String, Map<String, Set<String>>>>> lemmatization = this.lemmatizationByGrammaticalCategorySet.stream().filter(t -> t.getProfile().equals(profilToSave)).findFirst();
+            lemmatization.ifPresent(t -> lexicometricAnalysis.setLemmatizationByGrammaticalCategorySet(Set.of((LemmatizationByGrammaticalCategory) t)));
+            lexicometricAnalysis.setTokenizationSet(new HashSet<>());
+            lexicometricAnalysis.setLemmatizationSet(new HashSet<>());
+            Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
+            configurationFolder.ifPresent(f -> {
+                Path path = new File(f, "lemmatizationByGrammaticalCategory_" + profilToSave + ".json").toPath();
+                this.lemmatizationByGrammaticalCategoryFileMap.put(profilToSave, path);
                 saveConfigurationInFile(lexicometricAnalysis, path);
             });
         }
@@ -237,6 +313,9 @@ public class UserLexicometricAnalysisSettings {
         Set<String> lemmatizationProfileSet = lemmatizationFileMap.entrySet().stream().filter(entry -> entry.getValue().equals(file)).map(entry -> entry.getKey()).collect(Collectors.toSet());
         Set<Lemmatization> lemmatizationSet = this.lemmatizationSet.stream().filter(f -> lemmatizationProfileSet.contains(f.getProfile())).map(t -> (Lemmatization) t).collect(Collectors.toSet());
         lexicometricAnalysis.setLemmatizationSet(lemmatizationSet);
+        Set<String> lemmatizationByGrammaticalCategoryProfileSet = lemmatizationByGrammaticalCategoryFileMap.entrySet().stream().filter(entry -> entry.getValue().equals(file)).map(entry -> entry.getKey()).collect(Collectors.toSet());
+        Set<LemmatizationByGrammaticalCategory> lemmatizationByGrammaticalCategorySet = this.lemmatizationByGrammaticalCategorySet.stream().filter(f -> lemmatizationByGrammaticalCategoryProfileSet.contains(f.getProfile())).map(t -> (LemmatizationByGrammaticalCategory) t).collect(Collectors.toSet());
+        lexicometricAnalysis.setLemmatizationByGrammaticalCategorySet(lemmatizationByGrammaticalCategorySet);
         return lexicometricAnalysis;
     }
 
@@ -247,7 +326,7 @@ public class UserLexicometricAnalysisSettings {
      */
     private void saveConfigurationInFile(LexicometricAnalysis lexicometricAnalysis, Path file) {
         try {
-            if (lexicometricAnalysis.getTokenizationSet().isEmpty() && lexicometricAnalysis.getLemmatizationSet().isEmpty()) {
+            if (lexicometricAnalysis.getTokenizationSet().isEmpty() && lexicometricAnalysis.getLemmatizationSet().isEmpty() && lexicometricAnalysis.getLemmatizationByGrammaticalCategorySet().isEmpty()) {
                 if (file.toFile().exists()) {
                     PathUtils.deleteFile(file.toFile());
                     return;
@@ -284,5 +363,14 @@ public class UserLexicometricAnalysisSettings {
     public void setRemoveLemmatizationProfil(String profilToRemove) {
         Path path = this.lemmatizationFileMap.get(profilToRemove);
         this.removeLemmatizationProfil = Optional.of(Tuple.of(profilToRemove, path));
+    }
+
+    /**
+     * Permet de définir le profil à supprimer de la lemmatization par catégorie grammatical
+     * @param profilToRemove profil à supprimer
+     */
+    public void setRemoveLemmatizationByGrammaticalCategoryProfil(String profilToRemove) {
+        Path path = this.lemmatizationByGrammaticalCategoryFileMap.get(profilToRemove);
+        this.removeLemmatizationByGrammaticalCategoryProfil = Optional.of(Tuple.of(profilToRemove, path));
     }
 }

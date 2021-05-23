@@ -2,7 +2,7 @@ package view.panel.model;
 
 import java.util.function.Consumer;
 
-import javax.swing.JProgressBar;
+import javax.swing.*;
 
 import view.interfaces.IProgressBarModel;
 
@@ -19,6 +19,7 @@ public class ProgressBarModel implements IProgressBarModel {
 	private final Consumer<Consumer<Integer>> updateProgressBarConsumer;
 	private final Consumer<Void> closeWindowConsumer;
 	private JProgressBar progressBar;
+	private JLabel labelProgress;
 	private final Integer maximumValue;
 
 	public ProgressBarModel(Consumer<Void> actionProgressBarConsumer,
@@ -31,8 +32,9 @@ public class ProgressBarModel implements IProgressBarModel {
 	}
 
 	@Override
-	public void launchTreatment(JProgressBar progressBar) {
+	public void launchTreatment(JProgressBar progressBar, JLabel labelProgress) {
 		this.progressBar = progressBar;
+		this.labelProgress = labelProgress;
 		if (null != actionProgressBarConsumer && null != updateProgressBarConsumer && null != progressBar) {
 			progressBar.setMinimum(0);
 			progressBar.setMaximum(this.maximumValue);
@@ -52,6 +54,14 @@ public class ProgressBarModel implements IProgressBarModel {
 	private Consumer<Integer> getUpdateProgressBarConsumer() {
 		return value -> {
 			progressBar.setValue(value);
+			labelProgress.setText(getPercentage(value));
 		};
+	}
+
+	private String getPercentage(int value) {
+		StringBuilder sb = new StringBuilder();
+		int realValue = value * 100 / this.progressBar.getMaximum();
+		sb.append(realValue).append(" %");
+		return sb.toString();
 	}
 }

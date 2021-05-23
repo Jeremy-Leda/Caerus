@@ -64,6 +64,12 @@ public class Main extends ExecuteServerJFrameAbstract {
 
 	private JMenuItem createAnalyze = new JMenuItem(
 			ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_OPEN_TEXT_FOLDER_TITLE)),
+			stopWordsList = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL1_TITLE)),
+			lemmatizationList = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL2_TITLE)),
+			lemmatizationByGrammaticalCategoryList = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL3_TITLE)),
 			saveConfiguration = new JMenuItem(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE)),
 			saveCustomExcel = new JMenuItem(
@@ -95,6 +101,8 @@ public class Main extends ExecuteServerJFrameAbstract {
 	private JMenu about = new JMenu(ConfigurationUtils.getInstance().getDisplayMessage(Constants.MENU_ABOUT));
 	private JMenu analysis = new JMenu(ConfigurationUtils.getInstance()
 					.getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_TITLE));
+	private JMenu manageList = new JMenu(
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_TITLE));
 	private JMenuBar menuBar = new JMenuBar();
 	private final JPanel panContent = new JPanel();
 	private final JPanel panAnalyze = new JPanel();
@@ -286,9 +294,11 @@ public class Main extends ExecuteServerJFrameAbstract {
 
 		});
 
-		importExcel.addActionListener(e -> {
-			new ImportExcel(getControler());
-		});
+		stopWordsList.addActionListener(e -> new ManageStopWords(getControler()));
+		lemmatizationList.addActionListener(e -> new ManageLemmatization(getControler()));
+		lemmatizationByGrammaticalCategoryList.addActionListener(e -> new ManageLemmatizationByGrammaticalCategory(getControler()));
+
+		importExcel.addActionListener(e -> new ImportExcel(getControler()));
 
 		configurationLoadLibrary.addActionListener(new ActionListener() {
 
@@ -388,6 +398,10 @@ public class Main extends ExecuteServerJFrameAbstract {
 		});
 
 		analysis.add(load_analysis);
+		manageList.add(stopWordsList);
+		manageList.add(lemmatizationList);
+		manageList.add(lemmatizationByGrammaticalCategoryList);
+		analysis.add(manageList);
 
 		menuBar.add(about);
 
@@ -568,6 +582,10 @@ public class Main extends ExecuteServerJFrameAbstract {
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.CONFIGURATION_LIBRARY_MENU_TITLE));
 		textLibrary.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.TEXT_LIBRARY_MENU_TITLE));
 		analysis.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_TITLE));
+		manageList.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_TITLE));
+		stopWordsList.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL1_TITLE));
+		lemmatizationList.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL2_TITLE));
+		lemmatizationByGrammaticalCategoryList.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL3_TITLE));
 		load_analysis.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL2_TITLE));
 		analysis_assistant.setText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL1_TITLE));
 		textLoadLibrary

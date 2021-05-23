@@ -1,16 +1,15 @@
 package view.panel;
 
 import io.vavr.Function2;
-import org.apache.commons.lang3.StringUtils;
 import model.analyze.constants.ActionEditTableEnum;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.xpath.operations.Bool;
 import view.beans.EditTableElement;
 import view.beans.EditTableElementBuilder;
 import view.interfaces.*;
 import view.panel.model.EditTableModel;
 import view.panel.model.SpecificEditTableModel;
 import view.utils.ColumnsAutoSize;
-import view.utils.ConfigurationUtils;
-import view.utils.Constants;
 import view.utils.RowNumberTable;
 import view.windows.UserQuestion;
 
@@ -36,6 +35,7 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
     private final JScrollPane scrollPane;
     private final ITableFilterPanel tableFilterPanel;
     private Optional<Consumer<T>> loadSelectedRowConsumerOptional = Optional.empty();
+    private Consumer<Void> consumerForRefrehStateOfAllAddButton;
 
     private IActionPanel actionPanel;
     private ISpecificEditTableModel<T, ITableFilterObject> specificEditTableModel;
@@ -94,10 +94,8 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
      */
     private void createAndAddButtonEditAndRemove() {
         this.actionPanel = new ActionPanel(2);
-        this.actionPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
-                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_ADD_BUTTON_LABEL),
-                1, ConfigurationUtils.getInstance()
-                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_REMOVE_BUTTON_LABEL)));
+        this.actionPanel.setEnabled(0, Boolean.FALSE);
+        this.actionPanel.setEnabled(1, Boolean.FALSE);
         this.actionPanel.addAction(1, e -> removeSelectedRow(this.table));
         this.panel.add(this.actionPanel.getJPanel());
     }
@@ -114,7 +112,7 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
     }
 
     @Override
-    public void fillTable(Collection<T> collection) {
+    public void fillTable(final Collection<T> collection) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         executorService.submit(() -> {
             this.specificEditTableModel.createSpecificRowList(collection);
@@ -128,6 +126,12 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
     }
 
     @Override
+    public void setLabelForAddAndRemoveButton(String addLabel, String removeLabel) {
+        this.actionPanel.setStaticLabel(StringUtils.EMPTY,
+                Map.of(0, addLabel, 1, removeLabel));
+    }
+
+    @Override
     public Set<T> getValues() {
         return this.specificEditTableModel.getModelValues();
     }
@@ -138,8 +142,35 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
     }
 
     @Override
+    public void setConsumerForRefreshStateOfAllAddButton(Consumer<Void> consumer) {
+        this.consumerForRefrehStateOfAllAddButton = consumer;
+    }
+
+    @Override
     public Optional<EditTableElement> getEditTableElement() {
         return this.specificEditTableModel.getEditTableElement();
+    }
+
+    @Override
+    public T getSelectedValue() {
+        if (haveSelectedValue()) {
+            return (T) this.table.getModel().getValueAt(this.table.getSelectedRow(), 0);
+        }
+        return null;
+    }
+
+    /**
+     * Permet de savoir si une valeur est sélectionné
+     * @return Vrai si la valeur est sélectionné
+     */
+    @Override
+    public Boolean haveSelectedValue() {
+        return this.table.getSelectedRow() > -1;
+    }
+
+    @Override
+    public void setEnabledAddButton(Boolean enabledAddButton) {
+        this.actionPanel.setEnabled(0, enabledAddButton);
     }
 
     /**
@@ -188,7 +219,8 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
      */
     private ListSelectionListener getDefaultListSelectionListener() {
         return e -> {
-            if (table.getSelectedRow() > -1) {
+            this.actionPanel.setEnabled(1, Boolean.FALSE);
+            if (haveSelectedValue()) {
                 Object valeur = table.getModel().getValueAt(table.getSelectedRow(), 1);
                 this.specificEditTableModel.setEditTableElement(Optional.of(new EditTableElementBuilder()
                     .actionEditTableEnum(ActionEditTableEnum.UPDATE)
@@ -197,6 +229,10 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
                     .build()));
                 if (loadSelectedRowConsumerOptional.isPresent()) {
                     loadSelectedRowConsumerOptional.get().accept((T) valeur);
+                }
+                this.actionPanel.setEnabled(1, Boolean.TRUE);
+                if (Optional.ofNullable(this.consumerForRefrehStateOfAllAddButton).isPresent()) {
+                    this.consumerForRefrehStateOfAllAddButton.accept(null);
                 }
             }
         };

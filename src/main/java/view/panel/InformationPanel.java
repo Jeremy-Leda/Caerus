@@ -11,6 +11,10 @@ import utils.RessourcesUtils;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IInformationPanel;
 
+import java.awt.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * 
  * Classe pour afficher un panel d'information
@@ -26,6 +30,7 @@ public class InformationPanel implements IInformationPanel {
 	private final JLabel textPanel;
 	private final JScrollPane contentWithScrollBar;
 	private final Boolean enableScrollPane;
+	private JLabel icon;
 	
 	/**
 	 * Permet de créer une fenêtre d'information
@@ -56,7 +61,7 @@ public class InformationPanel implements IInformationPanel {
 	private void createWindow() {
 		content.setBorder(
 				BorderFactory.createTitledBorder(this.title));
-		JLabel icon = new JLabel(new ImageIcon(RessourcesUtils.getInstance().getImage(this.typeImage)));
+		icon = new JLabel(new ImageIcon(RessourcesUtils.getInstance().getAnimatedImage(this.typeImage)));
 		content.add(icon);
 		content.add(textPanel);
 	}

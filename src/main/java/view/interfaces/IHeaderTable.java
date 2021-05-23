@@ -11,4 +11,10 @@ public interface IHeaderTable {
      */
     String getHeaderLabel();
 
+    /**
+     * Permet de se procurer le label du filtre
+     * @return le label du filtre
+     */
+    String getFilterLabel();
+
 }

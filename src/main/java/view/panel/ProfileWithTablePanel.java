@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -49,7 +50,7 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
         this.panel = new JPanel();
         this.tablePanel = new JPanel();
         this.comboBoxPanel = new ComboBoxPanel(StringUtils.EMPTY, ConfigurationUtils.getInstance()
-                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_LABEL));
+                .getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_LABEL));
         this.tableWithFilterAndEditPanelMap = new TreeMap<>(Comparator.naturalOrder());
         this.functionIdTableMap = new HashMap<>();
         this.actionPanel = new ActionPanel(3);
@@ -71,9 +72,9 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
         this.comboBoxPanel.addConsumerOnSelectChange(getConsumerOnProfileChange());
         this.panel.add(this.comboBoxPanel.getJPanel());
         this.actionPanel.setStaticLabel(StringUtils.EMPTY, Map.of(
-                0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL),
-                1, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_LABEL),
-                2, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_SAVE_BUTTON_LABEL)));
+                0, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_NEW_BUTTON_LABEL),
+                1, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_REMOVE_BUTTON_LABEL),
+                2, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_SAVE_BUTTON_LABEL)));
         this.actionPanel.setIconButton(0, PictureTypeEnum.SAVE);
         this.actionPanel.setIconButton(1, PictureTypeEnum.SAVE);
         this.actionPanel.setIconButton(2, PictureTypeEnum.SAVE);
@@ -86,6 +87,7 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
         createTables(profilWithTableCmd);
         fillProfileSet(profilWithTableCmd.getLexicometricConfiguration().getProfilesSet(), profilWithTableCmd.getDefaultProfile());
         addTableLink(profilWithTableCmd);
+        addConsumerForRefreshStateOfAddButtons();
     }
 
     /**
@@ -96,7 +98,8 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
         tableWithFilterAndEditPanelMap.clear();
         Set<IRootTable> rootTableSet = profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
         rootTableSet.stream().forEach(iRootTable ->
-                tableWithFilterAndEditPanelMap.put(iRootTable.displayOrder(), profilWithTableCmd.getTableWithFilterAndEditPanelFunction().apply(iRootTable, getConsumerForSaveData(profilWithTableCmd))));
+                tableWithFilterAndEditPanelMap.put(iRootTable.displayOrder(),
+                        profilWithTableCmd.getTableWithFilterAndEditPanelFunction().apply(iRootTable, getConsumerForSaveData(profilWithTableCmd))));
         this.tablePanel.removeAll();
         tableWithFilterAndEditPanelMap.values().forEach(v -> this.tablePanel.add(v.getJPanel()));
     }
@@ -106,16 +109,27 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
      * @param profile profile à utiliser
      */
     private void fillRootTable(String profile) {
-        Set<IRootTable> rootTableSet = this.profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
-        Integer id = rootTableSet.stream().filter(IRootTable::isRoot).findFirst().get().displayOrder();
-        ILexicometricConfiguration<String> lexicometricConfigurationString = this.profilWithTableCmd.getLexicometricConfiguration();
-        lexicometricConfigurationString.getFillTableConfigurationList().forEach(table -> {
-            Collection<?> newCollection = Collections.EMPTY_LIST;
-            if (table.getDest().equals(id)) {
-                newCollection = table.getBiFunction().apply(profile, null);
-            }
-            fillTable(table.getDest(), newCollection);
-        });
+        //FIXME comprendre pourquoi c'est appelé tous le temps (tous les profil au démarrage)
+        if (profile.equals(getSelectedProfil())) {
+            Set<IRootTable> rootTableSet = this.profilWithTableCmd.getLexicometricConfiguration().getHierarchicalTableSet();
+            Integer id = rootTableSet.stream().filter(IRootTable::isRoot).findFirst().get().displayOrder();
+            ILexicometricConfiguration<String> lexicometricConfigurationString = this.profilWithTableCmd.getLexicometricConfiguration();
+            lexicometricConfigurationString.getFillTableConfigurationList().forEach(table -> {
+                Collection<?> newCollection = Collections.EMPTY_LIST;
+                if (table.getDest().equals(id)) {
+                    newCollection = table.getBiFunction().apply(profile, null);
+                }
+                fillTable(table.getDest(), newCollection);
+            });
+        }
+    }
+
+    /**
+     * Permet de se procurer le profil courant
+     * @return le profil courant
+     */
+    private String getSelectedProfil() {
+        return this.comboBoxPanel.getLabelSelected();
     }
 
     /**
@@ -126,10 +140,26 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
         profilWithTableCmd.getLexicometricConfiguration().getFillTableConfigurationList().forEach(tableConf -> {
             FillTableConfiguration<String> tableConfiguration = (FillTableConfiguration<String>) tableConf;
             if (tableConfiguration.getSource().isPresent()) {
-                this.tableWithFilterAndEditPanelMap.get(tableConfiguration.getSource().get()).setConsumerForRowChanged(rowValue -> fillTable(tableConfiguration.getDest(), tableConfiguration.getBiFunction().apply(this.comboBoxPanel.getLabelSelected(), (String) rowValue)));
+                this.tableWithFilterAndEditPanelMap.get(tableConfiguration.getSource().get()).setConsumerForRowChanged(rowValue -> fillTable(tableConfiguration.getDest(), tableConfiguration.getBiFunction().apply(this.comboBoxPanel.getLabelSelected(), getSelectedValues(tableConfiguration.getSource().get()))));
                 this.fillTable(tableConfiguration.getDest(), Collections.emptyList());
             }
         });
+    }
+
+    /**
+     * Permet d'ajouter le consumer pour rafraichir l'état des boutons ajouter
+     */
+    private void addConsumerForRefreshStateOfAddButtons() {
+        this.tableWithFilterAndEditPanelMap.values().forEach(table -> table.setConsumerForRefreshStateOfAllAddButton(x -> refreshAddButtonOfAllTable()));
+    }
+
+    /**
+     * Permet de se procurer les valeurs sélectionné pour chaque tableau inférieur ou égale
+     * @param destListNum numéro de la liste source
+     * @return la liste des valeurs sélectionné
+     */
+    private LinkedList<String> getSelectedValues(Integer destListNum) {
+        return this.tableWithFilterAndEditPanelMap.entrySet().stream().filter(x -> x.getKey() <= destListNum).map(x -> (String) x.getValue().getSelectedValue()).collect(Collectors.toCollection(LinkedList::new));
     }
 
     /**
@@ -153,12 +183,24 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
     }
 
     /**
+     * Permet de modifier le label pour le bouton ajouter et supprimer
+     * @param id Identifiant de la table
+     * @param addLabel Label du bouton ajouter
+     * @param removeLabel Label du bouton supprimer
+     */
+    @Override
+    public void setLabelForAddAndRemoveButton(Integer id, String addLabel, String removeLabel) {
+        tableWithFilterAndEditPanelMap.get(id).setLabelForAddAndRemoveButton(addLabel, removeLabel);
+    }
+
+    /**
      * permet de définir le profile sélectionné
      * @param profile profile à sélectionner
      */
     private void setProfile(String profile) {
         this.comboBoxPanel.selectItem(profile);
         fillRootTable(profile);
+        refreshAddButtonOfAllTable();
     }
 
 
@@ -197,12 +239,12 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
      */
     private ActionListener getConsumerForNewListe() {
         return e -> {
-            YesNoQuestion yesNoQuestion = new YesNoQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL),
+            YesNoQuestion yesNoQuestion = new YesNoQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_NEW_BUTTON_LABEL),
                     null,
-                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE));
+                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE));
             int result = yesNoQuestion.getAnswer();
-            UserQuestion userQuestion = new UserQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE),
-                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL));
+            UserQuestion userQuestion = new UserQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE),
+                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_NEW_BUTTON_LABEL));
             String newProfileName = userQuestion.getAnswer();
             if (StringUtils.isNotBlank(newProfileName)) {
                 executeOnServer(() -> {
@@ -220,9 +262,9 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
      */
     private ActionListener getConsumerForRemoveListe() {
         return e -> {
-            YesNoQuestion yesNoQuestion = new YesNoQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_LABEL),
+            YesNoQuestion yesNoQuestion = new YesNoQuestion(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_REMOVE_BUTTON_LABEL),
                     null,
-                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_CONFIRMATION_MESSAGE));
+                    ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_EDIT_PROFILE_REMOVE_BUTTON_CONFIRMATION_MESSAGE));
             int result = yesNoQuestion.getAnswer();
             String profilToRemove = this.comboBoxPanel.getLabelSelected();
             executeOnServer(() -> {
@@ -276,7 +318,28 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
      * @return le consumer
      */
     private Consumer<String> getConsumerOnProfileChange() {
-        return e -> fillRootTable(this.comboBoxPanel.getLabelSelected());
+        return e -> {
+            fillRootTable(this.comboBoxPanel.getLabelSelected());
+            refreshAddButtonOfAllTable();
+        };
+    }
+
+    /**
+     * Permet de rafraichir l'état des boutons ajouter sur tous les tableaux
+     */
+    private void refreshAddButtonOfAllTable() {
+        this.tableWithFilterAndEditPanelMap.get(0).setEnabledAddButton(true);
+        if (this.tableWithFilterAndEditPanelMap.size() > 1) {
+            IntStream.range(1, this.tableWithFilterAndEditPanelMap.size())
+                    .boxed()
+                    .forEach(integer -> {
+                        Boolean haveSelectedValue = this.tableWithFilterAndEditPanelMap.get(integer - 1).haveSelectedValue();
+                        this.tableWithFilterAndEditPanelMap.get(integer).setEnabledAddButton(haveSelectedValue);
+                        if (!haveSelectedValue) {
+                            this.tableWithFilterAndEditPanelMap.get(integer).fillTable(Collections.emptyList());
+                        }
+                    });
+        }
     }
 
     @Override

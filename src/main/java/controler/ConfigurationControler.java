@@ -692,4 +692,10 @@ public class ConfigurationControler implements IConfigurationControler {
 		lexicometricConfigurationEnumFromViewEnum.getSaveInDiskConsumer().accept(profileToSave);
 	}
 
+	@Override
+	public void saveLexicometricAllProfilInDisk(LexicometricEditEnum lexicometricEditEnum) {
+		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
+		lexicometricConfigurationEnumFromViewEnum.getAllProfils().apply(null).forEach(p -> lexicometricConfigurationEnumFromViewEnum.getSaveInDiskConsumer().accept(p));
+	}
+
 }

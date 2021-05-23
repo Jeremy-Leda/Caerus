@@ -42,7 +42,7 @@ public class TextBoxPanel implements ITextBoxPanel {
 		}
 		for (int i = 0; i < nbTextbox; i++) {
 			JTextField jTextField = new JTextField();
-			jTextField.setColumns(50);
+			jTextField.setColumns(12);
 			textBoxMap.put(i, jTextField);
 			JLabel jLabel = new JLabel();
 			labelBoxMap.put(i, jLabel);

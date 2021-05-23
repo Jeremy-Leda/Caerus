@@ -355,12 +355,6 @@ public final class Constants {
 	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL1_TITLE="window.menu.level6.sublevel1.title";
 	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL2_TITLE="window.menu.level6.sublevel2.title";
 
-	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE2="window.start.analysis.information.message.etape2";
-	public static final String WINDOW_START_ANALYSIS_OPTION_TOKENIZATION="window.start.analysis.option.tokenization";
-	public static final String WINDOW_START_ANALYSIS_OPTION_LEMMATIZATION="window.start.analysis.option.lemmatization";
-	public static final String WINDOW_START_ANALYSIS_OPTION_FREQUENCY="window.start.analysis.option.frequency";
-	public static final String WINDOW_START_ANALYSIS_OPTION_PANEL_TITLE="window.start.analysis.option.panel.title";
-
 	public static final String EXCEL_HEADER_NUMBER="excel.header.number";
 
 	public static final String WINDOW_SAVE_EXCEL_OPTIONS_KEY_LABEL="window.save.excel.options.key.label";
@@ -412,29 +406,88 @@ public final class Constants {
 	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_SPECIFIC_CONFIGURATION="window.functional.error.invalid.specific.configuration";
 	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_FILE_EXCEL_SPECIFIC_CONFIGURATION="window.functional.error.invalid.file.excel.specific.configuration";
 	public static final String WINDOW_FUNCTIONAL_ERROR_INVALID_ANALYSIS_FOLDER="window.functional.error.invalid.analysis.folder";
-	public static final String WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE="window.start.analysis.token.panel.title";
-	public static final String WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL="window.start.analysis.edit.filter.label";
-	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN="window.start.analysis.information.message.token";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_LABEL="window.start.analysis.edit.profile.label";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_LABEL="window.start.analysis.edit.profile.new.button.label";
-	public static final String WINDOW_START_ANALYSIS_EDIT_FILTER_ADD_BUTTON_LABEL="window.start.analysis.edit.filter.add.button.label";
-	public static final String WINDOW_START_ANALYSIS_EDIT_FILTER_REMOVE_BUTTON_LABEL="window.start.analysis.edit.filter.remove.button.label";
-	public static final String WINDOW_START_ANALYSIS_TOKEN_TABLE_HEADER_LABEL="window.start.analysis.token.table.header.label";
-	public static final String WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE="window.start.analysis.token.add.information.message";
 
 	public static final String WINDOW_OPERATION_VALIDATE="window.operation.validate";
-	public static final String WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL="window.start.analysis.token.add.text.label";
 	public static final String WINDOW_INFORMATION_ANSWER_USER_PANEL_TITLE="window.information.answer.user.panel.title";
 
 	public static final String WINDOW_INFORMATION_QUESTION_USER_PANEL_TITLE="window.information.question.user.panel.title";
-	public static final String WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE="window.start.analysis.token.table.panel.title";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_LABEL="window.start.analysis.edit.profile.remove.button.label";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_SAVE_BUTTON_LABEL="window.start.analysis.edit.profile.save.button.label";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_REMOVE_BUTTON_CONFIRMATION_MESSAGE="window.start.analysis.edit.profile.remove.button.confirmation.message";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE="window.start.analysis.edit.profile.new.button.copy.or.new.message";
-	public static final String WINDOW_START_ANALYSIS_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE="window.start.analysis.edit.profile.new.button.new.name.message";
 
 	public static final String WINDOW_FUNCTIONAL_ERROR_VALUE_EXIST="window.functional.error.value.exist";
+
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_TITLE="window.menu.level6.sublevel3.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL1_TITLE="window.menu.level6.sublevel3.sublevel1.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL2_TITLE="window.menu.level6.sublevel3.sublevel2.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL3_TITLE="window.menu.level6.sublevel3.sublevel3.title";
+
+
+	public static final String WINDOW_EDIT_PROFILE_LABEL="window.edit.profile.label";
+	public static final String WINDOW_EDIT_PROFILE_NEW_BUTTON_LABEL="window.edit.profile.new.button.label";
+	public static final String WINDOW_EDIT_PROFILE_REMOVE_BUTTON_LABEL="window.edit.profile.remove.button.label";
+	public static final String WINDOW_EDIT_PROFILE_SAVE_BUTTON_LABEL="window.edit.profile.save.button.label";
+	public static final String WINDOW_EDIT_PROFILE_REMOVE_BUTTON_CONFIRMATION_MESSAGE="window.edit.profile.remove.button.confirmation.message";
+	public static final String WINDOW_EDIT_PROFILE_NEW_BUTTON_COPY_OR_NEW_MESSAGE="window.edit.profile.new.button.copy.or.new.message";
+	public static final String WINDOW_EDIT_PROFILE_NEW_BUTTON_NEW_NAME_MESSAGE="window.edit.profile.new.button.new.name.message";
+	public static final String WINDOW_EDIT_PROFILE_SAVE_ALL_PROFILES_AND_QUIT="window.edit.profile.save.all.profiles.and.quit";
+
+
+
+	public static final String WINDOW_MANAGE_STOPWORDS_PANEL_TITLE="window.manage.stopwords.panel.title";
+	public static final String WINDOW_MANAGE_STOPWORDS_INFORMATION_MESSAGE="window.manage.stopwords.information.message";
+	public static final String WINDOW_MANAGE_STOPWORDS_TABLE_HEADER_LABEL="window.manage.stopwords.table.header.label";
+	public static final String WINDOW_MANAGE_STOPWORDS_ADD_INFORMATION_MESSAGE="window.manage.stopwords.add.information.message";
+	public static final String WINDOW_MANAGE_STOPWORDS_ADD_TEXT_LABEL="window.manage.stopwords.add.text.label";
+	public static final String WINDOW_MANAGE_STOPWORDS_TABLE_PANEL_TITLE="window.manage.stopwords.table.panel.title";
+	public static final String WINDOW_MANAGE_STOPWORDS_ADD_BUTTON_LABEL="window.manage.stopwords.add.button.label";
+	public static final String WINDOW_MANAGE_STOPWORDS_REMOVE_BUTTON_LABEL="window.manage.stopwords.remove.button.label";
+	public static final String WINDOW_MANAGE_STOPWORDS_FILTER_LABEL="window.manage.stopwords.filter.label";
+	public static final String WINDOW_MANAGE_STOPWORDS_INFORMATION_LABEL="window.manage.stopwords.information.label";
+
+	public static final String WINDOW_MANAGE_RADICALS_PANEL_TITLE="window.manage.radicals.panel.title";
+	public static final String WINDOW_MANAGE_RADICALS_INFORMATION_MESSAGE="window.manage.radicals.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_TABLE_HEADER_LABEL="window.manage.radicals.table.header.label";
+	public static final String WINDOW_MANAGE_RADICALS_ADD_INFORMATION_MESSAGE="window.manage.radicals.add.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_ADD_TEXT_LABEL="window.manage.radicals.add.text.label";
+	public static final String WINDOW_MANAGE_RADICALS_TABLE_PANEL_TITLE="window.manage.radicals.table.panel.title";
+	public static final String WINDOW_MANAGE_RADICALS_VARIATION_ADD_INFORMATION_MESSAGE="window.manage.radicals.variation.add.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_VARIATION_ADD_TEXT_LABEL="window.manage.radicals.variation.add.text.label";
+	public static final String WINDOW_MANAGE_RADICALS_ADD_BUTTON_LABEL="window.manage.radicals.add.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_REMOVE_BUTTON_LABEL="window.manage.radicals.remove.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_VARIATION_ADD_BUTTON_LABEL="window.manage.radicals.variation.add.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_VARIATION_REMOVE_BUTTON_LABEL="window.manage.radicals.variation.remove.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_FILTER_LABEL="window.manage.radicals.filter.label";
+	public static final String WINDOW_MANAGE_RADICALS_VARIATION_FILTER_LABEL="window.manage.radicals.variation.filter.label";
+	public static final String WINDOW_MANAGE_RADICALS_INFORMATION_LABEL="window.manage.radicals.information.label";
+	public static final String WINDOW_MANAGE_RADICALS_VARIATION_TABLE_HEADER_LABEL="window.manage.radicals.variation.table.header.label";
+
+
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_PANEL_TITLE="window.manage.radicals.by.class.panel.title";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_INFORMATION_MESSAGE="window.manage.radicals.by.class.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_TABLE_HEADER_LABEL="window.manage.radicals.by.class.table.header.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_ADD_INFORMATION_MESSAGE="window.manage.radicals.by.class.add.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_ADD_TEXT_LABEL="window.manage.radicals.by.class.add.text.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_TABLE_PANEL_TITLE="window.manage.radicals.by.class.table.panel.title";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_VARIATION_ADD_INFORMATION_MESSAGE="window.manage.radicals.by.class.variation.add.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_VARIATION_ADD_TEXT_LABEL="window.manage.radicals.by.class.variation.add.text.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_CATEGORY_ADD_INFORMATION_MESSAGE="window.manage.radicals.by.class.category.add.information.message";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_CATEGORY_ADD_TEXT_LABEL="window.manage.radicals.by.class.category.add.text.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_ADD_BUTTON_LABEL="window.manage.radicals.by.class.add.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_REMOVE_BUTTON_LABEL="window.manage.radicals.by.class.remove.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_VARIATION_ADD_BUTTON_LABEL="window.manage.radicals.by.class.variation.add.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_VARIATION_REMOVE_BUTTON_LABEL="window.manage.radicals.by.class.variation.remove.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_CATEGORY_ADD_BUTTON_LABEL="window.manage.radicals.by.class.category.add.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_CATEGORY_REMOVE_BUTTON_LABEL="window.manage.radicals.by.class.category.remove.button.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_FILTER_LABEL="window.manage.radicals.by.class.filter.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_VARIATION_FILTER_LABEL="window.manage.radicals.by.class.variation.filter.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_CATEGORY_FILTER_LABEL="window.manage.radicals.by.class.category.filter.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_INFORMATION_LABEL="window.manage.radicals.by.class.information.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_VARIATION_TABLE_HEADER_LABEL="window.manage.radicals.by.class.variation.table.header.label";
+	public static final String WINDOW_MANAGE_RADICALS_BY_CLASS_CATEGORY_TABLE_HEADER_LABEL="window.manage.radicals.by.class.category.table.header.label";
+
+
+
+
+
+
 
 
 

@@ -83,7 +83,7 @@ public class LemmatizationConfiguration implements ILexicometricConfiguration<St
                     if (lexicometricData.isEmpty()) {
                         return new HashSet<>();
                     }
-                    return lexicometricData.get().getData().get(base);
+                    return lexicometricData.get().getData().get(base.get(0));
                 })
                 .build();
     }

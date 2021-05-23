@@ -38,8 +38,7 @@ public class ProgressBarView extends ModalJFrameAbstract {
 				r -> closeFrame(), maximumValue);
 		this.progressBarPanel = new ProgressBarPanel(this.progressBarModel, label);
 		this.content = new JPanel();
-		createWindow(frame -> frame.setUndecorated(false), frame -> this.progressBarPanel.launchTreatment());
-//		setUndecorated(true);
+		createWindow(frame -> frame.setUndecorated(true), frame -> this.progressBarPanel.launchTreatment());
 	}
 
 	@Override

@@ -54,6 +54,7 @@ public class Dispatcher {
 	private static final String FOLDER_CONFIGURATIONS = "configurations";
 	private static final String FOLDER_ANALYZE_CONFIGURATIONS = "configurations_analysis";
 	private static final String ANALYZE_CONFIGURATION_DEFAULT_NAME = "LexicometricAnalyze";
+	private static final String ANALYZE_LEMMATIZATION_BY_GRAMMATICAL_CATEGORY_DEFAULT_NAME = "LemmatizationByGrammaticalCategoryAnalyze";
 	private static final String CONFIGURATION_CLASSIC_NAME = "Configuración básica";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
@@ -656,13 +657,9 @@ public class Dispatcher {
 	 */
 	private void createDefaultConfigurationIfFolderIsEmpty()
 			throws JsonParseException, JsonMappingException, IOException {
-		String rootPath = PathUtils.getCaerusFolder();
-		File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_CONFIGURATIONS);
-		if (configurationsPath.isDirectory() && configurationsPath.list().length == 0) {
-			Configuration basicalConfiguration = RessourcesUtils.getInstance().getBasicalConfiguration();
-			JSonFactoryUtils.createJsonInFile(basicalConfiguration,
-					new File(configurationsPath, CONFIGURATION_CLASSIC_NAME + ".json"));
-		}
+		File configurationsPath = checkAndGetDefaultPath(FOLDER_CONFIGURATIONS);
+		createDefaultFile(RessourcesUtils.getInstance().getBasicalConfiguration(),
+				configurationsPath, CONFIGURATION_CLASSIC_NAME);
 	}
 
 	/**
@@ -675,14 +672,51 @@ public class Dispatcher {
 	 */
 	private void createDefaultAnalyzeConfigurationIfFolderIsEmpty()
 			throws JsonParseException, JsonMappingException, IOException {
-		String rootPath = PathUtils.getCaerusFolder();
-		File configurationsPath = PathUtils.addFolderAndCreate(rootPath, FOLDER_ANALYZE_CONFIGURATIONS);
-		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS, configurationsPath);
-		if (configurationsPath.isDirectory() && configurationsPath.list().length == 0) {
-			LexicometricAnalysis analyzeConfiguration = RessourcesUtils.getInstance().getAnalyzeConfiguration();
-			JSonFactoryUtils.createJsonInFile(analyzeConfiguration,
-					new File(configurationsPath, ANALYZE_CONFIGURATION_DEFAULT_NAME + ".json"));
+		File configurationsPath = checkAndGetDefaultPath(FOLDER_ANALYZE_CONFIGURATIONS);
+		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS,
+				configurationsPath);
+		createDefaultFile(RessourcesUtils.getInstance().getAnalyzeConfiguration(), configurationsPath,
+				ANALYZE_CONFIGURATION_DEFAULT_NAME);
+		createDefaultFile(RessourcesUtils.getInstance().getLemmatizationByGrammaticalCategoryConfiguration(),
+				configurationsPath, ANALYZE_LEMMATIZATION_BY_GRAMMATICAL_CATEGORY_DEFAULT_NAME);
+	}
+
+	/**
+	 * Permet de créer un fichier par défaut avant le chargement de la configuration (si celui ci n'existe pas)
+	 * @param object Objet à créer
+	 * @param configurationsPath chemin de la configuration
+	 * @param fileName nom du fichier
+	 * @param <T> Type d'objet
+	 */
+	private <T> void createDefaultFile(T object, File configurationsPath, String fileName) {
+		File defaultFile = new File(configurationsPath, fileName + ".json");
+		if (!defaultFile.exists()) {
+			try {
+				JSonFactoryUtils.createJsonInFile(object, defaultFile);
+			} catch (IOException e) {
+				throw new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.objectInError(defaultFile)
+					.build());
+			}
 		}
+	}
+
+	/**
+	 * Permet de vérifier le répertoire par défaut et d'obtenir le chemin
+	 * @param folder répertoire par défaut à vérifier
+	 * @return le repertoire par défaut validé
+	 */
+	private File checkAndGetDefaultPath(String folder) {
+		String rootPath = PathUtils.getCaerusFolder();
+		File configurationsPath = PathUtils.addFolderAndCreate(rootPath, folder);
+		if (!configurationsPath.isDirectory()) {
+			throw new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.objectInError(configurationsPath)
+					.build());
+		}
+		return configurationsPath;
 	}
 
 	/**
@@ -790,6 +824,7 @@ public class Dispatcher {
 					.errorCode(ErrorCode.INVALID_FILE_EXCEL)
 					.objectInError(excelImportConfigurationCmd)
 					.build());
+			return informationExceptionSet;
 		}
 		progressBean.setCurrentElementForCurrentIterate(1);
 

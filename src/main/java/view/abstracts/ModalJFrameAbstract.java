@@ -20,6 +20,7 @@ import utils.RessourcesUtils;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IModalFrameRepack;
+import view.utils.ConfigurationUtils;
 
 /**
  * 
@@ -225,6 +226,15 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 	 */
 	public void addOptionalFrame(JComponent component) {
 		this.optionalComponents.add(component);
+	}
+
+	/**
+	 * Permet de se procurer le message
+	 * @param key Clé du message
+	 * @return le message
+	 */
+	public String getMessage(String key) {
+		return ConfigurationUtils.getInstance().getDisplayMessage(key);
 	}
 
 

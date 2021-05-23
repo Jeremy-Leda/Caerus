@@ -8,7 +8,7 @@ package view.beans;
  *
  */
 public enum PictureTypeEnum {
-	INFORMATION("icons/icons_information.png"),
+	INFORMATION("icons/icons_information.gif"),
 	TEXT("icons/icons_text.png"),
 	FILTER("icons/icons_filter.png"),
 	SAVE("icons/icons_save.png"),
@@ -20,7 +20,8 @@ public enum PictureTypeEnum {
 	LOGO_128_128("icons/icons_logo_128_128.png"),
 	LOGO_256_256("icons/icons_logo_256_256.png"),
 	QUESTION("icons/icons_question.png"),
-	WARNING("icons/icons_warning.png");
+	WARNING("icons/icons_warning.png"),
+	PROGRESS("icons/icons_progress.gif");
 
 	/**
 	 * Constructeur pour l'image

@@ -70,4 +70,12 @@ public interface IProfileWithTable extends IRefreshPanel, IAccessPanel {
      */
     void setInterfaceForTableAndAddButton(Integer id, String informationMessage, String label);
 
+    /**
+     * Permet de modifier le label pour le bouton ajouter et supprimer
+     * @param id Identifiant de la table
+     * @param addLabel Label du bouton ajouter
+     * @param removeLabel Label du bouton supprimer
+     */
+    void setLabelForAddAndRemoveButton(Integer id, String addLabel, String removeLabel);
+
 }

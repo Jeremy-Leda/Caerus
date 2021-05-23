@@ -4,6 +4,7 @@ import model.PojoBuilder;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
@@ -25,7 +26,7 @@ public class FillTableConfiguration<T> {
     private Integer dest;
 
     @NotNull
-    private BiFunction<String, T, Set<T>> biFunction;
+    private BiFunction<String, LinkedList<T>, Set<T>> biFunction;
 
     /**
      * Permet de se procurer la source si existante
@@ -63,7 +64,7 @@ public class FillTableConfiguration<T> {
      * Permet de se procurer la fonction de remplissage
      * @return la fonction de remplissage
      */
-    public BiFunction<String, T, Set<T>> getBiFunction() {
+    public BiFunction<String, LinkedList<T>, Set<T>> getBiFunction() {
         return biFunction;
     }
 
@@ -71,7 +72,7 @@ public class FillTableConfiguration<T> {
      * Permet de définir la fonction de remplissage
      * @param biFunction  la fonction de remplissage
      */
-    public void setBiFunction(BiFunction<String, T, Set<T>> biFunction) {
+    public void setBiFunction(BiFunction<String, LinkedList<T>, Set<T>> biFunction) {
         this.biFunction = biFunction;
     }
 }

@@ -59,7 +59,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
                 }
             }, getProgressConsumer(100), 100, ConfigurationUtils.getInstance().getDisplayMessage(ConstantLabelProgress));
             getControler().resetProgress();
-        });
+        }).onFailure(ServerException.class, this::logAndCreateErrorInterface);
     }
 
     public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable) {

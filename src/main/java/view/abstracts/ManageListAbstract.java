@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 public abstract class ManageListAbstract extends ModalJFrameAbstract {
 
     public ManageListAbstract(String title, IConfigurationControler configurationControler) {
-        super(title, configurationControler);
+        super(title, configurationControler, false);
     }
 
     /**

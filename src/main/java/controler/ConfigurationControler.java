@@ -671,12 +671,11 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public void addConfigurationLexicometricProfile(String newProfileName, LexicometricEditEnum lexicometricEditEnum, Boolean isCopy) {
+	public void addConfigurationLexicometricProfile(String olProfile, String newProfileName, LexicometricEditEnum lexicometricEditEnum, Boolean isCopy) {
 		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
 		lexicometricConfigurationEnumFromViewEnum.getAddProfilConsumer().accept(newProfileName);
 		if (isCopy) {
-			String lexicometricDefaultProfile = getLexicometricDefaultProfile();
-			lexicometricConfigurationEnumFromViewEnum.getCopyConsumer().accept(lexicometricDefaultProfile, newProfileName);
+			lexicometricConfigurationEnumFromViewEnum.getCopyConsumer().accept(olProfile, newProfileName);
 		}
 	}
 

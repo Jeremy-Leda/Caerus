@@ -618,11 +618,12 @@ public interface IConfigurationControler {
 
 	/**
 	 * Permet de créer un nouveau profil pour une configuration lexicométrique
+	 * @param oldProfile ancien profil
 	 * @param newProfileName nouveau nom du profil
 	 * @param lexicometricEditEnum type de configuration lexicométrique
 	 * @param isCopy Vrai si l'on souhaite dupliquer la liste du profil existant dans la nouvelle liste
 	 */
-	void addConfigurationLexicometricProfile(String newProfileName, LexicometricEditEnum lexicometricEditEnum, Boolean isCopy);
+	void addConfigurationLexicometricProfile(String oldProfile, String newProfileName, LexicometricEditEnum lexicometricEditEnum, Boolean isCopy);
 
 	/**
 	 * Permet de supprimer un profil pour une configuration lexicométrique

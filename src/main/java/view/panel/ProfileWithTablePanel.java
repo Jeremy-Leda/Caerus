@@ -248,7 +248,7 @@ public class ProfileWithTablePanel extends ExecuteServerJFrameAbstract implement
             String newProfileName = userQuestion.getAnswer();
             if (StringUtils.isNotBlank(newProfileName)) {
                 executeOnServer(() -> {
-                    this.controler.addConfigurationLexicometricProfile(newProfileName, this.profilWithTableCmd.getLexicometricEditEnum(), result == 0);
+                    this.controler.addConfigurationLexicometricProfile(this.comboBoxPanel.getLabelSelected(), newProfileName, this.profilWithTableCmd.getLexicometricEditEnum(), result == 0);
                     fillProfileSet(profilWithTableCmd.getLexicometricConfiguration().getProfilesSet(), newProfileName);
                     getControler().saveLexicometricProfilInDisk(this.profilWithTableCmd.getLexicometricEditEnum(), newProfileName);
                 }, true);

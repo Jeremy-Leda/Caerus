@@ -231,9 +231,9 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
                     loadSelectedRowConsumerOptional.get().accept((T) valeur);
                 }
                 this.actionPanel.setEnabled(1, Boolean.TRUE);
-                if (Optional.ofNullable(this.consumerForRefrehStateOfAllAddButton).isPresent()) {
-                    this.consumerForRefrehStateOfAllAddButton.accept(null);
-                }
+            }
+            if (Optional.ofNullable(this.consumerForRefrehStateOfAllAddButton).isPresent()) {
+                this.consumerForRefrehStateOfAllAddButton.accept(null);
             }
         };
     }

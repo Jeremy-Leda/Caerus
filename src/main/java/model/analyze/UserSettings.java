@@ -527,6 +527,13 @@ public class UserSettings {
 	}
 
 	/**
+	 * Permet de se procurer la totalité des champs sauf les meta
+	 */
+	public Map<String, String> getAllListFieldWithoutMeta() {
+		return getListField(false, true, true, true);
+	}
+
+	/**
 	 * Permet de se procurer la liste des champs souhaité
 	 * 
 	 * @param isMeta     méta

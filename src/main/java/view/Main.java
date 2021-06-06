@@ -389,13 +389,26 @@ public class Main extends ExecuteServerJFrameAbstract {
 
 		menuBar.add(analysis);
 		analysis.add(analysis_assistant);
-		analysis_assistant.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				AnalysisAssistant analysisAssistant = new AnalysisAssistant(
-						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
-			}
+
+		analysis_assistant.addActionListener(e -> {
+			super.executeOnServerWithProgressView(() -> getControler().loadTexts(), false,
+					Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL, Boolean.FALSE);
+			AnalysisAssistant analysisAssistant = new AnalysisAssistant(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
+			analysisAssistant.addActionOnClose((v) -> setEnabled(true));
+			setEnabled(false);
 		});
+//		analysis_assistant.addActionListener(e -> super.executeOnServerWithProgressView(() -> {
+//			getControler().loadTexts();
+//			new AnalysisAssistant(
+//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
+//		}, false, Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL, Boolean.FALSE));
+
+//		analysis_assistant.addActionListener(e -> {
+//
+//			AnalysisAssistant analysisAssistant = new AnalysisAssistant(
+//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
+//		});
 
 		analysis.add(load_analysis);
 		manageList.add(stopWordsList);

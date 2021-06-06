@@ -188,6 +188,11 @@ public class WizardPanel implements IWizardPanel {
 		}
 	}
 
+	@Override
+	public void refresh() {
+		displayStep(currentStep);
+	}
+
 	/**
 	 * Permet de rafraichir le nb d'étape
 	 */

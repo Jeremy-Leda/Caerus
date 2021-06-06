@@ -485,6 +485,29 @@ public final class Constants {
 
 
 
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE2="window.start.analysis.information.message.etape2";
+	public static final String WINDOW_START_ANALYSIS_TYPE_PANEL_TITLE="window.start.analysis.type.panel.title";
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE3="window.start.analysis.information.message.etape3";
+	public static final String WINDOW_START_ANALYSIS_FIELD_MATERIAL_PANEL_TITLE="window.start.analysis.field.material.panel.title";
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE4="window.start.analysis.information.message.etape4";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_ANALYSE_LABEL="window.start.analysis.choose.analyse.label";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_ANALYSE_PANEL_TITLE="window.start.analysis.choose.analyse.panel.title";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_ANALYSE_OPTION_PANEL_TITLE="window.start.analysis.choose.analyse.option.panel.title";
+	public static final String WINDOW_START_ANALYSIS_START_BUTTON_LABEL="window.start.analysis.start.button.label";
+	public static final String WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL="window.start.analysis.consult.results.button.label";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_NUMBER_LABEL="window.start.analysis.token.number.label";
+	public static final String WINDOW_START_ANALYSIS_LEMME_TYPE_LABEL="window.start.analysis.lemme.type.label";
+	public static final String WINDOW_START_ANALYSIS_TOKEN_RATIO_LABEL="window.start.analysis.token.ratio.label";
+	public static final String WINDOW_START_ANALYSIS_FREQUENCY_LABEL="window.start.analysis.frequency.label";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TREATMENT_OPTIONAL_LIST_PANEL_TITLE="window.start.analysis.choose.type.treatment.optional.list.panel.title";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_PANEL_TITLE="window.start.analysis.choose.profile.treatment.optional.list.panel.title";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.treatment.optional.list.label";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.profile.treatment.optional.list.label";
+
+
+
+
+
 
 
 

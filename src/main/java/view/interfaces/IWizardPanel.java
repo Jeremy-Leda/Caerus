@@ -46,4 +46,9 @@ public interface IWizardPanel extends IAccessPanel {
 	 */
 	void setStateOfStep(Long numStep, Boolean enabled);
 
+	/**
+	 * Permet de rafraichir l'affichage
+	 */
+	void refresh();
+
 }

@@ -132,6 +132,14 @@ public interface IConfigurationControler {
 	 * @return la liste des champs communs
 	 */
 	Map<String, String> getConfigurationFieldCommonFile();
+
+	/**
+	 * Permet de se procurer la configuration courante avec le champ et le label
+	 * associé sans les meta
+	 *
+	 * @return la map
+	 */
+	Map<String, String> getFieldConfigurationNameLabelWithoutMetaMap();
 	
 	/**
 	 * Permet de se procurer le nom du corpus en cours d'édition

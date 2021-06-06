@@ -355,6 +355,12 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
+	public Map<String, String> getFieldConfigurationNameLabelWithoutMetaMap() {
+		logger.debug("CALL getFieldConfigurationNameLabelWithoutMetaMap");
+		return UserSettings.getInstance().getAllListFieldWithoutMeta();
+	}
+
+	@Override
 	public List<String> getFieldListToProcess(String labelSpecificConfiguration) {
 		logger.debug(String.format("CALL getFieldListToProcess : label %s", labelSpecificConfiguration));
 		return this.dispatcher.getFieldListToProcess(labelSpecificConfiguration);

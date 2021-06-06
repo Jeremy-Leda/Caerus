@@ -87,7 +87,7 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 			actionBeforeCreated.accept(this.frame);
 		}
 		init();
-		repack();
+		repack(true);
 		if (null != actionAfterCreated) {
 			actionAfterCreated.accept(this.frame);
 		}

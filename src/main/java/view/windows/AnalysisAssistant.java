@@ -1,14 +1,9 @@
 package view.windows;
 
 import controler.IConfigurationControler;
-import io.vavr.Function2;
-import io.vavr.Function3;
-import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.*;
-import view.cmd.ProfilWithTableCmd;
-import view.cmd.ProfilWithTableCmdBuilder;
 import view.interfaces.*;
 import view.panel.*;
 import view.utils.ConfigurationUtils;
@@ -16,52 +11,56 @@ import view.utils.Constants;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class AnalysisAssistant extends ModalJFrameAbstract {
 
     // WIZARD
-    private final IWizardPanel wizardPanel;
+    private final IWizardPanel wizardPanel= new WizardPanel(ConfigurationUtils.getInstance()
+            .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));;
     private final ICheckBoxPanel checkBoxPanel;
     private JPanel content = new JPanel();
-    private final Map<Integer, Long> checkBoxIdStepMap = new HashMap<>();
+    private final IManageTextDisplayPanel displayTextsList;
+    private final IActionPanel filterTextActionPanel;
+    private ManageTextFilter manageTextFilter;
+    private IChooseLexicometricAnalyzePanel chooseLexicometricAnalyzePanel = new ChooseLexicometricAnalyzePanel(wizardPanel);
+    private IActionPanel chooseAnalyzeActionPanel;
+    private final ICheckBoxPanel checkBoxFieldsPanel;
+    private final Map<String, Integer> fieldNumberCheckBoxMap = new HashMap<>();
+
 
     public AnalysisAssistant(String title, IConfigurationControler configurationControler) {
-        super(title, configurationControler);
-        this.wizardPanel = new WizardPanel(ConfigurationUtils.getInstance()
-                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));
+        super(title, configurationControler, false);
         this.wizardPanel.addConsumerOnChangeStep(changeConsumerForWizard());
-        this.checkBoxPanel = new CheckBoxPanel(3, true);
-
-        fillCheckBoxIdStepMap();
-//        createCheckBox();
-        createStep_0();
-//        createStep_1();
-//        createStepTokenization();
-//        createStepLemmatization();
-//        createStepLemmatizationByGrammaticalCategory();
-//        createStepFrequency();
-        disableStepOnStart();
+        this.checkBoxPanel = new CheckBoxPanel(1, true);
+        this.displayTextsList = new DisplayTextsFilteredWithPagingPanel(configurationControler);
+        this.filterTextActionPanel = new ActionPanel(1);
+        this.checkBoxFieldsPanel = new CheckBoxPanel(getControler().getFieldConfigurationNameLabelWithoutMetaMap().size(), true);
+//        this.chooseAnalyzeComboBox = new ComboBoxPanel("Analyse Lexicométrique", "Choix de l'analyse");
+//        this.chooseAnalyzeComboBox.addAndSelectItem("Nombre de token");
+//        this.chooseAnalyzeComboBox.addAndSelectItem("Lemmatisation et numéro type");
+//        this.chooseAnalyzeComboBox.addAndSelectItem("Type token ratio");
+//        this.chooseAnalyzeComboBox.addAndSelectItem("Fréquence");
+//        this.chooseAnalyzeActionPanel = new ActionPanel(2);
+//        this.chooseAnalyzeActionPanel.setStaticLabel("Action", Map.of(0, "Lancer l'analyse", 1, "Consulter les résultats"));
+        super.addActionOnClose(closeAutomaticallyOtherChildrenWindow());
         createWindow();
-    }
-
-    /**
-     * Permet de remplir la map permettant de connecter les étapes avec les boutons radio
-     */
-    private void fillCheckBoxIdStepMap() {
-        this.checkBoxIdStepMap.put(0, 2L);
-        this.checkBoxIdStepMap.put(1, 3L);
-        this.checkBoxIdStepMap.put(2, 4L);
     }
 
     @Override
     public void initComponents() {
+        refreshActionTextFilterPanel();
+        refreshLabelCheckBoxFields();
+        createChooseAnalyzeAction();
+        createStep_0();
+        createStep_1();
+        createStep_2();
+        createStep_3();
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         content.add(wizardPanel.getJPanel());
+
     }
 
     @Override
@@ -88,17 +87,69 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.wizardPanel.addStep(Arrays.asList(informationStep));
     }
 
+    /**
+     * Permet de créer l'étape 1 de l'assistant
+     * Choix des textes à analyser
+     */
+    private void createStep_1() {
+        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE2),
+                false, true);
+        this.wizardPanel.addStep(Arrays.asList(informationStep, displayTextsList, filterTextActionPanel));
+    }
+
+    /**
+     * Permet de créer l'étape 2 de l'assistant
+     * Choix des champs à analyser
+     */
+    private void createStep_2() {
+        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE3),
+                false, true);
+        this.wizardPanel.addStep(Arrays.asList(informationStep, checkBoxFieldsPanel));
+    }
+
+    /**
+     * Permet de créer l'étape 3 de l'assistant
+     * Choix de l'analyse à effectuer
+     */
+    private void createStep_3() {
+        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
+                ConfigurationUtils.getInstance()
+                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE4),
+                false, true);
+        this.wizardPanel.addStep(Arrays.asList(informationStep, chooseLexicometricAnalyzePanel, chooseAnalyzeActionPanel));
+    }
+
+    /**
+     * Permet de créer la zone d'action du choix de l'analyse
+     */
+    private void createChooseAnalyzeAction() {
+        this.chooseAnalyzeActionPanel = new ActionPanel(2);
+        this.chooseAnalyzeActionPanel.setStaticLabel(getMessage(Constants.WINDOW_INFORMATION_ACTION_PANEL_LABEL),
+                Map.of(0, getMessage(Constants.WINDOW_START_ANALYSIS_START_BUTTON_LABEL),
+                        1, getMessage(Constants.WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL)));
+    }
+
 //    /**
-//     * Permet de créer l'étape 1 de l'assistant
+//     * Permet de créer l'étape 2 de l'assistant
 //     */
-//    private void createStep_1() {
+//    private void createStep_2() {
 //        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
 //                ConfigurationUtils.getInstance()
 //                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
 //                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE2),
-//                true, true);
-//        this.wizardPanel.addStep(Arrays.asList(informationStep, this.checkBoxPanel));
+//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE3),
+//                false, true);
+//        this.wizardPanel.addStep(Arrays.asList(informationStep, displayTextsList, filterTextActionPanel));
 //    }
 //
 //    /**
@@ -243,42 +294,52 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
 //        this.wizardPanel.addStep(Arrays.asList(informationStep, actionPanel));
 //    }
 
+    /**
+     * Permet de rafraichir l'affichage pour le bouton de filtre des textes
+     * Etape 2
+     */
+    private void refreshActionTextFilterPanel() {
+        Map<Integer, String> messageButtonMap = new HashMap<Integer, String>();
+        messageButtonMap.put(0,
+                ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MANAGE_TEXTS_FILTERS_BUTTON_LABEL));
+        this.filterTextActionPanel.setStaticLabel(StringUtils.EMPTY, messageButtonMap);
+        this.filterTextActionPanel.addAction(0, e -> {
+            manageTextFilter = new ManageTextFilter(getControler(), v -> {
+                displayTextsList.refresh();
+                repack();
+            });
+        });
+    }
+
 //    /**
 //     * Permet de créer les radio boutons
 //     */
 //    private void createCheckBox() {
 //        Map<Integer, String> mapCheckBox = new HashMap<>();
 //        mapCheckBox.put(0, ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_OPTION_TOKENIZATION));
-//        mapCheckBox.put(1, ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_OPTION_LEMMATIZATION));
-//        mapCheckBox.put(2, ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_OPTION_FREQUENCY));
+//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TYPE_OPTION_TOKEN));
 //        this.checkBoxPanel.setStaticLabel(ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_OPTION_PANEL_TITLE), mapCheckBox);
-//        this.checkBoxPanel.addConsumerOnChange(0, e -> updateStateOfStep(0));
-//        this.checkBoxPanel.addConsumerOnChange(1, e -> updateStateOfStep(1));
-//        this.checkBoxPanel.addConsumerOnChange(2, e -> updateStateOfStep(2));
+//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TYPE_PANEL_TITLE), mapCheckBox);
 //    }
 
-    /**
-     * Permet de mettre à jour l'état d'une étape en fonction d'un radio bouton
-     * @param idButton identifiant du radio bouton
-     */
-    private void updateStateOfStep(Integer idButton) {
-        Long idStep = this.checkBoxIdStepMap.get(idButton);
-        Boolean state = this.checkBoxPanel.getCheckBoxIsChecked(idButton);
-        this.wizardPanel.setStateOfStep(idStep, state);
-    }
-
-    /**
-     * Permet de désactiver les étapes non coché par défaut
-     */
-    private void disableStepOnStart() {
-        updateStateOfStep(0);
-        updateStateOfStep(1);
-        updateStateOfStep(2);
-    }
+//    /**
+//     * Permet de mettre à jour l'état d'une étape en fonction d'un radio bouton
+//     * @param idButton identifiant du radio bouton
+//     */
+//    private void updateStateOfStep(Integer idButton) {
+//        Long idStep = this.checkBoxIdStepMap.get(idButton);
+//        Boolean state = this.checkBoxPanel.getCheckBoxIsChecked(idButton);
+//        this.wizardPanel.setStateOfStep(idStep, state);
+//    }
+//
+//    /**
+//     * Permet de désactiver les étapes non coché par défaut
+//     */
+//    private void disableStepOnStart() {
+//        updateStateOfStep(0);
+//        updateStateOfStep(1);
+//        updateStateOfStep(2);
+//    }
 
     /**
      * Consumer pour le changement de page de l'assistant
@@ -287,8 +348,36 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
      */
     private Consumer<?> changeConsumerForWizard() {
         return v -> {
-            repack();
+            repack(true);
         };
+    }
+
+    /**
+     * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+     *
+     * @return
+     */
+    private Consumer<Void> closeAutomaticallyOtherChildrenWindow() {
+        return (v) -> {
+            if (null != manageTextFilter) {
+                manageTextFilter.closeFrame();
+            }
+            this.displayTextsList.close();
+        };
+    }
+
+    /**
+     * Met à jour le libellé des check box
+     */
+    private void refreshLabelCheckBoxFields() {
+        Integer current = 0;
+        Map<Integer, String> labels = new HashMap<>();
+        for (Map.Entry<String, String> entry : getControler().getFieldConfigurationNameLabelWithoutMetaMap().entrySet()) {
+            labels.put(current, entry.getValue());
+            this.fieldNumberCheckBoxMap.put(entry.getKey(), current);
+            current++;
+        }
+        this.checkBoxFieldsPanel.setStaticLabel(getMessage(Constants.WINDOW_START_ANALYSIS_FIELD_MATERIAL_PANEL_TITLE), labels);
     }
 
 }

@@ -378,7 +378,15 @@ public interface IConfigurationModel {
 	 * @return la map
 	 */
 	Map<String, String> getFieldConfigurationNameLabelMap();
-	
+
+	/**
+	 * Permet de se procurer la configuration courante avec le champ et le label
+	 * associé sans les meta
+	 *
+	 * @return la map
+	 */
+	Map<String, String> getFieldConfigurationNameLabelWithoutMetaMap();
+
 	/**
 	 * Permet de se procurer la liste des champs à process
 	 * 

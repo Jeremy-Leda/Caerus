@@ -115,6 +115,11 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
+	public Map<String, String> getFieldConfigurationNameLabelWithoutMetaMap() {
+		return this.configurationModel.getFieldConfigurationNameLabelWithoutMetaMap();
+	}
+
+	@Override
 	public String getEditingCorpusName() {
 		return this.configurationModel.getEditingCorpusName();
 	}

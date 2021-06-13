@@ -34,16 +34,16 @@ public enum LexicometricConfigurationEnum {
     TOKENIZATION(LexicometricConfigurationEnum::editTokenization, LexicometricEditEnum.TOKENIZATION,
             iLexicometricHierarchical -> new TokenizationHierarchicalService((ILexicometricHierarchical<TokenizationHierarchicalEditEnum>) iLexicometricHierarchical),
             LexicometricConfigurationEnum::getTokenizationConfiguration, getTokenizationCopyConsumer(),
-            getAddProfilTokenizationConsumer(), getRemoveProfilTokenizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveTokenizationConfigurationInFile(x), x -> getTokenizationProfils()),
+            getAddProfilTokenizationConsumer(), getRemoveProfilTokenizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveTokenizationConfigurationInFile(x), x -> getTokenizationProfils(), false),
     LEMMATIZATION(LexicometricConfigurationEnum::editLemmatization, LexicometricEditEnum.LEMMATIZATION,
             iLexicometricHierarchical -> new LemmatizationHierarchicalService((ILexicometricHierarchical<LemmatizationHierarchicalEditEnum>) iLexicometricHierarchical),
             LexicometricConfigurationEnum::getLemmatisationConfiguration, getLemmatisationCopyConsumer(),
-            getAddProfilLemmatizationConsumer(), getRemoveProfilLemmatizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationConfigurationInFile(x), x -> getLemmatizationProfils()),
+            getAddProfilLemmatizationConsumer(), getRemoveProfilLemmatizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationConfigurationInFile(x), x -> getLemmatizationProfils(), true),
     LEMMATIZATION_BY_GRAMMATICAL_CATEGORY(LexicometricConfigurationEnum::editLemmatizationByGrammaticalCategory, LexicometricEditEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY,
             iLexicometricHierarchical -> new LemmatizationByGrammaticalCategoryHierarchicalService((ILexicometricHierarchical<LemmatizationByGrammaticalCategoryHierarchicalEditEnum>) iLexicometricHierarchical),
             LexicometricConfigurationEnum::getLemmatisationByGrammaticalCategoryConfiguration, getLemmatisationByGrammaticalCategoryCopyConsumer(),
             getAddProfilLemmatizationByGrammaticalCategoryConsumer(), getRemoveProfilLemmatizationByGrammaticalCategoryConsumer(),
-            x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationByGrammaticalCategoryConfigurationInFile(x), x -> getLemmatizationByGrammaticalCategoryProfils());
+            x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationByGrammaticalCategoryConfigurationInFile(x), x -> getLemmatizationByGrammaticalCategoryProfils(), true);
 
     private static final LexicometricEditTableService lexicometricEditTableService = new LexicometricEditTableService();
     private final BiConsumer<String, EditTableElement> editTableElementBiConsumer;
@@ -56,6 +56,7 @@ public enum LexicometricConfigurationEnum {
     private final Consumer<String> saveInDiskConsumer;
     private static Set<IRootTable> hierarchicalTableSet = null;
     private final Function<Void, Set<String>> allProfilsFunction;
+    private final Boolean isLemmatization;
 
     /**
      * Constructeur
@@ -67,9 +68,9 @@ public enum LexicometricConfigurationEnum {
      * @param addProfilConsumer
      * @param removeProfilConsumer
      * @param saveInDiskConsumer
-     * @param allProfils
+     * @param isLemmatization
      */
-    LexicometricConfigurationEnum(BiConsumer<String, EditTableElement> editTableElementBiConsumer, LexicometricEditEnum lexicometricEditEnum, Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer, Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction, BiConsumer<String, String> copyConsumer, Consumer<String> addProfilConsumer, Consumer<String> removeProfilConsumer, Consumer<String> saveInDiskConsumer, Function<Void, Set<String>> allProfilsFunction) {
+    LexicometricConfigurationEnum(BiConsumer<String, EditTableElement> editTableElementBiConsumer, LexicometricEditEnum lexicometricEditEnum, Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer, Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction, BiConsumer<String, String> copyConsumer, Consumer<String> addProfilConsumer, Consumer<String> removeProfilConsumer, Consumer<String> saveInDiskConsumer, Function<Void, Set<String>> allProfilsFunction, Boolean isLemmatization) {
         this.editTableElementBiConsumer = editTableElementBiConsumer;
         this.lexicometricEditEnum = lexicometricEditEnum;
         this.lexicometricHierarchicalViewToLexicometricHierarchicalServer = lexicometricHierarchicalViewToLexicometricHierarchicalServer;
@@ -79,6 +80,7 @@ public enum LexicometricConfigurationEnum {
         this.removeProfilConsumer = removeProfilConsumer;
         this.saveInDiskConsumer = saveInDiskConsumer;
         this.allProfilsFunction = allProfilsFunction;
+        this.isLemmatization = isLemmatization;
     }
 
     /**
@@ -448,5 +450,13 @@ public enum LexicometricConfigurationEnum {
      */
     public Function<Void, Set<String>> getAllProfils() {
         return allProfilsFunction;
+    }
+
+    /**
+     * Permet de savoir si c'est de la lemmatization
+     * @return Vrai si c'est de la lemmatization
+     */
+    public Boolean isLemmatization() {
+        return isLemmatization;
     }
 }

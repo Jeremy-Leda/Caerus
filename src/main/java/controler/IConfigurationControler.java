@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import model.analyze.beans.Configuration;
 import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.StructuredFile;
+import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
@@ -21,7 +22,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * 
@@ -652,5 +652,17 @@ public interface IConfigurationControler {
 	 * @param lexicometricEditEnum Type de configuration lexicométrique
 	 */
 	void saveLexicometricAllProfilInDisk(LexicometricEditEnum lexicometricEditEnum);
+
+	/**
+	 * Permet de se procurer le set des clés filtrés
+	 * @return le set des clés filtrés
+	 */
+	List<String> getFilteredTextKeyList();
+
+	/**
+	 * Permet de lancer une analyse lexicométrique
+	 * @param cmd commande pour l'analyse
+	 */
+	void launchLexicometricAnalyze(LexicometricAnalyzeServerCmd cmd);
 
 }

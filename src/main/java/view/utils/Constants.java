@@ -501,9 +501,9 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_FREQUENCY_LABEL="window.start.analysis.frequency.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TREATMENT_OPTIONAL_LIST_PANEL_TITLE="window.start.analysis.choose.type.treatment.optional.list.panel.title";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_PANEL_TITLE="window.start.analysis.choose.profile.treatment.optional.list.panel.title";
-	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.treatment.optional.list.label";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_LEMMATIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.lemmatization.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.profile.treatment.optional.list.label";
-
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TOKENIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.tokenization.treatment.optional.list.label";
 
 
 

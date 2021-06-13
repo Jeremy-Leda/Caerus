@@ -3,10 +3,7 @@ package view.panel;
 import org.apache.commons.lang3.StringUtils;
 import utils.RessourcesUtils;
 import view.beans.LexicometricAnalyzeTypeViewEnum;
-import view.interfaces.IAccessPanel;
-import view.interfaces.IChooseLexicometricAnalyzePanel;
-import view.interfaces.IComboBoxPanel;
-import view.interfaces.IWizardPanel;
+import view.interfaces.*;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
@@ -25,6 +22,7 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
     private JPanel content = new JPanel();
     private IComboBoxPanel chooseAnalyzeComboBoxPanel;
     private final IWizardPanel wizardPanel;
+    private Optional<ILexicometricListApplyChoosePanel> optionalILexicometricListApplyChoosePanel = Optional.empty();
 
     public ChooseLexicometricAnalyzePanel(IWizardPanel wizardPanel) {
         createChooseAnalyzeComboBox();
@@ -41,11 +39,12 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
         return content;
     }
 
-    public void setOptionalPanel(Optional<IAccessPanel> panel) {
+    public void setOptionalPanel(Optional<ILexicometricListApplyChoosePanel> panel) {
+        optionalILexicometricListApplyChoosePanel = panel;
         content.removeAll();
         content.validate();
-        panel.ifPresent(accessPanel -> content.add(accessPanel.getJPanel()));
         content.add(chooseAnalyzeComboBoxPanel.getJPanel());
+        panel.ifPresent(accessPanel -> content.add(accessPanel.getJPanel()));
         content.revalidate();
         content.repaint();
         wizardPanel.refresh();
@@ -66,7 +65,17 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
                     LexicometricAnalyzeTypeViewEnum.fromLabel(chooseAnalyzeComboBoxPanel.getLabelSelected());
 
             optionalLexicometricAnalyzeTypeViewEnum.ifPresent(lexicometricAnalyzeTypeViewEnum ->
-                    setOptionalPanel(lexicometricAnalyzeTypeViewEnum.getOptionalPanel()));
+                    setOptionalPanel(lexicometricAnalyzeTypeViewEnum.getOptionalPanel().apply(wizardPanel)));
         });
+    }
+
+    @Override
+    public Optional<ILexicometricListApplyChoosePanel> getOptionalILexicometricListApplyChoosePanel() {
+        return this.optionalILexicometricListApplyChoosePanel;
+    }
+
+    @Override
+    public LexicometricAnalyzeTypeViewEnum getAnalyzeToLaunch() {
+        return LexicometricAnalyzeTypeViewEnum.fromLabel(this.chooseAnalyzeComboBoxPanel.getLabelSelected()).get();
     }
 }

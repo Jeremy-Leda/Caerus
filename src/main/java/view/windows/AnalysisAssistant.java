@@ -1,6 +1,7 @@
 package view.windows;
 
 import controler.IConfigurationControler;
+import io.vavr.Tuple2;
 import org.apache.commons.lang3.StringUtils;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.*;
@@ -137,6 +138,10 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.chooseAnalyzeActionPanel.setStaticLabel(getMessage(Constants.WINDOW_INFORMATION_ACTION_PANEL_LABEL),
                 Map.of(0, getMessage(Constants.WINDOW_START_ANALYSIS_START_BUTTON_LABEL),
                         1, getMessage(Constants.WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL)));
+        // FIXME passer en progress
+        this.chooseAnalyzeActionPanel.addAction(0, e -> executeOnServer(() -> {
+            chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
+        }));
     }
 
 //    /**
@@ -378,6 +383,47 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
             current++;
         }
         this.checkBoxFieldsPanel.setStaticLabel(getMessage(Constants.WINDOW_START_ANALYSIS_FIELD_MATERIAL_PANEL_TITLE), labels);
+    }
+
+    /**
+     * Permet de se procurer la commande de lancement de l'analyse lexicométrique
+     * @return la commande de lancement de l'analyse lexicométrique
+     */
+    private LexicometricAnalyzeCmd getLexicometricAnalyzeCmd() {
+        Map<LexicometricEditEnum, String> preTreatmentListLexicometricMap = new HashMap<>();
+        Optional<ILexicometricListApplyChoosePanel> optionalILexicometricListApplyChoosePanel = this.chooseLexicometricAnalyzePanel.getOptionalILexicometricListApplyChoosePanel();
+        if (optionalILexicometricListApplyChoosePanel.isPresent()) {
+            Optional<Tuple2<LexicometricEditEnum, String>> stopWordEntry = getOptionalEntryForLexicometricPanel(optionalILexicometricListApplyChoosePanel.get().getStopWordConfiguration());
+            stopWordEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
+            Optional<Tuple2<LexicometricEditEnum, String>> lemmeEntry = getOptionalEntryForLexicometricPanel(optionalILexicometricListApplyChoosePanel.get().getLemmatizationConfiguration());
+            lemmeEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
+        }
+        Set<String> fieldToAnalyzeSet = new HashSet<>();
+        Integer currentIndex = 0;
+        for (Map.Entry<String, String> entry : getControler().getFieldConfigurationNameLabelWithoutMetaMap().entrySet()) {
+            if (this.checkBoxFieldsPanel.getCheckBoxIsChecked(currentIndex)) {
+                fieldToAnalyzeSet.add(entry.getKey());
+            }
+            currentIndex++;
+        }
+        return new LexicometricAnalyzeCmdBuilder()
+                .keyTextFilteredList(getControler().getFilteredTextKeyList())
+                .preTreatmentListLexicometricMap(preTreatmentListLexicometricMap)
+                .fieldToAnalyzeSet(fieldToAnalyzeSet)
+                .build();
+    }
+
+    /**
+     * Permet de se procurer le tuple pour la récupération des informations sur les traitements lexicométrique
+     * @param lexicometricConfigurationChoosePanel panel dont on souhaite récupérer les informations
+     * @return le tuple pour la récupération des informations sur les traitements lexicométrique
+     */
+    private Optional<Tuple2<LexicometricEditEnum, String>> getOptionalEntryForLexicometricPanel(ILexicometricConfigurationChoosePanel lexicometricConfigurationChoosePanel) {
+        Optional<LexicometricEditEnum> lexicometricEditEnum = Optional.ofNullable(lexicometricConfigurationChoosePanel.getLexicometricEditEnum());
+        if (lexicometricEditEnum.isPresent() && StringUtils.isNotBlank(lexicometricConfigurationChoosePanel.getProfile())) {
+            return Optional.of(new Tuple2(lexicometricEditEnum.get(), lexicometricConfigurationChoosePanel.getProfile()));
+        }
+        return Optional.empty();
     }
 
 }

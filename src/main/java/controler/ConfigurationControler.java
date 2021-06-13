@@ -2,10 +2,11 @@ package controler;
 
 import model.ConfigurationModel;
 import model.IConfigurationModel;
-import model.analyze.UserLexicometricAnalysisSettings;
 import model.analyze.beans.*;
 import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.constants.TypeFilterTextEnum;
+import model.analyze.lexicometric.analyze.beans.Text;
+import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
@@ -700,6 +701,23 @@ public class ConfigurationControler implements IConfigurationControler {
 	public void saveLexicometricAllProfilInDisk(LexicometricEditEnum lexicometricEditEnum) {
 		LexicometricConfigurationEnum lexicometricConfigurationEnumFromViewEnum = LexicometricConfigurationEnum.getLexicometricConfigurationEnumFromViewEnum(lexicometricEditEnum);
 		lexicometricConfigurationEnumFromViewEnum.getAllProfils().apply(null).forEach(p -> lexicometricConfigurationEnumFromViewEnum.getSaveInDiskConsumer().accept(p));
+	}
+
+	@Override
+	public List<String> getFilteredTextKeyList() {
+		if (StringUtils.isNotBlank(this.configurationModel.getConfigurationName())) {
+			return this.configurationModel.getKeyFilteredList();
+		}
+		return Collections.emptyList();
+	}
+
+	@Override
+	public void launchLexicometricAnalyze(LexicometricAnalyzeServerCmd cmd) {
+		Set<Text> apply = cmd.getLexicometricAnalyzeTypeEnum().getAnalyzeServerCmdSetFunction().apply(cmd);
+		apply.forEach(t -> {
+			logger.info(t.toString());
+			logger.info("Nb de forme = " + t.getTokenSet().size());
+		});
 	}
 
 }

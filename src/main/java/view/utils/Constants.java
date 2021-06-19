@@ -505,8 +505,13 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.profile.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TOKENIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.tokenization.treatment.optional.list.label";
 
-
-
+	public static final String WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE="window.result.token.analysis.panel.title";
+	public static final String WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE="window.result.token.analysis.table.panel.title";
+	public static final String WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL="window.result.token.analysis.table.header.column.1.label";
+	public static final String WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL="window.result.token.analysis.table.header.column.2.label";
+	public static final String WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL="window.result.token.total.tokens.label";
+	public static final String WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL="window.result.token.total.words.label";
+	public static final String WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE="window.result.token.total.panel.title";
 
 
 

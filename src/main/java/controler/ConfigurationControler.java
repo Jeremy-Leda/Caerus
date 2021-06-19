@@ -2,10 +2,12 @@ package controler;
 
 import model.ConfigurationModel;
 import model.IConfigurationModel;
+import model.analyze.LexicometricAnalysis;
 import model.analyze.beans.*;
 import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.constants.TypeFilterTextEnum;
 import model.analyze.lexicometric.analyze.beans.Text;
+import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
@@ -16,6 +18,7 @@ import model.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.*;
 import view.interfaces.IHierarchicalTable;
 
@@ -713,11 +716,12 @@ public class ConfigurationControler implements IConfigurationControler {
 
 	@Override
 	public void launchLexicometricAnalyze(LexicometricAnalyzeServerCmd cmd) {
-		Set<Text> apply = cmd.getLexicometricAnalyzeTypeEnum().getAnalyzeServerCmdSetFunction().apply(cmd);
-		apply.forEach(t -> {
-			logger.info(t.toString());
-			logger.info("Nb de forme = " + t.getTokenSet().size());
-		});
+		cmd.getLexicometricAnalyzeTypeEnum().getAnalyzeServerCmdConsumer().accept(cmd);
+		logger.info("launchLexicometricAnalyze ended");
+//		apply.forEach(t -> {
+//			logger.info(t.toString());
+//			logger.info("Nb de forme = " + t.getTokenSet().size());
+//		});
 	}
 
 }

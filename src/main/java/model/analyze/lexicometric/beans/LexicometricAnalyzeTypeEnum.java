@@ -1,9 +1,10 @@
 package model.analyze.lexicometric.beans;
 
 import model.analyze.LexicometricAnalysis;
-import model.analyze.lexicometric.analyze.beans.Text;
+import view.analysis.beans.AnalysisResultDisplay;
 
-import java.util.Set;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -12,22 +13,32 @@ import java.util.function.Function;
  *
  */
 public enum LexicometricAnalyzeTypeEnum {
-    NUMBER_TOKENS(c -> LexicometricAnalysis.getInstance().getNumberTokensAnalyzeResult(c)),
-    LEMME_TYPE(c -> LexicometricAnalysis.getInstance().getNumberTokensAnalyzeResult(c)),
-    TOKEN_RATIO(c -> LexicometricAnalysis.getInstance().getNumberTokensAnalyzeResult(c)),
-    FREQUENCY(c -> LexicometricAnalysis.getInstance().getNumberTokensAnalyzeResult(c));
+    NUMBER_TOKENS(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys)),
+    LEMME_TYPE(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys)),
+    TOKEN_RATIO(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys)),
+    FREQUENCY(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys));
 
-    private final Function<LexicometricAnalyzeServerCmd, Set<Text>> analyzeServerCmdSetFunction;
+    private final Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer;
+    private final Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction;
 
-    LexicometricAnalyzeTypeEnum(Function<LexicometricAnalyzeServerCmd, Set<Text>> analyzeServerCmdSetFunction) {
-        this.analyzeServerCmdSetFunction = analyzeServerCmdSetFunction;
+    LexicometricAnalyzeTypeEnum(Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer, Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction) {
+        this.analyzeServerCmdConsumer = analyzeServerCmdConsumer;
+        this.analysisResultDisplayFunction = analysisResultDisplayFunction;
     }
 
     /**
-     * Fonction permettant d'exécuter l'analyse sur le serveur
-     * @return la function
+     * Consumer permettant d'exécuter l'analyse sur le serveur
+     * @return le consumer
      */
-    public Function<LexicometricAnalyzeServerCmd, Set<Text>> getAnalyzeServerCmdSetFunction() {
-        return analyzeServerCmdSetFunction;
+    public Consumer<LexicometricAnalyzeServerCmd> getAnalyzeServerCmdConsumer() {
+        return analyzeServerCmdConsumer;
+    }
+
+    /**
+     * Function pour se procurer le résultat de l'analyse
+     * @return la function pour se procurer le résultat de l'analyse
+     */
+    public Function<List<String>, AnalysisResultDisplay> getAnalysisResultDisplayFunction() {
+        return analysisResultDisplayFunction;
     }
 }

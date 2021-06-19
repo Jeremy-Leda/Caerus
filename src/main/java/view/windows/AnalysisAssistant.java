@@ -142,6 +142,9 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.chooseAnalyzeActionPanel.addAction(0, e -> executeOnServer(() -> {
             chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
         }));
+        this.chooseAnalyzeActionPanel.addAction(1, e ->
+                chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerDisplayResult()
+                        .accept(getControler(), getLexicometricAnalyzeCmd().getKeyTextFilteredList()));
     }
 
 //    /**

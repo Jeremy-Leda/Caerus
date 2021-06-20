@@ -1,12 +1,14 @@
 package view.beans;
 
 import controler.IConfigurationControler;
+import io.vavr.control.Try;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmdBuilder;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.interfaces.ILexicometricListApplyChoosePanel;
 import view.interfaces.IWizardPanel;
 import view.panel.LexicometricListApplyChoosePanel;
+import view.services.ExecutionService;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 import view.windows.AnalysisTokenResultWindow;
@@ -30,7 +32,7 @@ public enum LexicometricAnalyzeTypeViewEnum {
                             .keyTextFilteredList(lexicometricAnalyzeCmd.getKeyTextFilteredList())
                             .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
                             .build()),
-            ((controler, keys) -> new AnalysisTokenResultWindow(controler, LexicometricAnalyzeTypeEnum.NUMBER_TOKENS.getAnalysisResultDisplayFunction().apply(keys)))),
+            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.NUMBER_TOKENS, cmd))),
     LEMME_TYPE(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_LEMME_TYPE_LABEL), wizard -> Optional.ofNullable(new LexicometricListApplyChoosePanel(wizard,false, true)),
             (controler, lexicometricAnalyzeCmd) -> controler.launchLexicometricAnalyze(
                 new LexicometricAnalyzeServerCmdBuilder()
@@ -39,7 +41,7 @@ public enum LexicometricAnalyzeTypeViewEnum {
                         .preTreatmentListLexicometricMap(lexicometricAnalyzeCmd.toPreTreatmentServerMap())
                         .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
                         .build()),
-            ((controler, keys) -> new AnalysisTokenResultWindow(controler, LexicometricAnalyzeTypeEnum.LEMME_TYPE.getAnalysisResultDisplayFunction().apply(keys)))),
+            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.LEMME_TYPE, cmd))),
     TOKEN_RATIO(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_RATIO_LABEL), wizard -> Optional.ofNullable(new LexicometricListApplyChoosePanel(wizard,true, true)),
             (controler, lexicometricAnalyzeCmd) -> controler.launchLexicometricAnalyze(
                     new LexicometricAnalyzeServerCmdBuilder()
@@ -48,7 +50,7 @@ public enum LexicometricAnalyzeTypeViewEnum {
                             .preTreatmentListLexicometricMap(lexicometricAnalyzeCmd.toPreTreatmentServerMap())
                             .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
                             .build()),
-            ((controler, keys) -> new AnalysisTokenResultWindow(controler, LexicometricAnalyzeTypeEnum.TOKEN_RATIO.getAnalysisResultDisplayFunction().apply(keys)))),
+            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.TOKEN_RATIO, cmd))),
     FREQUENCY(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_FREQUENCY_LABEL), wizard -> Optional.empty(),
             (controler, lexicometricAnalyzeCmd) -> controler.launchLexicometricAnalyze(
                     new LexicometricAnalyzeServerCmdBuilder()
@@ -56,15 +58,16 @@ public enum LexicometricAnalyzeTypeViewEnum {
                             .keyTextFilteredList(lexicometricAnalyzeCmd.getKeyTextFilteredList())
                             .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
                             .build()),
-            ((controler, keys) -> new AnalysisTokenResultWindow(controler, LexicometricAnalyzeTypeEnum.FREQUENCY.getAnalysisResultDisplayFunction().apply(keys))));
+            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.FREQUENCY, cmd)));
 
 
     private final String label;
     private final Function<IWizardPanel, Optional<ILexicometricListApplyChoosePanel>> optionalPanel;
     private final BiConsumer<IConfigurationControler, LexicometricAnalyzeCmd> biConsumerAnalysis;
-    private final BiConsumer<IConfigurationControler, List<String>> biConsumerDisplayResult;
+    private final BiConsumer<IConfigurationControler, LexicometricAnalyzeCmd> biConsumerDisplayResult;
+    private static ExecutionService executionService = new ExecutionService();
 
-    LexicometricAnalyzeTypeViewEnum(String label, Function<IWizardPanel, Optional<ILexicometricListApplyChoosePanel>> optionalPanel, BiConsumer<IConfigurationControler, LexicometricAnalyzeCmd> biConsumerAnalysis, BiConsumer<IConfigurationControler, List<String>> biConsumerDisplayResult) {
+    LexicometricAnalyzeTypeViewEnum(String label, Function<IWizardPanel, Optional<ILexicometricListApplyChoosePanel>> optionalPanel, BiConsumer<IConfigurationControler, LexicometricAnalyzeCmd> biConsumerAnalysis, BiConsumer<IConfigurationControler, LexicometricAnalyzeCmd> biConsumerDisplayResult) {
         this.label = label;
         this.optionalPanel = optionalPanel;
         this.biConsumerAnalysis = biConsumerAnalysis;
@@ -97,10 +100,10 @@ public enum LexicometricAnalyzeTypeViewEnum {
 
     /**
      * Permet de se procurer le bi consumer pour l'affichage du résultat
-     * En paramètre le controller et la liste des clés à afficher
+     * En paramètre le controller et la commande
      * @return le bi consumer pour l'affichage du résultat
      */
-    public BiConsumer<IConfigurationControler, List<String>> getBiConsumerDisplayResult() {
+    public BiConsumer<IConfigurationControler, LexicometricAnalyzeCmd> getBiConsumerDisplayResult() {
         return biConsumerDisplayResult;
     }
 
@@ -111,5 +114,16 @@ public enum LexicometricAnalyzeTypeViewEnum {
      */
     public static Optional<LexicometricAnalyzeTypeViewEnum> fromLabel(String label) {
         return Arrays.stream(values()).filter(e -> e.getLabel().equals(label)).findFirst();
+    }
+
+    /**
+     * Permet d'ouvrir la fenêtre des résultats
+     * @param controler controller
+     * @param lexicometricAnalyzeTypeEnum type d'analyse
+     * @param cmd commande
+     */
+    private static void openResultWindow(IConfigurationControler controler, LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum, LexicometricAnalyzeCmd cmd) {
+        Try.of(() -> lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(cmd.getKeyTextFilteredList()))
+                .fold(s -> s, analysisResultDisplay -> new AnalysisTokenResultWindow(controler, analysisResultDisplay, cmd, lexicometricAnalyzeTypeEnum));
     }
 }

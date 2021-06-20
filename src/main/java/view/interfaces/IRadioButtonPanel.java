@@ -36,5 +36,11 @@ public interface IRadioButtonPanel extends IAccessPanel {
 	 * @param actionListener action listener
 	 */
 	void setActionListener(ActionListener actionListener);
+
+	/**
+	 * Permet de se procurer le label sélectionné
+	 * @return le label sélectionné
+	 */
+	String getSelectedLabel();
 	
 }

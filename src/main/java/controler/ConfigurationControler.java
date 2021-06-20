@@ -3,6 +3,7 @@ package controler;
 import model.ConfigurationModel;
 import model.IConfigurationModel;
 import model.analyze.LexicometricAnalysis;
+import model.analyze.UserSettings;
 import model.analyze.beans.*;
 import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.constants.TypeFilterTextEnum;
@@ -722,6 +723,15 @@ public class ConfigurationControler implements IConfigurationControler {
 //			logger.info(t.toString());
 //			logger.info("Nb de forme = " + t.getTokenSet().size());
 //		});
+	}
+
+	@Override
+	public String getValueFromKeyTextAndField(String key, String field) {
+		Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(key);
+		if (textFromKey.isPresent()) {
+			return LexicometricAnalysis.getInstance().getTextPreTreatment(textFromKey.get().getStructuredText().getContent(field));
+		}
+		return StringUtils.EMPTY;
 	}
 
 }

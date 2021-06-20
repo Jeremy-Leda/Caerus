@@ -1,9 +1,15 @@
 package view.windows;
 
 import controler.IConfigurationControler;
+import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisResultDisplay;
+import view.beans.LexicometricAnalyzeCmd;
+import view.beans.LexicometricAnalyzeTypeViewEnum;
+import view.interfaces.IActionPanel;
 import view.interfaces.ILabelsPanel;
+import view.interfaces.ITableAnalysisPanel;
+import view.panel.ActionPanel;
 import view.panel.LabelsPanel;
 import view.panel.analysis.TableAnalysisPanel;
 import view.utils.ConfigurationUtils;
@@ -11,6 +17,10 @@ import view.utils.Constants;
 
 import javax.swing.*;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import static view.utils.Constants.*;
 
 /**
  *
@@ -21,18 +31,26 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
 
     private final JPanel content = new JPanel();
     private final AnalysisResultDisplay analysisResultDisplay;
-    private final TableAnalysisPanel tableAnalysisPanel;
+    private final ITableAnalysisPanel tableAnalysisPanel;
     private final ILabelsPanel labelsPanel;
+    private final IActionPanel actionPanel = new ActionPanel(1);
+    private final LexicometricAnalyzeCmd cmd;
+    private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
 
-    public AnalysisTokenResultWindow(IConfigurationControler controler, AnalysisResultDisplay analysisResultDisplay) {
-        super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE), controler);
+    public AnalysisTokenResultWindow(IConfigurationControler controler,
+                                     AnalysisResultDisplay analysisResultDisplay,
+                                     LexicometricAnalyzeCmd cmd,
+                                     LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum) {
+        super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE), controler);
         this.analysisResultDisplay = analysisResultDisplay;
+        this.cmd = cmd;
+        this.lexicometricAnalyzeTypeEnum = lexicometricAnalyzeTypeEnum;
         LinkedList<String> headerLinkedList = new LinkedList<>();
-        headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
-        headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL));
-        this.tableAnalysisPanel = new TableAnalysisPanel(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE),
-                headerLinkedList, analysisResultDisplay.toAnalysisTokenRowList());
-        this.labelsPanel = new LabelsPanel(getMessage(Constants.WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE), 2);
+        headerLinkedList.add(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
+        headerLinkedList.add(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL));
+        this.tableAnalysisPanel = new TableAnalysisPanel(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE),
+                headerLinkedList, List.of(String.class, Long.class), analysisResultDisplay.toAnalysisTokenRowList());
+        this.labelsPanel = new LabelsPanel(getMessage(WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE), 2);
         createWindow();
     }
 
@@ -40,10 +58,21 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
     public void initComponents() {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
-        this.labelsPanel.setLabel(0, getMessage(Constants.WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
-        this.labelsPanel.setLabel(1, getMessage(Constants.WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
+        initActionPanel();
+        this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
+        this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
         content.add(this.labelsPanel.getJPanel());
         content.add(this.tableAnalysisPanel.getJPanel());
+        content.add(this.actionPanel.getJPanel());
+    }
+
+    /**
+     * Permet d'initialiser les boutons
+     */
+    private void initActionPanel() {
+        this.actionPanel.setStaticLabel(getMessage(WINDOW_RESULT_TOKEN_ACTION_PANEL_TITLE),
+                Map.of(0, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_BUTTON_LABEL)));
+        this.actionPanel.addAction(0, e -> new AnalysisTokenDetailResultWindow(getControler(), cmd, lexicometricAnalyzeTypeEnum));
     }
 
     @Override

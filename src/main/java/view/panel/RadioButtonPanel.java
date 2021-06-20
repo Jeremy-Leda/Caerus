@@ -83,5 +83,10 @@ public class RadioButtonPanel implements IRadioButtonPanel {
 		radioButtonMap.values().forEach(b -> b.addActionListener(actionListener));
 	}
 
-	
+	@Override
+	public String getSelectedLabel() {
+		return this.radioButtonMap.get(getSelectedRadioButtonNumber()).getText();
+	}
+
+
 }

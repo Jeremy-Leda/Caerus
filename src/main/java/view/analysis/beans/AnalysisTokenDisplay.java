@@ -57,7 +57,7 @@ public class AnalysisTokenDisplay {
      */
     public AnalysisRow toTokenRow() {
         AnalysisRow row = new AnalysisRow();
-        row.getAnalysisList().addAll(List.of(word, String.valueOf(nbOcurrency)));
+        row.getAnalysisList().addAll(List.of(word, nbOcurrency));
         return row;
     }
 }

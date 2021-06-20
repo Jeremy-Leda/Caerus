@@ -19,7 +19,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
 
     // WIZARD
     private final IWizardPanel wizardPanel= new WizardPanel(ConfigurationUtils.getInstance()
-            .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));;
+            .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));
     private final ICheckBoxPanel checkBoxPanel;
     private JPanel content = new JPanel();
     private final IManageTextDisplayPanel displayTextsList;
@@ -144,7 +144,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         }));
         this.chooseAnalyzeActionPanel.addAction(1, e ->
                 chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerDisplayResult()
-                        .accept(getControler(), getLexicometricAnalyzeCmd().getKeyTextFilteredList()));
+                        .accept(getControler(), getLexicometricAnalyzeCmd()));
     }
 
 //    /**

@@ -512,6 +512,18 @@ public final class Constants {
 	public static final String WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL="window.result.token.total.tokens.label";
 	public static final String WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL="window.result.token.total.words.label";
 	public static final String WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE="window.result.token.total.panel.title";
+	public static final String WINDOW_RESULT_TOKEN_ACTION_PANEL_TITLE="window.result.token.action.panel.title";
+	public static final String WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_BUTTON_LABEL="window.result.token.action.show.detail.button.label";
+
+
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE="window.result.detail.token.analysis.panel.title";
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_CHOOSE_FIELD_PANEL_TITLE="window.result.detail.token.analysis.choose.field.panel.title";
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_DISPLAY_FIELD_PANEL_TITLE="window.result.detail.token.analysis.display.field.panel.title";
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_META_BUTTON_LABEL="window.result.detail.token.analysis.action.view.meta.button.label";
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_DATA_BUTTON_LABEL="window.result.detail.token.analysis.action.view.data.button.label";
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_NAVIGATION_LABEL="window.result.detail.token.analysis.navigation.label";
+
+
 
 
 

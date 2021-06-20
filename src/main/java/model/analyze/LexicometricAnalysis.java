@@ -5,6 +5,7 @@ import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.lexicometric.analyze.beans.Text;
 import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.analysis.beans.AnalysisResultDisplayBuilder;
@@ -87,9 +88,28 @@ public class LexicometricAnalysis {
      * @return le résultat de l'analyse
      */
     public AnalysisResultDisplay getAnalysisResultDisplayForNumberTokens(List<String> keyTextFilteredList) {
+        System.out.println("getAnalysisResultDisplayForNumberTokens GO");
+
         Set<Text> textSet = this.analysisResultSet.stream().filter(t -> keyTextFilteredList.contains(t.getKey())).collect(Collectors.toSet());
-        Text text = textSet.stream().reduce(this::reduceText).orElse(new Text(StringUtils.EMPTY));
-        return convertTextToAnalysisResultDisplay(text);
+
+        List<Token> tokenList = textSet.stream().flatMap(t -> t.getTokenSet().stream()).collect(Collectors.toList());
+        Set<String> wordSet = textSet.stream().flatMap(t -> t.getTokenSet().stream()).map(t -> t.getWord()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+        System.out.println(wordSet.size());
+        Text text = new Text(StringUtils.EMPTY);
+        Set<Token> tokenSet = wordSet.parallelStream().map(w -> {
+            Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(t -> t.getNbOcurrency()).reduce(Long::sum).orElse(0L);
+            Token token = new Token(w);
+            token.setNbOcurrency(nbOccurrency);
+            return token;
+        }).collect(Collectors.toSet());
+        text.getTokenSet().addAll(tokenSet);
+
+//        System.out.println("START REDUCE");
+//        Text text = textSet.parallelStream().reduce(this::reduceText).orElse(new Text(StringUtils.EMPTY));
+        System.out.println("START CONVERT");
+        AnalysisResultDisplay analysisResultDisplay = convertTextToAnalysisResultDisplay(text);
+        System.out.println("getAnalysisResultDisplayForNumberTokens END");
+        return analysisResultDisplay;
     }
 
     /**
@@ -132,9 +152,23 @@ public class LexicometricAnalysis {
      * @return résultat d'analyse pour un token
      */
     private AnalysisTokenDisplay convertTokenToAnalysisTokenDisplay(Token token) {
-        return new AnalysisTokenDisplayBuilder()
-                .word(token.getWord())
-                .nbOcurrency(token.getNbOcurrency())
-                .build();
+        AnalysisTokenDisplay analysisTokenDisplay = new AnalysisTokenDisplay();
+        analysisTokenDisplay.setWord(token.getWord());
+        analysisTokenDisplay.setNbOcurrency(token.getNbOcurrency());
+        return analysisTokenDisplay;
+    }
+
+    /**
+     * Permet de se procurer le texte pré traité
+     * @param text texte
+     * @return le texte pré traité
+     */
+    public String getTextPreTreatment(String text) {
+        List<String> cleanWords = Arrays.stream(StringUtils.split(text))
+                .map(s -> s.replaceAll("[^A-Za-z0-9]", ""))
+                .map(s -> s.toLowerCase())
+                .map(s -> StringUtils.SPACE + s + StringUtils.SPACE)
+                .filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        return cleanWords.stream().reduce(String::concat).get();
     }
 }

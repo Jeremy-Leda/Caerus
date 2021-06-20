@@ -1162,6 +1162,15 @@ public class UserSettings {
 	}
 
 	/**
+	 * Permet de se procurer le texte utilisateur si il existe
+	 * @param key Clé du texte
+	 * @return le texte utilisateur si il existe
+	 */
+	public Optional<UserStructuredText> getTextFromKey(String key) {
+		return getTextFromKey(key, FolderSettingsEnum.FOLDER_TEXTS);
+	}
+
+	/**
 	 * Permet de charger un texte
 	 * 
 	 * @param key        clé du texte
@@ -1179,6 +1188,17 @@ public class UserSettings {
 		} else {
 			logger.error(String.format("Clé %s non trouvé", key));
 		}
+	}
+
+	/**
+	 * Permet de se procurer le texte utilisateur si il existe
+	 * @param key Clé du texte
+	 * @param folderType Type du dossier
+	 * @return le texte utilisateur si il existe
+	 */
+	private Optional<UserStructuredText> getTextFromKey(String key, FolderSettingsEnum folderType) {
+		return this.CURRENT_FOLDER_USER_TEXTS_MAP.get(folderType)
+				.getUserStructuredTextList().stream().filter(text -> key.equals(text.getKey())).findFirst();
 	}
 
 	/**

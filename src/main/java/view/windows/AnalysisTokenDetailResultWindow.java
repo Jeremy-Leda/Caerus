@@ -1,0 +1,161 @@
+package view.windows;
+
+import controler.IConfigurationControler;
+import io.vavr.collection.Stream;
+import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
+import view.abstracts.ModalJFrameAbstract;
+import view.analysis.beans.AnalysisResultDisplay;
+import view.beans.LexicometricAnalyzeCmd;
+import view.interfaces.IActionPanel;
+import view.interfaces.IRadioButtonPanel;
+import view.interfaces.ITableAnalysisPanel;
+import view.interfaces.ITextHighlightPanel;
+import view.panel.ActionPanel;
+import view.panel.RadioButtonPanel;
+import view.panel.TextHighlightPanel;
+import view.panel.analysis.TableAnalysisPanel;
+import view.utils.ConfigurationUtils;
+import view.utils.Constants;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+import static view.utils.Constants.*;
+
+/**
+ *
+ * Fenêtre pour l'affichage des détails pour les tokens
+ *
+ */
+public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
+
+    private JPanel content = new JPanel();
+    private IRadioButtonPanel radioButtonPanel;
+    private ITextHighlightPanel textHighlightPanel = new TextHighlightPanel(getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_DISPLAY_FIELD_PANEL_TITLE));
+    private IActionPanel actionPanel = new ActionPanel(2);
+    private IActionPanel navigationPanel = new ActionPanel(2);
+    private final ITableAnalysisPanel tableAnalysisPanel;
+    private int current = 0;
+    private final LexicometricAnalyzeCmd cmd;
+    private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
+    private final Map<String, String> mapField;
+
+    /**
+     * Constructeur
+     * @param configurationControler controller
+     */
+    public AnalysisTokenDetailResultWindow(IConfigurationControler configurationControler, LexicometricAnalyzeCmd cmd, LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum) {
+        super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE), configurationControler);
+        radioButtonPanel = new RadioButtonPanel(cmd.getFieldToAnalyzeSet().size());
+        LinkedList<String> headerLinkedList = new LinkedList<>();
+        headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
+        headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL));
+        this.tableAnalysisPanel = new TableAnalysisPanel(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE),
+                headerLinkedList, List.of(String.class, Long.class), new LinkedList<>());
+        this.cmd = cmd;
+        this.lexicometricAnalyzeTypeEnum = lexicometricAnalyzeTypeEnum;
+        this.mapField = getControler().getFieldConfigurationNameLabelWithoutMetaMap();
+        createWindow();
+    }
+
+    /**
+     * Permet d'initialiser les boutons radio
+     * @param cmd commande
+     */
+    private void initRadioButton(LexicometricAnalyzeCmd cmd) {
+        Map<Integer, String> radioButtonMap = Stream.ofAll(cmd.getFieldToAnalyzeSet()).zipWithIndex()
+                .collect(Collectors.toMap(t -> t._2, t ->  mapField.get(t._1)));
+        this.radioButtonPanel.setStaticLabel(
+                getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_CHOOSE_FIELD_PANEL_TITLE), radioButtonMap);
+        this.radioButtonPanel.setDefaultSelectedRadioButton(0);
+    }
+
+    /**
+     * Permet d'initialiser le panel des actions
+     */
+    private void initActionPanel() {
+        Map<Integer, String> labelMap = Map.of(0, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_META_BUTTON_LABEL),
+                1, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_DATA_BUTTON_LABEL));
+        this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), labelMap);
+    }
+
+    /**
+     * Permet d'initialiser le panel de navigation
+     */
+    private void initNavigationPanel() {
+        this.navigationPanel.addAction(0, x -> {
+            current--;
+            loadText();
+        });
+        this.navigationPanel.addAction(1, x -> {
+            current++;
+            loadText();
+        });
+    }
+
+    @Override
+    public void initComponents() {
+        initRadioButton(cmd);
+        initActionPanel();
+        initNavigationPanel();
+        this.tableAnalysisPanel.addConsumerOnSelectedChangeForWord(getConsumerForHighlight());
+        BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
+        content.setLayout(boxlayout);
+        content.add(this.radioButtonPanel.getJPanel());
+        content.add(this.textHighlightPanel.getJPanel());
+        content.add(this.tableAnalysisPanel.getJPanel());
+        content.add(this.actionPanel.getJPanel());
+        content.add(this.navigationPanel.getJPanel());
+        loadText();
+    }
+
+    @Override
+    public JPanel getContent() {
+        return this.content;
+    }
+
+    @Override
+    public String getWindowName() {
+        return "Detail analysis result window";
+    }
+
+    /**
+     * Permet de rafraichir la navigation
+     */
+    private void refreshNavigationDisplay() {
+        Map<Integer, String> labelMap = Map.of(0, getMessage(WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL),
+                1, getMessage(WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL));
+        this.navigationPanel.setStaticLabel(String.format(getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_NAVIGATION_LABEL),
+                this.current + 1, this.cmd.getKeyTextFilteredList().size()), labelMap);
+        this.navigationPanel.setEnabled(0, current > 0);
+        this.navigationPanel.setEnabled(1, current + 1 < this.cmd.getKeyTextFilteredList().size());
+    }
+
+    /**
+     * Permet de charger le texte
+     */
+    private void loadText() {
+        tableAnalysisPanel.clearSelection();
+        String key = this.cmd.getKeyTextFilteredList().get(current);
+        AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(List.of(key));
+        this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
+        String field = mapField.entrySet().stream().filter(s -> s.getValue().equals(this.radioButtonPanel.getSelectedLabel())).findFirst().get().getKey();
+        this.textHighlightPanel.setText(getControler().getValueFromKeyTextAndField(key, field));
+        refreshNavigationDisplay();
+    }
+
+    /**
+     * Permet de se procurer le consumer pour surligner
+     * @return le consumer
+     */
+    private Consumer<List<Object>> getConsumerForHighlight() {
+        return result -> {
+            String word = String.valueOf(result.get(0));
+            this.textHighlightPanel.highlightWord(word, Color.CYAN);
+        };
+    }
+}

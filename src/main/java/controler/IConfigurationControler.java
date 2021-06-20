@@ -668,4 +668,12 @@ public interface IConfigurationControler {
 	 */
 	void launchLexicometricAnalyze(LexicometricAnalyzeServerCmd cmd);
 
+	/**
+	 * Permet de se procurer la valeur en fonction de la clé du texte et du champ recherché
+	 * @param key Clé du texte
+	 * @param field Champ recherché
+	 * @return la valeur
+	 */
+	String getValueFromKeyTextAndField(String key, String field);
+
 }

@@ -9,13 +9,13 @@ import java.util.List;
 public class AnalysisRow {
 
 
-    private final List<String> analysisList = new LinkedList<>();
+    private final List<Object> analysisList = new LinkedList<>();
 
     /**
      * Permet de se procurer la liste des valeurs pour la ligne
      * @return la liste des valeurs pour la ligne
      */
-    public List<String> getAnalysisList() {
+    public List<Object> getAnalysisList() {
         return analysisList;
     }
 }

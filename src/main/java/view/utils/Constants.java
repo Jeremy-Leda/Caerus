@@ -524,6 +524,9 @@ public final class Constants {
 	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_NAVIGATION_LABEL="window.result.detail.token.analysis.navigation.label";
 
 
+	public static final String WINDOW_READ_CORPUS_TITLE="window.read.corpus.title";
+	public static final String WINDOW_READ_TEXT_TITLE="window.read.text.title";
+	public static final String WINDOW_READ_SPECIFIC_TITLE="window.read.specific.title";
 
 
 

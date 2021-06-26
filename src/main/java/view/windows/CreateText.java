@@ -23,10 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
-import view.beans.ConsumerTextTypeEnum;
-import view.beans.FunctionTextTypeEnum;
-import view.beans.PictureTypeEnum;
-import view.beans.TextIhmTypeEnum;
+import view.beans.*;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IActionPanel;
 import view.interfaces.IContentTextGenericPanel;
@@ -66,7 +63,7 @@ public class CreateText extends ModalJFrameAbstract {
 		this.filePanel = new FilePanel();
 		this.isMaximumScrollbar = Boolean.FALSE;
 		this.scrollBarPosition = 0;
-		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
+		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, StateCorpusEnum.EDIT);
 		this.actionPanel = new ActionPanel(3);
 		this.content = new JPanel();
 		super.addActionOnClose(closeAutomaticallySpecificText());

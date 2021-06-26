@@ -1,18 +1,19 @@
 package view.abstracts;
 
 import java.awt.FlowLayout;
+import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.text.JTextComponent;
 
+import controler.IConfigurationControler;
+import view.beans.*;
 import view.interfaces.IContentTextPanel;
 
 /**
@@ -148,6 +149,42 @@ public abstract class ContentTextPanelAbstract<T extends JComponent> implements 
 		if (this.mapKeyFieldTextField.containsKey(key)) {
 			setValueToField(this.mapKeyFieldTextField.get(key), newValue);
 		}
+	}
+
+	/**
+	 * Permet de se procurer le listener pour l'enregistrement sur la perte du focus
+	 * @param key Clé
+	 * @return le focus listener
+	 */
+	protected FocusListener saveValue(IConfigurationControler controler, StateCorpusEnum stateCorpusAction, String key) {
+		return new FocusListener() {
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				final StateCorpusSaveActionCmd cmd = new StateCorpusSaveActionCmdBuilder()
+						.keyField(key)
+						.value(((JTextComponent) e.getSource()).getText())
+						.build();
+				stateCorpusAction.getOptionalStateCorpusSaveActionCmdBiConsumer().ifPresent(c -> c.accept(controler, cmd));
+			}
+
+			@Override
+			public void focusGained(FocusEvent e) {
+			}
+		};
+	}
+
+	/**
+	 * Permet de se procurer la commande pour la récupération des champs
+	 * @param keyText Clé du texte (optionel)
+	 * @param keyField Clé du champ
+	 * @return la commande
+	 */
+	protected StateCorpusGetActionCmd getStateCorpusGetActionCmd(Optional<String> keyText, String keyField) {
+		if (keyText.isPresent()) {
+			return new StateCorpusGetActionCmdBuilder().keyField(keyField).keyText(keyText.get()).build();
+		}
+		return new StateCorpusGetActionCmdBuilder().keyField(keyField).build();
 	}
 
 }

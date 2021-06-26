@@ -19,10 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
-import view.beans.ConsumerTextTypeEnum;
-import view.beans.FunctionTextTypeEnum;
-import view.beans.PictureTypeEnum;
-import view.beans.TextIhmTypeEnum;
+import view.beans.*;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IActionPanel;
 import view.interfaces.IContentTextGenericPanel;
@@ -61,7 +58,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 		this.currentIndex = 0;
 		this.filePanel = new FilePanel();
 		this.actionPanel = new ActionPanel(2);
-		this.contentPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
+		this.contentPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, StateCorpusEnum.EDIT);
 		this.content = new JPanel();
 		super.addActionOnClose(closeAutomaticallySpecificText());
 		updateContentWithNextError();

@@ -3,6 +3,7 @@ package view.panel;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
@@ -10,6 +11,7 @@ import javax.swing.JComponent;
 import controler.IConfigurationControler;
 import view.beans.ConsumerTextTypeEnum;
 import view.beans.FunctionTextTypeEnum;
+import view.beans.StateCorpusEnum;
 import view.beans.TextIhmTypeEnum;
 import view.interfaces.IConsumerAndFunctionText;
 import view.interfaces.IContentTextGenericPanel;
@@ -34,26 +36,24 @@ public class ContentTextGenericPanel implements IContentTextGenericPanel {
 	 * 
 	 * @param controler controleur
 	 * @param typeIhm   type d'ihm
-	 * @param consumerType Type du consumer pour mettre à jour la valeur
-	 * @param functionType function du consumer pour se procurer la valeur
+	 * @param stateCorpusEnum Etat du corpus
 	 */
-	public ContentTextGenericPanel(IConfigurationControler controler, TextIhmTypeEnum typeIhm, ConsumerTextTypeEnum consumerType,
-			FunctionTextTypeEnum functionType) {
+	public ContentTextGenericPanel(IConfigurationControler controler, TextIhmTypeEnum typeIhm, StateCorpusEnum stateCorpusEnum) {
+		this(controler, typeIhm, stateCorpusEnum, Optional.empty());
+	}
+
+	/**
+	 * Constructeur
+	 *
+	 * @param controler controleur
+	 * @param typeIhm   type d'ihm
+	 * @param stateCorpusEnum Etat du corpus
+	 */
+	public ContentTextGenericPanel(IConfigurationControler controler, TextIhmTypeEnum typeIhm, StateCorpusEnum stateCorpusEnum, Optional<String> optionalKeyText) {
 		super();
 		this.consumerFunctionText = new ConsumerAndFunctionTextModel(controler);
-		switch (typeIhm) {
-		case JSCROLLPANE:
-			this.contentTextPanel = new ContentScrollPaneTextAreaPanel();
-			break;
-		case JTEXTFIELD:
-			this.contentTextPanel = new ContentTextFieldTextPanel();
-			break;
-		default:
-			this.contentTextPanel = new ContentScrollPaneTextAreaPanel();
-			break;
-		}
-		this.contentTextPanel.consumerToEditValue(this.consumerFunctionText.getConsumer(consumerType));
-		this.contentTextPanel.functionToGetValue(this.consumerFunctionText.getFunction(functionType));
+		this.contentTextPanel = typeIhm.getiContentTextPanelBiFunction().apply(controler, stateCorpusEnum);
+		optionalKeyText.ifPresent(s -> this.contentTextPanel.setKeyText(s));
 	}
 
 	@Override
@@ -112,6 +112,11 @@ public class ContentTextGenericPanel implements IContentTextGenericPanel {
 	}
 
 	@Override
+	public void setReadOnly(Boolean isReadOnly) {
+		this.contentTextPanel.setReadOnly(isReadOnly);
+	}
+
+	@Override
 	public void setValue(String key, String newValue) {
 		this.contentTextPanel.setValue(key, newValue);
 	}
@@ -124,6 +129,11 @@ public class ContentTextGenericPanel implements IContentTextGenericPanel {
 	@Override
 	public void setRefreshDisplayConsumer(Consumer<?> refreshDisplay) {
 		this.contentTextPanel.setRefreshDisplayConsumer(refreshDisplay);
+	}
+
+	@Override
+	public void setKeyText(String keyText) {
+		this.contentTextPanel.setKeyText(keyText);
 	}
 
 }

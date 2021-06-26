@@ -22,13 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
-import view.beans.ActionOperationTypeEnum;
-import view.beans.ActionUserTypeEnum;
-import view.beans.ConsumerTextTypeEnum;
-import view.beans.DirectionTypeEnum;
-import view.beans.FunctionTextTypeEnum;
-import view.beans.PictureTypeEnum;
-import view.beans.TextIhmTypeEnum;
+import view.beans.*;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IActionPanel;
 import view.interfaces.IContentTextGenericPanel;
@@ -74,8 +68,7 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		this.actionOperationType = actionOperationType;
 		this.filePanel = new FilePanel();
 		this.isMaximumScrollbar = Boolean.FALSE;
-		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE,
-				ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
+		this.informationsTextPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE, StateCorpusEnum.EDIT);
 		this.actionFixedTextPanel = new ActionPanel(2);
 		this.actionManageTextPanel = new ActionPanel(3);
 		this.actionAddTextPanel = new ActionPanel(3);
@@ -97,20 +90,18 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 		content.add(this.filePanel.getJPanel());
 		JScrollPane scrollPane = new JScrollPane(this.informationsTextPanel.getJPanel());
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-			public void adjustmentValueChanged(AdjustmentEvent e) {
-				if (e.getValueIsAdjusting()) {
-					scrollBarPosition = e.getAdjustable().getValue();
-					isMaximumScrollbar = e.getAdjustable().getMaximum() == (scrollBarPosition + scrollPane.getVerticalScrollBar().getModel().getExtent());
+		scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
+			if (e.getValueIsAdjusting()) {
+				scrollBarPosition = e.getAdjustable().getValue();
+				isMaximumScrollbar = e.getAdjustable().getMaximum() == (scrollBarPosition + scrollPane.getVerticalScrollBar().getModel().getExtent());
+			} else {
+				if (isMaximumScrollbar) {
+					e.getAdjustable().setValue(e.getAdjustable().getMaximum());
 				} else {
-					if (isMaximumScrollbar) {
-						e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-					} else {
-						e.getAdjustable().setValue(scrollBarPosition);
-					}
+					e.getAdjustable().setValue(scrollBarPosition);
 				}
-
 			}
+
 		});
 		content.add(scrollPane);
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {

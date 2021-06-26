@@ -78,6 +78,12 @@ public interface IContentTextGenericPanel extends IAccessPanel {
 	 * @param enabled Vrai, si actif faux sinon
 	 */
 	void setEnabledOnAllField(boolean enabled);
+
+	/**
+	 * Permet de définir si les champs sont en readOnly
+	 * @param isReadOnly vrai si readonly, faux sinon
+	 */
+	void setReadOnly(Boolean isReadOnly);
 	
 	/**
 	 * Permet de définir la valeur dans le champ texte à partir de la clé
@@ -96,5 +102,11 @@ public interface IContentTextGenericPanel extends IAccessPanel {
 	 * @param refreshDisplay refresh display consumer
 	 */
 	void setRefreshDisplayConsumer(Consumer<?> refreshDisplay);
+
+	/**
+	 * Permet de définir la clé du texte à utiliser
+	 * @param keyText Clé du texte
+	 */
+	void setKeyText(String keyText);
 	
 }

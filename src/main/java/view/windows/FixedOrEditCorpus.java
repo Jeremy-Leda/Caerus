@@ -15,12 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
-import view.beans.ActionOperationTypeEnum;
-import view.beans.ActionUserTypeEnum;
-import view.beans.ConsumerTextTypeEnum;
-import view.beans.FunctionTextTypeEnum;
-import view.beans.PictureTypeEnum;
-import view.beans.TextIhmTypeEnum;
+import view.beans.*;
 import view.interfaces.IActionOnClose;
 import view.interfaces.IActionPanel;
 import view.interfaces.IContentTextGenericPanel;
@@ -59,7 +54,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 		this.actionUserType = actionUserType;
 		this.filePanel = new FilePanel();
 		this.informationsCorpusPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JTEXTFIELD,
-				ConsumerTextTypeEnum.CORPUS, FunctionTextTypeEnum.CORPUS);
+				StateCorpusEnum.EDIT);
 		this.actionFixedPanel = new ActionPanel(1);
 		this.actionManagePanel = new ActionPanel(3);
 		this.content = new JPanel();
@@ -104,13 +99,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 		this.actionFixedPanel.addAction(0, saveAndGoToNextOrQuit());
 		this.actionManagePanel.addAction(0, openPanelForAddText());
 		this.actionManagePanel.addAction(1, saveAndQuit());
-		this.actionManagePanel.addAction(2, new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				closeFrame();
-			}
-		});
+		this.actionManagePanel.addAction(2, e -> closeFrame());
 		this.actionFixedPanel.setIconButton(0, PictureTypeEnum.SAVE);
 		this.actionManagePanel.setIconButton(1, PictureTypeEnum.SAVE);
 	}
@@ -121,19 +110,15 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	 * @return
 	 */
 	private ActionListener saveAndQuit() {
-		return new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getControler().applyEditText();
-				try {
-					getControler().writeEditText();
-				} catch (IOException e1) {
-					logger.error(e1.getMessage(), e1);
-				}
-				getControler().clearEditingCorpus();
-				closeFrame();
+		return e -> {
+			getControler().applyEditText();
+			try {
+				getControler().writeEditText();
+			} catch (IOException e1) {
+				logger.error(e1.getMessage(), e1);
 			}
+			getControler().clearEditingCorpus();
+			closeFrame();
 		};
 	}
 

@@ -7,8 +7,10 @@ import java.awt.event.KeyListener;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
+import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -19,9 +21,11 @@ import javax.swing.JViewport;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
+import controler.IConfigurationControler;
 import org.apache.commons.lang3.StringUtils;
 
 import view.abstracts.ContentTextPanelAbstract;
+import view.beans.*;
 
 /**
  * 
@@ -33,15 +37,17 @@ import view.abstracts.ContentTextPanelAbstract;
  */
 public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JScrollPane> {
 
-	private Function<String, String> functionToGetValue;
-	private BiConsumer<String, String> consumerEditValue;
+	private final StateCorpusEnum stateCorpusAction;
 	private Consumer<?> refreshDisplay;
 	private static final Integer NB_CARAC = 50;
 	private static final Integer NB_CARAC_MAX = 102;
+	private final IConfigurationControler controler;
+	private Optional<String> optionalKeyText = Optional.empty();
+	private Boolean isReadOnly = false;
 
-	@Override
-	public void consumerToEditValue(BiConsumer<String, String> consumerEditValue) {
-		this.consumerEditValue = consumerEditValue;
+	public ContentScrollPaneTextAreaPanel(IConfigurationControler controler, StateCorpusEnum stateCorpusAction) {
+		this.controler = controler;
+		this.stateCorpusAction = stateCorpusAction;
 	}
 
 	@Override
@@ -49,25 +55,28 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 		JTextArea textArea = new JTextArea(1, NB_CARAC);
 		textArea.setLineWrap(true);
 		textArea.setWrapStyleWord(true);
-		textArea.addFocusListener(saveValue(key));
+		textArea.addFocusListener(saveValue(controler, stateCorpusAction, key));
 		textArea.addKeyListener(refreshDisplayKeyListener(textArea));
-		if (null != this.functionToGetValue) {
-			String content = StringUtils.trim(this.functionToGetValue.apply(key));
-			textArea.setText(content);
+		textArea.setEditable(!isReadOnly);
+		this.stateCorpusAction.getOptionalStateCorpusGetActionCmdStringBiFunction().ifPresent(c -> {
+			final StateCorpusGetActionCmd cmd = super.getStateCorpusGetActionCmd(optionalKeyText, key);
+			String contentServer = c.apply(controler, cmd);
+			String contentTrim = StringUtils.trim(contentServer);
+			textArea.setText(contentTrim);
 			refreshNbLines(textArea);
-		}
+		});
 		JScrollPane areaScrollPane = new JScrollPane(textArea);
 		return areaScrollPane;
 	}
 
 	@Override
-	public void functionToGetValue(Function<String, String> functionToGetValue) {
-		this.functionToGetValue = functionToGetValue;
+	public void refreshComponents(Map<String, String> informationFieldMap) {
+		clearAndFillMap(informationFieldMap);
 	}
 
 	@Override
-	public void refreshComponents(Map<String, String> informationFieldMap) {
-		clearAndFillMap(informationFieldMap);
+	public void setReadOnly(Boolean isReadOnly) {
+		this.isReadOnly = isReadOnly;
 	}
 
 	@Override
@@ -78,39 +87,16 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 	@Override
 	public void reloadValue() {
 		super.getFieldValueMap().keySet().forEach(key -> {
-			String newValue = StringUtils.EMPTY;
-			if (null != this.functionToGetValue) {
-				newValue = this.functionToGetValue.apply(key);
-			}
-			super.setValue(key, newValue);
+			final StateCorpusGetActionCmd cmd = super.getStateCorpusGetActionCmd(optionalKeyText, key);
+			this.stateCorpusAction.getOptionalStateCorpusGetActionCmdStringBiFunction().ifPresentOrElse(
+					c -> super.setValue(key, c.apply(controler, cmd)),
+					() -> super.setValue(key, StringUtils.EMPTY));
 		});
 	}
 
 	@Override
 	public void setValueToField(JScrollPane field, String value) {
 		((JTextArea) ((JViewport) field.getComponent(0)).getComponent(0)).setText(value);
-	}
-
-	/**
-	 * Permet de se procurer le listener pour l'enregistrement sur la perte du focus
-	 * 
-	 * @param key Clé
-	 * @return le focus listener
-	 */
-	private FocusListener saveValue(String key) {
-		return new FocusListener() {
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				if (null != consumerEditValue) {
-					consumerEditValue.accept(key, ((JTextArea) e.getSource()).getText());
-				}
-			}
-
-			@Override
-			public void focusGained(FocusEvent e) {
-			}
-		};
 	}
 
 	@Override
@@ -175,4 +161,8 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 		this.refreshDisplay = refreshDisplay;
 	}
 
+	@Override
+	public void setKeyText(String keyText) {
+		this.optionalKeyText = Optional.ofNullable(keyText);
+	}
 }

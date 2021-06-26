@@ -43,13 +43,15 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
     private final LexicometricAnalyzeCmd cmd;
     private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
     private final Map<String, String> mapField;
+    private Optional<ReadCorpus> optionalReadCorpusWindow = Optional.empty();
+    private Optional<ReadText> optionalReadTextWindow = Optional.empty();
 
     /**
      * Constructeur
      * @param configurationControler controller
      */
     public AnalysisTokenDetailResultWindow(IConfigurationControler configurationControler, LexicometricAnalyzeCmd cmd, LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum) {
-        super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE), configurationControler);
+        super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE), configurationControler, false);
         radioButtonPanel = new RadioButtonPanel(cmd.getFieldToAnalyzeSet().size());
         LinkedList<String> headerLinkedList = new LinkedList<>();
         headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
@@ -60,6 +62,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         this.lexicometricAnalyzeTypeEnum = lexicometricAnalyzeTypeEnum;
         this.mapField = getControler().getFieldConfigurationNameLabelWithoutMetaMap();
         this.labelsPanel = new LabelsPanel(getMessage(WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE), 2);
+        this.addActionOnClose(e -> closeAutomaticallyAllWindows());
         createWindow();
     }
 
@@ -82,6 +85,16 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         Map<Integer, String> labelMap = Map.of(0, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_META_BUTTON_LABEL),
                 1, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_DATA_BUTTON_LABEL));
         this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), labelMap);
+        this.actionPanel.addAction(0, e -> {
+            actionPanel.setEnabled(0, false);
+            optionalReadCorpusWindow = Optional.of(new ReadCorpus(getMessage(WINDOW_READ_CORPUS_TITLE), getControler(), false, this.cmd.getKeyTextFilteredList().get(current)));
+            optionalReadCorpusWindow.get().addActionOnClose(s -> actionPanel.setEnabled(0, true));
+        });
+        this.actionPanel.addAction(1, e -> {
+            actionPanel.setEnabled(1, false);
+            optionalReadTextWindow = Optional.of(new ReadText(getMessage(WINDOW_READ_TEXT_TITLE), getControler(), false, this.cmd.getKeyTextFilteredList().get(current)));
+            optionalReadTextWindow.get().addActionOnClose(s -> actionPanel.setEnabled(1, true));
+        });
     }
 
     /**
@@ -143,12 +156,14 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
     private void loadText() {
         tableAnalysisPanel.clearSelection();
         String key = this.cmd.getKeyTextFilteredList().get(current);
+        optionalReadCorpusWindow.ifPresent(readCorpus -> readCorpus.setKeyText(key));
+        optionalReadTextWindow.ifPresent(readText -> readText.setKeyText(key));
         AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(List.of(key));
         this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
         this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
         this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
         String field = mapField.entrySet().stream().filter(s -> s.getValue().equals(this.radioButtonPanel.getSelectedLabel())).findFirst().get().getKey();
-        this.textHighlightPanel.setText(StringUtils.trim(getControler().getValueFromKeyTextAndField(key, field)));
+        this.textHighlightPanel.setText(StringUtils.trim(getControler().getValueFromKeyTextAndFieldWithAnalyzeTreatment(key, field)));
         refreshNavigationDisplay();
     }
 
@@ -160,6 +175,18 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         return result -> {
             String word = String.valueOf(result.get(0));
             this.textHighlightPanel.highlightWord(word, Color.CYAN);
+        };
+    }
+
+    /**
+     * Consumer pour rattacher la fermeture de la fenêtre fille si présente
+     *
+     * @return
+     */
+    private Consumer<Void> closeAutomaticallyAllWindows() {
+        return (v) -> {
+            optionalReadCorpusWindow.ifPresent(e -> e.closeFrame());
+            optionalReadTextWindow.ifPresent(e -> closeFrame());
         };
     }
 }

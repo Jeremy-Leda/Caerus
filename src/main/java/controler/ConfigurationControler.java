@@ -729,9 +729,14 @@ public class ConfigurationControler implements IConfigurationControler {
 	public String getValueFromKeyTextAndField(String key, String field) {
 		Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(key);
 		if (textFromKey.isPresent()) {
-			return LexicometricAnalysis.getInstance().getTextPreTreatment(textFromKey.get().getStructuredText().getContent(field));
+			return textFromKey.get().getStructuredText().getContent(field);
 		}
 		return StringUtils.EMPTY;
+	}
+
+	@Override
+	public String getValueFromKeyTextAndFieldWithAnalyzeTreatment(String key, String field) {
+		return LexicometricAnalysis.getInstance().getTextPreTreatment(getValueFromKeyTextAndField(key, field));
 	}
 
 }

@@ -17,10 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
-import view.beans.ConsumerTextTypeEnum;
-import view.beans.FunctionTextTypeEnum;
-import view.beans.PictureTypeEnum;
-import view.beans.TextIhmTypeEnum;
+import view.beans.*;
 import view.interfaces.IActionPanel;
 import view.interfaces.IContentTextGenericPanel;
 import view.panel.ActionPanel;
@@ -56,8 +53,8 @@ public class CreateCorpus extends ModalJFrameAbstract {
 	
 	public CreateCorpus(IConfigurationControler controler) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_CORPUS_TITLE), controler);
-		this.filePanel = new ContentTextGenericPanel(controler, TextIhmTypeEnum.JTEXTFIELD, ConsumerTextTypeEnum.NULL, FunctionTextTypeEnum.NULL);
-		this.informationsCorpusPanel = new ContentTextGenericPanel(controler, TextIhmTypeEnum.JTEXTFIELD, ConsumerTextTypeEnum.NULL, FunctionTextTypeEnum.NULL);
+		this.filePanel = new ContentTextGenericPanel(controler, TextIhmTypeEnum.JTEXTFIELD, StateCorpusEnum.CREATE);
+		this.informationsCorpusPanel = new ContentTextGenericPanel(controler, TextIhmTypeEnum.JTEXTFIELD, StateCorpusEnum.CREATE);
 		this.actionPanel = new ActionPanel(1);
 		this.content = new JPanel();
 		this.mapFilePanel = new HashMap<>();

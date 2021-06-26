@@ -676,4 +676,13 @@ public interface IConfigurationControler {
 	 */
 	String getValueFromKeyTextAndField(String key, String field);
 
+	/**
+	 * Permet de se procurer la valeur en fonction de la clé du texte et du champ recherché
+	 * Le prétraitement du texte est effectué avant son retour
+	 * @param key Clé du texte
+	 * @param field Champ recherché
+	 * @return la valeur
+	 */
+	String getValueFromKeyTextAndFieldWithAnalyzeTreatment(String key, String field);
+
 }

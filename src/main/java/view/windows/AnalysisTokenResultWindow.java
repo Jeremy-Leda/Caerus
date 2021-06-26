@@ -41,7 +41,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
                                      AnalysisResultDisplay analysisResultDisplay,
                                      LexicometricAnalyzeCmd cmd,
                                      LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum) {
-        super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE), controler);
+        super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE), controler, false);
         this.analysisResultDisplay = analysisResultDisplay;
         this.cmd = cmd;
         this.lexicometricAnalyzeTypeEnum = lexicometricAnalyzeTypeEnum;

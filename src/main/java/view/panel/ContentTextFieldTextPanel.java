@@ -52,7 +52,12 @@ public class ContentTextFieldTextPanel extends ContentTextPanelAbstract<JTextFie
 
 	@Override
 	public JTextField createNewComponentWithText(String key) {
-		JTextField textField = new JTextField(StringUtils.EMPTY, 30);
+		JTextField textField;
+		if (stateCorpusAction.equals(StateCorpusEnum.READ)) {
+			textField = new JTextField(StringUtils.EMPTY, 10);
+		} else {
+			textField = new JTextField(StringUtils.EMPTY, 30);
+		}
 		textField.setEditable(!isReadOnly);
 		textField.addFocusListener(saveValue(controler, stateCorpusAction, key));
 		this.stateCorpusAction.getOptionalStateCorpusGetActionCmdStringBiFunction().ifPresent(c -> {

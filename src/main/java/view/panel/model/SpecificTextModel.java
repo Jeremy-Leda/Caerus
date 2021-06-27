@@ -1,14 +1,6 @@
 package view.panel.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
@@ -18,7 +10,7 @@ import javax.swing.JTextField;
 import org.apache.commons.lang3.StringUtils;
 
 import controler.IConfigurationControler;
-import view.beans.SpecificRow;
+import view.beans.*;
 import view.interfaces.IModalFrameRepack;
 import view.interfaces.ISpecificTextModel;
 import view.interfaces.ISpecificTextRefreshPanel;
@@ -56,18 +48,20 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private final IModalFrameRepack modalFrameRepack;
 	private Integer currentIndex;
 	private Integer currentSelectedIndexInList;
-	private Map<String, String> mapSelectedValue;
+	private final Map<String, String> mapSelectedValue;
 	private final List<Consumer<?>> refreshOnLoadFieldConsumerList;
 	private Consumer<?> clearSelectionConsumer;
 	private final String HTML_BOLD_HEADER = "<html><b>%s</b></html>";
 	private final List<Integer> allSelectedIndexList;
+	private Optional<String> keyText = Optional.empty();
+	private final StateCorpusEnum stateCorpusAction;
 
 	/**
 	 * Constructeur
 	 * 
 	 * @param controler controler pour le chargment des données
 	 */
-	public SpecificTextModel(IConfigurationControler controler, IModalFrameRepack modalFrameRepack) {
+	public SpecificTextModel(IConfigurationControler controler, IModalFrameRepack modalFrameRepack, StateCorpusEnum stateCorpusAction) {
 		this.mapKeyIndex = new HashMap<String, Integer>();
 		this.mapHeaderKeyFieldText = new LinkedHashMap<String, String>();
 		this.mapHeaderFieldTextLabelField = new LinkedHashMap<String, String>();
@@ -82,6 +76,7 @@ public class SpecificTextModel implements ISpecificTextModel {
 		this.modalFrameRepack = modalFrameRepack;
 		this.currentIndex = 0;
 		this.currentSelectedIndexInList = null;
+		this.stateCorpusAction = stateCorpusAction;
 		allSelectedIndexList = new ArrayList<>();
 	}
 
@@ -138,7 +133,9 @@ public class SpecificTextModel implements ISpecificTextModel {
 			StringBuilder sb = new StringBuilder(v.replace("[", "").replace("]", ""));
 			sb.append(" : ");
 			this.mapHeaderFieldTextLabelField.put(k, sb.toString());
-			this.mapHeaderKeyFieldText.put(k, controler.getFieldInEditingCorpus(k));
+			String valeur = stateCorpusAction.getOptionalStateCorpusGetActionCmdStringBiFunction().get()
+					.apply(controler, getCorpusGetSpecificActionCmd(k));
+			this.mapHeaderKeyFieldText.put(k, valeur);
 		});
 	}
 
@@ -149,7 +146,8 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 */
 	private void loadSpecificFieldListValue(Integer index) {
 		this.mapKeyFieldListField.clear();
-		Map<String, List<String>> specificFieldInEditingCorpus = this.controler.getSpecificFieldInEditingCorpus(index);
+		Map<String, List<String>> specificFieldInEditingCorpus = stateCorpusAction.getStateCorpusGetSpecificActionCmdMapBiFunction()
+				.get().apply(controler, getCorpusGetSpecificActionCmd(index));
 		specificFieldInEditingCorpus.entrySet().stream().forEach(entry -> {
 			this.mapKeyFieldListField.put(entry.getKey(), entry.getValue());
 		});
@@ -226,7 +224,11 @@ public class SpecificTextModel implements ISpecificTextModel {
 	 */
 	@Override
 	public void updateField(String key, String value) {
-		this.controler.updateFieldInEditingCorpus(key, value);
+		stateCorpusAction.getOptionalStateCorpusSaveActionCmdBiConsumer().ifPresent(s -> s.accept(controler,
+				new StateCorpusSaveActionCmdBuilder()
+					.keyField(key)
+					.value(value)
+					.build()));
 	}
 
 	/**
@@ -362,7 +364,11 @@ public class SpecificTextModel implements ISpecificTextModel {
 	private void updateSpecificFieldControler() {
 		// controler.updateSpecificFieldInEditingCorpus(currentIndex,
 		// mapKeyFieldListField);
-		controler.updateSpecificFieldInEditingCorpus(currentIndex, constructMapKeyListValueForControler());
+		this.stateCorpusAction.getStateCorpusSaveSpecificActionCmdBiConsumer().ifPresent(s ->
+				s.accept(controler, new StateCorpusSaveSpecificActionCmdBuilder()
+					.index(currentIndex)
+					.valueMap(constructMapKeyListValueForControler())
+					.build()));
 		clearCurrentSelection();
 		loadAllField(currentIndex);
 	}
@@ -397,6 +403,40 @@ public class SpecificTextModel implements ISpecificTextModel {
 		}
 		// this.setCurrentSelectedIndexInList(-1);
 		this.mapSelectedValue.clear();
+	}
+
+	/**
+	 * Permet de se procurer la commande pour la récupération dans le corpus
+	 * @param field champ à récupérer
+	 * @return la cmd
+	 */
+	private StateCorpusGetActionCmd getCorpusGetSpecificActionCmd(String field) {
+		if (this.keyText.isPresent()) {
+			return new StateCorpusGetActionCmdBuilder()
+					.keyText(this.keyText.get())
+					.keyField(field)
+					.build();
+		}
+		return new StateCorpusGetActionCmdBuilder()
+				.keyField(field)
+				.build();
+	}
+
+	/**
+	 * Permet de se procurer la commande pour la récupération des spécifiques dans le corpus
+	 * @param index index à récupérer
+	 * @return la cmd
+	 */
+	private StateCorpusGetSpecificActionCmd getCorpusGetSpecificActionCmd(Integer index) {
+		if (this.keyText.isPresent()) {
+			return new StateCorpusGetSpecificActionCmdBuilder()
+					.keyText(this.keyText.get())
+					.index(index)
+					.build();
+		}
+		return new StateCorpusGetSpecificActionCmdBuilder()
+				.index(index)
+				.build();
 	}
 
 	/**
@@ -508,6 +548,11 @@ public class SpecificTextModel implements ISpecificTextModel {
 	@Override
 	public void clearAllSelectedIndexList() {
 		this.allSelectedIndexList.clear();
+	}
+
+	@Override
+	public void setKeyText(String keyText) {
+		this.keyText = Optional.ofNullable(keyText);
 	}
 
 }

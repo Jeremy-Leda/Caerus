@@ -24,6 +24,7 @@ import javax.swing.text.Highlighter;
 import controler.IConfigurationControler;
 import org.apache.commons.lang3.StringUtils;
 
+import org.apache.regexp.RE;
 import view.abstracts.ContentTextPanelAbstract;
 import view.beans.*;
 
@@ -39,7 +40,7 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 
 	private final StateCorpusEnum stateCorpusAction;
 	private Consumer<?> refreshDisplay;
-	private static final Integer NB_CARAC = 50;
+	private static Integer NB_CARAC;
 	private static final Integer NB_CARAC_MAX = 102;
 	private final IConfigurationControler controler;
 	private Optional<String> optionalKeyText = Optional.empty();
@@ -48,6 +49,11 @@ public class ContentScrollPaneTextAreaPanel extends ContentTextPanelAbstract<JSc
 	public ContentScrollPaneTextAreaPanel(IConfigurationControler controler, StateCorpusEnum stateCorpusAction) {
 		this.controler = controler;
 		this.stateCorpusAction = stateCorpusAction;
+		if (stateCorpusAction.equals(StateCorpusEnum.READ)) {
+			NB_CARAC = 30;
+		} else {
+			NB_CARAC = 50;
+		}
 	}
 
 	@Override

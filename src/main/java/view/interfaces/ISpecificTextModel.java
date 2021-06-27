@@ -186,4 +186,10 @@ public interface ISpecificTextModel {
 	 * Permet de supprimer la liste des index sélectionné de la liste
 	 */
 	void clearAllSelectedIndexList();
+
+	/**
+	 * Permet de définir la clé du texte à utiliser pour les donnéesl
+	 * @param keyText Clé du texte
+	 */
+	void setKeyText(String keyText);
 }

@@ -178,6 +178,14 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
+	public Map<String, List<String>> getSpecificFieldInUserStructuredText(String keyText, Integer index) {
+		if (null != index && index < getNbSpecificConfiguration()) {
+			return this.configurationModel.getSpecificFieldInUserStructuredText(keyText, index);
+		}
+		return this.configurationModel.getSpecificFieldInUserStructuredText(keyText,getNbSpecificConfiguration() - 1);
+	}
+
+	@Override
 	public String getFieldInEditingCorpus(String key) {
 		if (haveEditingCorpus() && StringUtils.isNotBlank(key)) {
 			return this.configurationModel.getFieldInEditingCorpus(key);

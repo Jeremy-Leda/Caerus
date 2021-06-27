@@ -205,12 +205,21 @@ public interface IConfigurationControler {
 	void updateSpecificFieldInEditingCorpus(Integer index, Map<String, List<String>> specificFieldMap);
 	
 	/**
-	 * Permet de se procurer la map des champs spécifique
+	 * Permet de se procurer la map des champs spécifique pour le corpus en cours d'édition
 	 * 
 	 * @param index index de la configuration utilisé
 	 * @return la map des champs spécifique
 	 */
 	Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index);
+
+	/**
+	 * Permet de se procurer la map des champs spécifique pour les textes structurés
+	 *
+	 * @param keyText Clé du texte
+	 * @param index index de la configuration utilisé
+	 * @return la map des champs spécifique
+	 */
+	Map<String, List<String>> getSpecificFieldInUserStructuredText(String keyText, Integer index);
 	
 	/**
 	 * Permet de se procurer la valeur d'un champ

@@ -14,27 +14,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import model.analyze.beans.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import model.analyze.beans.Configuration;
-import model.analyze.beans.CurrentUserConfiguration;
-import model.analyze.beans.CurrentUserTexts;
-import model.analyze.beans.FilterCorpus;
-import model.analyze.beans.FilterText;
-import model.analyze.beans.InconsistencyChangeText;
-import model.analyze.beans.LineError;
-import model.analyze.beans.MemoryFile;
-import model.analyze.beans.MissingBaseCode;
-import model.analyze.beans.SaveCurrentFixedText;
-import model.analyze.beans.SpecificConfiguration;
-import model.analyze.beans.StructuredField;
-import model.analyze.beans.StructuredFile;
-import model.analyze.beans.StructuredText;
-import model.analyze.beans.UserStructuredText;
 import model.analyze.beans.specific.ConfigurationStructuredText;
 import model.analyze.constants.ErrorTypeEnum;
 import model.analyze.constants.FolderSettingsEnum;
@@ -666,37 +652,90 @@ public class UserSettings {
 
 	/**
 	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction
-	 * pour avoir le même nombre d'élément
+	 * pour avoir le même nombre d'élément pour les textes en cours d'édition
 	 * 
 	 * @param index index de la configuration utilisé
 	 * @return la map des champs spécifique
 	 */
 	public Map<String, List<String>> getSpecificFieldInEditingCorpus(Integer index) {
 		Map<String, List<String>> mapFinalOrdered = getMapOfSpecificFieldProcessedInEditingCorpus(index);
-		Integer nbMaxElement = mapFinalOrdered.values().stream().map(values -> values.size())
+		return getSpecificFieldMap(mapFinalOrdered, index);
+	}
+
+	/**
+	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction
+	 * pour avoir le même nombre d'élément pour les textes stockés
+	 *
+	 * @param keyText Clé du texte
+	 * @param index index de la configuration utilisé
+	 * @return la map des champs spécifique
+	 */
+	public Map<String, List<String>> getSpecificFieldInUserStructuredText(String keyText, Integer index) {
+		Map<String, List<String>> mapFinalOrdered = getMapOfSpecificFieldProcessedInStructuredText(keyText, index);
+		return getSpecificFieldMap(mapFinalOrdered, index);
+	}
+
+	/**
+	 * Permet de se procurer la map des champs spécifique traité avec l'adjonction
+	 * pour avoir le même nombre d'élément
+	 *
+	 * @param textSpecificFieldMap Map des champs spécifiques contenu par les textes
+	 * @param index index de la configuration utilisé
+	 * @return la map des champs spécifique
+	 */
+	public Map<String, List<String>> getSpecificFieldMap(Map<String, List<String>> textSpecificFieldMap, Integer index) {
+		Integer nbMaxElement = textSpecificFieldMap.values().stream().map(values -> values.size())
 				.max(Comparator.comparing(Integer::valueOf)).get();
-		mapFinalOrdered.entrySet().stream().filter(entry -> entry.getValue().size() < nbMaxElement).forEach(entry -> {
+		textSpecificFieldMap.entrySet().stream().filter(entry -> entry.getValue().size() < nbMaxElement).forEach(entry -> {
 			while (entry.getValue().size() < nbMaxElement) {
 				entry.getValue().add(StringUtils.SPACE);
 			}
 		});
-		return mapFinalOrdered;
+		return textSpecificFieldMap;
 	}
 
 	/**
-	 * Permet de se procurer la map des champs spécifiques qui a été traité
+	 * Permet de se procurer la map des champs spécifiques qui a été traité pour le corpus en cours d'édition
 	 * 
 	 * @param index index de la configuration utilisé
 	 * @return la map des champs spécifiques traité
 	 */
 	private Map<String, List<String>> getMapOfSpecificFieldProcessedInEditingCorpus(Integer index) {
+		return getMapOfSpecificFieldProcessed(EDITING_FIELD_MAP, index);
+	}
+
+	/**
+	 * Permet de se procurer la map des champs spécifiques qui a été traité pour un texte demandé par son identifiant
+	 *
+	 * @param keyText Clé du texte
+	 * @param index index de la configuration utilisé
+	 * @return la map des champs spécifiques traité
+	 */
+	private Map<String, List<String>> getMapOfSpecificFieldProcessedInStructuredText(String keyText, Integer index) {
+		Optional<UserStructuredText> textFromKey = getTextFromKey(keyText);
+		if (textFromKey.isPresent()) {
+			UserStructuredText userStructuredText = textFromKey.get();
+			Map<String, String> fieldValueMap = userStructuredText.getStructuredText().getListContent().stream()
+					.collect(Collectors.toMap(Content::getKey, Content::getValue));
+			return getMapOfSpecificFieldProcessed(fieldValueMap, index);
+		}
+		return new HashMap<>();
+	}
+
+	/**
+	 * Permet de se procurer la map des champs spécifiques qui a été traité
+	 * @param fieldValueMap Les valeurs brutes
+	 * @param index index de la configuration utilisé
+	 * @return la map des champs spécifiques traité
+	 */
+	private Map<String, List<String>> getMapOfSpecificFieldProcessed(Map<String, String> fieldValueMap, Integer index) {
 		String delimiter = currentConfiguration.getSpecificConfigurationList().stream()
 				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
 				.getDelimiter();
 		List<String> treatmentFieldList = currentConfiguration.getSpecificConfigurationList().stream()
 				.sorted(Comparator.comparing(SpecificConfiguration::getOrder)).collect(Collectors.toList()).get(index)
 				.getTreatmentFieldList();
-		Map<String, String> filteredMap = EDITING_FIELD_MAP.entrySet().stream()
+		Map<String, String> filteredMap = fieldValueMap.entrySet().stream()
 				.filter(k -> treatmentFieldList.contains(k.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 		Map<String, List<String>> mapFinal = filteredMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey,

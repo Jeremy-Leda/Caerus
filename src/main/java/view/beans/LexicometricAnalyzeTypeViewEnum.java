@@ -33,6 +33,14 @@ public enum LexicometricAnalyzeTypeViewEnum {
                             .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
                             .build()),
             ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.NUMBER_TOKENS, cmd))),
+    FREQUENCY(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_FREQUENCY_LABEL), wizard -> Optional.empty(),
+            (controler, lexicometricAnalyzeCmd) -> controler.launchLexicometricAnalyze(
+                    new LexicometricAnalyzeServerCmdBuilder()
+                            .lexicometricAnalyzeTypeEnum(LexicometricAnalyzeTypeEnum.FREQUENCY)
+                            .keyTextFilteredList(lexicometricAnalyzeCmd.getKeyTextFilteredList())
+                            .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
+                            .build()),
+            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.FREQUENCY, cmd))),
     LEMME_TYPE(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_LEMME_TYPE_LABEL), wizard -> Optional.ofNullable(new LexicometricListApplyChoosePanel(wizard,false, true)),
             (controler, lexicometricAnalyzeCmd) -> controler.launchLexicometricAnalyze(
                 new LexicometricAnalyzeServerCmdBuilder()
@@ -50,15 +58,7 @@ public enum LexicometricAnalyzeTypeViewEnum {
                             .preTreatmentListLexicometricMap(lexicometricAnalyzeCmd.toPreTreatmentServerMap())
                             .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
                             .build()),
-            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.TOKEN_RATIO, cmd))),
-    FREQUENCY(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_FREQUENCY_LABEL), wizard -> Optional.empty(),
-            (controler, lexicometricAnalyzeCmd) -> controler.launchLexicometricAnalyze(
-                    new LexicometricAnalyzeServerCmdBuilder()
-                            .lexicometricAnalyzeTypeEnum(LexicometricAnalyzeTypeEnum.FREQUENCY)
-                            .keyTextFilteredList(lexicometricAnalyzeCmd.getKeyTextFilteredList())
-                            .fieldToAnalyzeSet(lexicometricAnalyzeCmd.getFieldToAnalyzeSet())
-                            .build()),
-            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.FREQUENCY, cmd)));
+            ((controler, cmd) -> openResultWindow(controler, LexicometricAnalyzeTypeEnum.TOKEN_RATIO, cmd)));
 
 
     private final String label;

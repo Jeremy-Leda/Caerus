@@ -20,11 +20,13 @@ public class SpecificTableModel extends AbstractTableModel implements IRefreshPa
 	private final ISpecificTextModel specificTextModel;
 	private final List<String> headersList;
 	private final List<SpecificRow> rowsList;
+	private final Boolean isReadOnly;
 
-	public SpecificTableModel(ISpecificTextModel specificTextModel) {
+	public SpecificTableModel(ISpecificTextModel specificTextModel, Boolean isReadOnly) {
 		this.specificTextModel = specificTextModel;
 		this.headersList = new LinkedList<String>();
 		this.rowsList = new LinkedList<SpecificRow>();
+		this.isReadOnly = isReadOnly;
 	}
 
 	private void loadTable() {
@@ -51,7 +53,7 @@ public class SpecificTableModel extends AbstractTableModel implements IRefreshPa
 
 	@Override
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return columnIndex != 0;
+		return !isReadOnly && columnIndex != 0;
 	}
 	
 	@Override

@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.PictureTypeEnum;
+import view.beans.StateCorpusEnum;
 import view.interfaces.IAccessPanel;
 import view.interfaces.IActionPanel;
 import view.interfaces.IFilePanel;
@@ -48,7 +49,7 @@ public class FillSpecificText extends ModalJFrameAbstract {
 	
 	public FillSpecificText(String title, IConfigurationControler configurationControler) {
 		super(title, configurationControler, false);
-		this.specificTextModel = new SpecificTextModel(configurationControler, this);
+		this.specificTextModel = new SpecificTextModel(configurationControler, this, StateCorpusEnum.EDIT);
 		this.filePanel = new FilePanel();
 		this.actionPanel = new ActionPanel(3);
 		this.textInformationPanel = new InformationPanel(PictureTypeEnum.INFORMATION, 

@@ -35,30 +35,29 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 	private final SpecificTableModel tableModel;
 	private final JTable table;
 
-	public SpecificListTablePanel(ISpecificTextModel specificTextModel) {
+	public SpecificListTablePanel(ISpecificTextModel specificTextModel, Boolean isReadOnly) {
 		this.specificTextModel = specificTextModel;
 		this.detailsListPanel = new JPanel();
-		this.tableModel = new SpecificTableModel(this.specificTextModel);
+		this.tableModel = new SpecificTableModel(this.specificTextModel, isReadOnly);
 		this.table = new JTable(this.tableModel);
 		this.specificTextModel.setClearSelectionConsumer(v -> this.table.clearSelection());
 		this.scrollPanel = new JScrollPane(table);
 		loadDisplayDetailsListPanel();
 
-		InputMap im = table.getInputMap(JTable.WHEN_FOCUSED);
-		ActionMap am = table.getActionMap();
+		if (!isReadOnly) {
+			InputMap im = table.getInputMap(JTable.WHEN_FOCUSED);
+			ActionMap am = table.getActionMap();
 
-		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "DeleteRow");
-		am.put("DeleteRow", new AbstractAction() {
-			private static final long serialVersionUID = -4413772916234405739L;
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (specificTextModel.haveCurrentSelectedIndexInList()) {
-					specificTextModel.removeSpecificField();
+			im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "DeleteRow");
+			am.put("DeleteRow", new AbstractAction() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if (specificTextModel.haveCurrentSelectedIndexInList()) {
+						specificTextModel.removeSpecificField();
+					}
 				}
-
-			}
-		});
+			});
+		}
 	}
 
 	/**
@@ -69,20 +68,16 @@ public class SpecificListTablePanel implements ISpecificTextRefreshPanel {
 	}
 
 	private void addSelectionModelHandler() {
-		this.table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				ListSelectionModel lsm = (ListSelectionModel) e.getSource();
-				specificTextModel.clearAllSelectedIndexList();
-				specificTextModel.setCurrentSelectedIndexInList(lsm.getAnchorSelectionIndex());
-				// On ajoute la liste des index sélectionné
-				int minIndex = lsm.getMinSelectionIndex();
-				int maxIndex = lsm.getMaxSelectionIndex();
-				for (int i = minIndex; i <= maxIndex; i++) {
-					if (lsm.isSelectedIndex(i)) {
-						specificTextModel.addIndexToSelectedIndexList(i);
-					}
+		this.table.getSelectionModel().addListSelectionListener(e -> {
+			ListSelectionModel lsm = (ListSelectionModel) e.getSource();
+			specificTextModel.clearAllSelectedIndexList();
+			specificTextModel.setCurrentSelectedIndexInList(lsm.getAnchorSelectionIndex());
+			// On ajoute la liste des index sélectionné
+			int minIndex = lsm.getMinSelectionIndex();
+			int maxIndex = lsm.getMaxSelectionIndex();
+			for (int i = minIndex; i <= maxIndex; i++) {
+				if (lsm.isSelectedIndex(i)) {
+					specificTextModel.addIndexToSelectedIndexList(i);
 				}
 			}
 		});

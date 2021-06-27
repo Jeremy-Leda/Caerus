@@ -8,10 +8,7 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 import javax.swing.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,9 +53,9 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
     private void createChooseAnalyzeComboBox() {
         this.chooseAnalyzeComboBoxPanel = new ComboBoxPanel(StringUtils.EMPTY,
                 ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CHOOSE_ANALYSE_LABEL));
-        Set<String> lexicometricAnalyzeTypeSet = new HashSet<>();
+        List<String> lexicometricAnalyzeTypeSet = new ArrayList<>();
         lexicometricAnalyzeTypeSet.add(StringUtils.EMPTY);
-        lexicometricAnalyzeTypeSet.addAll(Arrays.stream(LexicometricAnalyzeTypeViewEnum.values()).map(e -> e.getLabel()).collect(Collectors.toSet()));
+        lexicometricAnalyzeTypeSet.addAll(Arrays.stream(LexicometricAnalyzeTypeViewEnum.values()).map(e -> e.getLabel()).collect(Collectors.toList()));
         this.chooseAnalyzeComboBoxPanel.refresh(lexicometricAnalyzeTypeSet);
         this.chooseAnalyzeComboBoxPanel.addConsumerOnSelectChange(e -> {
             Optional<LexicometricAnalyzeTypeViewEnum> optionalLexicometricAnalyzeTypeViewEnum =

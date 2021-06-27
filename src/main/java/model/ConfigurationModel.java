@@ -186,6 +186,12 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
+	public Map<String, List<String>> getSpecificFieldInUserStructuredText(String keyText, Integer index) {
+		logger.debug(String.format("CALL getSpecificFieldInUserStructuredText : keyText %s - index %d", keyText, index));
+		return UserSettings.getInstance().getSpecificFieldInUserStructuredText(keyText, index);
+	}
+
+	@Override
 	public String getFieldInEditingCorpus(String key) {
 		logger.debug(String.format("CALL getFieldInEditingCorpus : key %s", key));
 		return UserSettings.getInstance().getFieldInEditingCorpus(key);

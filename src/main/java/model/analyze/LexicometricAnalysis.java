@@ -54,7 +54,19 @@ public class LexicometricAnalysis {
                 .map(f -> UserSettings.getInstance().getFieldInEditingCorpus(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
                 .orElse(StringUtils.EMPTY);
         List<String> cleanWords = Arrays.stream(StringUtils.split(textToAnalyze))
-                .map(s -> s.replaceAll("[^A-Za-z0-9]", ""))
+                .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
+                .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
+                .map(s -> s.replaceAll("-", ""))
+                .map(s -> s.replaceAll("¿", ""))
+                .map(s -> s.replaceAll("[0-9]", ""))
+                .map(s -> s.replaceAll("^\"|\"$", ""))
+                .map(s -> s.replaceAll("“", ""))
+                .map(s -> s.replaceAll("”", ""))
+                .map(s -> s.replaceAll("»", ""))
+                .map(s -> s.replaceAll("«", ""))
+                .map(s -> s.replaceAll("^\'|\'$", ""))
+                .map(s -> s.replaceAll("‘", ""))
+                .map(s -> s.replaceAll("—", ""))
                 .map(s -> s.toLowerCase())
                 .filter(StringUtils::isNotBlank).collect(Collectors.toList());
         return cleanWords.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
@@ -165,7 +177,19 @@ public class LexicometricAnalysis {
      */
     public String getTextPreTreatment(String text) {
         List<String> cleanWords = Arrays.stream(StringUtils.split(text))
-                .map(s -> s.replaceAll("[^A-Za-z0-9]", ""))
+                .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
+                .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
+                .map(s -> s.replaceAll("-", ""))
+                .map(s -> s.replaceAll("¿", ""))
+                .map(s -> s.replaceAll("[0-9]", ""))
+                .map(s -> s.replaceAll("^\"|\"$", ""))
+                .map(s -> s.replaceAll("“", ""))
+                .map(s -> s.replaceAll("”", ""))
+                .map(s -> s.replaceAll("»", ""))
+                .map(s -> s.replaceAll("«", ""))
+                .map(s -> s.replaceAll("^\'|\'$", ""))
+                .map(s -> s.replaceAll("‘", ""))
+                .map(s -> s.replaceAll("—", ""))
                 .map(s -> s.toLowerCase())
                 .map(s -> StringUtils.SPACE + s + StringUtils.SPACE)
                 .filter(StringUtils::isNotBlank).collect(Collectors.toList());

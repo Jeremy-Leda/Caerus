@@ -17,8 +17,7 @@ import javax.swing.*;
 import java.util.Map;
 import java.util.Optional;
 
-import static view.utils.Constants.WINDOW_INFORMATION_ACTION_BUTTON_LABEL;
-import static view.utils.Constants.WINDOW_INFORMATION_ACTION_PANEL_LABEL;
+import static view.utils.Constants.*;
 
 /**
  *
@@ -33,14 +32,17 @@ public class ReadText extends ModalJFrameAbstract {
     private final IContentTextGenericPanel informationsCorpusPanel;
     private final IActionPanel actionPanel;
     private final JPanel content;
+    private final String keyText;
+    private Optional<ReadSpecificText> readSpecificTextOptional = Optional.empty();
 
     public ReadText(String title, IConfigurationControler configurationControler, Boolean isModal, String keyText) {
         super(title, configurationControler, isModal);
         this.informationsCorpusPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JSCROLLPANE,
                 StateCorpusEnum.READ, Optional.of(keyText));
         this.informationsCorpusPanel.setReadOnly(true);
-        this.actionPanel = new ActionPanel(1);
+        this.actionPanel = new ActionPanel(2);
         this.content = new JPanel();
+        this.keyText = keyText;
         updateContentInformationsCorpusPanel();
         createWindow();
     }
@@ -63,6 +65,7 @@ public class ReadText extends ModalJFrameAbstract {
      */
     public void setKeyText(String key) {
         this.informationsCorpusPanel.setKeyText(key);
+        this.readSpecificTextOptional.ifPresent(s -> s.setKeyText(key));
         this.informationsCorpusPanel.reloadValue();
     }
 
@@ -89,14 +92,23 @@ public class ReadText extends ModalJFrameAbstract {
      * Permet d'ajouter les actions au boutons
      */
     private void addActionPanel() {
-        this.actionPanel.addAction(0, e -> closeFrame());
+        this.actionPanel.addAction(0, e -> {
+            this.actionPanel.setEnabled(0, false);
+            readSpecificTextOptional = Optional.of(new ReadSpecificText(getMessage(WINDOW_READ_SPECIFIC_TITLE), getControler(), false, keyText));
+            readSpecificTextOptional.get().addActionOnClose(x -> {
+                this.actionPanel.setEnabled(0, true);
+                readSpecificTextOptional = Optional.empty();
+            });
+        });
+        this.actionPanel.addAction(1, e -> closeFrame());
     }
 
     /**
      * Permet de rafraichir l'affichage
      */
     private void refreshActionPanelMessage() {
-        this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), Map.of(0, getMessage(WINDOW_INFORMATION_ACTION_BUTTON_LABEL)));
+        this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), Map.of(0, getMessage(WINDOW_READ_SPECIFIC_TITLE),
+                1, getMessage(WINDOW_INFORMATION_ACTION_BUTTON_LABEL)));
     }
 
     @Override

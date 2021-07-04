@@ -1,7 +1,9 @@
 package model.analyze.lexicometric.beans;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -14,9 +16,10 @@ import java.util.Set;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LexicometricAnalysis {
 
-    private Set<Lemmatization> lemmatizationSet;
-    private Set<Tokenization> tokenizationSet;
-    private Set<LemmatizationByGrammaticalCategory> lemmatizationByGrammaticalCategorySet;
+    private Set<Lemmatization> lemmatizationSet = new HashSet<>();
+    private Set<Tokenization> tokenizationSet = new HashSet<>();
+    private Set<LemmatizationByGrammaticalCategory> lemmatizationByGrammaticalCategorySet = new HashSet<>();
+    private Set<ProperNoun> properNounSet = new HashSet<>();
 
     public Set<Lemmatization> getLemmatizationSet() {
         return lemmatizationSet;
@@ -42,16 +45,20 @@ public class LexicometricAnalysis {
         this.lemmatizationByGrammaticalCategorySet = lemmatizationByGrammaticalCategorySet;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        LexicometricAnalysis that = (LexicometricAnalysis) o;
-        return Objects.equals(lemmatizationSet, that.lemmatizationSet) && Objects.equals(tokenizationSet, that.tokenizationSet);
+    public Set<ProperNoun> getProperNounSet() {
+        return properNounSet;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(lemmatizationSet, tokenizationSet);
+    public void setProperNounSet(Set<ProperNoun> properNounSet) {
+        this.properNounSet = properNounSet;
     }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return lemmatizationSet.isEmpty() &&
+                tokenizationSet.isEmpty() &&
+                lemmatizationByGrammaticalCategorySet.isEmpty() &&
+                properNounSet.isEmpty();
+    }
+
 }

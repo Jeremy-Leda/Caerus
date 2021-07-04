@@ -14,22 +14,22 @@ import java.util.stream.Collectors;
 
 /**
  *
- * Configuration à utiliser pour la lemmatisation
+ * Configuration à utiliser pour les noms propres
  *
  */
-public class TokenizationConfiguration implements ILexicometricConfiguration<String> {
+public class ProperNounConfiguration implements ILexicometricConfiguration<String> {
 
-    private final Map<TokenizationHierarchicalEnum, Integer> tokenizationHierarchicalEnumIntegerMap;
+    private final Map<ProperNounHierarchicalEnum, Integer> tokenizationHierarchicalEnumIntegerMap;
     private final Set<IRootTable> hierarchicalTableSet;
 
-    public TokenizationConfiguration(ILexicometricHierarchical<TokenizationHierarchicalEnum> lexicometricHierarchical, Set<IRootTable> hierarchicalTableSet) {
+    public ProperNounConfiguration(ILexicometricHierarchical<ProperNounHierarchicalEnum> lexicometricHierarchical, Set<IRootTable> hierarchicalTableSet) {
         this.tokenizationHierarchicalEnumIntegerMap = lexicometricHierarchical.getHierarchicalIntegerMap();
         this.hierarchicalTableSet = hierarchicalTableSet;
     }
 
     @Override
     public Set<String> getProfilesSet() {
-        return UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.TOKENIZATION).stream().map(d -> d.getProfile()).collect(Collectors.toSet());
+        return UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.PROPER_NOUN).stream().map(d -> d.getProfile()).collect(Collectors.toSet());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TokenizationConfiguration implements ILexicometricConfiguration<Str
 
     @Override
     public BiConsumer<String, EditTableElement> getEditConsumer() {
-        return LexicometricConfigurationEnum.TOKENIZATION.getEditTableElementBiConsumer();
+        return LexicometricConfigurationEnum.PROPER_NOUN.getEditTableElementBiConsumer();
     }
 
     @Override
@@ -59,9 +59,9 @@ public class TokenizationConfiguration implements ILexicometricConfiguration<Str
     private FillTableConfiguration<String> getBaseConfiguration() {
         return new FillTableConfigurationBuilder<String>()
                 .source(Optional.empty())
-                .dest(tokenizationHierarchicalEnumIntegerMap.get(TokenizationHierarchicalEnum.BASE))
+                .dest(tokenizationHierarchicalEnumIntegerMap.get(ProperNounHierarchicalEnum.BASE))
                 .biFunction((profil, x) -> {
-                    Optional<ILexicometricData> lexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.TOKENIZATION).stream().filter(data -> data.getProfile().equals(profil)).findFirst();
+                    Optional<ILexicometricData> lexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.PROPER_NOUN).stream().filter(data -> data.getProfile().equals(profil)).findFirst();
                     if (lexicometricData.isEmpty()) {
                         return new HashSet<>();
                     }

@@ -18,14 +18,14 @@ import java.util.function.BiFunction;
 @PojoBuilder
 public class FillTableConfiguration<T> {
 
-    @NotNull
+    @NotNull(message = "source ne peut pas être null")
     private Optional<Integer> source;
 
-    @NotNull
+    @NotNull(message = "dest ne peut pas être null")
     @Min(0)
     private Integer dest;
 
-    @NotNull
+    @NotNull(message = "biFunction ne peut pas être null")
     private BiFunction<String, LinkedList<T>, Set<T>> biFunction;
 
     /**

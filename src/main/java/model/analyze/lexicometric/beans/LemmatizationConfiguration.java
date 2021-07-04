@@ -29,7 +29,7 @@ public class LemmatizationConfiguration implements ILexicometricConfiguration<St
 
     @Override
     public Set<String> getProfilesSet() {
-        return UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().map(d -> d.getProfile()).collect(Collectors.toSet());
+        return UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.LEMMATIZATION).stream().map(d -> d.getProfile()).collect(Collectors.toSet());
     }
 
     @Override
@@ -61,11 +61,11 @@ public class LemmatizationConfiguration implements ILexicometricConfiguration<St
                 .source(Optional.empty())
                 .dest(lemmatizationHierarchicalEnumIntegerMap.get(LemmatizationHierarchicalEnum.BASE))
                 .biFunction((profil, x) -> {
-                    Optional<ILexicometricData<Map<String, Set<String>>>> lexicometricData = UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().filter(data -> data.getProfile().equals(profil)).findFirst();
+                    Optional<ILexicometricData> lexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.LEMMATIZATION).stream().filter(data -> data.getProfile().equals(profil)).findFirst();
                     if (lexicometricData.isEmpty()) {
                         return new HashSet<>();
                     }
-                    return lexicometricData.get().getData().keySet();
+                    return ((Map<String, Set<String>>)lexicometricData.get().getData()).keySet();
                 })
                 .build();
     }
@@ -79,11 +79,11 @@ public class LemmatizationConfiguration implements ILexicometricConfiguration<St
                 .source(Optional.ofNullable(lemmatizationHierarchicalEnumIntegerMap.get(LemmatizationHierarchicalEnum.BASE)))
                 .dest(lemmatizationHierarchicalEnumIntegerMap.get(LemmatizationHierarchicalEnum.LEMME))
                 .biFunction((profil, base) -> {
-                    Optional<ILexicometricData<Map<String, Set<String>>>> lexicometricData = UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().filter(data -> data.getProfile().equals(profil)).findFirst();
+                    Optional<ILexicometricData> lexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.LEMMATIZATION).stream().filter(data -> data.getProfile().equals(profil)).findFirst();
                     if (lexicometricData.isEmpty()) {
                         return new HashSet<>();
                     }
-                    return lexicometricData.get().getData().get(base.get(0));
+                    return ((Map<String, Set<String>>)lexicometricData.get().getData()).get(base.get(0));
                 })
                 .build();
     }

@@ -5,10 +5,7 @@ import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricCopyData;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
-import model.analyze.lexicometric.services.LemmatizationByGrammaticalCategoryHierarchicalService;
-import model.analyze.lexicometric.services.LemmatizationHierarchicalService;
-import model.analyze.lexicometric.services.LexicometricEditTableService;
-import model.analyze.lexicometric.services.TokenizationHierarchicalService;
+import model.analyze.lexicometric.services.*;
 import model.exceptions.ErrorCode;
 import model.exceptions.InformationException;
 import model.exceptions.InformationExceptionBuilder;
@@ -31,19 +28,46 @@ import java.util.stream.Collectors;
  */
 public enum LexicometricConfigurationEnum {
 
-    TOKENIZATION(LexicometricConfigurationEnum::editTokenization, LexicometricEditEnum.TOKENIZATION,
+    TOKENIZATION((profil, x) -> editData(LexicometricCleanListEnum.TOKENIZATION, profil, x),
+            LexicometricEditEnum.TOKENIZATION,
             iLexicometricHierarchical -> new TokenizationHierarchicalService((ILexicometricHierarchical<TokenizationHierarchicalEditEnum>) iLexicometricHierarchical),
-            LexicometricConfigurationEnum::getTokenizationConfiguration, getTokenizationCopyConsumer(),
-            getAddProfilTokenizationConsumer(), getRemoveProfilTokenizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveTokenizationConfigurationInFile(x), x -> getTokenizationProfils(), false),
-    LEMMATIZATION(LexicometricConfigurationEnum::editLemmatization, LexicometricEditEnum.LEMMATIZATION,
+            LexicometricConfigurationEnum::getTokenizationConfiguration,
+            getCopyConsumer(LexicometricCleanListEnum.TOKENIZATION),
+            getAddProfilConsumer(LexicometricCleanListEnum.TOKENIZATION),
+            getRemoveProfilConsumer(LexicometricCleanListEnum.TOKENIZATION),
+            x -> UserLexicometricAnalysisSettings.getInstance().saveLexicometricConfigurationInFile(LexicometricCleanListEnum.TOKENIZATION, x),
+            x -> getProfilSet(LexicometricCleanListEnum.TOKENIZATION),
+            false),
+    LEMMATIZATION((profil, x) -> editData(LexicometricCleanListEnum.LEMMATIZATION, profil, x),
+            LexicometricEditEnum.LEMMATIZATION,
             iLexicometricHierarchical -> new LemmatizationHierarchicalService((ILexicometricHierarchical<LemmatizationHierarchicalEditEnum>) iLexicometricHierarchical),
-            LexicometricConfigurationEnum::getLemmatisationConfiguration, getLemmatisationCopyConsumer(),
-            getAddProfilLemmatizationConsumer(), getRemoveProfilLemmatizationConsumer(), x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationConfigurationInFile(x), x -> getLemmatizationProfils(), true),
-    LEMMATIZATION_BY_GRAMMATICAL_CATEGORY(LexicometricConfigurationEnum::editLemmatizationByGrammaticalCategory, LexicometricEditEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY,
+            LexicometricConfigurationEnum::getLemmatisationConfiguration,
+            getCopyConsumer(LexicometricCleanListEnum.LEMMATIZATION),
+            getAddProfilConsumer(LexicometricCleanListEnum.LEMMATIZATION),
+            getRemoveProfilConsumer(LexicometricCleanListEnum.LEMMATIZATION),
+            x -> UserLexicometricAnalysisSettings.getInstance().saveLexicometricConfigurationInFile(LexicometricCleanListEnum.LEMMATIZATION, x),
+            x -> getProfilSet(LexicometricCleanListEnum.LEMMATIZATION),
+            true),
+    LEMMATIZATION_BY_GRAMMATICAL_CATEGORY((profil, x) -> editData(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY, profil, x),
+            LexicometricEditEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY,
             iLexicometricHierarchical -> new LemmatizationByGrammaticalCategoryHierarchicalService((ILexicometricHierarchical<LemmatizationByGrammaticalCategoryHierarchicalEditEnum>) iLexicometricHierarchical),
-            LexicometricConfigurationEnum::getLemmatisationByGrammaticalCategoryConfiguration, getLemmatisationByGrammaticalCategoryCopyConsumer(),
-            getAddProfilLemmatizationByGrammaticalCategoryConsumer(), getRemoveProfilLemmatizationByGrammaticalCategoryConsumer(),
-            x -> UserLexicometricAnalysisSettings.getInstance().saveLemmatizationByGrammaticalCategoryConfigurationInFile(x), x -> getLemmatizationByGrammaticalCategoryProfils(), true);
+            LexicometricConfigurationEnum::getLemmatisationByGrammaticalCategoryConfiguration,
+            getCopyConsumer(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY),
+            getAddProfilConsumer(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY),
+            getRemoveProfilConsumer(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY),
+            x -> UserLexicometricAnalysisSettings.getInstance().saveLexicometricConfigurationInFile(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY, x),
+            x -> getProfilSet(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY),
+            true),
+    PROPER_NOUN((profil, x) -> editData(LexicometricCleanListEnum.PROPER_NOUN, profil, x),
+            LexicometricEditEnum.PROPER_NOUN,
+            iLexicometricHierarchical -> new ProperNounHierarchicalService((ILexicometricHierarchical<ProperNounHierarchicalEditEnum>) iLexicometricHierarchical),
+            LexicometricConfigurationEnum::getProperNounConfiguration,
+            getCopyConsumer(LexicometricCleanListEnum.PROPER_NOUN),
+            getAddProfilConsumer(LexicometricCleanListEnum.PROPER_NOUN),
+            getRemoveProfilConsumer(LexicometricCleanListEnum.PROPER_NOUN),
+            x -> UserLexicometricAnalysisSettings.getInstance().saveLexicometricConfigurationInFile(LexicometricCleanListEnum.PROPER_NOUN, x),
+            x -> getProfilSet(LexicometricCleanListEnum.PROPER_NOUN),
+            false);
 
     private static final LexicometricEditTableService lexicometricEditTableService = new LexicometricEditTableService();
     private final BiConsumer<String, EditTableElement> editTableElementBiConsumer;
@@ -62,13 +86,13 @@ public enum LexicometricConfigurationEnum {
      * Constructeur
      * @param editTableElementBiConsumer Le consumer pour éditer les données serveur
      * @param lexicometricEditEnum Enumeration provenant de l'ihm
-     * @param lexicometricHierarchicalViewToLexicometricHierarchicalServer
+     * @param lexicometricHierarchicalViewToLexicometricHierarchicalServer fonction pour la conversion de type
      * @param lexicometricHierarchicalILexicometricConfigurationFunction la configuration lexicometric
-     * @param copyConsumer
-     * @param addProfilConsumer
-     * @param removeProfilConsumer
-     * @param saveInDiskConsumer
-     * @param isLemmatization
+     * @param copyConsumer Consumer pour la copy
+     * @param addProfilConsumer consumer pour l'ajout de profil
+     * @param removeProfilConsumer consumer pour la suppression de profil
+     * @param saveInDiskConsumer consumer pour la sauvegarde sur le disque
+     * @param isLemmatization Vrai si c'est une liste de lemmatization
      */
     LexicometricConfigurationEnum(BiConsumer<String, EditTableElement> editTableElementBiConsumer, LexicometricEditEnum lexicometricEditEnum, Function<ILexicometricHierarchical<?>, ILexicometricHierarchical<?>> lexicometricHierarchicalViewToLexicometricHierarchicalServer, Function<ILexicometricHierarchical<?>, ILexicometricConfiguration> lexicometricHierarchicalILexicometricConfigurationFunction, BiConsumer<String, String> copyConsumer, Consumer<String> addProfilConsumer, Consumer<String> removeProfilConsumer, Consumer<String> saveInDiskConsumer, Function<Void, Set<String>> allProfilsFunction, Boolean isLemmatization) {
         this.editTableElementBiConsumer = editTableElementBiConsumer;
@@ -115,105 +139,94 @@ public enum LexicometricConfigurationEnum {
         return editTableElementBiConsumer;
     }
 
+
     /**
-     * Permet de se procurer la lemmatisation si elle existe
+     * Permet de se procurer les datas si elle existe
+     * @param typeList type de liste
      * @param profil profil de recherche
-     * @return la lemmatisation si elle existe
+     * @return les datas si elle existe
      */
-    private static Optional<ILexicometricData> getLemmatizationData(String profil) {
-        return UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(profil)).map(x -> (ILexicometricData) x).findFirst();
+    private static Optional<ILexicometricData> getData(LexicometricCleanListEnum typeList, String profil) {
+        return UserLexicometricAnalysisSettings.getInstance().getDataSet(typeList).stream().filter(x -> x.getProfile().equals(profil)).findFirst();
     }
 
     /**
-     * Permet de se procurer la tokenisation si elle existe
+     * Permet de se procurer la liste des profils
+     * @param typeList Type de liste
+     * @return la liste des profils
+     */
+    private static Set<String> getProfilSet(LexicometricCleanListEnum typeList) {
+        return UserLexicometricAnalysisSettings.getInstance().getDataSet(typeList).stream().map(ILexicometricData::getProfile).collect(Collectors.toSet());
+    }
+
+    /**
+     * Permet d'éditer les données serveur
+     * @param typeList type de liste
      * @param profil profil de recherche
-     * @return la tokenisation si elle existe
+     * @param editTableElement données nécessaire à l'édition
      */
-    private static Optional<ILexicometricData> getTokenizationData(String profil) {
-        return UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().stream().filter(lemmatization -> lemmatization.getProfile().equals(profil)).map(x -> (ILexicometricData) x).findFirst();
+    private static void editData(LexicometricCleanListEnum typeList, String profil, EditTableElement editTableElement) {
+        Optional<ILexicometricData> optionalILexicometricData = getData(typeList, profil);
+        optionalILexicometricData.ifPresent(iLexicometricData -> {
+            Object data = iLexicometricData.getData();
+            Object result = editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, data);
+            UserLexicometricAnalysisSettings.getInstance().saveDataWithProfil(typeList, profil, result);
+        });
     }
 
     /**
-     * Permet de se procurer la lemmatisation par catégorie grammatical si elle existe
-     * @param profil profil de recherche
-     * @return la lemmatisation par catégorie grammatical si elle existe
+     * Permet de se procurer un consumer de copie
+     * @param typeList Type de liste
+     * @return le consumer de copie
      */
-    private static Optional<ILexicometricData> getLemmatizationByGrammaticalCategoryData(String profil) {
-        return UserLexicometricAnalysisSettings.getInstance().getLemmatizationByGrammaticalCategorySet().stream().filter(lemmatization -> lemmatization.getProfile().equals(profil)).map(x -> (ILexicometricData) x).findFirst();
+    private static BiConsumer<String, String> getCopyConsumer(LexicometricCleanListEnum typeList) {
+        return (x,v) -> {
+            Optional<ILexicometricData> lemmatizationDataOrigin = getData(typeList, x);
+            Optional<ILexicometricData> lemmatizationDataDest = getData(typeList, v);
+            if (lemmatizationDataOrigin.isPresent() && lemmatizationDataDest.isPresent()) {
+                copyLexicometricData((ILexicometricCopyData) lemmatizationDataOrigin.get(), (ILexicometricCopyData) lemmatizationDataDest.get());
+            }
+        };
     }
 
     /**
-     * Permet de se procurer la liste des profils pour la lemmatisation
-     * @return la liste des profils pour la lemmatisation
+     * Permet de se procurer le consumer pour la création de profil pour la lemmatization
+     * @return le consumer pour la création de profil pour la lemmatization
      */
-    private static Set<String> getLemmatizationProfils() {
-        return UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().map(lemmatization -> lemmatization.getProfile()).collect(Collectors.toSet());
+    private static Consumer<String> getAddProfilConsumer(LexicometricCleanListEnum typeList) {
+        return x -> {
+            if (StringUtils.isBlank(x)) {
+                return;
+            }
+            boolean exist = UserLexicometricAnalysisSettings.getInstance().getDataSet(typeList).stream().anyMatch(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
+            if (exist) {
+                throw new ServerException().addInformationException(new InformationExceptionBuilder()
+                        .errorCode(ErrorCode.VALUE_EXIST)
+                        .objectInError(x)
+                        .build());
+            }
+            ILexicometricData lexicometricData = typeList.getNewInstanceProfilFunction().apply(x);
+            UserLexicometricAnalysisSettings.getInstance().getDataSet(typeList).add(lexicometricData);
+        };
     }
 
     /**
-     * Permet de se procurer la liste des profils pour la tokenization
-     * @return la liste des profils pour la tokenization
+     * Permet de se procurer le consumer pour la suppression d'un profil
+     * @param typeList Type de liste
+     * @return le consumer pour la suppression d'un profil
      */
-    private static Set<String> getTokenizationProfils() {
-        return UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().stream().map(tokenization -> tokenization.getProfile()).collect(Collectors.toSet());
-    }
-
-    /**
-     * Permet de se procurer la liste des profils pour la lemmatisation par catégorie grammatical
-     * @return la liste des profils pour la lemmatisation par catégorie grammatical
-     */
-    private static Set<String> getLemmatizationByGrammaticalCategoryProfils() {
-        return UserLexicometricAnalysisSettings.getInstance().getLemmatizationByGrammaticalCategorySet().stream().map(lemmatization -> lemmatization.getProfile()).collect(Collectors.toSet());
+    private static Consumer<String> getRemoveProfilConsumer(LexicometricCleanListEnum typeList) {
+        return x -> {
+            UserLexicometricAnalysisSettings.getInstance().getDataSet(typeList).removeIf(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
+            UserLexicometricAnalysisSettings.getInstance().setRemoveProfil(typeList, x);
+        };
     }
 
     /**
      * Permet de déterminer les tables hiérarchiques en provenance de l'IHM
-     * @return Les tables hiérarchiques en provenance de l'IHM
      */
     public void setHierarchicalTableSet(Set<IRootTable> hierarchicalTableSet) {
-        this.hierarchicalTableSet = hierarchicalTableSet;
-    }
-
-    /**
-     * Permet d'éditer les données serveur concernant la lemmatisation
-     * @param profil profil de recherche
-     * @param editTableElement données nécessaire à l'édition
-     */
-    private static void editLemmatization(String profil, EditTableElement editTableElement) {
-        Optional<ILexicometricData> optionalILexicometricData = getLemmatizationData(profil);
-        optionalILexicometricData.ifPresent(iLexicometricData -> {
-            Map<String, Set<String>> data = (Map<String, Set<String>>) iLexicometricData.getData();
-            Map<String, Set<String>> result = (Map<String, Set<String>>) editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, data);
-            UserLexicometricAnalysisSettings.getInstance().saveLemmatization(profil, result);
-        });
-    }
-
-    /**
-     * Permet d'éditer les données serveur concernant la tokenisation
-     * @param profil profil de recherche
-     * @param editTableElement données nécessaire à l'édition
-     */
-    private static void editTokenization(String profil, EditTableElement editTableElement) {
-        Optional<ILexicometricData> optionalILexicometricData = getTokenizationData(profil);
-        optionalILexicometricData.ifPresent(iLexicometricData -> {
-            Set<String> data = (Set<String>) iLexicometricData.getData();
-            Set<String> result = (Set<String>) editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, data);
-            UserLexicometricAnalysisSettings.getInstance().saveTokenization(profil, result);
-        });
-    }
-
-    /**
-     * Permet d'éditer les données serveur concernant la lemmatisation par catégorie grammatical
-     * @param profil profil de recherche
-     * @param editTableElement données nécessaire à l'édition
-     */
-    private static void editLemmatizationByGrammaticalCategory(String profil, EditTableElement editTableElement) {
-        Optional<ILexicometricData> optionalILexicometricData = getLemmatizationByGrammaticalCategoryData(profil);
-        optionalILexicometricData.ifPresent(iLexicometricData -> {
-            Map<String, Map<String, Set<String>>> data = (Map<String, Map<String, Set<String>>>) iLexicometricData.getData();
-            Map<String, Map<String, Set<String>>> result = (Map<String, Map<String, Set<String>>>) editTableElement.getActionEditTableEnum().getApplyFunction().apply(lexicometricEditTableService, editTableElement, data);
-            UserLexicometricAnalysisSettings.getInstance().saveLemmatizationByGrammaticalCategory(profil, result);
-        });
+        LexicometricConfigurationEnum.hierarchicalTableSet = hierarchicalTableSet;
     }
 
     /**
@@ -244,45 +257,12 @@ public enum LexicometricConfigurationEnum {
     }
 
     /**
-     * Permet de se procurer un consumer de copie pour la lemmatisation
-     * @return le consumer de copie pour la lemmatisation
+     * Permet de se procurer la configuration pour les noms propres
+     * @param lexicometricHierarchical interface contenant les informations des datas
+     * @return La configuration pour les noms propres
      */
-    private static BiConsumer<String, String> getLemmatisationCopyConsumer() {
-        return (x,v) -> {
-            Optional<ILexicometricData> lemmatizationDataOrigin = getLemmatizationData(x);
-            Optional<ILexicometricData> lemmatizationDataDest = getLemmatizationData(v);
-            if (lemmatizationDataOrigin.isPresent() && lemmatizationDataDest.isPresent()) {
-                copyLexicometricData((ILexicometricCopyData) lemmatizationDataOrigin.get(), (ILexicometricCopyData) lemmatizationDataDest.get());
-            }
-        };
-    }
-
-    /**
-     * Permet de se procurer un consumer de copie pour la tokenization
-     * @return le consumer de copie pour la tokenization
-     */
-    private static BiConsumer<String, String> getTokenizationCopyConsumer() {
-        return (x,v) -> {
-            Optional<ILexicometricData> tokenizationDataOrigin = getTokenizationData(x);
-            Optional<ILexicometricData> tokenizationDataDest = getTokenizationData(v);
-            if (tokenizationDataOrigin.isPresent() && tokenizationDataDest.isPresent()) {
-                copyLexicometricData((ILexicometricCopyData) tokenizationDataOrigin.get(), (ILexicometricCopyData) tokenizationDataDest.get());
-            }
-        };
-    }
-
-    /**
-     * Permet de se procurer un consumer de copie pour la lemmatisation par catégorie grammatical
-     * @return le consumer de copie pour la lemmatisation par catégorie grammatical
-     */
-    private static BiConsumer<String, String> getLemmatisationByGrammaticalCategoryCopyConsumer() {
-        return (x,v) -> {
-            Optional<ILexicometricData> lemmatizationDataOrigin = getLemmatizationByGrammaticalCategoryData(x);
-            Optional<ILexicometricData> lemmatizationDataDest = getLemmatizationByGrammaticalCategoryData(v);
-            if (lemmatizationDataOrigin.isPresent() && lemmatizationDataDest.isPresent()) {
-                copyLexicometricData((ILexicometricCopyData) lemmatizationDataOrigin.get(), (ILexicometricCopyData) lemmatizationDataDest.get());
-            }
-        };
+    private static ILexicometricConfiguration getProperNounConfiguration(ILexicometricHierarchical<?> lexicometricHierarchical) {
+        return new ProperNounConfiguration((ILexicometricHierarchical<ProperNounHierarchicalEnum>) lexicometricHierarchical, hierarchicalTableSet);
     }
 
     /**
@@ -319,105 +299,6 @@ public enum LexicometricConfigurationEnum {
      */
     public BiConsumer<String, String> getCopyConsumer() {
         return copyConsumer;
-    }
-
-    /**
-     * Permet de se procurer le consumer pour la création de profil pour la lemmatization
-     * @return le consumer pour la création de profil pour la lemmatization
-     */
-    private static Consumer<String> getAddProfilLemmatizationConsumer() {
-        return x -> {
-            if (StringUtils.isBlank(x)) {
-                return;
-            }
-            Boolean exist = UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().stream().anyMatch(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
-            if (exist) {
-                throw new ServerException().addInformationException(new InformationExceptionBuilder()
-                        .errorCode(ErrorCode.VALUE_EXIST)
-                        .objectInError(x)
-                        .build());
-            }
-            Lemmatization lemmatization = new Lemmatization();
-            lemmatization.setProfile(x);
-            UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().add(lemmatization);
-        };
-    }
-
-    /**
-     * Permet de se procurer le consumer pour la création de profil pour la tokenization
-     * @return le consumer pour la création de profil pour la tokenization
-     */
-    private static Consumer<String> getAddProfilTokenizationConsumer() {
-        return x -> {
-            if (StringUtils.isBlank(x)) {
-                return;
-            }
-            Boolean exist = UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().stream().anyMatch(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
-            if (exist) {
-                throw new ServerException().addInformationException(new InformationExceptionBuilder()
-                        .errorCode(ErrorCode.VALUE_EXIST)
-                        .objectInError(x)
-                        .build());
-            }
-            Tokenization tokenization = new Tokenization();
-            tokenization.setProfile(x);
-            UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().add(tokenization);
-        };
-    }
-
-    /**
-     * Permet de se procurer le consumer pour la création de profil pour la lemmatization par catégorie grammatical
-     * @return le consumer pour la création de profil pour la lemmatization par catégorie grammatical
-     */
-    private static Consumer<String> getAddProfilLemmatizationByGrammaticalCategoryConsumer() {
-        return x -> {
-            if (StringUtils.isBlank(x)) {
-                return;
-            }
-            Boolean exist = UserLexicometricAnalysisSettings.getInstance().getLemmatizationByGrammaticalCategorySet().stream().anyMatch(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
-            if (exist) {
-                throw new ServerException().addInformationException(new InformationExceptionBuilder()
-                        .errorCode(ErrorCode.VALUE_EXIST)
-                        .objectInError(x)
-                        .build());
-            }
-            LemmatizationByGrammaticalCategory lemmatization = new LemmatizationByGrammaticalCategory();
-            lemmatization.setProfile(x);
-            UserLexicometricAnalysisSettings.getInstance().getLemmatizationByGrammaticalCategorySet().add(lemmatization);
-        };
-    }
-
-    /**
-     * Permet de se procurer le consumer pour la suppression d'un profil pour la lemmatization
-     * @return le consumer pour la suppression d'un profil pour la lemmatization
-     */
-    private static Consumer<String> getRemoveProfilLemmatizationConsumer() {
-        return x -> {
-            UserLexicometricAnalysisSettings.getInstance().getLemmatizationSet().removeIf(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
-            UserLexicometricAnalysisSettings.getInstance().setRemoveLemmatizationProfil(x);
-        };
-    }
-
-    /**
-     * Permet de se procurer le consumer pour la suppression d'un profil pour la tokenization
-     * @return le consumer pour la suppression d'un profil pour la tokenization
-     */
-    private static Consumer<String> getRemoveProfilTokenizationConsumer() {
-        return x -> {
-            UserLexicometricAnalysisSettings.getInstance().getTokenizationSet().removeIf(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
-            UserLexicometricAnalysisSettings.getInstance().setRemoveTokenizationProfil(x);
-        };
-    }
-
-    /**
-     * Permet de se procurer le consumer pour la suppression d'un profil pour la lemmatization par catégorie grammatical
-     * @return le consumer pour la suppression d'un profil pour la lemmatization par catégorie grammatical
-     */
-    private static Consumer<String> getRemoveProfilLemmatizationByGrammaticalCategoryConsumer() {
-        return x -> {
-            UserLexicometricAnalysisSettings.getInstance().getLemmatizationByGrammaticalCategorySet().removeIf(s -> s.getProfile().toLowerCase(Locale.ROOT).equals(x.toLowerCase(Locale.ROOT)));
-            UserLexicometricAnalysisSettings.getInstance().setRemoveLemmatizationByGrammaticalCategoryProfil(x);
-        };
     }
 
     /**

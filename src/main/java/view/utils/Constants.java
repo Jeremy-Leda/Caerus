@@ -418,6 +418,8 @@ public final class Constants {
 	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL1_TITLE="window.menu.level6.sublevel3.sublevel1.title";
 	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL2_TITLE="window.menu.level6.sublevel3.sublevel2.title";
 	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL3_TITLE="window.menu.level6.sublevel3.sublevel3.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL4_TITLE="window.menu.level6.sublevel3.sublevel4.title";
+
 
 
 	public static final String WINDOW_EDIT_PROFILE_LABEL="window.edit.profile.label";
@@ -529,6 +531,16 @@ public final class Constants {
 	public static final String WINDOW_READ_SPECIFIC_TITLE="window.read.specific.title";
 
 
+	public static final String WINDOW_MANAGE_PROPER_NOUN_PANEL_TITLE="window.manage.proper.noun.panel.title";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_INFORMATION_MESSAGE="window.manage.proper.noun.information.message";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_TABLE_HEADER_LABEL="window.manage.proper.noun.table.header.label";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_ADD_INFORMATION_MESSAGE="window.manage.proper.noun.add.information.message";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_ADD_TEXT_LABEL="window.manage.proper.noun.add.text.label";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_TABLE_PANEL_TITLE="window.manage.proper.noun.table.panel.title";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_ADD_BUTTON_LABEL="window.manage.proper.noun.add.button.label";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_REMOVE_BUTTON_LABEL="window.manage.proper.noun.remove.button.label";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_FILTER_LABEL="window.manage.proper.noun.filter.label";
+	public static final String WINDOW_MANAGE_PROPER_NOUN_INFORMATION_LABEL="window.manage.proper.noun.information.label";
 
 
 

@@ -67,7 +67,7 @@ public abstract class ManageListAbstract extends ModalJFrameAbstract {
      * @param label Label du filtre
      * @return le table filter pour filtrer par rapport à une chaine de caractère
      */
-    private ITableFilterPanel getTableTextFilterPanel(String label) {
+    protected ITableFilterPanel getTableTextFilterPanel(String label) {
         TableFilterTextPanel tableFilterPanel = new TableFilterTextPanel();
         tableFilterPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, label));
         return tableFilterPanel;

@@ -743,8 +743,12 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public String getValueFromKeyTextAndFieldWithAnalyzeTreatment(String key, String field) {
-		return LexicometricAnalysis.getInstance().getTextPreTreatment(getValueFromKeyTextAndField(key, field));
+	public String getValueFromKeyTextAndFieldWithAnalyzeTreatment(String key, String field, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+		return LexicometricAnalysis.getInstance().getTextPreTreatment(getValueFromKeyTextAndField(key, field), preTreatmentListLexicometricMap);
 	}
 
+	@Override
+	public Collection<String> getPotentialProperNounCollection(String key, String field, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+		return LexicometricAnalysis.getInstance().getPotentialProperNounCollection(key, Set.of(field), preTreatmentListLexicometricMap);
+	}
 }

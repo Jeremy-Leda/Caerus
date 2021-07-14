@@ -3,8 +3,12 @@ package view.panel.model;
 import view.interfaces.ISpecificEditTableModel;
 
 import javax.swing.table.AbstractTableModel;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -16,16 +20,21 @@ public class EditTableModel extends AbstractTableModel {
     private final ISpecificEditTableModel specificEditTableModel;
     private final LinkedList<String> headersList;
     private final String HTML_BOLD_HEADER = "<html><b>%s</b></html>";
+    private final Boolean isReadOnly;
+    private final Map<Integer, Class<?>> columnClassMap;
 
     /**
      * Constructeur
      * @param header En tête pour le tableau
      * @param specificEditTableModel la gestion des données pour le tableau
      */
-    public EditTableModel(String header, ISpecificEditTableModel specificEditTableModel) {
+    public EditTableModel(String header, ISpecificEditTableModel specificEditTableModel, Boolean isReadOnly,
+                          Optional<Map<Integer, Class<?>>> columnClassMap) {
         this.headersList = new LinkedList<>();
         this.headersList.add(String.format(HTML_BOLD_HEADER,header));
         this.specificEditTableModel = specificEditTableModel;
+        this.isReadOnly = isReadOnly;
+        this.columnClassMap = columnClassMap.orElse(getStringColumnClassMap(this.headersList.size()));
         this.specificEditTableModel.setConsumerForFireTableInserted(getFireTableInsertConsumer());
         this.specificEditTableModel.setConsumerForFireTableUpdated(getFireTableUpdateConsumer());
         this.specificEditTableModel.setConsumerForFireTableDeleted(getFireTableDeleteConsumer());
@@ -48,7 +57,7 @@ public class EditTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return true;
+        return !isReadOnly;
     }
 
     @Override
@@ -88,4 +97,14 @@ public class EditTableModel extends AbstractTableModel {
         return (startRow, endRow) -> this.fireTableRowsDeleted(startRow, endRow);
     }
 
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return this.columnClassMap.get(columnIndex);
+    }
+
+    private Map<Integer, Class<?>> getStringColumnClassMap(Integer nb) {
+        Map<Integer, Class<?>> map = new HashMap<>();
+        IntStream.range(0, nb).forEach(s -> map.put(s, String.class));
+        return map;
+    }
 }

@@ -1,6 +1,7 @@
 package view.panel;
 
 import view.beans.LexicometricLemmatizationConfigurationEnum;
+import view.beans.LexicometricProperNounConfigurationEnum;
 import view.beans.LexicometricTokenizationConfigurationEnum;
 import view.interfaces.ILexicometricConfigurationChoosePanel;
 import view.interfaces.ILexicometricListApplyChoosePanel;
@@ -15,17 +16,19 @@ public class LexicometricListApplyChoosePanel implements ILexicometricListApplyC
     private final JPanel content = new JPanel();
     private final ILexicometricConfigurationChoosePanel lemmatizationChoosePanel;
     private final ILexicometricConfigurationChoosePanel stopWordChoosePanel;
+    private final ILexicometricConfigurationChoosePanel properNounChoosePanel;
 
-    public LexicometricListApplyChoosePanel(IWizardPanel wizardPanel, Boolean withStopWords, Boolean withLemmatization) {
+    public LexicometricListApplyChoosePanel(IWizardPanel wizardPanel, Boolean withStopWords, Boolean withLemmatization, Boolean withProperNoun) {
         lemmatizationChoosePanel = new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricLemmatizationConfigurationEnum.values());
         stopWordChoosePanel = new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricTokenizationConfigurationEnum.values());
-        createWindow(withStopWords, withLemmatization);
+        properNounChoosePanel = new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricProperNounConfigurationEnum.values());
+        createWindow(withStopWords, withLemmatization, withProperNoun);
     }
 
     /**
      * Permet de créer la fenetre
      */
-    private void createWindow(Boolean withStopWords, Boolean withLemmatization) {
+    private void createWindow(Boolean withStopWords, Boolean withLemmatization, Boolean withProperNoun) {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         content.setBorder(
@@ -35,6 +38,9 @@ public class LexicometricListApplyChoosePanel implements ILexicometricListApplyC
         }
         if (withLemmatization) {
             content.add(lemmatizationChoosePanel.getJPanel());
+        }
+        if (withProperNoun) {
+            content.add(properNounChoosePanel.getJPanel());
         }
     }
 
@@ -51,5 +57,10 @@ public class LexicometricListApplyChoosePanel implements ILexicometricListApplyC
     @Override
     public ILexicometricConfigurationChoosePanel getStopWordConfiguration() {
         return this.stopWordChoosePanel;
+    }
+
+    @Override
+    public ILexicometricConfigurationChoosePanel getProperNounConfiguration() {
+        return this.properNounChoosePanel;
     }
 }

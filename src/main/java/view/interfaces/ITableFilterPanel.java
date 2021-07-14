@@ -7,19 +7,19 @@ import java.util.function.Consumer;
  * Interface pour filtrer dans les tableaux
  *
  */
-public interface ITableFilterPanel extends IAccessPanel{
+public interface ITableFilterPanel<T> extends IAccessPanel{
 
     /**
      * Permet de se procurer le filtre
      * @return le filtre
      */
-    ITableFilterObject getFilter();
+    ITableFilterObject<T> getFilter();
 
     /**
      * Permet d'ajouter un consumer sur le changement
      * @param consumer consumer pour gérer le changement
      */
-    void addConsumerOnChange(Consumer<?> consumer);
+    void addConsumerOnChange(Consumer<T> consumer);
 
 
 }

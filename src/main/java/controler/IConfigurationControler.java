@@ -7,6 +7,7 @@ import model.analyze.beans.FilesToAnalyzeInformation;
 import model.analyze.beans.StructuredFile;
 import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
+import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import model.analyze.lexicometric.interfaces.ILexicometricHierarchical;
 import model.excel.beans.ExcelGenerateConfigurationCmd;
@@ -21,10 +22,7 @@ import view.interfaces.IHierarchicalTable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 
@@ -690,8 +688,18 @@ public interface IConfigurationControler {
 	 * Le prétraitement du texte est effectué avant son retour
 	 * @param key Clé du texte
 	 * @param field Champ recherché
+	 * @param preTreatmentListLexicometricMap La map de prétraitement
 	 * @return la valeur
 	 */
-	String getValueFromKeyTextAndFieldWithAnalyzeTreatment(String key, String field);
+	String getValueFromKeyTextAndFieldWithAnalyzeTreatment(String key, String field, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap);
+
+	/**
+	 * Permet de se procurer la liste des noms propres potentiel
+	 * @param key Clé du texte
+	 * @param field Champ recherché
+	 * @param preTreatmentListLexicometricMap La map de prétraitement
+	 * @return la valeur
+	 */
+	Collection<String> getPotentialProperNounCollection(String key, String field, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap);
 
 }

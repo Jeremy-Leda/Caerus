@@ -3,7 +3,6 @@ package view.panel;
 import io.vavr.Function2;
 import model.analyze.constants.ActionEditTableEnum;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.xpath.operations.Bool;
 import view.beans.EditTableElement;
 import view.beans.EditTableElementBuilder;
 import view.interfaces.*;
@@ -22,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -43,6 +43,14 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
     public TableWithFilterAndEditPanel(String titlePanel, String header, Consumer<?> saveInMemory,
                                        Comparator comparator, Comparator viewComparator, Function<ITableFilterObject, Boolean> checkFilterIsPresentFunction, Function2<T, ITableFilterObject, Boolean> applyFilterFunction,
                                        ITableFilterPanel tableFilterPanel) {
+        this(titlePanel, header, saveInMemory, comparator, viewComparator, checkFilterIsPresentFunction, applyFilterFunction, tableFilterPanel, false, Optional.empty());
+    }
+
+    public TableWithFilterAndEditPanel(String titlePanel, String header, Consumer<?> saveInMemory,
+                                       Comparator comparator, Comparator viewComparator, Function<ITableFilterObject, Boolean> checkFilterIsPresentFunction, Function2<T, ITableFilterObject, Boolean> applyFilterFunction,
+                                       ITableFilterPanel tableFilterPanel,
+                                       Boolean isReadOnly,
+                                       Optional<Map<Integer, Class<?>>> optionalColumnClassMap) {
         this.panel = new JPanel();
         if (StringUtils.isNotBlank(titlePanel)) {
             this.panel.setBorder(
@@ -54,9 +62,9 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
         //this.tableFilterPanel = new TextBoxPanel(1, false);
         this.tableFilterPanel = tableFilterPanel;
         this.tableFilterPanel.addConsumerOnChange(getConsumerFilter());
-        this.editTableModel = new EditTableModel(header, this.specificEditTableModel);
+        this.editTableModel = new EditTableModel(header, this.specificEditTableModel, isReadOnly, optionalColumnClassMap);
         this.table = new JTable(this.editTableModel);
-        configureTable();
+
         this.scrollPane = new JScrollPane(this.table);
         JTable rowTable = new RowNumberTable(this.table);
         scrollPane.setRowHeaderView(rowTable);
@@ -67,14 +75,17 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
 //        this.tableFilterPanel.addConsumerOnChange(0, getConsumerFilter());
         this.panel.add(this.tableFilterPanel.getJPanel());
         this.panel.add(this.scrollPane);
-        createAndAddButtonEditAndRemove();
+        table.getSelectionModel().setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
+        if (!isReadOnly) {
+            configureTable();
+            createAndAddButtonEditAndRemove();
+        }
     }
 
     /**
      * Permet de configurer la table
       */
     private void configureTable() {
-        table.getSelectionModel().setSelectionMode(DefaultListSelectionModel.SINGLE_SELECTION);
         InputMap im = table.getInputMap(JTable.WHEN_FOCUSED);
         ActionMap am = table.getActionMap();
 
@@ -258,7 +269,7 @@ public class TableWithFilterAndEditPanel<T> implements ITableWithFilterAndEditPa
      * @return le consumer
      */
     private Consumer<Integer> getConsumerForAutoSizeColumn() {
-        return id -> ColumnsAutoSize.sizeColumnsToFitForUpdate(this.table, id);
+        return id -> ColumnsAutoSize.sizeColumnsToFitForUpdate(this.table, id, 0);
     }
 
 }

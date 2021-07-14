@@ -340,4 +340,5 @@ public enum LexicometricConfigurationEnum {
     public Boolean isLemmatization() {
         return isLemmatization;
     }
+
 }

@@ -9,13 +9,18 @@ import view.interfaces.ITableFilterObject;
  *
  */
 @PojoBuilder
-public class TableFilterObject implements ITableFilterObject {
+public class TableFilterObject<T> implements ITableFilterObject<T> {
 
     private String stringValue;
 
     @Override
     public String getStringValue() {
         return this.stringValue;
+    }
+
+    @Override
+    public T getValue() {
+        return (T) stringValue;
     }
 
     /**

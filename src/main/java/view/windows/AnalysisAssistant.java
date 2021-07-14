@@ -20,7 +20,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
     // WIZARD
     private final IWizardPanel wizardPanel= new WizardPanel(ConfigurationUtils.getInstance()
             .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_WIZARD_PANEL_TITLE));
-    private final ICheckBoxPanel checkBoxPanel;
+    //private final ICheckBoxPanel checkBoxPanel;
     private JPanel content = new JPanel();
     private final IManageTextDisplayPanel displayTextsList;
     private final IActionPanel filterTextActionPanel;
@@ -34,17 +34,10 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
     public AnalysisAssistant(String title, IConfigurationControler configurationControler) {
         super(title, configurationControler, false);
         this.wizardPanel.addConsumerOnChangeStep(changeConsumerForWizard());
-        this.checkBoxPanel = new CheckBoxPanel(1, true);
+        //this.checkBoxPanel = new CheckBoxPanel(1, true);
         this.displayTextsList = new DisplayTextsFilteredWithPagingPanel(configurationControler);
         this.filterTextActionPanel = new ActionPanel(1);
         this.checkBoxFieldsPanel = new CheckBoxPanel(getControler().getFieldConfigurationNameLabelWithoutMetaMap().size(), true);
-//        this.chooseAnalyzeComboBox = new ComboBoxPanel("Analyse Lexicométrique", "Choix de l'analyse");
-//        this.chooseAnalyzeComboBox.addAndSelectItem("Nombre de token");
-//        this.chooseAnalyzeComboBox.addAndSelectItem("Lemmatisation et numéro type");
-//        this.chooseAnalyzeComboBox.addAndSelectItem("Type token ratio");
-//        this.chooseAnalyzeComboBox.addAndSelectItem("Fréquence");
-//        this.chooseAnalyzeActionPanel = new ActionPanel(2);
-//        this.chooseAnalyzeActionPanel.setStaticLabel("Action", Map.of(0, "Lancer l'analyse", 1, "Consulter les résultats"));
         super.addActionOnClose(closeAutomaticallyOtherChildrenWindow());
         createWindow();
     }
@@ -147,161 +140,6 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                         .accept(getControler(), getLexicometricAnalyzeCmd()));
     }
 
-//    /**
-//     * Permet de créer l'étape 2 de l'assistant
-//     */
-//    private void createStep_2() {
-//        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE3),
-//                false, true);
-//        this.wizardPanel.addStep(Arrays.asList(informationStep, displayTextsList, filterTextActionPanel));
-//    }
-//
-//    /**
-//     * Permet de créer l'étape des stopWords
-//     */
-//    private void createStepTokenization() {
-//        ProfilWithTableCmd profilWithTableCmd = new ProfilWithTableCmdBuilder()
-//                .titlePanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE))
-//                .defaultProfile(getControler().getLexicometricDefaultProfile())
-//                .titleTablePanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
-//                .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.TOKENIZATION, TokenizationHierarchicalEditEnum.BASE))
-//                .lexicometricEditEnum(LexicometricEditEnum.TOKENIZATION)
-//                .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
-//                .build();
-//        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd, getControler());
-//        profileWithTable.setInterfaceForTableAndAddButton(0,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-//        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
-//                false, true);
-//        this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
-//    }
-//
-//    /**
-//     * Permet de créer l'étape pour la lemmatization
-//     */
-//    private void createStepLemmatization() {
-//        ProfilWithTableCmd profilWithTableCmd = new ProfilWithTableCmdBuilder()
-//                .titlePanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE))
-//                .defaultProfile(getControler().getLexicometricDefaultProfile())
-//                .titleTablePanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
-//                .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.LEMMATIZATION, LemmatizationHierarchicalEditEnum.BASE))
-//                .lexicometricEditEnum(LexicometricEditEnum.LEMMATIZATION)
-//                .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
-//                .build();
-//        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd, getControler());
-//        profileWithTable.setInterfaceForTableAndAddButton(0,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-//        profileWithTable.setInterfaceForTableAndAddButton(1,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-//        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
-//                false, true);
-//        this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
-//    }
-//
-//    /**
-//     * Permet de créer l'étape pour la lemmatization
-//     */
-//    private void createStepLemmatizationByGrammaticalCategory() {
-//        ProfilWithTableCmd profilWithTableCmd = new ProfilWithTableCmdBuilder()
-//                .titlePanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_PANEL_TITLE))
-//                .defaultProfile(getControler().getLexicometricDefaultProfile())
-//                .titleTablePanel(ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_TABLE_PANEL_TITLE))
-//                .lexicometricConfiguration(getControler().getLexicometricConfiguration(LexicometricEditEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY, LemmatizationByGrammaticalCategoryHierarchicalEditEnum.CATEGORY))
-//                .lexicometricEditEnum(LexicometricEditEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY)
-//                .tableWithFilterAndEditPanelFunction(getTableWithTextFilterAndEditPanelFunction())
-//                .build();
-//        IProfileWithTable profileWithTable = new ProfileWithTablePanel(profilWithTableCmd, getControler());
-//        profileWithTable.setInterfaceForTableAndAddButton(0,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-//        profileWithTable.setInterfaceForTableAndAddButton(1,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-//        profileWithTable.setInterfaceForTableAndAddButton(2,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_INFORMATION_MESSAGE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TOKEN_ADD_TEXT_LABEL));
-//        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_TOKEN),
-//                false, true);
-//        this.wizardPanel.addStep(Arrays.asList(informationStep, profileWithTable));
-//    }
-//
-//    /**
-//     * Permet de se procurer le tableau d'édition préparer pour la gestion avec des mots et recherche avec filtre sur contains en text
-//     * @return le tableau d'édition préparer pour la gestion avec des mots et recherche avec filtre sur contains en text
-//     */
-//    private Function2<IRootTable, Consumer<?>, ITableWithFilterAndEditPanel> getTableWithTextFilterAndEditPanelFunction() {
-//        return (x, v) -> new TableWithFilterAndEditPanel<String>(StringUtils.EMPTY, x.getHeaderLabel(), v,
-//                Comparator.comparing(StringUtils::stripAccents),
-//                s -> StringUtils.isNotBlank(s.getStringValue()),
-//                (s, f) -> s.toLowerCase(Locale.ROOT).contains(f.getStringValue()), getTableTextFilterPanel());
-//    }
-//
-//    /**
-//     * Permet de se procurer le table filter pour filtrer par rapport à une chaine de caractère
-//     * @return le table filter pour filtrer par rapport à une chaine de caractère
-//     */
-//    private ITableFilterPanel getTableTextFilterPanel() {
-//        TableFilterTextPanel tableFilterPanel = new TableFilterTextPanel();
-//        tableFilterPanel.setStaticLabel(StringUtils.EMPTY, Map.of(0, ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_EDIT_FILTER_LABEL)));
-//        return tableFilterPanel;
-//    }
-//
-//    /**
-//     * Permet de créer l'étape pour la configuration des fréquences
-//     */
-//    private void createStepFrequency() {
-//        IInformationPanel informationStep = new InformationPanel(PictureTypeEnum.INFORMATION,
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_PANEL_TITLE),
-//                ConfigurationUtils.getInstance()
-//                        .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE1),
-//                true, true);
-//
-//        IActionPanel actionPanel = new ActionPanel(1);
-//        actionPanel.setStaticLabel("Fréquence", Map.of(0, "Fréquence"));
-//        actionPanel.addAction(0, e -> new GephiTest().script());
-//
-//        this.wizardPanel.addStep(Arrays.asList(informationStep, actionPanel));
-//    }
-
     /**
      * Permet de rafraichir l'affichage pour le bouton de filtre des textes
      * Etape 2
@@ -318,36 +156,6 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
             });
         });
     }
-
-//    /**
-//     * Permet de créer les radio boutons
-//     */
-//    private void createCheckBox() {
-//        Map<Integer, String> mapCheckBox = new HashMap<>();
-//        mapCheckBox.put(0, ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TYPE_OPTION_TOKEN));
-//        this.checkBoxPanel.setStaticLabel(ConfigurationUtils.getInstance()
-//                .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_TYPE_PANEL_TITLE), mapCheckBox);
-//    }
-
-//    /**
-//     * Permet de mettre à jour l'état d'une étape en fonction d'un radio bouton
-//     * @param idButton identifiant du radio bouton
-//     */
-//    private void updateStateOfStep(Integer idButton) {
-//        Long idStep = this.checkBoxIdStepMap.get(idButton);
-//        Boolean state = this.checkBoxPanel.getCheckBoxIsChecked(idButton);
-//        this.wizardPanel.setStateOfStep(idStep, state);
-//    }
-//
-//    /**
-//     * Permet de désactiver les étapes non coché par défaut
-//     */
-//    private void disableStepOnStart() {
-//        updateStateOfStep(0);
-//        updateStateOfStep(1);
-//        updateStateOfStep(2);
-//    }
 
     /**
      * Consumer pour le changement de page de l'assistant
@@ -400,6 +208,8 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
             stopWordEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
             Optional<Tuple2<LexicometricEditEnum, String>> lemmeEntry = getOptionalEntryForLexicometricPanel(optionalILexicometricListApplyChoosePanel.get().getLemmatizationConfiguration());
             lemmeEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
+            Optional<Tuple2<LexicometricEditEnum, String>> properNounEntry = getOptionalEntryForLexicometricPanel(optionalILexicometricListApplyChoosePanel.get().getProperNounConfiguration());
+            properNounEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
         }
         Set<String> fieldToAnalyzeSet = new HashSet<>();
         Integer currentIndex = 0;

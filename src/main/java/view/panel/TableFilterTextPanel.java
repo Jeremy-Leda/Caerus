@@ -15,7 +15,7 @@ import java.util.function.Consumer;
  * Filtre permettant de filtrer par un text sur les tableaux
  *
  */
-public class TableFilterTextPanel implements ITableFilterPanel, ITextBoxPanel {
+public class TableFilterTextPanel<T> implements ITableFilterPanel<T>, ITextBoxPanel {
 
     private final ITextBoxPanel textBoxPanel = new TextBoxPanel(1, false);
 
@@ -25,14 +25,14 @@ public class TableFilterTextPanel implements ITableFilterPanel, ITextBoxPanel {
     }
 
     @Override
-    public ITableFilterObject getFilter() {
+    public ITableFilterObject<T> getFilter() {
         return new TableFilterObjectBuilder()
                 .stringValue(getValueOfTextBox(0))
                 .build();
     }
 
     @Override
-    public void addConsumerOnChange(Consumer<?> consumer) {
+    public void addConsumerOnChange(Consumer<T> consumer) {
         this.textBoxPanel.addConsumerOnChange(0, consumer);
     }
 

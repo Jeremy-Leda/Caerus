@@ -5,6 +5,9 @@ import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.lexicometric.analyze.beans.Text;
 import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
+import model.analyze.lexicometric.beans.LexicometricCleanListEnum;
+import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
+import model.analyze.lexicometric.interfaces.ILexicometricData;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import view.analysis.beans.AnalysisResultDisplay;
@@ -36,8 +39,9 @@ public class LexicometricAnalysis {
      * @return la liste des textes analysés
      */
     public void executeNumberTokensAnalyze(LexicometricAnalyzeServerCmd cmd) {
+        analysisResultSet.clear();
         Map<String, Map<String, Long>> keyTextMap = cmd.getKeyTextFilteredList().stream()
-                .collect(Collectors.toMap(Function.identity(), s -> getNbTokensOfText(s, cmd.getFieldToAnalyzeSet())));
+                .collect(Collectors.toMap(Function.identity(), s -> getNbTokensOfText(s, cmd.getFieldToAnalyzeSet(), cmd.getPreTreatmentListLexicometricMap())));
         analysisResultSet.addAll(keyTextMap.entrySet().stream().map(this::getTextFromNumberTokensEntry).collect(Collectors.toSet()));
     }
 
@@ -48,12 +52,65 @@ public class LexicometricAnalysis {
      * @param fieldSet Liste des champs à analyser
      * @return une map qui détient en clé un mot et en valeur son nombre total d'apparition
      */
-    private Map<String, Long> getNbTokensOfText(String keyText, Set<String> fieldSet) {
-        UserSettings.getInstance().loadFilteredText(keyText);
+    private Map<String, Long> getNbTokensOfText(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+//        Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(keyText);
+//        String textToAnalyze = fieldSet.stream()
+//                .map(f -> textFromKey.get().getStructuredText().getContent(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
+//                .orElse(StringUtils.EMPTY);
+//        List<String> cleanWords = Arrays.stream(StringUtils.split(textToAnalyze))
+//                .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
+//                .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
+//                .map(s -> s.replaceAll("-", ""))
+//                .map(s -> s.replaceAll("¿", ""))
+//                .map(s -> s.replaceAll("[0-9]", ""))
+//                .map(s -> s.replaceAll("^\"|\"$", ""))
+//                .map(s -> s.replaceAll("“", ""))
+//                .map(s -> s.replaceAll("”", ""))
+//                .map(s -> s.replaceAll("»", ""))
+//                .map(s -> s.replaceAll("«", ""))
+//                .map(s -> s.replaceAll("^\'|\'$", ""))
+//                .map(s -> s.replaceAll("‘", ""))
+//                .map(s -> s.replaceAll("—", ""))
+//                .map(s -> s.toLowerCase())
+//                .filter(StringUtils::isNotBlank).collect(Collectors.toList());
+
+        Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet);
+        if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
+            Set<String> properNounToRemoveSet = getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN));
+            tokenCleanedCollection.removeAll(properNounToRemoveSet);
+        }
+
+
+        return tokenCleanedCollection.stream().map(s -> s.toLowerCase()).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+    }
+
+    /**
+     * Permet de se procurer la liste des noms propres potentiels
+     * @param keyText Clé du texte
+     * @param fieldSet Liste des champs identifiés
+     * @return la liste des noms propres potentiels
+     */
+    public Collection<String> getPotentialProperNounCollection(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+        Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet);
+        if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
+            Set<String> properNounToRemoveSet = getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN));
+            tokenCleanedCollection.removeAll(properNounToRemoveSet);
+        }
+        return tokenCleanedCollection.stream().filter(s -> Character.isUpperCase(s.charAt(0))).collect(Collectors.toSet());
+    }
+
+    /**
+     * Permet de se procurer la liste des tokens nettoyés
+     * @param keyText Clé du texte
+     * @param fieldSet Liste des champs à analyser
+     * @return la liste des tokens nettoyés
+     */
+    private Collection<String> getTokenCleaned(String keyText, Set<String> fieldSet) {
+        Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(keyText);
         String textToAnalyze = fieldSet.stream()
-                .map(f -> UserSettings.getInstance().getFieldInEditingCorpus(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
+                .map(f -> textFromKey.get().getStructuredText().getContent(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
                 .orElse(StringUtils.EMPTY);
-        List<String> cleanWords = Arrays.stream(StringUtils.split(textToAnalyze))
+        List<String> tokenSet = Arrays.stream(StringUtils.split(textToAnalyze))
                 .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
                 .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
                 .map(s -> s.replaceAll("-", ""))
@@ -67,9 +124,10 @@ public class LexicometricAnalysis {
                 .map(s -> s.replaceAll("^\'|\'$", ""))
                 .map(s -> s.replaceAll("‘", ""))
                 .map(s -> s.replaceAll("—", ""))
-                .map(s -> s.toLowerCase())
-                .filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        return cleanWords.stream().collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+                .map(s -> s.replaceAll("¡", ""))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.toList());
+        return tokenSet;
     }
 
     /**
@@ -175,7 +233,11 @@ public class LexicometricAnalysis {
      * @param text texte
      * @return le texte pré traité
      */
-    public String getTextPreTreatment(String text) {
+    public String getTextPreTreatment(String text, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+        Set<String> properNounToRemoveSet = new HashSet<>();
+        if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
+            properNounToRemoveSet.addAll(getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN)));
+        }
         List<String> cleanWords = Arrays.stream(StringUtils.split(text))
                 .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
                 .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
@@ -190,9 +252,20 @@ public class LexicometricAnalysis {
                 .map(s -> s.replaceAll("^\'|\'$", ""))
                 .map(s -> s.replaceAll("‘", ""))
                 .map(s -> s.replaceAll("—", ""))
+                .map(s -> s.replaceAll("¡", ""))
+                .filter(s -> !properNounToRemoveSet.contains(s))
                 .map(s -> s.toLowerCase())
                 .map(s -> StringUtils.SPACE + s + StringUtils.SPACE)
                 .filter(StringUtils::isNotBlank).collect(Collectors.toList());
         return cleanWords.stream().reduce(String::concat).get();
+    }
+
+    private Set<String> getProperNounToRemoveSet(String profil) {
+        Optional<ILexicometricData> optionalILexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.PROPER_NOUN).stream().filter(s -> s.getProfile().equals(profil)).findFirst();
+        if (optionalILexicometricData.isPresent()) {
+            ILexicometricData<Set<String>> iLexicometricData = optionalILexicometricData.get();
+            return iLexicometricData.getData();
+        }
+        return new HashSet<>();
     }
 }

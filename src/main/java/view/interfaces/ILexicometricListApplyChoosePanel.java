@@ -19,4 +19,10 @@ public interface ILexicometricListApplyChoosePanel extends IAccessPanel{
      */
     ILexicometricConfigurationChoosePanel getStopWordConfiguration();
 
+    /**
+     * Permet de se procurer la configuration pour les noms propres
+     * @return la configuration pour les noms propres
+     */
+    ILexicometricConfigurationChoosePanel getProperNounConfiguration();
+
 }

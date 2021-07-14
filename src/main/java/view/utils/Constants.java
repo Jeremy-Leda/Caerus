@@ -541,6 +541,22 @@ public final class Constants {
 	public static final String WINDOW_MANAGE_PROPER_NOUN_REMOVE_BUTTON_LABEL="window.manage.proper.noun.remove.button.label";
 	public static final String WINDOW_MANAGE_PROPER_NOUN_FILTER_LABEL="window.manage.proper.noun.filter.label";
 	public static final String WINDOW_MANAGE_PROPER_NOUN_INFORMATION_LABEL="window.manage.proper.noun.information.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_PANEL_TITLE="window.analysis.proper.noun.add.panel.title";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_INFORMATION_MESSAGE="window.analysis.proper.noun.add.information.message";
+
+
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PROPER_NOUN_BUTTON_LABEL="window.result.detail.token.analysis.proper.noun.button.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROFIL_PANEL="window.analysis.proper.noun.add.profil.panel";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROFIL_LABEL="window.analysis.proper.noun.add.profil.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROPER_NOUN_TABLE_PANEL_TITLE="window.analysis.proper.noun.add.proper.noun.table.panel.title";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROPER_NOUN_TABLE_FILTER_LABEL="window.analysis.proper.noun.add.proper.noun.table.filter.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROPER_NOUN_TABLE_HEADER_LABEL="window.analysis.proper.noun.add.proper.noun.table.header.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_WORD_TABLE_PANEL_TITLE="window.analysis.proper.noun.add.word.table.panel.title";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_WORD_TABLE_FILTER_LABEL="window.analysis.proper.noun.add.word.table.filter.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_WORD_TABLE_HEADER_LABEL="window.analysis.proper.noun.add.word.table.header.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_SAVE_LIST_BUTTON_LABEL="window.analysis.proper.noun.add.save.list.button.label";
+	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_RELAUNCH_ANALYZE_BUTTON_LABEL="window.analysis.proper.noun.add.relaunch.analyze.button.label";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_PROPER_NOUN_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.proper.noun.treatment.optional.list.label";
 
 
 

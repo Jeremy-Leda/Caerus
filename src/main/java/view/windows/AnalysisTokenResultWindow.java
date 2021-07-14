@@ -19,6 +19,8 @@ import javax.swing.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
 
 import static view.utils.Constants.*;
 
@@ -30,7 +32,7 @@ import static view.utils.Constants.*;
 public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
 
     private final JPanel content = new JPanel();
-    private final AnalysisResultDisplay analysisResultDisplay;
+    private AnalysisResultDisplay analysisResultDisplay;
     private final ITableAnalysisPanel tableAnalysisPanel;
     private final ILabelsPanel labelsPanel;
     private final IActionPanel actionPanel = new ActionPanel(1);
@@ -72,7 +74,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
     private void initActionPanel() {
         this.actionPanel.setStaticLabel(getMessage(WINDOW_RESULT_TOKEN_ACTION_PANEL_TITLE),
                 Map.of(0, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_BUTTON_LABEL)));
-        this.actionPanel.addAction(0, e -> new AnalysisTokenDetailResultWindow(getControler(), cmd, lexicometricAnalyzeTypeEnum));
+        this.actionPanel.addAction(0, e -> new AnalysisTokenDetailResultWindow(getControler(), cmd, lexicometricAnalyzeTypeEnum, getRelaunchAnalyzeConsumer()));
     }
 
     @Override
@@ -83,5 +85,20 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
     @Override
     public String getWindowName() {
         return "Analysis token result window";
+    }
+
+    /**
+     * Consumer permettant de relancer l'analyse
+     * @return le consumer
+     */
+    private Consumer<?> getRelaunchAnalyzeConsumer() {
+        return x -> {
+            LexicometricAnalyzeTypeViewEnum lexicometricAnalyzeTypeViewEnum = LexicometricAnalyzeTypeViewEnum.valueOf(lexicometricAnalyzeTypeEnum.name());
+            lexicometricAnalyzeTypeViewEnum.getBiConsumerAnalysis().accept(getControler(), cmd);
+            AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(cmd.getKeyTextFilteredList());
+            this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
+            this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
+            this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
+        };
     }
 }

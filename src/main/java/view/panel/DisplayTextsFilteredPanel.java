@@ -45,7 +45,7 @@ public class DisplayTextsFilteredPanel implements IRefreshTextDisplayPanel {
 	public DisplayTextsFilteredPanel(IConfigurationControler controler, Integer nbTextsByPage, Consumer<Void> consumerToItemChange) {
 		this.content = new JPanel();
 		this.controler = controler;
-		this.displayTextsList = new JList<DisplayText>();
+		this.displayTextsList = new JList<>();
 		this.displayTextsList.setCellRenderer(new DisplayTextRenderer());
 		this.displayTextsList.addListSelectionListener(new ListSelectionListener() {
 			

@@ -20,14 +20,18 @@ import javax.swing.table.TableColumn;
 public class ColumnsAutoSize {
 
 	public static void sizeColumnsToFit(JTable table) {
-		sizeColumnsToFit(table, 5, -1);
+		sizeColumnsToFit(table, 0);
 	}
 
-	public static void sizeColumnsToFitForUpdate(JTable table, int rowIndex) {
-		sizeColumnsToFit(table, 5, rowIndex);
+	public static void sizeColumnsToFit(JTable table, int columnIndex) {
+		sizeColumnsToFit(table, 5, -1, columnIndex);
 	}
 
-	public static void sizeColumnsToFit(JTable table, int columnMargin, int rowIndex) {
+	public static void sizeColumnsToFitForUpdate(JTable table, int rowIndex, int columnIndex) {
+		sizeColumnsToFit(table, 5, rowIndex, columnIndex);
+	}
+
+	public static void sizeColumnsToFit(JTable table, int columnMargin, int rowIndex, int columnIndex) {
 		JTableHeader tableHeader = table.getTableHeader();
 
 		if (tableHeader == null) {
@@ -41,14 +45,14 @@ public class ColumnsAutoSize {
 		int[] minWidths = new int[table.getColumnCount()];
 		int[] maxWidths = new int[table.getColumnCount()];
 
-		int headerWidth = headerFontMetrics.stringWidth(table.getColumnName(0));
+		int headerWidth = headerFontMetrics.stringWidth(table.getColumnName(columnIndex));
 
 		if (rowIndex > -1) {
-			minWidths[0] = table.getColumnModel().getColumn(0).getMinWidth();
+			minWidths[0] = table.getColumnModel().getColumn(columnIndex).getMinWidth();
 		} else {
 			minWidths[0] = headerWidth + columnMargin;
 		}
-		int maxWidth = getMaximalRequiredColumnWidth(table, 0, headerWidth, rowIndex);
+		int maxWidth = getMaximalRequiredColumnWidth(table, columnIndex, headerWidth, rowIndex);
 
 		maxWidths[0] = Math.max(maxWidth, minWidths[0]) + columnMargin;
 
@@ -61,13 +65,13 @@ public class ColumnsAutoSize {
 			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
 		}
 		if (minWidths[0] > 0) {
-			table.getColumnModel().getColumn(0).setMinWidth(minWidths[0]);
+			table.getColumnModel().getColumn(columnIndex).setMinWidth(minWidths[0]);
 		}
 
 		if (maxWidths[0] > 0) {
-			table.getColumnModel().getColumn(0).setMaxWidth(maxWidths[0]);
+			table.getColumnModel().getColumn(columnIndex).setMaxWidth(maxWidths[0]);
 
-			table.getColumnModel().getColumn(0).setWidth(maxWidths[0]);
+			table.getColumnModel().getColumn(columnIndex).setWidth(maxWidths[0]);
 		}
 		table.setRowHeight(30);
 		table.setShowGrid(false);

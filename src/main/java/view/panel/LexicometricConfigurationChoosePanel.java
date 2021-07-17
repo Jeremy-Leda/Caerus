@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class LexicometricConfigurationChoosePanel implements ILexicometricConfigurationChoosePanel {
@@ -25,12 +26,16 @@ public class LexicometricConfigurationChoosePanel implements ILexicometricConfig
             ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_LABEL));
     private final ILexicometricConfigurationEnum[] values;
     private final IWizardPanel wizardPanel;
+    private final LexicometricEditEnum lexicometricGeneralEditEnum;
 
-    public LexicometricConfigurationChoosePanel(IWizardPanel wizardPanel, ILexicometricConfigurationEnum[] values) {
+    public LexicometricConfigurationChoosePanel(IWizardPanel wizardPanel, ILexicometricConfigurationEnum[] values, LexicometricEditEnum lexicometricEditEnum) {
         this.values = values;
         this.wizardPanel = wizardPanel;
+        this.lexicometricGeneralEditEnum = lexicometricEditEnum;
         ILexicometricConfigurationEnum iLexicometricConfigurationEnum = Arrays.stream(values).findFirst().get();
+        chooseListComboBox.addConsumerOnSelectChange(s -> wizardPanel.getEnableDisableConsumer().accept(null));
         chooseComboBox = new ComboBoxPanel(StringUtils.EMPTY, iLexicometricConfigurationEnum.getChooseListLabel());
+        chooseComboBox.addConsumerOnSelectChange(s -> wizardPanel.getEnableDisableConsumer().accept(null));
         configureChooseComboBox();
         createWindow();
     }
@@ -71,5 +76,15 @@ public class LexicometricConfigurationChoosePanel implements ILexicometricConfig
     @Override
     public String getProfile() {
         return chooseListComboBox.getLabelSelected();
+    }
+
+    @Override
+    public Boolean isValid() {
+        return StringUtils.isNotBlank(chooseComboBox.getLabelSelected()) && StringUtils.isNotBlank(chooseListComboBox.getLabelSelected());
+    }
+
+    @Override
+    public LexicometricEditEnum getGeneralLexicometricEditEnum() {
+        return this.lexicometricGeneralEditEnum;
     }
 }

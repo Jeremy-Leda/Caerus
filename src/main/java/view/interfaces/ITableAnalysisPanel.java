@@ -3,6 +3,7 @@ package view.interfaces;
 import view.panel.analysis.model.AnalysisRow;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -28,6 +29,12 @@ public interface ITableAnalysisPanel extends IAccessPanel{
      * @param consumer consumer
      */
     void addConsumerOnSelectedChangeForWord(Consumer<List<Object>> consumer);
+
+    /**
+     * Permet de se procurer la liste des mots sélectionnés
+     * @return la liste des mots sélectionnés
+     */
+    Set<String> getSelectedWords();
 
 
 }

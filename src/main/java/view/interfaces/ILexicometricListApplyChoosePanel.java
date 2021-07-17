@@ -25,4 +25,10 @@ public interface ILexicometricListApplyChoosePanel extends IAccessPanel{
      */
     ILexicometricConfigurationChoosePanel getProperNounConfiguration();
 
+    /**
+     * Permet de savoir si les données ont bien été remplis par l'utilisateur
+     * @return vrai si les données ont bien été remplis par l'utilisateur
+     */
+    Boolean isValid();
+
 }

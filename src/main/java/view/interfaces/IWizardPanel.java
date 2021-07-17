@@ -51,4 +51,17 @@ public interface IWizardPanel extends IAccessPanel {
 	 */
 	void refresh();
 
+	/**
+	 * Permet d'activer ou désactiver des composant par rapport aux autres composant du wizard
+	 * @return le consumer à appelé
+	 */
+	Consumer<?> getEnableDisableConsumer();
+
+	/**
+	 * Permet d'ajouter un consumer d'activation ou de désactivation des composants par rapport à une étape
+	 * @param numStep numéro de l'étape
+	 * @param consumer consumer à ajouter
+	 */
+	void addEnableDisableConsumer(Long numStep, Consumer<?> consumer);
+
 }

@@ -748,7 +748,12 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public Collection<String> getPotentialProperNounCollection(String key, String field, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
-		return LexicometricAnalysis.getInstance().getPotentialProperNounCollection(key, Set.of(field), preTreatmentListLexicometricMap);
+	public Collection<String> getPotentialProperNounCollection(Set<String> key, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+		return LexicometricAnalysis.getInstance().getPotentialProperNounCollection(key, fieldSet, preTreatmentListLexicometricMap);
+	}
+
+	@Override
+	public Collection<String> getKeyTextSetWithSelectedWordsFromAnalyze(Set<String> wordSet) {
+		return LexicometricAnalysis.getInstance().getKeyTextSetWithSelectedWords(wordSet);
 	}
 }

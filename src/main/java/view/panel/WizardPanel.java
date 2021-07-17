@@ -30,6 +30,7 @@ public class WizardPanel implements IWizardPanel {
 	private final IActionPanel actionPanel;
 	private final List<Consumer<?>> consumerOnChangeStepList;
 	private Long currentStep;
+	private final Map<Long, Consumer<?>> stepConsumerMap = new HashMap<>();
 
 	/**
 	 * Constructeur
@@ -191,6 +192,16 @@ public class WizardPanel implements IWizardPanel {
 	@Override
 	public void refresh() {
 		displayStep(currentStep);
+	}
+
+	@Override
+	public Consumer<?> getEnableDisableConsumer() {
+		return this.stepConsumerMap.get(this.currentStep);
+	}
+
+	@Override
+	public void addEnableDisableConsumer(Long numStep, Consumer<?> consumer) {
+		this.stepConsumerMap.put(numStep, consumer);
 	}
 
 	/**

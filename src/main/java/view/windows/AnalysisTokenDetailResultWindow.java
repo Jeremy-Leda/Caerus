@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.LexicometricAnalyzeCmd;
+import view.beans.LexicometricEditEnum;
 import view.interfaces.*;
 import view.panel.ActionPanel;
 import view.panel.LabelsPanel;
@@ -47,14 +48,19 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
     private Optional<ReadText> optionalReadTextWindow = Optional.empty();
     private Optional<AnalysisProperNounAddWindow> optionalAnalysisProperNounAddWindow = Optional.empty();
     private final Consumer<?> consumerRelaunchBase;
-
+    private final List<String> keyFilteredTextList = new LinkedList<>();
     /**
      * Constructeur
      * @param configurationControler controller
      */
-    public AnalysisTokenDetailResultWindow(IConfigurationControler configurationControler, LexicometricAnalyzeCmd cmd, LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum, Consumer<?> relaunchAnalyzeConsumer) {
+    public AnalysisTokenDetailResultWindow(IConfigurationControler configurationControler,
+                                           LexicometricAnalyzeCmd cmd,
+                                           LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum,
+                                           Consumer<?> relaunchAnalyzeConsumer,
+                                           Set<String> selectedWords) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE), configurationControler, false);
         this.consumerRelaunchBase = relaunchAnalyzeConsumer;
+        this.keyFilteredTextList.addAll(getControler().getKeyTextSetWithSelectedWordsFromAnalyze(selectedWords));
         radioButtonPanel = new RadioButtonPanel(cmd.getFieldToAnalyzeSet().size());
         LinkedList<String> headerLinkedList = new LinkedList<>();
         headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
@@ -92,17 +98,19 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), labelMap);
         this.actionPanel.addAction(0, e -> {
             actionPanel.setEnabled(0, false);
-            optionalReadCorpusWindow = Optional.of(new ReadCorpus(getMessage(WINDOW_READ_CORPUS_TITLE), getControler(), false, this.cmd.getKeyTextFilteredList().get(current)));
+            optionalReadCorpusWindow = Optional.of(new ReadCorpus(getMessage(WINDOW_READ_CORPUS_TITLE), getControler(), false, this.keyFilteredTextList.get(current)));
             optionalReadCorpusWindow.get().addActionOnClose(s -> actionPanel.setEnabled(0, true));
         });
         this.actionPanel.addAction(1, e -> {
             actionPanel.setEnabled(1, false);
-            optionalReadTextWindow = Optional.of(new ReadText(getMessage(WINDOW_READ_TEXT_TITLE), getControler(), false, this.cmd.getKeyTextFilteredList().get(current)));
+            optionalReadTextWindow = Optional.of(new ReadText(getMessage(WINDOW_READ_TEXT_TITLE), getControler(), false, this.keyFilteredTextList.get(current)));
             optionalReadTextWindow.get().addActionOnClose(s -> actionPanel.setEnabled(1, true));
         });
         this.actionPanel.addAction(2, e -> {
             actionPanel.setEnabled(2, false);
-            optionalAnalysisProperNounAddWindow = Optional.of(new AnalysisProperNounAddWindow(getControler(), getPotentialProperNounCollection(), getRelaunchAnalyzeConsumer(consumerRelaunchBase)));
+            optionalAnalysisProperNounAddWindow = Optional.of(new AnalysisProperNounAddWindow(getControler(), getPotentialProperNounCollection(),
+                    getRelaunchAnalyzeConsumer(consumerRelaunchBase),
+                    cmd.getPreTreatmentListLexicometricMap().get(LexicometricEditEnum.PROPER_NOUN)));
             optionalAnalysisProperNounAddWindow.get().addActionOnClose(s -> actionPanel.setEnabled(2, true));
         });
     }
@@ -155,9 +163,9 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         Map<Integer, String> labelMap = Map.of(0, getMessage(WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL),
                 1, getMessage(WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL));
         this.navigationPanel.setStaticLabel(String.format(getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_NAVIGATION_LABEL),
-                this.current + 1, this.cmd.getKeyTextFilteredList().size()), labelMap);
+                this.current + 1, this.keyFilteredTextList.size()), labelMap);
         this.navigationPanel.setEnabled(0, current > 0);
-        this.navigationPanel.setEnabled(1, current + 1 < this.cmd.getKeyTextFilteredList().size());
+        this.navigationPanel.setEnabled(1, current + 1 < this.keyFilteredTextList.size());
     }
 
     /**
@@ -165,7 +173,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
      */
     private void loadText() {
         tableAnalysisPanel.clearSelection();
-        String key = this.cmd.getKeyTextFilteredList().get(current);
+        String key = this.keyFilteredTextList.get(current);
         optionalReadCorpusWindow.ifPresent(readCorpus -> readCorpus.setKeyText(key));
         optionalReadTextWindow.ifPresent(readText -> readText.setKeyText(key));
         AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(List.of(key));
@@ -182,9 +190,9 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
      * @return la liste des noms propres potentiels
      */
     private Collection<String> getPotentialProperNounCollection() {
-        String key = this.cmd.getKeyTextFilteredList().get(current);
+        String key = this.keyFilteredTextList.get(current);
         String field = mapField.entrySet().stream().filter(s -> s.getValue().equals(this.radioButtonPanel.getSelectedLabel())).findFirst().get().getKey();
-        return getControler().getPotentialProperNounCollection(key, field, cmd.toPreTreatmentServerMap());
+        return getControler().getPotentialProperNounCollection(Set.of(key), Set.of(field), cmd.toPreTreatmentServerMap());
     }
 
     /**

@@ -9,9 +9,12 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Permet de construire un panel pour l'affichage du tableau des résultats d'analyse
@@ -62,6 +65,14 @@ public class TableAnalysisPanel implements ITableAnalysisPanel {
     @Override
     public void addConsumerOnSelectedChangeForWord(Consumer<List<Object>> consumer) {
         this.consumerOnSelectedChange = Optional.ofNullable(consumer);
+    }
+
+    @Override
+    public Set<String> getSelectedWords() {
+        return Arrays.stream(table.getSelectionModel().getSelectedIndices())
+                .map(x -> table.convertRowIndexToModel(x))
+                .mapToObj(x -> this.analysisTableModel.getRow(x).get(0).toString())
+                .collect(Collectors.toSet());
     }
 
     /**

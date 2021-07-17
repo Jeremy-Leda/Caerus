@@ -3,6 +3,7 @@ package view.panel;
 import org.apache.commons.lang3.StringUtils;
 import utils.RessourcesUtils;
 import view.beans.LexicometricAnalyzeTypeViewEnum;
+import view.beans.PictureTypeEnum;
 import view.interfaces.*;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
@@ -20,6 +21,11 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
     private IComboBoxPanel chooseAnalyzeComboBoxPanel;
     private final IWizardPanel wizardPanel;
     private Optional<ILexicometricListApplyChoosePanel> optionalILexicometricListApplyChoosePanel = Optional.empty();
+//    private final IInformationPanel informationPanel = new InformationPanel(PictureTypeEnum.WARNING,
+//            ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_PANEL_LABEL),
+//            ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_OPTIONALS_LISTE_MESSAGE),
+//            false,
+//            false);
 
     public ChooseLexicometricAnalyzePanel(IWizardPanel wizardPanel) {
         createChooseAnalyzeComboBox();
@@ -63,6 +69,7 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
 
             optionalLexicometricAnalyzeTypeViewEnum.ifPresent(lexicometricAnalyzeTypeViewEnum ->
                     setOptionalPanel(lexicometricAnalyzeTypeViewEnum.getOptionalPanel().apply(wizardPanel)));
+            wizardPanel.getEnableDisableConsumer().accept(null);
         });
     }
 
@@ -74,5 +81,14 @@ public class ChooseLexicometricAnalyzePanel implements IChooseLexicometricAnalyz
     @Override
     public LexicometricAnalyzeTypeViewEnum getAnalyzeToLaunch() {
         return LexicometricAnalyzeTypeViewEnum.fromLabel(this.chooseAnalyzeComboBoxPanel.getLabelSelected()).get();
+    }
+
+    @Override
+    public boolean isValidForStartAnalysis() {
+        boolean isOk = StringUtils.isNotBlank(chooseAnalyzeComboBoxPanel.getLabelSelected());
+        if (optionalILexicometricListApplyChoosePanel.isPresent()) {
+            isOk &= optionalILexicometricListApplyChoosePanel.get().isValid();
+        }
+        return isOk;
     }
 }

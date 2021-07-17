@@ -86,11 +86,23 @@ public class LexicometricAnalysis {
 
     /**
      * Permet de se procurer la liste des noms propres potentiels
+     * @param keyTextSet Liste des clés du texte
+     * @param fieldSet Liste des champs identifiés
+     * @return la liste des noms propres potentiels
+     */
+    public Collection<String> getPotentialProperNounCollection(Set<String> keyTextSet, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+        Collection<String> tokenCleanedCollection = new HashSet<>();
+        keyTextSet.forEach(s -> tokenCleanedCollection.addAll(getPotentialProperNounCollection(s, fieldSet, preTreatmentListLexicometricMap)));
+        return tokenCleanedCollection;
+    }
+
+    /**
+     * Permet de se procurer la liste des noms propres potentiels
      * @param keyText Clé du texte
      * @param fieldSet Liste des champs identifiés
      * @return la liste des noms propres potentiels
      */
-    public Collection<String> getPotentialProperNounCollection(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
+    private Collection<String> getPotentialProperNounCollection(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
         Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet);
         if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
             Set<String> properNounToRemoveSet = getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN));
@@ -110,7 +122,7 @@ public class LexicometricAnalysis {
         String textToAnalyze = fieldSet.stream()
                 .map(f -> textFromKey.get().getStructuredText().getContent(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
                 .orElse(StringUtils.EMPTY);
-        List<String> tokenSet = Arrays.stream(StringUtils.split(textToAnalyze))
+        List<String> tokenList = Arrays.stream(StringUtils.split(textToAnalyze))
                 .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
                 .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
                 .map(s -> s.replaceAll("-", ""))
@@ -127,7 +139,7 @@ public class LexicometricAnalysis {
                 .map(s -> s.replaceAll("¡", ""))
                 .filter(StringUtils::isNotBlank)
                 .collect(Collectors.toList());
-        return tokenSet;
+        return tokenList;
     }
 
     /**
@@ -267,5 +279,24 @@ public class LexicometricAnalysis {
             return iLexicometricData.getData();
         }
         return new HashSet<>();
+    }
+
+    /**
+     * Permet de se procurer la liste des clés contenant la liste des mots demandés
+     * Si la liste des mots demandés est vide alors la liste de toutes les clés est retournés
+     * @param wordSet liste des mots
+     * @return la liste des clés associés
+     */
+    public Collection<String> getKeyTextSetWithSelectedWords(Set<String> wordSet) {
+        if (wordSet.isEmpty()) {
+            return this.analysisResultSet.stream().map(Text::getKey).collect(Collectors.toSet());
+        }
+        return this.analysisResultSet.stream()
+                .filter(x -> x.getTokenSet().stream()
+                        .filter(s -> wordSet.contains(s.getWord()))
+                        .findFirst()
+                        .isPresent())
+                .map(Text::getKey)
+                .collect(Collectors.toSet());
     }
 }

@@ -506,6 +506,9 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_LEMMATIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.lemmatization.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.profile.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TOKENIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.tokenization.treatment.optional.list.label";
+	public static final String WINDOW_START_ANALYSIS_INFORMATION_OPTIONALS_LISTE_MESSAGE="window.start.analysis.information.optionals.liste.message";
+
+
 
 	public static final String WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE="window.result.token.analysis.panel.title";
 	public static final String WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE="window.result.token.analysis.table.panel.title";
@@ -558,6 +561,9 @@ public final class Constants {
 	public static final String WINDOW_ANALYSIS_PROPER_NOUN_ADD_RELAUNCH_ANALYZE_BUTTON_LABEL="window.analysis.proper.noun.add.relaunch.analyze.button.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_PROPER_NOUN_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.proper.noun.treatment.optional.list.label";
 
+	public static final String WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_FOR_WORD_BUTTON_LABEL="window.result.token.action.show.detail.for.word.button.label";
+	public static final String WINDOW_START_ANALYSIS_HELP_BUTTON_LABEL="window.start.analysis.help.button.label";
+	public static final String WINDOW_HELP_USER_TITLE="window.help.user.title";
 
 
 

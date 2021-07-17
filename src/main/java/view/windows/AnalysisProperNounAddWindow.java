@@ -35,9 +35,9 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
             ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_INFORMATION_MESSAGE),
             true, false);
     private final JPanel content = new JPanel();
-    private final IComboBoxPanel comboBoxPanel = new ComboBoxPanel(
-            ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROFIL_PANEL),
-            ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROFIL_LABEL));
+//    private final IComboBoxPanel comboBoxPanel = new ComboBoxPanel(
+//            ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROFIL_PANEL),
+//            ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROFIL_LABEL));
     private final JPanel tablePanel = new JPanel();
     private final ITableWithFilterAndEditPanel<String> properNounTable = new TableWithFilterAndEditPanel<>(
             ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PROPER_NOUN_TABLE_PANEL_TITLE),
@@ -58,13 +58,15 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
             ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_WORD_TABLE_FILTER_LABEL));
     private final IActionPanel actionPanel = new ActionPanel(3);
     private final Consumer<?> consumerRelaunchAnalyze;
+    private final String selectedProfil;
 
-
-    public AnalysisProperNounAddWindow(IConfigurationControler configurationControler, Collection<String> properNounSet, Consumer<?> consumerRelaunchAnalyze) {
+    public AnalysisProperNounAddWindow(IConfigurationControler configurationControler, Collection<String> properNounSet, Consumer<?> consumerRelaunchAnalyze,
+                                       String selectedProfil) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PANEL_TITLE), configurationControler, false);
         this.consumerRelaunchAnalyze = consumerRelaunchAnalyze;
-        this.comboBoxPanel.addConsumerOnSelectChange(getConsumerOnProfileChange());
-        loadAllProfils();
+        this.selectedProfil = selectedProfil;
+        //this.comboBoxPanel.addConsumerOnSelectChange(getConsumerOnProfileChange());
+        reloadProperNounList();
         wordTablePanel.refreshData(properNounSet.stream().map(s -> new SelectedObjectTable<>(s)).collect(Collectors.toCollection(LinkedList::new)));
         configureActionPanel();
         createWindow();
@@ -75,7 +77,7 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         content.add(this.textInformationPanel.getJPanel());
-        content.add(this.comboBoxPanel.getJPanel());
+        //content.add(this.comboBoxPanel.getJPanel());
         this.tablePanel.add(wordTablePanel.getJPanel());
         this.tablePanel.add(properNounTable.getJPanel());
         content.add(this.tablePanel);
@@ -99,15 +101,15 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
     private Consumer<String> getConsumerOnProfileChange() {
         return e -> reloadProperNounList();
     }
-
-    /**
-     * Permet de charger les profiles
-     */
-    private void loadAllProfils() {
-        Set<String> profilSet = LexicometricConfigurationEnum.PROPER_NOUN.getAllProfils().apply(null);
-        this.comboBoxPanel.refresh(profilSet);
-        profilSet.stream().findFirst().ifPresent(s -> this.comboBoxPanel.selectItem(s));
-    }
+//
+//    /**
+//     * Permet de charger les profiles
+//     */
+//    private void loadAllProfils() {
+//        Set<String> profilSet = LexicometricConfigurationEnum.PROPER_NOUN.getAllProfils().apply(null);
+//        this.comboBoxPanel.refresh(profilSet);
+//        profilSet.stream().findFirst().ifPresent(s -> this.comboBoxPanel.selectItem(s));
+//    }
 
     /**
      * Permet de se procurer le table filter pour filtrer par rapport à une chaine de caractère
@@ -147,9 +149,9 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
                         .value(x.getData())
                         .actionEditTableEnum(ActionEditTableEnum.ADD)
                         .build();
-                LexicometricConfigurationEnum.PROPER_NOUN.getEditTableElementBiConsumer().accept(this.comboBoxPanel.getLabelSelected(), editTableElement);
+                LexicometricConfigurationEnum.PROPER_NOUN.getEditTableElementBiConsumer().accept(selectedProfil, editTableElement);
             });
-            LexicometricConfigurationEnum.PROPER_NOUN.getSaveInDiskConsumer().accept(this.comboBoxPanel.getLabelSelected());
+            LexicometricConfigurationEnum.PROPER_NOUN.getSaveInDiskConsumer().accept(selectedProfil);
             reloadProperNounList();
         }, true);
     }
@@ -163,7 +165,7 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
         lexicometricConfiguration.getFillTableConfigurationList().stream()
                 .filter(s -> s.getDest().equals(0))
                 .findFirst()
-                .ifPresent(x -> properNounTable.fillTable(x.getBiFunction().apply(this.comboBoxPanel.getLabelSelected(), null)));
+                .ifPresent(x -> properNounTable.fillTable(x.getBiFunction().apply(selectedProfil, null)));
     }
 
 }

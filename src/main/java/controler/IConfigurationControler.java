@@ -695,11 +695,19 @@ public interface IConfigurationControler {
 
 	/**
 	 * Permet de se procurer la liste des noms propres potentiel
-	 * @param key Clé du texte
-	 * @param field Champ recherché
+	 * @param keyList Liste des Clé du texte
+	 * @param fieldSet Liste des Champs recherché
 	 * @param preTreatmentListLexicometricMap La map de prétraitement
 	 * @return la valeur
 	 */
-	Collection<String> getPotentialProperNounCollection(String key, String field, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap);
+	Collection<String> getPotentialProperNounCollection(Set<String> keyList, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap);
+
+	/**
+	 * Permet de se procurer la liste des clés des textes correspondant aux textes contenants les mots choisis
+	 * Si la liste des mots est vide alors toutes les clés sont retournées
+	 * @param wordSet liste des mots
+	 * @return la liste des clés des textes correspondant aux textes contenants les mots choisis
+	 */
+	Collection<String> getKeyTextSetWithSelectedWordsFromAnalyze(Set<String> wordSet);
 
 }

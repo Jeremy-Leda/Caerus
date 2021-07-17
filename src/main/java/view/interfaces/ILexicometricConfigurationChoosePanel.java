@@ -1,6 +1,7 @@
 package view.interfaces;
 
 import view.beans.LexicometricEditEnum;
+import view.panel.LexicometricListApplyChoosePanel;
 
 /**
  *
@@ -20,5 +21,17 @@ public interface ILexicometricConfigurationChoosePanel extends IAccessPanel{
      * @return le profil à utiliser
      */
     String getProfile();
+
+    /**
+     * Permet de savoir si le profil a bien été renseigné
+     * @return Vrai si le profil à bien été renseigné
+     */
+    Boolean isValid();
+
+    /**
+     * Permet de se procurer le type de configuration lexicométrique général
+     * @return le type de configuration lexicométrique général
+     */
+    LexicometricEditEnum getGeneralLexicometricEditEnum();
 
 }

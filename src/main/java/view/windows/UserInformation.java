@@ -31,7 +31,11 @@ public class UserInformation extends ModalJFrameAbstract {
 	private final IActionPanel actionPanel;
 	
 	public UserInformation(String title, IConfigurationControler configurationControler, PictureTypeEnum pictureType, String message) {
-		super(title, configurationControler);
+		this(title, configurationControler, pictureType, message, true);
+	}
+
+	public UserInformation(String title, IConfigurationControler configurationControler, PictureTypeEnum pictureType, String message, Boolean isModal) {
+		super(title, configurationControler, isModal);
 		this.content = new JPanel();
 		this.infoPanel = new InformationPanel(pictureType, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_MESSAGE_PANEL_LABEL), message, true, true);
 		this.actionPanel = new ActionPanel(1);
@@ -74,13 +78,7 @@ public class UserInformation extends ModalJFrameAbstract {
 	 * @return l'action listener
 	 */
 	private ActionListener closeAction() {
-		return new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				closeFrame();
-			}
-		};
+		return e -> closeFrame();
 	}
 
 	@Override

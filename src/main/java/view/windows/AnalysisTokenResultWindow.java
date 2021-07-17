@@ -2,10 +2,12 @@ package view.windows;
 
 import controler.IConfigurationControler;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
+import org.apache.commons.collections4.CollectionUtils;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricAnalyzeTypeViewEnum;
+import view.beans.LexicometricEditEnum;
 import view.interfaces.IActionPanel;
 import view.interfaces.ILabelsPanel;
 import view.interfaces.ITableAnalysisPanel;
@@ -16,11 +18,9 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 import javax.swing.*;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static view.utils.Constants.*;
 
@@ -35,7 +35,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
     private AnalysisResultDisplay analysisResultDisplay;
     private final ITableAnalysisPanel tableAnalysisPanel;
     private final ILabelsPanel labelsPanel;
-    private final IActionPanel actionPanel = new ActionPanel(1);
+    private final IActionPanel actionPanel = new ActionPanel(3);
     private final LexicometricAnalyzeCmd cmd;
     private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
 
@@ -73,8 +73,35 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
      */
     private void initActionPanel() {
         this.actionPanel.setStaticLabel(getMessage(WINDOW_RESULT_TOKEN_ACTION_PANEL_TITLE),
-                Map.of(0, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_BUTTON_LABEL)));
-        this.actionPanel.addAction(0, e -> new AnalysisTokenDetailResultWindow(getControler(), cmd, lexicometricAnalyzeTypeEnum, getRelaunchAnalyzeConsumer()));
+                Map.of(0, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_BUTTON_LABEL),
+                        1, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PROPER_NOUN_BUTTON_LABEL),
+                            2, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_FOR_WORD_BUTTON_LABEL)));
+        this.actionPanel.addAction(0, e -> openDetailResult(new HashSet<>()));
+        this.actionPanel.addAction(1, e -> {
+            actionPanel.setEnabled(1, false);
+            AnalysisProperNounAddWindow analysisProperNounAddWindow =
+                    new AnalysisProperNounAddWindow(getControler(), getPotentialProperNounCollection(), getRelaunchAnalyzeConsumer(),
+                            cmd.getPreTreatmentListLexicometricMap().get(LexicometricEditEnum.PROPER_NOUN));
+            analysisProperNounAddWindow.addActionOnClose(s -> actionPanel.setEnabled(1, true));
+        });
+        this.actionPanel.addAction(2, e -> openDetailResult(this.tableAnalysisPanel.getSelectedWords()));
+        
+    }
+
+    /**
+     * Permet d'ouvrir la fenêtre de détail des résultats
+     * @param selectedWordSet liste des mots sélectionné
+     */
+    private void openDetailResult(Set<String> selectedWordSet) {
+        actionPanel.setEnabled(0, false);
+        actionPanel.setEnabled(2, false);
+        AnalysisTokenDetailResultWindow analysisTokenDetailResultWindow =
+                new AnalysisTokenDetailResultWindow(getControler(), cmd, lexicometricAnalyzeTypeEnum,
+                        getRelaunchAnalyzeConsumer(), selectedWordSet);
+        analysisTokenDetailResultWindow.addActionOnClose(x -> {
+            actionPanel.setEnabled(0, true);
+            actionPanel.setEnabled(2, true);
+        });
     }
 
     @Override
@@ -100,5 +127,14 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract {
             this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
             this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
         };
+    }
+
+    /**
+     * Permet de se procurer la liste des noms propres potentiel
+     * @return la liste des noms propres potentiels
+     */
+    private Collection<String> getPotentialProperNounCollection() {
+        return getControler().getPotentialProperNounCollection(this.cmd.getKeyTextFilteredList().stream().collect(Collectors.toSet()),
+                this.cmd.getFieldToAnalyzeSet(), cmd.toPreTreatmentServerMap());
     }
 }

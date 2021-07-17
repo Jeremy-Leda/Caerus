@@ -22,4 +22,10 @@ public interface IChooseLexicometricAnalyzePanel extends IAccessPanel{
      */
     LexicometricAnalyzeTypeViewEnum getAnalyzeToLaunch();
 
+    /**
+     * Permet de savoir si le panel est prêt pour l'analyse
+     * @return Vrai si valid pour lancer l'analyse
+     */
+    boolean isValidForStartAnalysis();
+
 }

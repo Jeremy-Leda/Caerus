@@ -1,5 +1,7 @@
 package view.panel;
 
+import org.apache.commons.lang3.StringUtils;
+import view.beans.LexicometricEditEnum;
 import view.beans.LexicometricLemmatizationConfigurationEnum;
 import view.beans.LexicometricProperNounConfigurationEnum;
 import view.beans.LexicometricTokenizationConfigurationEnum;
@@ -10,18 +12,23 @@ import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 import javax.swing.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class LexicometricListApplyChoosePanel implements ILexicometricListApplyChoosePanel {
 
     private final JPanel content = new JPanel();
-    private final ILexicometricConfigurationChoosePanel lemmatizationChoosePanel;
-    private final ILexicometricConfigurationChoosePanel stopWordChoosePanel;
-    private final ILexicometricConfigurationChoosePanel properNounChoosePanel;
+    private final Map<LexicometricEditEnum, LexicometricConfigurationChoosePanel> lexicometricListApplyChoosePanelMap = new HashMap<>();
+    private final Collection<LexicometricEditEnum> lexicometricEditEnumCollection = new HashSet<>();
+
 
     public LexicometricListApplyChoosePanel(IWizardPanel wizardPanel, Boolean withStopWords, Boolean withLemmatization, Boolean withProperNoun) {
-        lemmatizationChoosePanel = new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricLemmatizationConfigurationEnum.values());
-        stopWordChoosePanel = new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricTokenizationConfigurationEnum.values());
-        properNounChoosePanel = new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricProperNounConfigurationEnum.values());
+        lexicometricListApplyChoosePanelMap.put(LexicometricEditEnum.LEMMATIZATION,
+                new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricLemmatizationConfigurationEnum.values(), LexicometricEditEnum.LEMMATIZATION));
+        lexicometricListApplyChoosePanelMap.put(LexicometricEditEnum.TOKENIZATION,
+                new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricTokenizationConfigurationEnum.values(), LexicometricEditEnum.TOKENIZATION));
+        lexicometricListApplyChoosePanelMap.put(LexicometricEditEnum.PROPER_NOUN,
+                new LexicometricConfigurationChoosePanel(wizardPanel, LexicometricProperNounConfigurationEnum.values(), LexicometricEditEnum.PROPER_NOUN));
         createWindow(withStopWords, withLemmatization, withProperNoun);
     }
 
@@ -34,13 +41,16 @@ public class LexicometricListApplyChoosePanel implements ILexicometricListApplyC
         content.setBorder(
                 BorderFactory.createTitledBorder(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CHOOSE_ANALYSE_OPTION_PANEL_TITLE)));
         if (withStopWords) {
-            content.add(stopWordChoosePanel.getJPanel());
+            content.add(lexicometricListApplyChoosePanelMap.get(LexicometricEditEnum.TOKENIZATION).getJPanel());
+            lexicometricEditEnumCollection.add(LexicometricEditEnum.TOKENIZATION);
         }
         if (withLemmatization) {
-            content.add(lemmatizationChoosePanel.getJPanel());
+            content.add(lexicometricListApplyChoosePanelMap.get(LexicometricEditEnum.LEMMATIZATION).getJPanel());
+            lexicometricEditEnumCollection.add(LexicometricEditEnum.LEMMATIZATION);
         }
         if (withProperNoun) {
-            content.add(properNounChoosePanel.getJPanel());
+            content.add(lexicometricListApplyChoosePanelMap.get(LexicometricEditEnum.PROPER_NOUN).getJPanel());
+            lexicometricEditEnumCollection.add(LexicometricEditEnum.PROPER_NOUN);
         }
     }
 
@@ -51,16 +61,25 @@ public class LexicometricListApplyChoosePanel implements ILexicometricListApplyC
 
     @Override
     public ILexicometricConfigurationChoosePanel getLemmatizationConfiguration() {
-        return this.lemmatizationChoosePanel;
+        return lexicometricListApplyChoosePanelMap.get(LexicometricEditEnum.LEMMATIZATION);
     }
 
     @Override
     public ILexicometricConfigurationChoosePanel getStopWordConfiguration() {
-        return this.stopWordChoosePanel;
+        return lexicometricListApplyChoosePanelMap.get(LexicometricEditEnum.TOKENIZATION);
     }
 
     @Override
     public ILexicometricConfigurationChoosePanel getProperNounConfiguration() {
-        return this.properNounChoosePanel;
+        return lexicometricListApplyChoosePanelMap.get(LexicometricEditEnum.PROPER_NOUN);
+    }
+
+    @Override
+    public Boolean isValid() {
+        return lexicometricListApplyChoosePanelMap.values().stream()
+                .filter(x -> lexicometricEditEnumCollection.contains(x.getGeneralLexicometricEditEnum()))
+                .map(LexicometricConfigurationChoosePanel::isValid)
+                .reduce(Boolean::logicalAnd)
+                .orElse(true);
     }
 }

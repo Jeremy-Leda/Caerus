@@ -121,21 +121,37 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                         .getDisplayMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_MESSAGE_ETAPE4),
                 false, true);
         this.wizardPanel.addStep(Arrays.asList(informationStep, chooseLexicometricAnalyzePanel, chooseAnalyzeActionPanel));
+        //FIXME rajouter l'activation que une fois que tout a été sélectionné et est ok pour lancer l'analyse
+        this.wizardPanel.addEnableDisableConsumer(3L, s -> chooseAnalyzeActionPanel.setEnabled(1, chooseLexicometricAnalyzePanel.isValidForStartAnalysis()));
     }
 
     /**
      * Permet de créer la zone d'action du choix de l'analyse
      */
     private void createChooseAnalyzeAction() {
-        this.chooseAnalyzeActionPanel = new ActionPanel(2);
+        this.chooseAnalyzeActionPanel = new ActionPanel(3);
         this.chooseAnalyzeActionPanel.setStaticLabel(getMessage(Constants.WINDOW_INFORMATION_ACTION_PANEL_LABEL),
-                Map.of(0, getMessage(Constants.WINDOW_START_ANALYSIS_START_BUTTON_LABEL),
-                        1, getMessage(Constants.WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL)));
+                Map.of(0, getMessage(Constants.WINDOW_START_ANALYSIS_HELP_BUTTON_LABEL),
+                        1, getMessage(Constants.WINDOW_START_ANALYSIS_START_BUTTON_LABEL),
+                        2, getMessage(Constants.WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL)));
         // FIXME passer en progress
-        this.chooseAnalyzeActionPanel.addAction(0, e -> executeOnServer(() -> {
+        this.chooseAnalyzeActionPanel.setIconButton(0, PictureTypeEnum.WARNING);
+        this.chooseAnalyzeActionPanel.setEnabled(1, false);
+        this.chooseAnalyzeActionPanel.setEnabled(2, false);
+        this.chooseAnalyzeActionPanel.addAction(0, e -> {
+            this.chooseAnalyzeActionPanel.setEnabled(0, false);
+            UserInformation userInformation = new UserInformation(getMessage(Constants.WINDOW_HELP_USER_TITLE),
+                    getControler(),
+                    PictureTypeEnum.INFORMATION,
+                    getMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_OPTIONALS_LISTE_MESSAGE),
+                    false);
+            userInformation.addActionOnClose(x -> this.chooseAnalyzeActionPanel.setEnabled(0, true));
+        });
+        this.chooseAnalyzeActionPanel.addAction(1, e -> executeOnServer(() -> {
             chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
+            this.chooseAnalyzeActionPanel.setEnabled(2, true);
         }));
-        this.chooseAnalyzeActionPanel.addAction(1, e ->
+        this.chooseAnalyzeActionPanel.addAction(2, e ->
                 chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerDisplayResult()
                         .accept(getControler(), getLexicometricAnalyzeCmd()));
     }

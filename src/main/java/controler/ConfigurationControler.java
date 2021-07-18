@@ -19,6 +19,7 @@ import model.exceptions.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import view.analysis.beans.AnalysisGroupDisplay;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.*;
 import view.interfaces.IHierarchicalTable;
@@ -753,7 +754,12 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
-	public Collection<String> getKeyTextSetWithSelectedWordsFromAnalyze(Set<String> wordSet) {
-		return LexicometricAnalysis.getInstance().getKeyTextSetWithSelectedWords(wordSet);
+	public Collection<String> getKeyTextSetWithSelectedWordsFromAnalyze(Set<String> keySet, Set<String> wordSet) {
+		return LexicometricAnalysis.getInstance().getKeyTextSetWithSelectedWords(keySet, wordSet);
+	}
+
+	@Override
+	public Set<AnalysisGroupDisplay> getAnalysisGroupDisplaySet(Set<String> keySet, Set<String> fieldSet) {
+		return LexicometricAnalysis.getInstance().getAnalysisGroupDisplaySet(keySet, fieldSet);
 	}
 }

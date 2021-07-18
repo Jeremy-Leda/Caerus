@@ -28,7 +28,6 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
     private IChooseLexicometricAnalyzePanel chooseLexicometricAnalyzePanel = new ChooseLexicometricAnalyzePanel(wizardPanel);
     private IActionPanel chooseAnalyzeActionPanel;
     private final ICheckBoxPanel checkBoxFieldsPanel;
-    private final Map<String, Integer> fieldNumberCheckBoxMap = new HashMap<>();
 
 
     public AnalysisAssistant(String title, IConfigurationControler configurationControler) {
@@ -206,7 +205,6 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         Map<Integer, String> labels = new HashMap<>();
         for (Map.Entry<String, String> entry : getControler().getFieldConfigurationNameLabelWithoutMetaMap().entrySet()) {
             labels.put(current, entry.getValue());
-            this.fieldNumberCheckBoxMap.put(entry.getKey(), current);
             current++;
         }
         this.checkBoxFieldsPanel.setStaticLabel(getMessage(Constants.WINDOW_START_ANALYSIS_FIELD_MATERIAL_PANEL_TITLE), labels);

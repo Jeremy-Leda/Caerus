@@ -57,10 +57,15 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
                                            LexicometricAnalyzeCmd cmd,
                                            LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum,
                                            Consumer<?> relaunchAnalyzeConsumer,
-                                           Set<String> selectedWords) {
+                                           Set<String> selectedWords,
+                                           Set<String> keySet) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE), configurationControler, false);
         this.consumerRelaunchBase = relaunchAnalyzeConsumer;
-        this.keyFilteredTextList.addAll(getControler().getKeyTextSetWithSelectedWordsFromAnalyze(selectedWords));
+        if (selectedWords.isEmpty()) {
+            this.keyFilteredTextList.addAll(keySet);
+        } else {
+            this.keyFilteredTextList.addAll(getControler().getKeyTextSetWithSelectedWordsFromAnalyze(keySet, selectedWords));
+        }
         radioButtonPanel = new RadioButtonPanel(cmd.getFieldToAnalyzeSet().size());
         LinkedList<String> headerLinkedList = new LinkedList<>();
         headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));

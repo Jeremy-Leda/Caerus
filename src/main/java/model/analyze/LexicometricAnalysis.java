@@ -1,23 +1,21 @@
 package model.analyze;
 
+import model.analyze.beans.CartesianGroup;
+import model.analyze.beans.CartesianGroupBuilder;
 import model.analyze.beans.UserStructuredText;
-import model.analyze.constants.FolderSettingsEnum;
 import model.analyze.lexicometric.analyze.beans.Text;
 import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
 import model.analyze.lexicometric.beans.LexicometricCleanListEnum;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import view.analysis.beans.AnalysisResultDisplay;
-import view.analysis.beans.AnalysisResultDisplayBuilder;
-import view.analysis.beans.AnalysisTokenDisplay;
-import view.analysis.beans.AnalysisTokenDisplayBuilder;
+import view.analysis.beans.*;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LexicometricAnalysis {
 
@@ -53,34 +51,11 @@ public class LexicometricAnalysis {
      * @return une map qui détient en clé un mot et en valeur son nombre total d'apparition
      */
     private Map<String, Long> getNbTokensOfText(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
-//        Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(keyText);
-//        String textToAnalyze = fieldSet.stream()
-//                .map(f -> textFromKey.get().getStructuredText().getContent(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
-//                .orElse(StringUtils.EMPTY);
-//        List<String> cleanWords = Arrays.stream(StringUtils.split(textToAnalyze))
-//                .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
-//                .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
-//                .map(s -> s.replaceAll("-", ""))
-//                .map(s -> s.replaceAll("¿", ""))
-//                .map(s -> s.replaceAll("[0-9]", ""))
-//                .map(s -> s.replaceAll("^\"|\"$", ""))
-//                .map(s -> s.replaceAll("“", ""))
-//                .map(s -> s.replaceAll("”", ""))
-//                .map(s -> s.replaceAll("»", ""))
-//                .map(s -> s.replaceAll("«", ""))
-//                .map(s -> s.replaceAll("^\'|\'$", ""))
-//                .map(s -> s.replaceAll("‘", ""))
-//                .map(s -> s.replaceAll("—", ""))
-//                .map(s -> s.toLowerCase())
-//                .filter(StringUtils::isNotBlank).collect(Collectors.toList());
-
         Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet);
         if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
             Set<String> properNounToRemoveSet = getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN));
             tokenCleanedCollection.removeAll(properNounToRemoveSet);
         }
-
-
         return tokenCleanedCollection.stream().map(s -> s.toLowerCase()).collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
     }
 
@@ -185,9 +160,6 @@ public class LexicometricAnalysis {
             return token;
         }).collect(Collectors.toSet());
         text.getTokenSet().addAll(tokenSet);
-
-//        System.out.println("START REDUCE");
-//        Text text = textSet.parallelStream().reduce(this::reduceText).orElse(new Text(StringUtils.EMPTY));
         System.out.println("START CONVERT");
         AnalysisResultDisplay analysisResultDisplay = convertTextToAnalysisResultDisplay(text);
         System.out.println("getAnalysisResultDisplayForNumberTokens END");
@@ -284,19 +256,113 @@ public class LexicometricAnalysis {
     /**
      * Permet de se procurer la liste des clés contenant la liste des mots demandés
      * Si la liste des mots demandés est vide alors la liste de toutes les clés est retournés
+     * @param keySet liste des clés pour la recherche
      * @param wordSet liste des mots
      * @return la liste des clés associés
      */
-    public Collection<String> getKeyTextSetWithSelectedWords(Set<String> wordSet) {
+    public Collection<String> getKeyTextSetWithSelectedWords(Set<String> keySet, Set<String> wordSet) {
+        if (keySet.isEmpty()) {
+            keySet.addAll(this.analysisResultSet.stream().map(Text::getKey).collect(Collectors.toSet()));
+        }
         if (wordSet.isEmpty()) {
-            return this.analysisResultSet.stream().map(Text::getKey).collect(Collectors.toSet());
+            return keySet;
         }
         return this.analysisResultSet.stream()
+                .filter(x -> keySet.contains(x.getKey()))
                 .filter(x -> x.getTokenSet().stream()
                         .filter(s -> wordSet.contains(s.getWord()))
                         .findFirst()
                         .isPresent())
                 .map(Text::getKey)
                 .collect(Collectors.toSet());
+    }
+
+    /**
+     * Permet de se procurer la liste des groupes généré
+     * @param keySet Liste des clés à traiter
+     * @param fieldSet liste des champs pour regrouper
+     * @return la liste des groupes généré
+     */
+    public Set<AnalysisGroupDisplay> getAnalysisGroupDisplaySet(Set<String> keySet, Set<String> fieldSet) {
+        Map<String, Set<CartesianGroup>> fieldValueSetMap = getFieldValueSetMap(keySet, fieldSet);
+        List<List<CartesianGroup>> cartesianGroup = getCartesianGroup(fieldValueSetMap);
+        return cartesianGroup.stream().map(s -> constructAnalysisGroupDisplay(keySet, s))
+                .filter(s -> !s.getKeySet().isEmpty())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Permet de se procurer la liste des valeurs associés aux champs pour l'ensemble des textes passé en paramètres
+     * @param keySet Liste des clés du texte
+     * @param fieldSet Liste des champs
+     * @return la liste des valeurs associés aux champs
+     */
+    private Map<String, Set<CartesianGroup>> getFieldValueSetMap(Set<String> keySet, Set<String> fieldSet) {
+        Map<String, Set<CartesianGroup>> map = new HashMap<>();
+        fieldSet.forEach(f -> {
+            Set<CartesianGroup> values = new HashSet<>();
+            keySet.forEach(k -> {
+                Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(k);
+                String content = StringUtils.trim(textFromKey.get().getStructuredText().getContent(f));
+                String label = UserSettings.getInstance().getAllListField().get(f);
+                values.add(new CartesianGroupBuilder().field(f).value(content).label(label).build());
+            });
+            map.put(f, values);
+        });
+        return map;
+    }
+
+    /**
+     * Permet de créer les groupes cartésiens à partir de la map des valeurs
+     * @param valuesMap map des valeurs
+     * @return les groupes cartésiens
+     */
+    private List<List<CartesianGroup>>getCartesianGroup(Map<String, Set<CartesianGroup>> valuesMap) {
+        return valuesMap.values().stream()
+                .map(list -> list.stream().map(Collections::singletonList)
+                        .collect(Collectors.toList()))
+                .reduce((list1, list2) -> list1.stream()
+                        .flatMap(first -> list2.stream()
+                                .map(second -> Stream.of(first, second)
+                                        .flatMap(List::stream)
+                                        .collect(Collectors.toList())))
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+    }
+
+    /**
+     * Permet de se procurer la liste des clés du textes répondant à un groupe cartésien
+     * @param keySet liste des clés
+     * @param cartesianGroupList groupe cartésien recherché
+     * @return la liste des clés
+     */
+    private Set<String> getKeySetFromCartesianGroupList(Set<String> keySet, List<CartesianGroup> cartesianGroupList) {
+        Set<String> keyList = new HashSet<>();
+        keySet.forEach(k -> {
+            Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(k);
+            Set<CartesianGroup> cartesianGroupSet = cartesianGroupList.stream()
+                    .filter(group -> group.getValue().equals(StringUtils.trim(textFromKey.get().getStructuredText().getContent(group.getField()))))
+                    .collect(Collectors.toSet());
+            if (cartesianGroupSet.size() == cartesianGroupList.size()) {
+                keyList.add(k);
+            }
+        });
+        return keyList;
+    }
+
+    /**
+     * Permet de construire le résultat de l'analyse pour les groupes
+     * @param keySet liste des clés
+     * @param cartesianGroupList liste des groupes cartésien
+     * @return le résultat de l'analyse pour les groupes
+     */
+    private AnalysisGroupDisplay constructAnalysisGroupDisplay(Set<String> keySet, List<CartesianGroup> cartesianGroupList) {
+        Set<String> keyFilteredSet = getKeySetFromCartesianGroupList(keySet, cartesianGroupList);
+        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(keyFilteredSet.stream().collect(Collectors.toList()));
+        return new AnalysisGroupDisplayBuilder()
+                .cartesianGroupSet(cartesianGroupList.stream().collect(Collectors.toSet()))
+                .analysisResultDisplay(analysisResultDisplayForNumberTokens)
+                .keySet(keyFilteredSet)
+                .build();
     }
 }

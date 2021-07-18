@@ -565,6 +565,15 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_HELP_BUTTON_LABEL="window.start.analysis.help.button.label";
 	public static final String WINDOW_HELP_USER_TITLE="window.help.user.title";
 
+	public static final String WINDOW_ANALYSIS_RESULT_GROUP_PANEL_TITLE="window.analysis.result.group.panel.title";
+	public static final String WINDOW_ANALYSIS_RESULT_GROUP_INFORMATION_MESSAGE="window.analysis.result.group.information.message";
+	public static final String WINDOW_ANALYSIS_RESULT_GROUP_CHOOSE_FIELD_PANEL="window.analysis.result.group.choose.field.panel";
+	public static final String WINDOW_ANALYSIS_RESULT_GROUP_BUTTON_LABEL="window.analysis.result.group.button.label";
+	public static final String WINDOW_RESULT_TOKEN_GLOBAL_LABEL="window.result.token.global.label";
+	public static final String WINDOW_RESULT_TOKEN_ACTION_SHOW_GROUP_RESULT_BUTTON_LABEL="window.result.token.action.show.group.result.button.label";
+	public static final String WINDOW_RESULT_TOKEN_GROUP_RESULT_INFORMATION_PANEL_TITLE="window.result.token.group.result.information.panel.title";
+
+
 
 
 

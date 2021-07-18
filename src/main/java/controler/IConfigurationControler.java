@@ -15,6 +15,7 @@ import model.excel.beans.ExcelImportConfigurationCmd;
 import model.exceptions.ImportExcelException;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import view.analysis.beans.AnalysisGroupDisplay;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.*;
 import view.interfaces.IHierarchicalTable;
@@ -705,9 +706,18 @@ public interface IConfigurationControler {
 	/**
 	 * Permet de se procurer la liste des clés des textes correspondant aux textes contenants les mots choisis
 	 * Si la liste des mots est vide alors toutes les clés sont retournées
+	 * @param keySet liste des clés pour la recherche
 	 * @param wordSet liste des mots
 	 * @return la liste des clés des textes correspondant aux textes contenants les mots choisis
 	 */
-	Collection<String> getKeyTextSetWithSelectedWordsFromAnalyze(Set<String> wordSet);
+	Collection<String> getKeyTextSetWithSelectedWordsFromAnalyze(Set<String> keySet, Set<String> wordSet);
+
+	/**
+	 * Permet de se procurer la liste des groupes généré
+	 * @param keySet Liste des clés à traiter
+	 * @param fieldSet liste des champs pour regrouper
+	 * @return la liste des groupes généré
+	 */
+	Set<AnalysisGroupDisplay> getAnalysisGroupDisplaySet(Set<String> keySet, Set<String> fieldSet);
 
 }

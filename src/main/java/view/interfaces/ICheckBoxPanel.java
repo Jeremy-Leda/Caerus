@@ -1,6 +1,7 @@
 package view.interfaces;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -57,6 +58,13 @@ public interface ICheckBoxPanel extends IAccessPanel {
 	 * @return Le nombre de case à cocher qui ont été coché.
 	 */
 	long getNumberOfCheckedBox();
+
+	/**
+	 * Permet de se procurer tous les index qui ont été cochés ou non
+	 * @param checked Vrai si on souhaite les cochés
+	 * @return tous les index qui ont été cochés ou non
+	 */
+	Set<Integer> getAllIndexChecked(Boolean checked);
 	
 	
 }

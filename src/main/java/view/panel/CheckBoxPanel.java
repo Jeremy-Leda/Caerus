@@ -4,7 +4,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -124,4 +126,11 @@ public class CheckBoxPanel implements ICheckBoxPanel {
         return checkBoxMap.values().stream().filter(jCheckBox -> jCheckBox.isSelected()).count();
     }
 
+	@Override
+	public Set<Integer> getAllIndexChecked(Boolean checked) {
+		return checkBoxMap.entrySet().stream()
+				.filter(jCheckBox -> checked.equals(jCheckBox.getValue().isSelected()))
+				.map(Map.Entry::getKey)
+				.collect(Collectors.toSet());
+	}
 }

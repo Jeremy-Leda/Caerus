@@ -9,6 +9,7 @@ import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricAnalyzeTypeViewEnum;
 import view.beans.LexicometricEditEnum;
+import view.components.DragAndDropCloseableTabbedPane;
 import view.interfaces.IActionPanel;
 import view.interfaces.IAddAnalysisGroupDisplay;
 import view.interfaces.ILabelsPanel;
@@ -41,7 +42,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
     private final IActionPanel actionPanel = new ActionPanel(4);
     private final LexicometricAnalyzeCmd cmd;
     private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
-    private final JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
+    private final DragAndDropCloseableTabbedPane tabbedPane = new DragAndDropCloseableTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
     private final Map<JComponent, AnalysisGroupDisplay> componentAnalysisGroupDisplayMap = new HashMap<>();
     private final Map<JComponent, ITableAnalysisPanel> componentTableAnalysisPanelMap = new HashMap<>();
     private final LinkedList<String> headerLinkedList;
@@ -186,7 +187,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         content.add(tableAnalysisPanel.getJPanel());
         this.componentAnalysisGroupDisplayMap.put(content, analysisGroupDisplay);
         this.componentTableAnalysisPanelMap.put(content, tableAnalysisPanel);
-        this.tabbedPane.addTab(analysisGroupDisplay.getTitle(), content);
+        this.tabbedPane.addCloseableTab(analysisGroupDisplay.getTitle(), content);
     }
 
 //    @Override

@@ -52,7 +52,7 @@ public class FilterRenderer extends JLabel implements ListCellRenderer<Filter> {
 		StringBuilder filterBuilder = new StringBuilder(Constants.WINDOW_FILTER_TYPE_PREFIX);
 		filterBuilder.append(value.getType().name());
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("<html><p><br/><font color='green'>");
+		stringBuilder.append("<html><p><br/><font color='rgb(74, 86, 145)'>");
 		stringBuilder.append(value.getLabel());
 		stringBuilder.append("</font><br/>");
 		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(filterBuilder.toString()));

@@ -53,7 +53,7 @@ public class DisplayTextRenderer extends JLabel implements ListCellRenderer<Disp
 		stringBuilder.append("<html><p><br/>");
 		stringBuilder.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_DISPLAY_TEXTS_CORPUS_LABEL)).append(value.getCorpusName());
 		value.getMapKeyValueList().entrySet().stream().forEach((entry) -> {
-			stringBuilder.append("<br/><font color='green'>").append(entry.getKey()).append(" : </font>");
+			stringBuilder.append("<br/><font color='rgb(74, 86, 145)'>").append(entry.getKey()).append(" : </font>");
 			String totalText = entry.getKey() + entry.getValue();
 			if (totalText.length() > MAX_LENGTH) {
 				stringBuilder.append("<br/>");

@@ -140,7 +140,7 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 				});
 				informationPanel.refreshInformations(String.format(
 						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_SAVE_EXCEL_CLASSICAL_INFORMATION_PANEL_TEXT),
-						sb.toString()));
+						sb));
 				repack();
 			}
 		};

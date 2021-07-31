@@ -39,7 +39,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
     private AnalysisResultDisplay analysisResultDisplay;
     private final ITableAnalysisPanel tableAnalysisPanel;
     private final ILabelsPanel labelsPanel;
-    private final IActionPanel actionPanel = new ActionPanel(4);
+    private final IActionPanel actionPanel = new ActionPanel(5);
     private final LexicometricAnalyzeCmd cmd;
     private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
     private final DragAndDropCloseableTabbedPane tabbedPane = new DragAndDropCloseableTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -87,7 +87,8 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
                 Map.of(0, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_BUTTON_LABEL),
                         1, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PROPER_NOUN_BUTTON_LABEL),
                             2, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_FOR_WORD_BUTTON_LABEL),
-                        3, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_GROUP_RESULT_BUTTON_LABEL)));
+                        3, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_GROUP_RESULT_BUTTON_LABEL),
+                        4, getMessage(WINDOW_RESULT_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL)));
         this.actionPanel.addAction(0, e -> openDetailResult(new HashSet<>(), getKeySetForDisplayDetail()));
         this.actionPanel.addAction(1, e -> {
             actionPanel.setEnabled(1, false);
@@ -98,6 +99,8 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         });
         this.actionPanel.addAction(2, e -> openDetailResult(getSelectedWordsForDisplayDetail(), getKeySetForDisplayDetail()));
         this.actionPanel.addAction(3, e -> new AnalysisGroupResultWindow(getControler(), this, cmd));
+        this.actionPanel.addAction(4, e -> new ExportExcelWindow(getControler(), analysisResultDisplay,
+                Arrays.asList(tabbedPane.getComponents()).stream().filter(c -> c instanceof JPanel).map(c -> componentAnalysisGroupDisplayMap.getOrDefault(c, null)).collect(Collectors.toList())));
         
     }
 
@@ -189,12 +192,6 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         this.componentTableAnalysisPanelMap.put(content, tableAnalysisPanel);
         this.tabbedPane.addCloseableTab(analysisGroupDisplay.getTitle(), content);
     }
-
-//    @Override
-//    public void addAnalysisGroupDisplay(String title, JComponent component, Integer id) {
-//        this.tabbedPane.addTab(title, component);
-//        this.displayIdMap.put(this.tabbedPane.indexOfComponent(component), id);
-//    }
 
     private ILabelsPanel createLabelsPanel(AnalysisGroupDisplay analysisGroupDisplay) {
         ILabelsPanel labelsPanel = new LabelsPanel(getMessage(WINDOW_RESULT_TOKEN_GROUP_RESULT_INFORMATION_PANEL_TITLE), analysisGroupDisplay.getCartesianGroupSet().size() + 2);

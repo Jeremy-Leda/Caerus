@@ -572,8 +572,15 @@ public final class Constants {
 	public static final String WINDOW_RESULT_TOKEN_GLOBAL_LABEL="window.result.token.global.label";
 	public static final String WINDOW_RESULT_TOKEN_ACTION_SHOW_GROUP_RESULT_BUTTON_LABEL="window.result.token.action.show.group.result.button.label";
 	public static final String WINDOW_RESULT_TOKEN_GROUP_RESULT_INFORMATION_PANEL_TITLE="window.result.token.group.result.information.panel.title";
+	public static final String WINDOW_RESULT_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL="window.result.token.action.export.excel.button.label";
 
 
+
+	public static final String WINDOW_EXPORT_EXCEL_PANEL_TITLE="window.export.excel.panel.title";
+	public static final String WINDOW_EXPORT_EXCEL_INFORMATION_MESSAGE="window.export.excel.information.message";
+	public static final String WINDOW_EXPORT_EXCEL_BUTTON_LABEL="window.export.excel.button.label";
+	public static final String WINDOW_EXPORT_EXCEL_FILE_PICKER_PANEL_LABEL="window.export.excel.file.picker.panel.label";
+	public static final String WINDOW_EXPORT_EXCEL_INFORMATION_LABEL="window.export.excel.information.label";
 
 
 

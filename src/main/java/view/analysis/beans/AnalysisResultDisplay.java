@@ -1,13 +1,17 @@
 package view.analysis.beans;
 
 import model.PojoBuilder;
+import model.excel.beans.*;
 import view.panel.analysis.model.AnalysisRow;
+import view.utils.ConfigurationUtils;
 
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static view.utils.Constants.*;
 
 /**
  * Bean pour l'affichage des résultats
@@ -91,5 +95,50 @@ public class AnalysisResultDisplay {
      */
     public List<AnalysisRow> toAnalysisTokenRowList() {
         return this.getAnalysisTokenDisplaySet().stream().map(AnalysisTokenDisplay::toTokenRow).collect(Collectors.toCollection(LinkedList::new));
+    }
+
+    /**
+     * Permet de se procurer la feuille excel
+     * @return la feuille excel
+     */
+    public ExcelSheet toExcelSheet() {
+        // Creation de la feuille
+        return new ExcelSheetBuilder()
+                .name(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_GLOBAL_LABEL))
+                .excelBlockList(toExcelBlockList())
+                .build();
+    }
+
+    /**
+     * Permet de se procurer la liste des bloc excels
+     * @return la liste des blocs excel
+     */
+    public List<ExcelBlock> toExcelBlockList() {
+        // Creation du premier bloc
+        ExcelCell cellTotalTokensLabel = new ExcelStringCellBuilder()
+                .value(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL))
+                .build();
+        ExcelCell cellTotalWordsLabel = new ExcelStringCellBuilder()
+                .value(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL))
+                .build();
+        ExcelCell cellTotalTokens = new ExcelIntegerCellBuilder()
+                .value(this.getNbToken())
+                .build();
+        ExcelCell cellTotalWords = new ExcelIntegerCellBuilder()
+                .value(Math.toIntExact(this.getNbOccurrency()))
+                .build();
+        ExcelBlock excelBlockHeader = new ExcelBlock(new ExcelLine(cellTotalTokensLabel, cellTotalTokens), new ExcelLine(cellTotalWordsLabel, cellTotalWords));
+
+        // Creation du deuxième bloc
+        ExcelCell cellWordLabel = new ExcelStringCellBuilder()
+                .value(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL))
+                .build();
+        ExcelCell cellNbTokenLabel = new ExcelStringCellBuilder()
+                .value(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL))
+                .build();
+        ExcelBlock excelBlockValues = new ExcelBlock(new ExcelLine(cellWordLabel, cellNbTokenLabel));
+        excelBlockValues.getExcelLineLinkedList().addAll(analysisTokenDisplaySet.stream().map(AnalysisTokenDisplay::toExcelLine).collect(Collectors.toList()));
+
+        return List.of(excelBlockHeader, excelBlockValues);
     }
 }

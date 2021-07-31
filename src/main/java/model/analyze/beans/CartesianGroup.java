@@ -1,6 +1,10 @@
 package model.analyze.beans;
 
 import model.PojoBuilder;
+import model.excel.beans.ExcelCell;
+import model.excel.beans.ExcelLine;
+import model.excel.beans.ExcelStringCell;
+import model.excel.beans.ExcelStringCellBuilder;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
@@ -52,5 +56,19 @@ public class CartesianGroup {
     @Override
     public int hashCode() {
         return Objects.hash(field, value, label);
+    }
+
+    /**
+     * Permet de se procurer la ligne excel
+     * @return la ligne excel
+     */
+    public ExcelLine toExcelLine() {
+        ExcelCell label = new ExcelStringCellBuilder()
+                .value(getLabel())
+                .build();
+        ExcelCell value = new ExcelStringCellBuilder()
+                .value(getValue())
+                .build();
+        return new ExcelLine(label, value);
     }
 }

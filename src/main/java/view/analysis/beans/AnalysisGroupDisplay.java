@@ -2,11 +2,18 @@ package view.analysis.beans;
 
 import model.PojoBuilder;
 import model.analyze.beans.CartesianGroup;
+import model.excel.beans.ExcelBlock;
+import model.excel.beans.ExcelLine;
+import model.excel.beans.ExcelSheet;
+import model.excel.beans.ExcelSheetBuilder;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -47,6 +54,21 @@ public class AnalysisGroupDisplay {
 
     public void setCartesianGroupSet(Set<CartesianGroup> cartesianGroupSet) {
         this.cartesianGroupSet = cartesianGroupSet;
+    }
+
+    /**
+     * Permet de se procurer la feuille excel
+     * @return la feuille excel
+     */
+    public ExcelSheet toExcelSheet() {
+        List<ExcelLine> excelLineCartesianList = this.cartesianGroupSet.stream().map(CartesianGroup::toExcelLine).collect(Collectors.toList());
+        List<ExcelBlock> excelBlockList = new LinkedList<>();
+        excelBlockList.add(new ExcelBlock(excelLineCartesianList.toArray(ExcelLine[]::new)));
+        excelBlockList.addAll(analysisResultDisplay.toExcelBlockList());
+        return new ExcelSheetBuilder()
+                .name(getTitle())
+                .excelBlockList(excelBlockList)
+                .build();
     }
 
     public String getTitle() {

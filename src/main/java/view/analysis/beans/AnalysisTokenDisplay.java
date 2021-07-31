@@ -1,6 +1,7 @@
 package view.analysis.beans;
 
 import model.PojoBuilder;
+import model.excel.beans.*;
 import view.panel.analysis.model.AnalysisRow;
 
 import javax.validation.constraints.NotEmpty;
@@ -59,5 +60,17 @@ public class AnalysisTokenDisplay {
         AnalysisRow row = new AnalysisRow();
         row.getAnalysisList().addAll(List.of(word, nbOcurrency));
         return row;
+    }
+
+    /**
+     * Permet de se procurer la ligne excel
+     * @return la ligne excel
+     */
+    public ExcelLine toExcelLine() {
+        ExcelStringCell excelCellWord = new ExcelStringCell();
+        excelCellWord.setValue(word);
+        ExcelIntegerCell excelCellOccurrency = new ExcelIntegerCell();
+        excelCellOccurrency.setValue(Math.toIntExact(nbOcurrency));
+        return new ExcelLine(excelCellWord, excelCellOccurrency);
     }
 }

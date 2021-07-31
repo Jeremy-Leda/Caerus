@@ -87,13 +87,7 @@ public class FilePickerPanel implements IFilePickerPanel {
 		if (StringUtils.isNotBlank(label)) {
 			this.label.setText(label);
 		}
-		this.button.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				buttonActionPerformed(filePickerType);
-			}
-		});
+		this.button.addActionListener(e -> buttonActionPerformed(filePickerType));
 		this.textField = new JTextField(30);
 		this.textField.setEnabled(false);
 		this.filePickerPanel.add(this.label);

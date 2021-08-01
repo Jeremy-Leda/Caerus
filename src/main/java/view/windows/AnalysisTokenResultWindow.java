@@ -6,6 +6,7 @@ import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisGroupDisplay;
 import view.analysis.beans.AnalysisResultDisplay;
+import view.analysis.beans.interfaces.IExcelSheet;
 import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricAnalyzeTypeViewEnum;
 import view.beans.LexicometricEditEnum;
@@ -62,6 +63,10 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
                 headerLinkedList, List.of(String.class, Long.class), analysisResultDisplay.toAnalysisTokenRowList());
         this.labelsPanel = new LabelsPanel(getMessage(WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE), 2);
         this.tabbedPane.addChangeListener(s -> repack());
+        this.tabbedPane.setConsumerToRemove(c -> {
+            componentAnalysisGroupDisplayMap.remove(c);
+            componentTableAnalysisPanelMap.remove(c);
+        });
         createWindow();
     }
 
@@ -99,8 +104,12 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         });
         this.actionPanel.addAction(2, e -> openDetailResult(getSelectedWordsForDisplayDetail(), getKeySetForDisplayDetail()));
         this.actionPanel.addAction(3, e -> new AnalysisGroupResultWindow(getControler(), this, cmd));
-        this.actionPanel.addAction(4, e -> new ExportExcelWindow(getControler(), analysisResultDisplay,
-                Arrays.asList(tabbedPane.getComponents()).stream().filter(c -> c instanceof JPanel).map(c -> componentAnalysisGroupDisplayMap.getOrDefault(c, null)).collect(Collectors.toList())));
+        this.actionPanel.addAction(4, e -> {
+            List<IExcelSheet> sheetsList = new LinkedList<>();
+            sheetsList.add(analysisResultDisplay);
+            sheetsList.addAll(componentAnalysisGroupDisplayMap.values());
+            new ExportExcelWindow(getControler(), sheetsList);
+        });
         
     }
 

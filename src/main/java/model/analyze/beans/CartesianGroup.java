@@ -65,6 +65,7 @@ public class CartesianGroup {
     public ExcelLine toExcelLine() {
         ExcelCell label = new ExcelStringCellBuilder()
                 .value(getLabel())
+                .header(true)
                 .build();
         ExcelCell value = new ExcelStringCellBuilder()
                 .value(getValue())

@@ -10,4 +10,6 @@ public interface ExcelCell<T> {
     Class<T> getType();
 
     T getValue();
+
+    boolean isHeader();
 }

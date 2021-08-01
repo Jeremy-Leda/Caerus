@@ -4,6 +4,7 @@ import model.PojoBuilder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -20,6 +21,9 @@ public class ExcelSheet {
     @NotEmpty(message = "Une feuille excel doit au moins disposer d'un bloc de ligne")
     private List<ExcelBlock> excelBlockList;
 
+    @NotNull(message = "Le nombre de colonne maximum ne peut pas être null")
+    private Integer nbColumnMax;
+
     public String getName() {
         return name;
     }
@@ -34,5 +38,13 @@ public class ExcelSheet {
 
     public void setExcelBlockList(List<ExcelBlock> excelBlockList) {
         this.excelBlockList = excelBlockList;
+    }
+
+    public Integer getNbColumnMax() {
+        return nbColumnMax;
+    }
+
+    public void setNbColumnMax(Integer nbColumnMax) {
+        this.nbColumnMax = nbColumnMax;
     }
 }

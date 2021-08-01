@@ -1,26 +1,14 @@
 package model.excel.beans;
 
 import model.PojoBuilder;
-
-import javax.validation.constraints.NotNull;
+import model.excel.beans.abstracts.ExcelCellAbstract;
 
 @PojoBuilder
-public class ExcelIntegerCell implements ExcelCell<Integer> {
-
-    @NotNull(message = "Le contenu de la valeur ne peut pas être null")
-    private Integer value;
+public class ExcelIntegerCell extends ExcelCellAbstract<Integer> {
 
     @Override
     public Class<Integer> getType() {
         return Integer.class;
     }
 
-    @Override
-    public Integer getValue() {
-        return value;
-    }
-
-    public void setValue(Integer value) {
-        this.value = value;
-    }
 }

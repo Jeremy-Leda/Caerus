@@ -6,12 +6,12 @@ import model.excel.beans.ExcelBlock;
 import model.excel.beans.ExcelLine;
 import model.excel.beans.ExcelSheet;
 import model.excel.beans.ExcelSheetBuilder;
+import view.analysis.beans.interfaces.IExcelSheet;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  *
  */
 @PojoBuilder
-public class AnalysisGroupDisplay {
+public class AnalysisGroupDisplay implements IExcelSheet {
 
     @NotEmpty(message = "la liste des groupes cartésiens ne peut pas être vide")
     private Set<CartesianGroup> cartesianGroupSet;
@@ -56,11 +56,16 @@ public class AnalysisGroupDisplay {
         this.cartesianGroupSet = cartesianGroupSet;
     }
 
-    /**
-     * Permet de se procurer la feuille excel
-     * @return la feuille excel
-     */
-    public ExcelSheet toExcelSheet() {
+    public String getTitle() {
+        String reduce = cartesianGroupSet.stream().map(CartesianGroup::getValue).reduce((a, b) -> a + " - " + b).get();
+        if (reduce.length() > 25) {
+            return reduce.substring(0, 22) + "...";
+        }
+        return reduce;
+    }
+
+    @Override
+    public ExcelSheet getExcelSheet() {
         List<ExcelLine> excelLineCartesianList = this.cartesianGroupSet.stream().map(CartesianGroup::toExcelLine).collect(Collectors.toList());
         List<ExcelBlock> excelBlockList = new LinkedList<>();
         excelBlockList.add(new ExcelBlock(excelLineCartesianList.toArray(ExcelLine[]::new)));
@@ -68,14 +73,7 @@ public class AnalysisGroupDisplay {
         return new ExcelSheetBuilder()
                 .name(getTitle())
                 .excelBlockList(excelBlockList)
+                .nbColumnMax(2)
                 .build();
-    }
-
-    public String getTitle() {
-        String reduce = cartesianGroupSet.stream().map(CartesianGroup::getValue).reduce((a, b) -> a + " - " + b).get();
-        if (reduce.length() > 25) {
-            return reduce.substring(0, 22) + "...";
-        }
-        return reduce;
     }
 }

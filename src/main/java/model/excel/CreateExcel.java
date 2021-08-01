@@ -10,6 +10,9 @@ import java.util.Optional;
 import model.excel.beans.ExcelBlock;
 import model.excel.beans.ExcelLine;
 import model.excel.beans.ExcelSheet;
+import model.excel.factories.CellStyleWorkbookFactory;
+import model.excel.interfaces.ICellStyleWorkbook;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
@@ -27,6 +30,7 @@ public class CreateExcel {
 
 	private final File path;
 	private final List<ExcelRow> rows = new ArrayList<ExcelRow>();
+	private int nbColumnMax = 0;
 
 	public CreateExcel(File path) {
 		super();
@@ -81,24 +85,32 @@ public class CreateExcel {
 
 	public void createSheet(SXSSFWorkbook workbook, ExcelSheet excelSheet) {
 		SXSSFSheet sheet = workbook.createSheet(excelSheet.getName());
+		ICellStyleWorkbook cellStyleWorkbook = new CellStyleWorkbookFactory(workbook);
+		sheet.trackAllColumnsForAutoSizing();
 		excelSheet.getExcelBlockList().forEach(excelBlock -> {
-			createBlock(sheet, excelBlock, getBlockStyle(workbook));
-			sheet.createRow(sheet.getLastRowNum()+1);
+			createBlock(sheet, excelBlock, cellStyleWorkbook);
+			sheet.createRow(sheet.getLastRowNum() + 1);
 		});
+		for (int i = 0; i < excelSheet.getNbColumnMax(); i++) {
+			sheet.autoSizeColumn(i);
+		}
+
 	}
 
-	public void createBlock(SXSSFSheet sheet, ExcelBlock excelBlock, CellStyle cellStyle) {
+	public void createBlock(SXSSFSheet sheet, ExcelBlock excelBlock, ICellStyleWorkbook cellStyleWorkbook) {
 		excelBlock.getExcelLineLinkedList().forEach(line -> {
 			SXSSFRow row = sheet.createRow(sheet.getLastRowNum()+1);
-			createLine(row, line, Optional.of(cellStyle));
+			createLine(row, line, true, cellStyleWorkbook);
 		});
 	}
 
-	public void createLine(SXSSFRow row, ExcelLine excelLine, Optional<CellStyle> optionalCellStyle) {
+	public void createLine(SXSSFRow row, ExcelLine excelLine, boolean isTableStyle, ICellStyleWorkbook cellStyleWorkbook) {
 		excelLine.getExcelCellLinkedList().forEach(l -> {
 			int cellNumber = row.getLastCellNum() < 0 ?  row.getLastCellNum()+1 : row.getLastCellNum();
 			SXSSFCell cell = row.createCell(cellNumber);
-			optionalCellStyle.ifPresent(cellStyle -> cell.setCellStyle(cellStyle));
+			if (isTableStyle) {
+				cell.setCellStyle(l.isHeader() ? cellStyleWorkbook.getHeaderTableStyle(BorderStyle.DOUBLE) : cellStyleWorkbook.getTableStyle(BorderStyle.MEDIUM));
+			}
 			if (l.getType().equals(String.class)) {
 				String value = (String) l.getValue();
 				cell.setCellValue(new XSSFRichTextString(value.replaceAll("\\R", " ")));
@@ -111,15 +123,14 @@ public class CreateExcel {
 		});
 	}
 
-
-	private CellStyle getBlockStyle(SXSSFWorkbook workbook) {
-		CellStyle cellStyle = workbook.createCellStyle();
-		cellStyle.setBorderTop(BorderStyle.MEDIUM);
-		cellStyle.setBorderRight(BorderStyle.MEDIUM);
-		cellStyle.setBorderBottom(BorderStyle.MEDIUM);
-		cellStyle.setBorderLeft(BorderStyle.MEDIUM);
-		return cellStyle;
+	public void createRowWithEmptyValues(SXSSFRow row, int nbColumn) {
+		for (int i = 0; i < nbColumn; i++) {
+			SXSSFCell cell = row.createCell(i);
+			cell.setCellValue(StringUtils.EMPTY);
+		}
 	}
+
+
 
 
 }

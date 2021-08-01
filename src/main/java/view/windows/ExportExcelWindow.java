@@ -5,8 +5,7 @@ import model.analyze.beans.Progress;
 import model.excel.CreateExcel;
 import model.excel.beans.ExcelSheet;
 import view.abstracts.ModalJFrameAbstract;
-import view.analysis.beans.AnalysisGroupDisplay;
-import view.analysis.beans.AnalysisResultDisplay;
+import view.analysis.beans.interfaces.IExcelSheet;
 import view.beans.FilePickerTypeEnum;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;
@@ -21,9 +20,9 @@ import javax.swing.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static view.utils.Constants.*;
 
@@ -43,13 +42,11 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
             false,
             false);
     private final IActionPanel actionPanel = new ActionPanel(1);
-    private final List<AnalysisGroupDisplay> analysisGroupDisplayList;
-    private final AnalysisResultDisplay analysisResultDisplay;
+    private final List<IExcelSheet> iExcelSheetList;
 
-    public ExportExcelWindow(IConfigurationControler configurationControler, AnalysisResultDisplay analysisResultDisplay, List<AnalysisGroupDisplay> analysisGroupDisplayList) {
+    public ExportExcelWindow(IConfigurationControler configurationControler, List<IExcelSheet> iExcelSheetList) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_EXPORT_EXCEL_PANEL_TITLE), configurationControler);
-        this.analysisGroupDisplayList = analysisGroupDisplayList;
-        this.analysisResultDisplay = analysisResultDisplay;
+        this.iExcelSheetList = iExcelSheetList;
         createWindow();
     }
 
@@ -87,14 +84,7 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
     private void createExcel() throws IOException {
         executeOnServer(() -> {
             Progress progress = new Progress(1);
-            List<ExcelSheet> excelSheetList = new LinkedList<>();
-            analysisGroupDisplayList.forEach(a -> {
-                if (a == null) {
-                    excelSheetList.add(analysisResultDisplay.toExcelSheet());
-                } else {
-                    excelSheetList.add(a.toExcelSheet());
-                }
-            });
+            List<ExcelSheet> excelSheetList = this.iExcelSheetList.stream().map(IExcelSheet::getExcelSheet).collect(Collectors.toList());
             CreateExcel createExcel = new CreateExcel(new File(filePickerPanel.getFile()));
             createExcel.generateExcel(excelSheetList, progress);
             closeFrame();

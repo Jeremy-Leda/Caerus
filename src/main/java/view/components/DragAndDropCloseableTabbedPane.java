@@ -10,6 +10,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
+import java.util.function.Consumer;
 
 /**
  *
@@ -23,6 +24,7 @@ public class DragAndDropCloseableTabbedPane extends JTabbedPane {
     private final Rectangle lineRect = new Rectangle();
     private final Color lineColor = new Color(0, 100, 255);
     private int dragTabIndex = -1;
+    private Consumer<Component> consumerToRemove;
 
     private void clickArrowButton(String actionKey) {
         ActionMap map = getActionMap();
@@ -201,8 +203,19 @@ public class DragAndDropCloseableTabbedPane extends JTabbedPane {
                 btnClose.setBorderPainted(false);
             }
         });
-        btnClose.addActionListener(x -> remove(component));
+        btnClose.addActionListener(x -> {
+            remove(component);
+            consumerToRemove.accept(component);
+        });
         return btnClose;
+    }
+
+    /**
+     * Permet d'exécuter un consumer lorsque l'onglet est fermé par l'utilisateur
+     * @param consumerToRemove consumer
+     */
+    public void setConsumerToRemove(Consumer<Component> consumerToRemove) {
+        this.consumerToRemove = consumerToRemove;
     }
 
     class CDropTargetListener implements DropTargetListener {

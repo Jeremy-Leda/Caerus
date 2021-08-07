@@ -2,8 +2,10 @@ package view.windows;
 
 import controler.IConfigurationControler;
 import io.vavr.Tuple2;
+import model.analyze.LexicometricAnalysis;
 import org.apache.commons.lang3.StringUtils;
 import view.abstracts.ModalJFrameAbstract;
+import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.*;
 import view.interfaces.*;
 import view.panel.*;
@@ -12,8 +14,8 @@ import view.utils.Constants;
 
 import javax.swing.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 public class AnalysisAssistant extends ModalJFrameAbstract {
 
@@ -146,13 +148,19 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                     false);
             userInformation.addActionOnClose(x -> this.chooseAnalyzeActionPanel.setEnabled(0, true));
         });
-        this.chooseAnalyzeActionPanel.addAction(1, e -> executeOnServer(() -> {
+        this.chooseAnalyzeActionPanel.addAction(1, e -> executeOnServerWithProgressView(() -> {
             chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
             this.chooseAnalyzeActionPanel.setEnabled(2, true);
-        }));
-        this.chooseAnalyzeActionPanel.addAction(2, e ->
-                chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerDisplayResult()
-                        .accept(getControler(), getLexicometricAnalyzeCmd()));
+        }, LexicometricAnalysis.getInstance(), false, false));
+        this.chooseAnalyzeActionPanel.addAction(2, e -> {
+            AtomicReference<AnalysisResultDisplay> analysisResultDisplayAtomicReference = new AtomicReference<>();
+            LexicometricAnalyzeCmd lexicometricAnalyzeCmd = getLexicometricAnalyzeCmd();
+            executeOnServerWithProgressView(() -> analysisResultDisplayAtomicReference.set(chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getFunctionDisplayResult()
+                    .apply(lexicometricAnalyzeCmd)), LexicometricAnalysis.getInstance(), false, false);
+            new AnalysisTokenResultWindow(getControler(), analysisResultDisplayAtomicReference.get(),
+                    lexicometricAnalyzeCmd,
+                    chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLexicometricAnalyzeTypeEnum());
+        });
     }
 
     /**

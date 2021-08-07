@@ -28,6 +28,27 @@ public class ExcelSheet {
         return name;
     }
 
+    public String getFormattedName() {
+        String excelTitle = name.replaceAll("/[^a-zA-Z ]/g", "")
+                .replaceAll("[\\p{Punct}&&[^'-]]+", "")
+                .replaceAll("-", "")
+                .replaceAll("¿", "")
+                .replaceAll("[0-9]", "")
+                .replaceAll("^\"|\"$", "")
+                .replaceAll("“", "")
+                .replaceAll("”", "")
+                .replaceAll("»", "")
+                .replaceAll("«", "")
+                .replaceAll("^\'|\'$", "")
+                .replaceAll("‘", "")
+                .replaceAll("—", "")
+                .replaceAll("¡", "");
+        if (excelTitle.length() > 31) {
+            return excelTitle.substring(0, 30);
+        }
+        return excelTitle;
+    }
+
     public void setName(String name) {
         this.name = name;
     }

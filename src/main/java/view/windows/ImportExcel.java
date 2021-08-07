@@ -218,36 +218,11 @@ public class ImportExcel extends ModalJFrameAbstract {
 	 * @return consumer
 	 */
 	private ActionListener getImportExcelAction() {
-		return e-> executeOnServerWithProgressView(() -> getControler().importExcel(importExcelCmd()), Boolean.TRUE, WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL, Boolean.TRUE);
+		return e-> executeOnServerWithProgressView(() -> getControler().importExcel(importExcelCmd()),
+				getControler(),
+				Boolean.TRUE,
+				Boolean.TRUE);
 
-		//return e -> executeOnServerWithCloseCurrentFrame(() -> getControler().importExcel(importExcelCmd()));
-
-//		return e -> executeOnServer(() -> {
-//			new ProgressBarView(r -> {
-//				try {
-//					getControler().importExcel(importExcelCmd());
-//					closeFrame();
-//				} catch (IOException | ImportExcelException | LoadTextException e1) {
-//					logger.error(e1.getMessage(), e1);
-//				}
-//			}, getProgressConsumer(100), 100,
-//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL));
-//			getControler().resetProgress();
-//		});
-
-
-//		return e -> {
-//			new ProgressBarView(r -> {
-//				try {
-//					getControler().importExcel(importExcelCmd());
-//					closeFrame();
-//				} catch (IOException | ImportExcelException | LoadTextException e1) {
-//					logger.error(e1.getMessage(), e1);
-//				}
-//			}, getProgressConsumer(100), 100,
-//					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL));
-//			getControler().resetProgress();
-//		};
 	}
 
 	/**

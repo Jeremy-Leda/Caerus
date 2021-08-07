@@ -1,6 +1,7 @@
 package view.windows;
 
 import controler.IConfigurationControler;
+import model.analyze.LexicometricAnalysis;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisGroupDisplay;
 import view.beans.LexicometricAnalyzeCmd;
@@ -17,6 +18,7 @@ import view.utils.ConfigurationUtils;
 import javax.swing.*;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -96,13 +98,15 @@ public class AnalysisGroupResultWindow extends ModalJFrameAbstract {
      * Permet de construire les résultats
      */
     private void constructResult() {
-        Set<Integer> allIndexChecked = this.checkBoxFieldsPanel.getAllIndexChecked(true);
-        Set<String> fieldSet = this.fieldNumberCheckBoxMap.entrySet().stream()
-                .filter(x -> allIndexChecked.contains(x.getKey()))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toSet());
-        Set<AnalysisGroupDisplay> analysisGroupDisplaySet = getControler().getAnalysisGroupDisplaySet(cmd.getKeyTextFilteredList().stream().collect(Collectors.toSet()), fieldSet);
+        Set<AnalysisGroupDisplay> analysisGroupDisplaySet = new HashSet<>();
+        executeOnServerWithProgressView(() -> {
+            Set<Integer> allIndexChecked = this.checkBoxFieldsPanel.getAllIndexChecked(true);
+            Set<String> fieldSet = this.fieldNumberCheckBoxMap.entrySet().stream()
+                    .filter(x -> allIndexChecked.contains(x.getKey()))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toSet());
+            analysisGroupDisplaySet.addAll(getControler().getAnalysisGroupDisplaySet(cmd.getKeyTextFilteredList().stream().collect(Collectors.toSet()), fieldSet));
+        }, LexicometricAnalysis.getInstance(), true, false);
         analysisGroupDisplaySet.forEach(addAnalysisGroupDisplay::addAnalysisGroupDisplay);
-        closeFrame();
     }
 }

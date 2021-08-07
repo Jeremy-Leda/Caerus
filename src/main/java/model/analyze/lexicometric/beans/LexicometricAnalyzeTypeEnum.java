@@ -13,10 +13,10 @@ import java.util.function.Function;
  *
  */
 public enum LexicometricAnalyzeTypeEnum {
-    NUMBER_TOKENS(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys)),
-    LEMME_TYPE(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys)),
-    TOKEN_RATIO(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys)),
-    FREQUENCY(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys));
+    NUMBER_TOKENS(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true)),
+    LEMME_TYPE(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true)),
+    TOKEN_RATIO(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true)),
+    FREQUENCY(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true));
 
     private final Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer;
     private final Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction;

@@ -29,10 +29,9 @@ public class ProgressBarPanel implements IProgressBarPanel {
 	 * @param progressBarModel Modele affecté
 	 * @param label            libellé a afficher dans la progressbar
 	 */
-	public ProgressBarPanel(IProgressBarModel progressBarModel, String label) {
+	public ProgressBarPanel(IProgressBarModel progressBarModel) {
 		this.progressBarModel = progressBarModel;
 		this.progressBar = new JProgressBar();
-		this.progressBar.setString(label);
 		this.progressBar.setStringPainted(true);
 		this.iconLabel = new JLabel(new ImageIcon(RessourcesUtils.getInstance().getAnimatedImage(PictureTypeEnum.PROGRESS)));
 		this.labelProgress = new JLabel();

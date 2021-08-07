@@ -369,7 +369,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 				setEnabled(true);
 			});
 			setEnabled(false);
-		}, false, Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL, Boolean.FALSE));
+		}, getControler(), false, Boolean.FALSE));
 //		manageTextLibrary.addActionListener(e -> {
 //			new ProgressBarView(r -> {
 //				try {
@@ -394,8 +394,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 		analysis.add(analysis_assistant);
 
 		analysis_assistant.addActionListener(e -> {
-			super.executeOnServerWithProgressView(() -> getControler().loadTexts(), false,
-					Constants.WINDOW_PROGRESS_BAR_LOAD_TEXT_LABEL, Boolean.FALSE);
+			super.executeOnServerWithProgressView(() -> getControler().loadTexts(), getControler(), false, Boolean.FALSE);
 			AnalysisAssistant analysisAssistant = new AnalysisAssistant(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
 			analysisAssistant.addActionOnClose((v) -> setEnabled(true));

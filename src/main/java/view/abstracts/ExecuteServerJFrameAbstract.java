@@ -7,6 +7,8 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import model.exceptions.ErrorCode;
 import model.exceptions.ServerException;
+import model.interfaces.IProgressBean;
+import model.interfaces.IProgressModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.beans.PictureTypeEnum;
@@ -49,7 +51,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
         executeOnServer(runnable, Boolean.FALSE);
     }
 
-    public void executeOnServerWithProgressView(CheckedRunnable runnable, Boolean closeCurrentFrameOnSucceed, String ConstantLabelProgress, Boolean showSucceedPanel) {
+    public void executeOnServerWithProgressView(CheckedRunnable runnable, IProgressModel progressModel, Boolean closeCurrentFrameOnSucceed, Boolean showSucceedPanel) {
         Try.run(() -> {
             new ProgressBarView(r -> {
                 if (closeCurrentFrameOnSucceed) {
@@ -57,7 +59,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
                 } else {
                     executeOnServer(runnable, showSucceedPanel);
                 }
-            }, getProgressConsumer(100), 100, ConfigurationUtils.getInstance().getDisplayMessage(ConstantLabelProgress));
+            }, getProgressConsumer(100, progressModel), 100);
             getControler().resetProgress();
         }).onFailure(ServerException.class, this::logAndCreateErrorInterface);
     }
@@ -119,10 +121,10 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
      * @param progressMaxValue le maximum de la valeur
      * @return le progressConsumer
      */
-    public Consumer<Consumer<Integer>> getProgressConsumer(Integer progressMaxValue) {
+    public Consumer<Consumer<Integer>> getProgressConsumer(Integer progressMaxValue, IProgressModel progressModel) {
         return valueProgressSetter -> {
-            while (this.configurationControler.getProgress() < progressMaxValue) {
-                valueProgressSetter.accept(this.configurationControler.getProgress());
+            while (progressModel.getProgress() < progressMaxValue) {
+                valueProgressSetter.accept(progressModel.getProgress());
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {

@@ -1,49 +1,63 @@
 package model.excel;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import model.abstracts.ProgressAbstract;
+import model.analyze.Dispatcher;
+import model.analyze.beans.Progress;
 import model.excel.beans.ExcelBlock;
 import model.excel.beans.ExcelLine;
+import model.excel.beans.ExcelRow;
 import model.excel.beans.ExcelSheet;
 import model.excel.factories.CellStyleWorkbookFactory;
 import model.excel.interfaces.ICellStyleWorkbook;
-import org.apache.commons.lang3.StringUtils;
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationException;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
+import model.interfaces.ICreateExcel;
+import model.interfaces.IProgressBean;
+import model.interfaces.IProgressModel;
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import model.analyze.beans.Progress;
-import model.excel.beans.ExcelRow;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-public class CreateExcel {
+public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 
 	private final File path;
-	private final List<ExcelRow> rows = new ArrayList<ExcelRow>();
-	private int nbColumnMax = 0;
+	private final List<ExcelRow> rows = new ArrayList<>();
+	private static final Logger logger = LoggerFactory.getLogger(CreateExcel.class);
 
 	public CreateExcel(File path) {
-		super();
-		this.path = path;
+		this(path, 0);
 	}
 
+	public CreateExcel(File path, Integer nbMaxIterate) {
+		super();
+		this.path = path;
+		super.createProgressBean(nbMaxIterate);
+	}
+
+	@Override
 	public void createRow(List<String> listCells) {
 		ExcelRow row = new ExcelRow();
-		listCells.stream().forEach(s -> row.addCell(s));
+		listCells.forEach(row::addCell);
 		rows.add(row);
 	}
 
-	public void generateExcel(Progress progressBean) throws IOException {
+	@Override
+	public void generateExcel(IProgressBean progressBean) throws IOException {
 		try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
 			SXSSFSheet sheet = workbook.createSheet("Textos");
 			progressBean.setNbMaxElementForCurrentIterate(rows.size());
@@ -70,21 +84,37 @@ public class CreateExcel {
 		}
 	}
 
-	public void generateExcel(List<ExcelSheet> excelSheetList, Progress progressBean) throws IOException {
+	@Override
+	public void generateExcel(List<ExcelSheet> excelSheetList) throws IOException {
+		super.createProgressBean(excelSheetList.size());
+		List<String> listSheetName = new ArrayList<>();
 		try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
-			progressBean.setNbMaxElementForCurrentIterate(excelSheetList.size());
 			for (int i = 0; i < excelSheetList.size(); i++) {
-				createSheet(workbook, excelSheetList.get(i));
-				progressBean.setCurrentElementForCurrentIterate(i);
+				super.getProgressBean().setCurrentIterate(i+1);
+				ExcelSheet currentSheet = excelSheetList.get(i);
+				createSheet(workbook, currentSheet, listSheetName, 1);
+				listSheetName.add(currentSheet.getFormattedName().toLowerCase(Locale.ROOT));
 			}
 			try (FileOutputStream fos = new FileOutputStream(path)) {
 				workbook.write(fos);
 			}
+		} catch (Exception ex) {
+			logger.error(listSheetName.toString());
+			logger.error(ex.getMessage(), ex);
+			throw new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.stackTraceElements(ex.getStackTrace())
+					.build());
 		}
 	}
 
-	public void createSheet(SXSSFWorkbook workbook, ExcelSheet excelSheet) {
-		SXSSFSheet sheet = workbook.createSheet(excelSheet.getName());
+	public void createSheet(SXSSFWorkbook workbook, ExcelSheet excelSheet, List<String> listSheetName, int numberSheetAddIfExist) {
+		if (listSheetName.contains(excelSheet.getFormattedName().toLowerCase(Locale.ROOT))) {
+			excelSheet.setName(excelSheet.getFormattedName() + " " + numberSheetAddIfExist);
+			createSheet(workbook, excelSheet, listSheetName, numberSheetAddIfExist + 1);
+			return;
+		}
+		SXSSFSheet sheet = workbook.createSheet(excelSheet.getFormattedName());
 		ICellStyleWorkbook cellStyleWorkbook = new CellStyleWorkbookFactory(workbook);
 		sheet.trackAllColumnsForAutoSizing();
 		excelSheet.getExcelBlockList().forEach(excelBlock -> {
@@ -94,7 +124,6 @@ public class CreateExcel {
 		for (int i = 0; i < excelSheet.getNbColumnMax(); i++) {
 			sheet.autoSizeColumn(i);
 		}
-
 	}
 
 	public void createBlock(SXSSFSheet sheet, ExcelBlock excelBlock, ICellStyleWorkbook cellStyleWorkbook) {
@@ -121,13 +150,6 @@ public class CreateExcel {
 				cell.setCellValue(value);
 			}
 		});
-	}
-
-	public void createRowWithEmptyValues(SXSSFRow row, int nbColumn) {
-		for (int i = 0; i < nbColumn; i++) {
-			SXSSFCell cell = row.createCell(i);
-			cell.setCellValue(StringUtils.EMPTY);
-		}
 	}
 
 

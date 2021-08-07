@@ -1,5 +1,6 @@
 package model.analyze;
 
+import model.abstracts.ProgressAbstract;
 import model.analyze.beans.CartesianGroup;
 import model.analyze.beans.CartesianGroupBuilder;
 import model.analyze.beans.UserStructuredText;
@@ -13,11 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import view.analysis.beans.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class LexicometricAnalysis {
+public class LexicometricAnalysis extends ProgressAbstract {
 
     private static final LexicometricAnalysis _instance = new LexicometricAnalysis();
     private final Set<Text> analysisResultSet = new HashSet<>();
@@ -37,10 +39,18 @@ public class LexicometricAnalysis {
      * @return la liste des textes analysés
      */
     public void executeNumberTokensAnalyze(LexicometricAnalyzeServerCmd cmd) {
+        super.createProgressBean(1);
+        super.getProgressBean().setCurrentIterate(1);
         analysisResultSet.clear();
+        AtomicInteger at = new AtomicInteger(1);
+        super.getProgressBean().setNbMaxElementForCurrentIterate(cmd.getKeyTextFilteredList().size());
         Map<String, Map<String, Long>> keyTextMap = cmd.getKeyTextFilteredList().stream()
-                .collect(Collectors.toMap(Function.identity(), s -> getNbTokensOfText(s, cmd.getFieldToAnalyzeSet(), cmd.getPreTreatmentListLexicometricMap())));
+                .collect(Collectors.toMap(Function.identity(), s -> {
+                    super.getProgressBean().setCurrentElementForCurrentIterate(at.getAndIncrement());
+                    return getNbTokensOfText(s, cmd.getFieldToAnalyzeSet(), cmd.getPreTreatmentListLexicometricMap());
+                }));
         analysisResultSet.addAll(keyTextMap.entrySet().stream().map(this::getTextFromNumberTokensEntry).collect(Collectors.toSet()));
+        super.resetProgress();
     }
 
     /**
@@ -144,25 +154,33 @@ public class LexicometricAnalysis {
      * @param keyTextFilteredList liste des clés à récupérer
      * @return le résultat de l'analyse
      */
-    public AnalysisResultDisplay getAnalysisResultDisplayForNumberTokens(List<String> keyTextFilteredList) {
+    public AnalysisResultDisplay getAnalysisResultDisplayForNumberTokens(List<String> keyTextFilteredList, Boolean driveProgress) {
         System.out.println("getAnalysisResultDisplayForNumberTokens GO");
-
+        if (driveProgress) {
+            super.createProgressBean(1);
+            super.getProgressBean().setCurrentIterate(1);
+        }
         Set<Text> textSet = this.analysisResultSet.stream().filter(t -> keyTextFilteredList.contains(t.getKey())).collect(Collectors.toSet());
-
         List<Token> tokenList = textSet.stream().flatMap(t -> t.getTokenSet().stream()).collect(Collectors.toList());
         Set<String> wordSet = textSet.stream().flatMap(t -> t.getTokenSet().stream()).map(t -> t.getWord()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+        super.getProgressBean().setNbMaxElementForCurrentIterate(wordSet.size());
+        AtomicInteger at = new AtomicInteger(1);
         System.out.println(wordSet.size());
         Text text = new Text(StringUtils.EMPTY);
         Set<Token> tokenSet = wordSet.parallelStream().map(w -> {
             Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(t -> t.getNbOcurrency()).reduce(Long::sum).orElse(0L);
             Token token = new Token(w);
             token.setNbOcurrency(nbOccurrency);
+            super.getProgressBean().setCurrentElementForCurrentIterate(at.getAndIncrement());
             return token;
         }).collect(Collectors.toSet());
         text.getTokenSet().addAll(tokenSet);
         System.out.println("START CONVERT");
         AnalysisResultDisplay analysisResultDisplay = convertTextToAnalysisResultDisplay(text);
         System.out.println("getAnalysisResultDisplayForNumberTokens END");
+        if (driveProgress) {
+            super.resetProgress();
+        }
         return analysisResultDisplay;
     }
 
@@ -192,12 +210,13 @@ public class LexicometricAnalysis {
                 .stream()
                 .map(this::convertTokenToAnalysisTokenDisplay)
                 .collect(Collectors.toSet());
-        return new AnalysisResultDisplayBuilder()
+        AnalysisResultDisplay analysisResultDisplay = new AnalysisResultDisplayBuilder()
                 .key(textToConvert.getKey())
                 .analysisTokenDisplaySet(analysisTokenDisplaySet)
                 .nbOccurrency(analysisTokenDisplaySet.stream().map(AnalysisTokenDisplay::getNbOcurrency).reduce(Long::sum).orElse(0L))
                 .nbToken(analysisTokenDisplaySet.size())
                 .build();
+        return analysisResultDisplay;
     }
 
     /**
@@ -286,9 +305,16 @@ public class LexicometricAnalysis {
     public Set<AnalysisGroupDisplay> getAnalysisGroupDisplaySet(Set<String> keySet, Set<String> fieldSet) {
         Map<String, Set<CartesianGroup>> fieldValueSetMap = getFieldValueSetMap(keySet, fieldSet);
         List<List<CartesianGroup>> cartesianGroup = getCartesianGroup(fieldValueSetMap);
-        return cartesianGroup.stream().map(s -> constructAnalysisGroupDisplay(keySet, s))
+        super.createProgressBean(cartesianGroup.size());
+        AtomicInteger at = new AtomicInteger(0);
+        Set<AnalysisGroupDisplay> result = cartesianGroup.stream()
+                .map(s -> {
+                    super.getProgressBean().setCurrentIterate(at.getAndIncrement());
+                    return constructAnalysisGroupDisplay(keySet, s);
+                })
                 .filter(s -> !s.getKeySet().isEmpty())
                 .collect(Collectors.toSet());
+        return result;
     }
 
     /**
@@ -338,6 +364,8 @@ public class LexicometricAnalysis {
      */
     private Set<String> getKeySetFromCartesianGroupList(Set<String> keySet, List<CartesianGroup> cartesianGroupList) {
         Set<String> keyList = new HashSet<>();
+        super.getProgressBean().setNbMaxElementForCurrentIterate(keySet.size());
+        AtomicInteger at = new AtomicInteger(1);
         keySet.forEach(k -> {
             Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(k);
             Set<CartesianGroup> cartesianGroupSet = cartesianGroupList.stream()
@@ -346,6 +374,7 @@ public class LexicometricAnalysis {
             if (cartesianGroupSet.size() == cartesianGroupList.size()) {
                 keyList.add(k);
             }
+            super.getProgressBean().setCurrentElementForCurrentIterate(at.getAndIncrement());
         });
         return keyList;
     }
@@ -358,7 +387,7 @@ public class LexicometricAnalysis {
      */
     private AnalysisGroupDisplay constructAnalysisGroupDisplay(Set<String> keySet, List<CartesianGroup> cartesianGroupList) {
         Set<String> keyFilteredSet = getKeySetFromCartesianGroupList(keySet, cartesianGroupList);
-        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(keyFilteredSet.stream().collect(Collectors.toList()));
+        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(keyFilteredSet.stream().collect(Collectors.toList()), false);
         return new AnalysisGroupDisplayBuilder()
                 .cartesianGroupSet(cartesianGroupList.stream().collect(Collectors.toSet()))
                 .analysisResultDisplay(analysisResultDisplayForNumberTokens)

@@ -15,6 +15,7 @@ import model.excel.beans.ExcelImportConfigurationCmd;
 import model.exceptions.ImportExcelException;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import model.interfaces.IProgressModel;
 import view.analysis.beans.AnalysisGroupDisplay;
 import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.*;
@@ -32,7 +33,7 @@ import java.util.*;
  * @author jerem
  *
  */
-public interface IConfigurationControler {
+public interface IConfigurationControler extends IProgressModel {
 
 	/**
 	 * Permet de lancer l'analyse des textes
@@ -603,12 +604,6 @@ public interface IConfigurationControler {
 	 * @return le délimiteur
 	 */
 	String getDelimiterSpecific(Integer index);
-	
-	/**
-	 * Permet de se procurer la progression
-	 * @return la progression
-	 */
-	Integer getProgress();
 	
 	/**
 	 * Permet de remettre la barre de progression à zéro

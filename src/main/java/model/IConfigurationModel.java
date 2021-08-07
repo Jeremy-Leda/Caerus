@@ -19,6 +19,7 @@ import model.exceptions.ImportExcelException;
 import model.exceptions.InformationException;
 import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
+import model.interfaces.IProgressModel;
 import view.beans.ExportTypeEnum;
 
 /**
@@ -28,7 +29,7 @@ import view.beans.ExportTypeEnum;
  * @author jerem
  *
  */
-public interface IConfigurationModel {
+public interface IConfigurationModel extends IProgressModel {
 
 	/**
 	 * Permet de lancer l'analyse des textes
@@ -581,12 +582,6 @@ public interface IConfigurationModel {
 	 * @return le délimiteur
 	 */
 	String getDelimiterSpecific(Integer index);
-	
-	/**
-	 * Permet de se procurer la progression
-	 * @return la progression
-	 */
-	Integer getProgress();
 	
 	/**
 	 * Permet de remettre la barre de progression à zéro

@@ -727,11 +727,6 @@ public class ConfigurationControler implements IConfigurationControler {
 	@Override
 	public void launchLexicometricAnalyze(LexicometricAnalyzeServerCmd cmd) {
 		cmd.getLexicometricAnalyzeTypeEnum().getAnalyzeServerCmdConsumer().accept(cmd);
-		logger.info("launchLexicometricAnalyze ended");
-//		apply.forEach(t -> {
-//			logger.info(t.toString());
-//			logger.info("Nb de forme = " + t.getTokenSet().size());
-//		});
 	}
 
 	@Override

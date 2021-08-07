@@ -4,6 +4,7 @@ import controler.IConfigurationControler;
 import model.analyze.beans.Progress;
 import model.excel.CreateExcel;
 import model.excel.beans.ExcelSheet;
+import model.interfaces.ICreateExcel;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.interfaces.IExcelSheet;
 import view.beans.FilePickerTypeEnum;
@@ -15,6 +16,7 @@ import view.panel.ActionPanel;
 import view.panel.FilePickerPanel;
 import view.panel.InformationPanel;
 import view.utils.ConfigurationUtils;
+import view.utils.Constants;
 
 import javax.swing.*;
 
@@ -82,13 +84,11 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
     }
 
     private void createExcel() throws IOException {
-        executeOnServer(() -> {
-            Progress progress = new Progress(1);
+        ICreateExcel createExcel = new CreateExcel(new File(filePickerPanel.getFile()));
+        executeOnServerWithProgressView(() -> {
             List<ExcelSheet> excelSheetList = this.iExcelSheetList.stream().map(IExcelSheet::getExcelSheet).collect(Collectors.toList());
-            CreateExcel createExcel = new CreateExcel(new File(filePickerPanel.getFile()));
-            createExcel.generateExcel(excelSheetList, progress);
-            closeFrame();
-        }, true);
+            createExcel.generateExcel(excelSheetList);
+        }, createExcel, true, false);
 
     }
 }

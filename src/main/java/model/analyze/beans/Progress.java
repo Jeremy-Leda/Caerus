@@ -1,5 +1,8 @@
 package model.analyze.beans;
 
+import model.interfaces.IProgressBean;
+import model.interfaces.IProgressModel;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
@@ -11,7 +14,7 @@ import java.util.Objects;
  * @author jerem
  *
  */
-public class Progress {
+public class Progress implements IProgressBean, IProgressModel {
 
 	private final Integer nbMaxIterate;
 	private Integer currentIterate;
@@ -33,6 +36,7 @@ public class Progress {
 	 * 
 	 * @param currentIterate numéro de l'itération
 	 */
+	@Override
 	public void setCurrentIterate(Integer currentIterate) {
 		this.currentIterate = currentIterate;
 		this.nbMaxElementForCurrentIterate = 0;
@@ -45,6 +49,7 @@ public class Progress {
 	 * @param nbMaxElementForCurrentIterate le nombre maximum d'éléments dans
 	 *                                      l'itération en cours
 	 */
+	@Override
 	public void setNbMaxElementForCurrentIterate(Integer nbMaxElementForCurrentIterate) {
 		this.nbMaxElementForCurrentIterate = nbMaxElementForCurrentIterate;
 	}
@@ -55,6 +60,7 @@ public class Progress {
 	 * @param currentElementForCurrentIterate le numéro de l'élément courant pour
 	 *                                        l'itération en cours
 	 */
+	@Override
 	public void setCurrentElementForCurrentIterate(Integer currentElementForCurrentIterate) {
 		this.currentElementForCurrentIterate = currentElementForCurrentIterate;
 	}
@@ -64,6 +70,7 @@ public class Progress {
 	 * 
 	 * @return l'état en pourcentage de la progression
 	 */
+	@Override
 	public Integer getProgress() {
 		if (Objects.isNull(currentElementForCurrentIterate) || Objects.isNull(currentIterate)
 				|| Objects.isNull(nbMaxElementForCurrentIterate)) {

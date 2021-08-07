@@ -12,14 +12,17 @@ import org.apache.poi.xssf.usermodel.XSSFColor;
 public final class CellStyleWorkbookFactory implements ICellStyleWorkbook {
 
     private final Workbook workbook;
+    private final CellStyle cellStyle;
+    private final CellStyle cellHeaderStyle;
 
     public CellStyleWorkbookFactory(Workbook workbook) {
         this.workbook = workbook;
+        this.cellStyle = workbook.createCellStyle();
+        this.cellHeaderStyle = workbook.createCellStyle();
     }
 
     @Override
     public CellStyle getTableStyle(BorderStyle borderStyle) {
-        CellStyle cellStyle = workbook.createCellStyle();
         cellStyle.setBorderTop(borderStyle);
         cellStyle.setBorderRight(borderStyle);
         cellStyle.setBorderBottom(borderStyle);
@@ -29,15 +32,18 @@ public final class CellStyleWorkbookFactory implements ICellStyleWorkbook {
 
     @Override
     public CellStyle getHeaderTableStyle(BorderStyle borderStyle) {
-        CellStyle cellStyle = getTableStyle(borderStyle);
+        cellHeaderStyle.setBorderTop(borderStyle);
+        cellHeaderStyle.setBorderRight(borderStyle);
+        cellHeaderStyle.setBorderBottom(borderStyle);
+        cellHeaderStyle.setBorderLeft(borderStyle);
         Font font = workbook.createFont();
         font.setBold(true);
         font.setColor(HSSFColor.HSSFColorPredefined.WHITE.getIndex());
-        cellStyle.setFont(font);
-        ((XSSFCellStyle)cellStyle).setFillForegroundColor(getRGBColor(74,86,145));
-        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        cellStyle.setAlignment(HorizontalAlignment.CENTER);
-        return cellStyle;
+        cellHeaderStyle.setFont(font);
+        ((XSSFCellStyle)cellHeaderStyle).setFillForegroundColor(getRGBColor(74,86,145));
+        cellHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        cellHeaderStyle.setAlignment(HorizontalAlignment.CENTER);
+        return cellHeaderStyle;
     }
 
     private XSSFColor getRGBColor(int red, int green, int blue) {

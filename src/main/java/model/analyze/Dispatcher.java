@@ -1,42 +1,36 @@
 package model.analyze;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import model.abstracts.ProgressAbstract;
+import model.analyze.beans.*;
+import model.analyze.beans.specific.ConfigurationStructuredText;
+import model.analyze.constants.FolderSettingsEnum;
+import model.excel.CreateExcel;
+import model.excel.ImportExcel;
+import model.excel.beans.ExcelGenerateConfigurationCmd;
+import model.excel.beans.ExcelImportConfigurationCmd;
+import model.excel.beans.StructuredTextExcel;
+import model.exceptions.*;
+import model.interfaces.IProgressBean;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import utils.JSonFactoryUtils;
+import utils.PathUtils;
+import utils.RessourcesUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import model.analyze.beans.*;
-import model.analyze.lexicometric.beans.LexicometricAnalysis;
-import model.excel.ImportExcel;
-import model.excel.beans.ExcelImportConfigurationCmd;
-import model.excel.beans.StructuredTextExcel;
-import model.exceptions.*;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import model.analyze.beans.specific.ConfigurationStructuredText;
-import model.analyze.constants.FolderSettingsEnum;
-import model.excel.CreateExcel;
-import model.excel.beans.ExcelGenerateConfigurationCmd;
-import utils.JSonFactoryUtils;
-import utils.PathUtils;
-import utils.RessourcesUtils;
 
 /**
  * 
@@ -46,9 +40,9 @@ import utils.RessourcesUtils;
  * @author Jeremy
  *
  */
-public class Dispatcher {
+public class Dispatcher extends ProgressAbstract {
 
-	private static Logger logger = LoggerFactory.getLogger(Dispatcher.class);
+	private static final Logger logger = LoggerFactory.getLogger(Dispatcher.class);
 	private static final String FOLDER_CONTEXT = "context";
 	private static final String FOLDER_TEXTS = "library";
 	private static final String FOLDER_CONFIGURATIONS = "configurations";
@@ -59,8 +53,6 @@ public class Dispatcher {
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
 	private static final String ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT = "ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT";
-	// private Integer progress;
-	private Progress progressBean;
 
 	/**
 	 * Constructeur
@@ -108,8 +100,8 @@ public class Dispatcher {
 	private void processAndLoadTexts(FolderSettingsEnum folderType, Integer depth)
 			throws IOException, LoadTextException {
 		logger.debug(String.format("CALL processAndLoadTexts => type %s", folderType));
-		progressBean = new Progress(
-				1 + UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().size());
+		Integer nbMaxIterate = 1 + UserSettings.getInstance().getCurrentConfiguration().getSpecificConfigurationList().size();
+		IProgressBean progressBean = super.createProgressBean(nbMaxIterate);
 		progressBean.setCurrentIterate(1);
 		File pathToProcess;
 		if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {
@@ -146,7 +138,7 @@ public class Dispatcher {
 				.getConfigurationStructuredTextList(folderType);
 		for (int i = 0; i < configurationStructuredTextList.size(); i++) {
 			structuredTextSpecificProcess(memoryFiles, folderType, configurationStructuredTextList.get(i), i,
-					configurationStructuredTextList.size());
+					progressBean);
 		}
 		UserSettings.getInstance().saveAllErrorForFixed();
 	}
@@ -250,7 +242,8 @@ public class Dispatcher {
 	 */
 	private void generateClassicalExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd)
 			throws IOException {
-		progressBean = new Progress(cmd.getMapLabelSpecificFileName().size() + 1);
+		Integer nbMaxIterate = cmd.getMapLabelSpecificFileName().size() + 1;
+		IProgressBean progressBean = super.createProgressBean(nbMaxIterate);
 		Integer currentIterate = 1;
 		progressBean.setCurrentIterate(currentIterate);
 		ExcelStructuring es = new ExcelStructuring();
@@ -291,7 +284,7 @@ public class Dispatcher {
 	 * @throws IOException
 	 */
 	private void generateCustomExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd) throws IOException {
-		progressBean = new Progress(1);
+		IProgressBean progressBean = super.createProgressBean(1);
 		progressBean.setCurrentIterate(1);
 		if (!cmd.getIsSpecificGeneration()) {
 			ExcelStructuring es = new ExcelStructuring();
@@ -324,12 +317,11 @@ public class Dispatcher {
 	 */
 	private void structuredTextSpecificProcess(List<MemoryFile> memoryFiles, FolderSettingsEnum folderType,
 			ConfigurationStructuredText configurationSpecific, Integer currentConfigurationSpecificIndex,
-			Integer nbConfigurationSpecific) {
+			IProgressBean progressBean) {
 		for (int i = 0; i < memoryFiles.size(); i++) {
 			progressBean.setCurrentIterate(2 + currentConfigurationSpecificIndex);
 			progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
 			progressBean.setCurrentElementForCurrentIterate(i);
-			progressBean.getProgress();
 			configurationSpecific.getStructuredFileList()
 					.add(new Structuring(memoryFiles.get(i), folderType, configurationSpecific, i+1).getStructuredFile());
 		}
@@ -345,7 +337,7 @@ public class Dispatcher {
 	 * @throws IOException io exception
 	 */
 	private void createExcelSpecific(File path, ConfigurationStructuredText configurationSpecific,
-			ExcelGenerateConfigurationCmd cmd, Progress progressBean) throws IOException {
+			ExcelGenerateConfigurationCmd cmd, IProgressBean progressBean) throws IOException {
 		cmd.setSpecificConfiguration(Boolean.TRUE);
 		ExcelStructuring es = new ExcelStructuring();
 		List<List<String>> rows = es.getStructuringRows(configurationSpecific.getStructuredFileList(),
@@ -779,24 +771,7 @@ public class Dispatcher {
 		}
 	}
 
-	/**
-	 * Permet de se procurer la progression d'une tache
-	 * 
-	 * @return la progression
-	 */
-	public Integer getProgress() {
-		if (null != progressBean) {
-			return progressBean.getProgress();
-		}
-		return 0;
-	}
 
-	/**
-	 * Permet de remettre la barre de progression à zéro
-	 */
-	public void resetProgress() {
-		this.progressBean = null;
-	}
 
 	/**
 	 * Permet de lancer l'import excel
@@ -806,7 +781,7 @@ public class Dispatcher {
 
     	Set<InformationException> informationExceptionSet = new HashSet<>();
 
-    	progressBean = new Progress(3);
+    	IProgressBean progressBean = super.createProgressBean(3);
 
 		// Check Excel
 		progressBean.setCurrentIterate(1);

@@ -1,9 +1,12 @@
 package model.analyze.lexicometric.beans;
 
 import model.analyze.LexicometricAnalysis;
+import model.analyze.cmd.AnalysisDetailResultDisplayCmd;
+import view.analysis.beans.AnalysisDetailResultDisplay;
 import view.analysis.beans.AnalysisResultDisplay;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -13,17 +16,27 @@ import java.util.function.Function;
  *
  */
 public enum LexicometricAnalyzeTypeEnum {
-    NUMBER_TOKENS(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true)),
-    LEMME_TYPE(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true)),
-    TOKEN_RATIO(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true)),
-    FREQUENCY(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c), keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true));
+    NUMBER_TOKENS(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c),
+            keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true),
+            cmd -> LexicometricAnalysis.getInstance().getAnalysisDetailResultDisplayForNumberTokens(cmd)),
+    LEMME_TYPE(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c),
+            keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true),
+            cmd -> LexicometricAnalysis.getInstance().getAnalysisDetailResultDisplayForNumberTokens(cmd)),
+    TOKEN_RATIO(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c),
+            keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true),
+            cmd -> LexicometricAnalysis.getInstance().getAnalysisDetailResultDisplayForNumberTokens(cmd)),
+    FREQUENCY(c -> LexicometricAnalysis.getInstance().executeNumberTokensAnalyze(c),
+            keys -> LexicometricAnalysis.getInstance().getAnalysisResultDisplayForNumberTokens(keys, true),
+            cmd -> LexicometricAnalysis.getInstance().getAnalysisDetailResultDisplayForNumberTokens(cmd));
 
     private final Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer;
     private final Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction;
+    private final Function<AnalysisDetailResultDisplayCmd, Set<AnalysisDetailResultDisplay>> analysisDetailResultDisplayCmdSetFunction;
 
-    LexicometricAnalyzeTypeEnum(Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer, Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction) {
+    LexicometricAnalyzeTypeEnum(Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer, Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction, Function<AnalysisDetailResultDisplayCmd, Set<AnalysisDetailResultDisplay>> analysisDetailResultDisplayCmdSetFunction) {
         this.analyzeServerCmdConsumer = analyzeServerCmdConsumer;
         this.analysisResultDisplayFunction = analysisResultDisplayFunction;
+        this.analysisDetailResultDisplayCmdSetFunction = analysisDetailResultDisplayCmdSetFunction;
     }
 
     /**
@@ -40,5 +53,13 @@ public enum LexicometricAnalyzeTypeEnum {
      */
     public Function<List<String>, AnalysisResultDisplay> getAnalysisResultDisplayFunction() {
         return analysisResultDisplayFunction;
+    }
+
+    /**
+     * Permet de se procurer la fonction pour avoir un set de détail de résultat
+     * @return la fonction pour avoir un set de détail de résultat
+     */
+    public Function<AnalysisDetailResultDisplayCmd, Set<AnalysisDetailResultDisplay>> getAnalysisDetailResultDisplayCmdSetFunction() {
+        return analysisDetailResultDisplayCmdSetFunction;
     }
 }

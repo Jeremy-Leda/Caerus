@@ -85,7 +85,7 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 	}
 
 	@Override
-	public void generateExcel(List<ExcelSheet> excelSheetList) throws IOException {
+	public void generateExcel(List<ExcelSheet> excelSheetList) {
 		super.createProgressBean(excelSheetList.size());
 		List<String> listSheetName = new ArrayList<>();
 		try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
@@ -99,18 +99,21 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 				workbook.write(fos);
 			}
 		} catch (Exception ex) {
-			logger.error(listSheetName.toString());
-			logger.error(ex.getMessage(), ex);
 			throw new ServerException().addInformationException(new InformationExceptionBuilder()
 					.errorCode(ErrorCode.TECHNICAL_ERROR)
 					.stackTraceElements(ex.getStackTrace())
+					.exceptionParent(ex)
 					.build());
 		}
 	}
 
 	public void createSheet(SXSSFWorkbook workbook, ExcelSheet excelSheet, List<String> listSheetName, int numberSheetAddIfExist) {
 		if (listSheetName.contains(excelSheet.getFormattedName().toLowerCase(Locale.ROOT))) {
-			excelSheet.setName(excelSheet.getFormattedName() + " " + numberSheetAddIfExist);
+			String newName = excelSheet.getFormattedName() + " " + numberSheetAddIfExist;
+			if (numberSheetAddIfExist > 1) {
+				newName = excelSheet.getFormattedName().substring(0, excelSheet.getFormattedName().length() - 1) + numberSheetAddIfExist;
+			}
+			excelSheet.setName(newName);
 			createSheet(workbook, excelSheet, listSheetName, numberSheetAddIfExist + 1);
 			return;
 		}

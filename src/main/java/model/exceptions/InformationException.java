@@ -18,6 +18,7 @@ public class InformationException {
     private Set<String> parameters;
     private Object objectInError;
     private StackTraceElement[] stackTraceElements;
+    private Exception exceptionParent;
 
     /**
      * Permet de se procurer le code de l'erreur
@@ -83,6 +84,22 @@ public class InformationException {
         this.stackTraceElements = stackTraceElements;
     }
 
+    /**
+     * Permet de se procurer l'exception parente si présente
+     * @return l'exception parente si présente
+     */
+    public Exception getExceptionParent() {
+        return exceptionParent;
+    }
+
+    /**
+     * Permet de définir l'exception parente
+     * @param exceptionParent l'exception parente
+     */
+    public void setExceptionParent(Exception exceptionParent) {
+        this.exceptionParent = exceptionParent;
+    }
+
     @Override
     public String toString() {
         return "InformationException{" +
@@ -90,6 +107,7 @@ public class InformationException {
                 ", parameters=" + parameters +
                 ", objectInError=" + objectInError +
                 ", stackTraceElements=" + Arrays.toString(stackTraceElements) +
+                ", exceptionParent=" + exceptionParent +
                 '}';
     }
 }

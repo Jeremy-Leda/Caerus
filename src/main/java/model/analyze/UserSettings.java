@@ -1208,6 +1208,23 @@ public class UserSettings {
 	public Optional<UserStructuredText> getTextFromKey(String key) {
 		return getTextFromKey(key, FolderSettingsEnum.FOLDER_TEXTS);
 	}
+//
+//	/**
+//	 * Permet de trier une liste de clé
+//	 * @param keyTexts liste des clés triés
+//	 * @return la liste des clés trié
+//	 */
+//	public Set<String> getOrderedKeyText(Collection<String> keyTexts) {
+//		return keyTexts.stream()
+//				.map(this::getTextFromKey)
+//				.filter(Optional::isPresent)
+//				.map(Optional::get)
+//				.sorted(Comparator.comparing(UserStructuredText::getNumber))
+//				.map(UserStructuredText::getKey)
+//				.collect(Collectors.toCollection(LinkedHashSet::new));
+//	}
+
+
 
 	/**
 	 * Permet de charger un texte

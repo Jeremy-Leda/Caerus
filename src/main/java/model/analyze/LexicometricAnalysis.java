@@ -1,9 +1,11 @@
 package model.analyze;
 
+import io.vavr.Tuple2;
 import model.abstracts.ProgressAbstract;
 import model.analyze.beans.CartesianGroup;
 import model.analyze.beans.CartesianGroupBuilder;
 import model.analyze.beans.UserStructuredText;
+import model.analyze.cmd.AnalysisDetailResultDisplayCmd;
 import model.analyze.lexicometric.analyze.beans.Text;
 import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
@@ -150,12 +152,40 @@ public class LexicometricAnalysis extends ProgressAbstract {
     }
 
     /**
+     * Permet de se procurer un set des résultats pour la consultation au détail
+     * @param cmd Commande pour l'appel
+     * @return un set des résultats pour la consultation au détail
+     */
+    public Set<AnalysisDetailResultDisplay> getAnalysisDetailResultDisplayForNumberTokens(AnalysisDetailResultDisplayCmd cmd) {
+        super.createProgressBean(1);
+        super.getProgressBean().setCurrentIterate(1);
+        Set<AnalysisDetailResultDisplay> detailResultDisplaySet = cmd.getKeyTextFilteredList().stream().map(k -> {
+            AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(List.of(k), false);
+            Map<String, String> fieldValueMap = cmd.getKeyFieldSet().stream()
+                    .map(f -> new Tuple2<>(f, getTextPreTreatment(getValueFromKeyTextAndField(k, f), cmd.getPreTreatmentListLexicometricMap())))
+                    .collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
+            analysisResultDisplayForNumberTokens.setKey(k);
+            Tuple2<Integer, Integer> fileAndMaterialNumberOfText = getFileAndMaterialNumberOfText(k);
+            return new AnalysisDetailResultDisplayBuilder()
+            .analysisResultDisplay(analysisResultDisplayForNumberTokens)
+            .fieldValueMap(fieldValueMap)
+            .fileNumber(fileAndMaterialNumberOfText._1)
+            .materialNumber(fileAndMaterialNumberOfText._2)
+            .build();
+        }).sorted(Comparator.comparing(AnalysisDetailResultDisplay::getFileNumber).thenComparing(AnalysisDetailResultDisplay::getMaterialNumber))
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        super.resetProgress();
+        return detailResultDisplaySet;
+    }
+
+
+
+    /**
      * Permet de se procurer le résultat de l'analyse
      * @param keyTextFilteredList liste des clés à récupérer
      * @return le résultat de l'analyse
      */
     public AnalysisResultDisplay getAnalysisResultDisplayForNumberTokens(List<String> keyTextFilteredList, Boolean driveProgress) {
-        System.out.println("getAnalysisResultDisplayForNumberTokens GO");
         if (driveProgress) {
             super.createProgressBean(1);
             super.getProgressBean().setCurrentIterate(1);
@@ -165,7 +195,6 @@ public class LexicometricAnalysis extends ProgressAbstract {
         Set<String> wordSet = textSet.stream().flatMap(t -> t.getTokenSet().stream()).map(t -> t.getWord()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
         super.getProgressBean().setNbMaxElementForCurrentIterate(wordSet.size());
         AtomicInteger at = new AtomicInteger(1);
-        System.out.println(wordSet.size());
         Text text = new Text(StringUtils.EMPTY);
         Set<Token> tokenSet = wordSet.parallelStream().map(w -> {
             Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(t -> t.getNbOcurrency()).reduce(Long::sum).orElse(0L);
@@ -175,29 +204,11 @@ public class LexicometricAnalysis extends ProgressAbstract {
             return token;
         }).collect(Collectors.toSet());
         text.getTokenSet().addAll(tokenSet);
-        System.out.println("START CONVERT");
         AnalysisResultDisplay analysisResultDisplay = convertTextToAnalysisResultDisplay(text);
-        System.out.println("getAnalysisResultDisplayForNumberTokens END");
         if (driveProgress) {
             super.resetProgress();
         }
         return analysisResultDisplay;
-    }
-
-    /**
-     * Permet de réduire la liste des textes à un seul texte pour un résumé
-     * @param text1 texte 1
-     * @param text2 texte
-     * @return le texte réduit
-     */
-    private Text reduceText(Text text1, Text text2) {
-        Text text = new Text(StringUtils.EMPTY);
-        text.getTokenSet().addAll(text1.getTokenSet());
-        text2.getTokenSet().forEach(t -> {
-            Optional<Token> optionalToken = text.getTokenSet().stream().filter(s -> s.equals(t)).findFirst();
-            optionalToken.ifPresentOrElse(s -> s.setNbOcurrency(s.getNbOcurrency() + t.getNbOcurrency()), () -> text.getTokenSet().add(t));
-        });
-        return text;
     }
 
     /**
@@ -393,5 +404,35 @@ public class LexicometricAnalysis extends ProgressAbstract {
                 .analysisResultDisplay(analysisResultDisplayForNumberTokens)
                 .keySet(keyFilteredSet)
                 .build();
+    }
+
+    /**
+     * Permet de se procurer la valeur du champ pour une clé de texte
+     * @param key clé du texte
+     * @param field champ
+     * @return la valeur
+     */
+    private String getValueFromKeyTextAndField(String key, String field) {
+        Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(key);
+        if (textFromKey.isPresent()) {
+            return textFromKey.get().getStructuredText().getContent(field);
+        }
+        return StringUtils.EMPTY;
+    }
+
+    /**
+     * Permet de se procurer un tuple contenant le numéro du fichier et le numéro du matériel
+     * @param key clé du texte
+     * @return le tuple
+     */
+    private Tuple2<Integer, Integer> getFileAndMaterialNumberOfText(String key) {
+        Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(key);
+        if (textFromKey.isPresent()) {
+            UserStructuredText userStructuredText = textFromKey.get();
+            //FIXME corriger la gestion du numéro
+            Integer fileNumber = Integer.valueOf(userStructuredText.getFileName().replaceAll(".txt", ""));
+            return new Tuple2<>(fileNumber, textFromKey.get().getStructuredText().getNumber());
+        }
+        return new Tuple2<>(-1,-1);
     }
 }

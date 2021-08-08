@@ -77,7 +77,6 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         content.add(this.textInformationPanel.getJPanel());
-        //content.add(this.comboBoxPanel.getJPanel());
         this.tablePanel.add(wordTablePanel.getJPanel());
         this.tablePanel.add(properNounTable.getJPanel());
         content.add(this.tablePanel);
@@ -92,6 +91,10 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
     @Override
     public String getWindowName() {
         return "Analysis proper noun add window";
+    }
+
+    public void setProperNounSetOfText(Collection<String> properNounSet) {
+        wordTablePanel.refreshData(properNounSet.stream().map(s -> new SelectedObjectTable<>(s)).collect(Collectors.toCollection(LinkedList::new)));
     }
 
     /**

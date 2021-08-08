@@ -27,6 +27,6 @@ public interface ICreateExcel extends IProgressModel {
      * @param excelSheetList Liste des feuilles excel à générer
      * @throws IOException
      */
-    void generateExcel(List<ExcelSheet> excelSheetList) throws IOException;
+    void generateExcel(List<ExcelSheet> excelSheetList);
 
 }

@@ -83,6 +83,10 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
     private void logAndCreateErrorInterface(ServerException serverException) {
         logger.error(serverException.toString(), serverException);
         if (serverException.getInformationExceptionSet().stream().anyMatch(informationException -> informationException.getErrorCode().equals(ErrorCode.TECHNICAL_ERROR))) {
+            serverException.getInformationExceptionSet().stream()
+                    .filter(i -> i.getExceptionParent() != null)
+                    .map(i -> i.getExceptionParent())
+                    .forEach(e -> logger.error(e.getMessage(), e));
             new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_FAILURE_TECHNICAL_PANEL_TITLE),
                     getControler(),
                     PictureTypeEnum.WARNING,

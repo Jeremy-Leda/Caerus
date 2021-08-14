@@ -36,6 +36,7 @@ public class Loader {
 	public MemoryFile getMemoryFile() throws IOException {
 		MemoryFile memoryFile = new MemoryFile(path);
 		Files.lines(path).forEach(l -> memoryFile.getLinesOrdered().add(l));
+		UserSettings.getInstance().setNumberOfMemoryFile(memoryFile);
 		return memoryFile;		
 	}
 	

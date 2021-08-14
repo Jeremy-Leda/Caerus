@@ -24,6 +24,7 @@ public class MemoryFile {
 	private final List<String> linesOrdered = new ArrayList<String>();
 	private Iterator<String> iterableLine;
 	private Integer currentLine;
+	private Integer number;
 	
 	/**
 	 * Constructeur
@@ -121,5 +122,21 @@ public class MemoryFile {
 	 */
 	public Path getPath() {
 		return path;
+	}
+
+	/**
+	 * Permet de se procurer le numéro du fichier
+	 * @return le numéro du fichier
+	 */
+	public Integer getNumber() {
+		return number;
+	}
+
+	/**
+	 * Permet de définir le numéro du fichier
+	 * @param number  le numéro du fichier
+	 */
+	public void setNumber(Integer number) {
+		this.number = number;
 	}
 }

@@ -59,7 +59,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	@Override
 	public void setCurrentConfiguration(Configuration configuration) {
 		logger.debug(String.format("CALL setCurrentConfiguration : Name %s", configuration.getName()));
-		UserSettings.getInstance().setCurrentConfiguration(configuration);
+		this.dispatcher.setCurrentConfiguration(configuration);
 	}
 
 	@Override

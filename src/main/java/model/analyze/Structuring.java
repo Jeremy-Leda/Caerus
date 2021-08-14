@@ -137,7 +137,7 @@ public class Structuring {
 			if (null != structuredText) {
 				StringBuilder keyTextBuilder = new StringBuilder();
 				keyTextBuilder.append(memoryFile.nameFile());
-				keyTextBuilder.append(number.toString());
+				keyTextBuilder.append(number);
 				structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
 				keyStructuredText = KeyGenerator.generateKey(structuredText);
 				if (structuredText.getHaveBlankLine()) {
@@ -166,6 +166,7 @@ public class Structuring {
 
 			} else if (null != structuredText) {
 				UserStructuredText userStructuredText = new UserStructuredText(memoryFile.nameFile(), number,
+						memoryFile.getNumber(),
 						structuredText);
 				UserSettings.getInstance().addUserStructuredText(folderType, userStructuredText);
 				if (FolderSettingsEnum.FOLDER_TEXTS.equals(folderType)) {

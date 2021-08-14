@@ -142,6 +142,15 @@ public class Configuration {
 				.map(s -> s.getFieldName()).filter(s -> !otherFieldList.contains(s)).collect(Collectors.toList());
 	}
 
+	/**
+	 * Permet de se procurer le nom du fichier pour les ordres
+	 * @return le nom du fichier pour les ordres
+	 */
+	@JsonIgnore
+	public String getConfigurationOrderNameFile() {
+		return name + "_order.json";
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

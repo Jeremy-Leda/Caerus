@@ -271,6 +271,9 @@ public class LexicometricAnalysis extends ProgressAbstract {
                 .map(s -> s.toLowerCase())
                 .map(s -> StringUtils.SPACE + s + StringUtils.SPACE)
                 .filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        if (cleanWords.isEmpty()) {
+            return StringUtils.EMPTY;
+        }
         return cleanWords.stream().reduce(String::concat).get();
     }
 
@@ -429,9 +432,7 @@ public class LexicometricAnalysis extends ProgressAbstract {
         Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(key);
         if (textFromKey.isPresent()) {
             UserStructuredText userStructuredText = textFromKey.get();
-            //FIXME corriger la gestion du numéro
-            Integer fileNumber = Integer.valueOf(userStructuredText.getFileName().replaceAll(".txt", ""));
-            return new Tuple2<>(fileNumber, textFromKey.get().getStructuredText().getNumber());
+            return new Tuple2<>(userStructuredText.getDocumentNumber(), userStructuredText.getStructuredText().getNumber());
         }
         return new Tuple2<>(-1,-1);
     }

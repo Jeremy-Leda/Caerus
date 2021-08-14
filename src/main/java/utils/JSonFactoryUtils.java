@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import model.analyze.beans.Configuration;
+import model.analyze.beans.FilesOrder;
 import model.analyze.lexicometric.beans.LexicometricAnalysis;
 
 /**
@@ -83,6 +84,19 @@ public final class JSonFactoryUtils {
 	public static LexicometricAnalysis createAnalyseConfigurationFromJsonFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(inputStream, LexicometricAnalysis.class);
+	}
+
+	/**
+	 * Permet de se procurer le fichier d'ordre des fichiers à partir d'un fichier Json
+	 * @param inputStream Inputstream
+	 * @return le fichier d'ordre des fichiers
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public static FilesOrder createFilesOrderFromJsonFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.readValue(inputStream, FilesOrder.class);
 	}
 	
 	/**

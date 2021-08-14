@@ -2,6 +2,7 @@ package model.analyze;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +16,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import model.analyze.beans.*;
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,6 +32,8 @@ import model.analyze.constants.TypeFilterTextEnum;
 import model.analyze.interfaces.IWriteText;
 import utils.JSonFactoryUtils;
 import utils.KeyGenerator;
+import utils.PathUtils;
+import utils.RessourcesUtils;
 
 /**
  * 
@@ -278,6 +284,12 @@ public class UserSettings {
 	 * @param editingCorpusNameFile nom du corpus en cours d'édition
 	 */
 	public void setEditingCorpusNameFile(String editingCorpusNameFile) {
+		if (StringUtils.isNotBlank(editingCorpusNameFile)) {
+			Optional<FileOrder> numberOfNameFile = getNumberOfNameFile(editingCorpusNameFile);
+			if (numberOfNameFile.isEmpty()) {
+				generateAndSaveNumberOfNameFiles(editingCorpusNameFile);
+			}
+		}
 		this.editingCorpusNameFile = editingCorpusNameFile;
 	}
 
@@ -1395,7 +1407,8 @@ public class UserSettings {
 		keyTextBuilder.append(corpusName);
 		keyTextBuilder.append(number);
 		structuredText.setUniqueKey(KeyGenerator.generateKey(keyTextBuilder.toString()));
-		UserStructuredText userStructuredText = new UserStructuredText(corpusName, number, structuredText);
+		Optional<FileOrder> numberOfNameFile = getNumberOfNameFile(getEditingCorpusNameFile());
+		UserStructuredText userStructuredText = new UserStructuredText(corpusName, number, numberOfNameFile.get().getNumber(), structuredText);
 		currentUserTexts.addUserStructuredText(userStructuredText);
 		applyFilterOnCorpusForFolderText(this.lastFilterCorpus, folderType);
 	}
@@ -1424,9 +1437,11 @@ public class UserSettings {
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					if (!Files.isDirectory(file)) {
 						logger.debug(String.format("Loading Configuration %s", file.toString()));
-						Configuration configurationFromJsonFile = JSonFactoryUtils
-								.createConfigurationFromJsonFile(FileUtils.openInputStream(file.toFile()));
-						configurationsList.add(configurationFromJsonFile);
+						try (InputStream is = FileUtils.openInputStream(file.toFile())) {
+							Configuration configurationFromJsonFile = JSonFactoryUtils
+									.createConfigurationFromJsonFile(is);
+							configurationsList.add(configurationFromJsonFile);
+						}
 					}
 					return FileVisitResult.CONTINUE;
 				}
@@ -1490,6 +1505,121 @@ public class UserSettings {
 			this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).put(file, new HashMap<>());
 		}
 		this.MAP_TYPE_ERROR_KEYS_LIST_BY_FILE.get(typeError).get(file).put(number, keyError);
+	}
+
+	/**
+	 * Permet de se procurer le numéro d'un nom de fichier
+	 * @param nameFile nom du fichier
+	 * @return le numéro du fichier optional
+	 */
+	private Optional<FileOrder> getNumberOfNameFile(String nameFile) {
+		String realName = nameFile + ".txt";
+		File orderFile = getFileOfOrders();
+		return getFilesOrder(orderFile).getFileOrderSet().stream().filter(x -> x.getNameFile().equals(realName)).findFirst();
+	}
+
+	/**
+	 * Permet de générer un numéro pour un nom de fichier
+	 * @param nameFile nom du fichier
+	 * @return le nom du fichier
+	 */
+	private void generateAndSaveNumberOfNameFiles(String nameFile) {
+		String realName = nameFile + ".txt";
+		File orderFile = getFileOfOrders();
+		FilesOrder filesOrderFromJsonFile = getFilesOrder(orderFile);
+		generateNumberOfNameFileAndSaveConfig(filesOrderFromJsonFile, realName, orderFile);
+	}
+
+	/**
+	 * Permet de définir le numéro du fichier
+	 * @param memoryFile memory file dont on souhaite sauvegarder le numéro
+	 */
+	public void setNumberOfMemoryFile(MemoryFile memoryFile) {
+		if (Objects.isNull(memoryFile.getNumber())) {
+			File orderFile = getFileOfOrders();
+			FilesOrder filesOrderFromJsonFile = getFilesOrder(orderFile);
+			Optional<FileOrder> optionalFileOrder = filesOrderFromJsonFile.getFileOrderSet().stream()
+					.filter(x -> x.getNameFile().equals(memoryFile.nameFile()))
+					.findFirst();
+			optionalFileOrder.ifPresentOrElse(x -> memoryFile.setNumber(x.getNumber()),
+					() -> memoryFile.setNumber(generateNumberOfNameFileAndSaveConfig(filesOrderFromJsonFile, memoryFile.nameFile(), orderFile)));
+		}
+	}
+
+	/**
+	 * Permet de se procurer le fichier des ordres
+	 * @return le fichier des ordres
+	 */
+	private File getFileOfOrders() {
+		String rootPath = PathUtils.getCaerusFolder();
+		File directory = new File(rootPath, RessourcesUtils.FOLDER_ORDER_CONFIGURATION);
+		return new File(directory, getCurrentConfiguration().getConfigurationOrderNameFile());
+	}
+
+	/**
+	 * Permet de se procurer l'objet qui gére les ordres
+	 * @param orderFile fichier des ordres
+	 * @return l'objet qui géres les ordres
+	 */
+	private FilesOrder getFilesOrder(File orderFile) {
+		FilesOrder filesOrderFromJsonFile;
+		try (InputStream is = FileUtils.openInputStream(orderFile)) {
+			filesOrderFromJsonFile = JSonFactoryUtils.createFilesOrderFromJsonFile(is);
+		} catch (IOException exception) {
+			throw new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.exceptionParent(exception)
+					.build());
+		}
+		return filesOrderFromJsonFile;
+	}
+
+	/**
+	 * Permet de générer un numéro et de sauvegarder la configuration
+	 * @param filesOrderFromJsonFile objet pour stocker les ordres
+	 * @param nameFile Nom du fichier
+	 * @param orderFile fichier de sauvegarde des ordres
+	 * @return le numéro
+	 */
+	private Integer generateNumberOfNameFileAndSaveConfig(FilesOrder filesOrderFromJsonFile, String nameFile, File orderFile) {
+		FileOrder fileOrder = new FileOrder();
+		fileOrder.setNameFile(nameFile);
+		String numericNameFile = nameFile.replaceAll(".txt", "");
+		if (isInt(numericNameFile)) {
+			fileOrder.setNumber(Integer.parseInt(numericNameFile));
+		} else {
+			Integer number = filesOrderFromJsonFile.getFileOrderSet().stream()
+					.filter(x -> x.getNameFile().equals(nameFile))
+					.findFirst()
+					.map(FileOrder::getNumber)
+					.orElse(filesOrderFromJsonFile.getMaxNumber());
+			fileOrder.setNumber(number);
+		}
+		filesOrderFromJsonFile.getFileOrderSet().add(fileOrder);
+		try {
+			JSonFactoryUtils.createJsonInFile(filesOrderFromJsonFile, orderFile);
+		} catch (IOException exception) {
+			throw new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.exceptionParent(exception)
+					.build());
+		}
+		return fileOrder.getNumber();
+	}
+
+	/**
+	 * Permet de savoir si la chaine de caractére est un entier
+	 * @param s chaine de caractére
+	 * @return Vrai si c'est un entier
+	 */
+	private boolean isInt(String s)
+	{
+		try {
+			int i = Integer.parseInt(s);
+			return true;
+		} catch(NumberFormatException er) {
+			return false;
+		}
 	}
 
 }

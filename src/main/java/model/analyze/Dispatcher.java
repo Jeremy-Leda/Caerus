@@ -214,8 +214,13 @@ public class Dispatcher extends ProgressAbstract {
 	 * @param currentConfiguration Configuration courante
 	 */
 	public void setCurrentConfigurationWithSaveUserConfiguration(Configuration currentConfiguration) {
-		UserSettings.getInstance().setCurrentConfiguration(currentConfiguration);
-		saveUserConfiguration();
+		try {
+			createDefaultConfigurationOrderIfFolderIsEmpty(currentConfiguration);
+			UserSettings.getInstance().setCurrentConfiguration(currentConfiguration);
+			saveUserConfiguration();
+		} catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+		}
 	}
 
 	/**
@@ -519,6 +524,7 @@ public class Dispatcher extends ProgressAbstract {
 			currentUserConfiguration.setDefaultConfiguration(CONFIGURATION_CLASSIC_NAME);
 		}
 		UserSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
+		createDefaultConfigurationOrderIfFolderIsEmpty(UserSettings.getInstance().getCurrentConfiguration());
 		UserLexicometricAnalysisSettings.getInstance().restoreUserConfiguration(currentUserConfiguration);
 		saveUserConfiguration();
 	}
@@ -651,7 +657,22 @@ public class Dispatcher extends ProgressAbstract {
 			throws JsonParseException, JsonMappingException, IOException {
 		File configurationsPath = checkAndGetDefaultPath(FOLDER_CONFIGURATIONS);
 		createDefaultFile(RessourcesUtils.getInstance().getBasicalConfiguration(),
-				configurationsPath, CONFIGURATION_CLASSIC_NAME);
+				configurationsPath, CONFIGURATION_CLASSIC_NAME, true);
+	}
+
+	/**
+	 * Permet d'ajouter la configuration de l'ordre par défaut si le dossier des configurations d'ordre
+	 * est vide
+	 *
+	 * @throws IOException          Exception d'entrée sortie
+	 * @throws JsonMappingException Json mapping exception
+	 * @throws JsonParseException   Json parse exception
+	 */
+	private void createDefaultConfigurationOrderIfFolderIsEmpty(Configuration configuration)
+			throws JsonParseException, JsonMappingException, IOException {
+		File configurationsPath = checkAndGetDefaultPath(RessourcesUtils.FOLDER_ORDER_CONFIGURATION);
+		createDefaultFile(new FilesOrder(),
+				configurationsPath, configuration.getConfigurationOrderNameFile(), false);
 	}
 
 	/**
@@ -668,9 +689,9 @@ public class Dispatcher extends ProgressAbstract {
 		UserFolder.getInstance().putFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS,
 				configurationsPath);
 		createDefaultFile(RessourcesUtils.getInstance().getAnalyzeConfiguration(), configurationsPath,
-				ANALYZE_CONFIGURATION_DEFAULT_NAME);
+				ANALYZE_CONFIGURATION_DEFAULT_NAME, true);
 		createDefaultFile(RessourcesUtils.getInstance().getLemmatizationByGrammaticalCategoryConfiguration(),
-				configurationsPath, ANALYZE_LEMMATIZATION_BY_GRAMMATICAL_CATEGORY_DEFAULT_NAME);
+				configurationsPath, ANALYZE_LEMMATIZATION_BY_GRAMMATICAL_CATEGORY_DEFAULT_NAME, true);
 	}
 
 	/**
@@ -680,8 +701,11 @@ public class Dispatcher extends ProgressAbstract {
 	 * @param fileName nom du fichier
 	 * @param <T> Type d'objet
 	 */
-	private <T> void createDefaultFile(T object, File configurationsPath, String fileName) {
-		File defaultFile = new File(configurationsPath, fileName + ".json");
+	private <T> void createDefaultFile(T object, File configurationsPath, String fileName, Boolean addExtension) {
+		if (addExtension) {
+			fileName = fileName + ".json";
+		}
+		File defaultFile = new File(configurationsPath, fileName);
 		if (!defaultFile.exists()) {
 			try {
 				JSonFactoryUtils.createJsonInFile(object, defaultFile);
@@ -879,4 +903,16 @@ public class Dispatcher extends ProgressAbstract {
 
 		return informationExceptionSet;
     }
+
+    /**
+	 * Permet de changer la configuration courante
+     */
+	public void setCurrentConfiguration(Configuration configuration) {
+    	try {
+			createDefaultConfigurationOrderIfFolderIsEmpty(configuration);
+			UserSettings.getInstance().setCurrentConfiguration(configuration);
+		}catch (Exception ex) {
+			logger.error(ex.getMessage(), ex);
+		}
+	}
 }

@@ -583,6 +583,8 @@ public final class Constants {
 	public static final String WINDOW_EXPORT_EXCEL_INFORMATION_LABEL="window.export.excel.information.label";
 
 
+	public static final String WINDOW_INFORMATION_DOCUMENT_LABEL="window.information.document.label";
+	public static final String WINDOW_INFORMATION_MATERIAL_LABEL="window.information.material.label";
 
 
 

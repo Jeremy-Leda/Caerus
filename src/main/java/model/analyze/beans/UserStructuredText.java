@@ -15,6 +15,7 @@ public class UserStructuredText {
 	private final Integer number;
 	private final StructuredText structuredText;
 	private final String key;
+	private final Integer documentNumber;
 	
 	/**
 	 * Utilisé par le Json
@@ -25,6 +26,7 @@ public class UserStructuredText {
 		this.number = null;
 		this.structuredText = null;
 		this.key = null;
+		this.documentNumber = null;
 	}
 	
 	/**
@@ -33,9 +35,10 @@ public class UserStructuredText {
 	 * @param number numéro 
 	 * @param structuredText text structuré
 	 */
-	public UserStructuredText(String fileName, Integer number, StructuredText structuredText) {
+	public UserStructuredText(String fileName, Integer number, Integer documentNumber, StructuredText structuredText) {
 		this.fileName = fileName;
 		this.number = number;
+		this.documentNumber = documentNumber;
 		this.structuredText = structuredText;
 		this.key = KeyGenerator.generateKey(structuredText);
 	}
@@ -71,7 +74,12 @@ public class UserStructuredText {
 	public String getKey() {
 		return key;
 	}
-	
-	
-	
+
+	/**
+	 * Permet de se procurer le numéro du document
+	 * @return le nuémro du document
+	 */
+	public Integer getDocumentNumber() {
+		return documentNumber;
+	}
 }

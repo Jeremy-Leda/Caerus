@@ -39,6 +39,7 @@ public class RessourcesUtils {
 	private static final String DEFAULT_CONFIGURATION = "ConfiguraciónBásica.json";
 	private static final String DEFAULT_ANALYZE_CONFIGURATION = "LexicometricAnalyze.json";
 	private static final String DEFAULT_LEMMATIZATION_BY_GRAMMATICAL_CATEGORY_CONFIGURATION = "LemmatizationByGrammaticalCategory.json";
+	public static final String FOLDER_ORDER_CONFIGURATION = "configuration_order";
 	private static Logger logger = LoggerFactory.getLogger(RessourcesUtils.class);
 	
 	/**

@@ -1,6 +1,9 @@
 package view.analysis.beans;
 
 import model.PojoBuilder;
+import org.apache.commons.lang3.StringUtils;
+import view.utils.ConfigurationUtils;
+import view.utils.Constants;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
@@ -27,6 +30,8 @@ public class AnalysisDetailResultDisplay {
     @NotNull
     private Integer materialNumber;
 
+    private final String NUMBER_LABEL = "n°";
+
     public AnalysisResultDisplay getAnalysisResultDisplay() {
         return analysisResultDisplay;
     }
@@ -45,10 +50,14 @@ public class AnalysisDetailResultDisplay {
 
     public String getIdentification() {
         StringBuilder sb = new StringBuilder();
-        //FIXME texte
-        sb.append("Manual n°");
+        sb.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_DOCUMENT_LABEL));
+        sb.append(StringUtils.SPACE);
+        sb.append(NUMBER_LABEL);
         sb.append(fileNumber);
-        sb.append(" - Material n°");
+        sb.append(" - ");
+        sb.append(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_MATERIAL_LABEL));
+        sb.append(StringUtils.SPACE);
+        sb.append(NUMBER_LABEL);
         sb.append(materialNumber);
         return sb.toString();
     }

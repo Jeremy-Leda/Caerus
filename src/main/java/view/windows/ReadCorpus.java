@@ -1,18 +1,18 @@
 package view.windows;
 
 import controler.IConfigurationControler;
+import io.vavr.Tuple2;
+import model.analyze.UserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.ActionUserTypeEnum;
 import view.beans.StateCorpusEnum;
 import view.beans.TextIhmTypeEnum;
-import view.interfaces.IActionOnClose;
-import view.interfaces.IActionPanel;
-import view.interfaces.IContentTextGenericPanel;
-import view.interfaces.IFilePanel;
+import view.interfaces.*;
 import view.panel.ActionPanel;
 import view.panel.ContentTextGenericPanel;
+import view.panel.LabelsPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
@@ -36,6 +36,7 @@ public class ReadCorpus extends ModalJFrameAbstract {
     private final IContentTextGenericPanel informationsCorpusPanel;
     private final IActionPanel actionPanel;
     private final JPanel content;
+    private final ILabelsPanel labelsPanel = new LabelsPanel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_FILE_PANEL_TITLE), 2);
 
     public ReadCorpus(String title, IConfigurationControler configurationControler, Boolean isModal, String keyText) {
         super(title, configurationControler, isModal);
@@ -45,6 +46,7 @@ public class ReadCorpus extends ModalJFrameAbstract {
         this.actionPanel = new ActionPanel(1);
         this.content = new JPanel();
         updateContentInformationsCorpusPanel();
+        refreshLabelsPanel(keyText);
         createWindow();
     }
 
@@ -67,6 +69,7 @@ public class ReadCorpus extends ModalJFrameAbstract {
     public void setKeyText(String key) {
         this.informationsCorpusPanel.setKeyText(key);
         this.informationsCorpusPanel.reloadValue();
+        refreshLabelsPanel(key);
     }
 
     /**
@@ -84,6 +87,7 @@ public class ReadCorpus extends ModalJFrameAbstract {
     private void createContent() {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
+        content.add(this.labelsPanel.getJPanel());
         content.add(this.informationsCorpusPanel.getJPanel());
         content.add(this.actionPanel.getJPanel());
     }
@@ -100,6 +104,18 @@ public class ReadCorpus extends ModalJFrameAbstract {
      */
     private void refreshActionPanelMessage() {
         this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), Map.of(0, getMessage(WINDOW_INFORMATION_ACTION_BUTTON_LABEL)));
+    }
+
+    /**
+     * Permet de rafraichir les labels
+     * @param keyText Clé du texte
+     */
+    private void refreshLabelsPanel(String keyText) {
+        Optional<Tuple2<String, Integer>> informationOfDocument = UserSettings.getInstance().getInformationOfDocument(keyText);
+        informationOfDocument.ifPresent(tuple -> {
+            this.labelsPanel.setLabel(0, getMessage(Constants.WINDOW_CREATE_TEXT_NAME_LABEL), true, tuple._1(), true);
+            this.labelsPanel.setLabel(1, getMessage(Constants.WINDOW_CREATE_TEXT_NUMBER_LABEL), true, tuple._2().toString(), true);
+        });
     }
 
     @Override

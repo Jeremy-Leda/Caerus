@@ -10,19 +10,17 @@ import java.util.function.Consumer;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import model.analyze.UserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controler.IConfigurationControler;
 import view.abstracts.ModalJFrameAbstract;
 import view.beans.*;
-import view.interfaces.IActionOnClose;
-import view.interfaces.IActionPanel;
-import view.interfaces.IContentTextGenericPanel;
-import view.interfaces.IFilePanel;
+import view.interfaces.*;
 import view.panel.ActionPanel;
 import view.panel.ContentTextGenericPanel;
-import view.panel.FilePanel;
+import view.panel.LabelsPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
@@ -39,8 +37,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	 */
 	private static final long serialVersionUID = 1660889209023320528L;
 	private static Logger logger = LoggerFactory.getLogger(FixedOrEditCorpus.class);
-
-	private final IFilePanel filePanel;
+	private final ILabelsPanel labelsPanel = new LabelsPanel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_FILE_PANEL_TITLE), 2);
 	private final IContentTextGenericPanel informationsCorpusPanel;
 	private final IActionPanel actionManagePanel;
 	private final IActionPanel actionFixedPanel;
@@ -52,7 +49,6 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 			ActionUserTypeEnum actionUserType) {
 		super(title, configurationControler, isModal);
 		this.actionUserType = actionUserType;
-		this.filePanel = new FilePanel();
 		this.informationsCorpusPanel = new ContentTextGenericPanel(configurationControler, TextIhmTypeEnum.JTEXTFIELD,
 				StateCorpusEnum.EDIT);
 		this.actionFixedPanel = new ActionPanel(1);
@@ -65,7 +61,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 
 	@Override
 	public void initComponents() {
-		refreshFilePanel();
+		refreshLabelsPanel();
 		refreshActionPanelMessage();
 		addActionPanel();
 		createContent();
@@ -78,7 +74,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	private void createContent() {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
-		content.add(this.filePanel.getJPanel());
+		content.add(this.labelsPanel.getJPanel());
 		content.add(this.informationsCorpusPanel.getJPanel());
 		if (ActionUserTypeEnum.FOLDER_ANALYZE.equals(actionUserType)) {
 			content.add(actionFixedPanel.getJPanel());
@@ -161,13 +157,12 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	}
 
 	/**
-	 * Permet de rafraichir le file panel
+	 * Permet de rafraichir les labels
 	 */
-	private void refreshFilePanel() {
-		this.filePanel.refresh(
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_FILE_PANEL_TITLE),
-				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_NAME_LABEL),
-				getControler().getEditingCorpusName());
+	private void refreshLabelsPanel() {
+		this.labelsPanel.setLabel(0, getMessage(Constants.WINDOW_CREATE_TEXT_NAME_LABEL), true, getControler().getEditingCorpusName(), true);
+		UserSettings.getInstance().getNumberOfCurrentEditingFile().ifPresent(n ->
+				this.labelsPanel.setLabel(1, getMessage(Constants.WINDOW_CREATE_TEXT_NUMBER_LABEL), true, n.toString(), true));
 	}
 
 	/**
@@ -215,7 +210,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 			getControler().loadNextErrorMetaBlankLine();
 		}
 		updateContentInformationsCorpusPanel();
-		refreshFilePanel();
+		refreshLabelsPanel();
 		refreshActionPanelMessage();
 	}
 

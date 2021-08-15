@@ -5,6 +5,7 @@ import net.karneim.pojobuilder.GeneratePojoBuilder;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -19,6 +20,7 @@ public class InformationException {
     private Object objectInError;
     private StackTraceElement[] stackTraceElements;
     private Exception exceptionParent;
+    private List<String> messageParameters;
 
     /**
      * Permet de se procurer le code de l'erreur
@@ -100,6 +102,22 @@ public class InformationException {
         this.exceptionParent = exceptionParent;
     }
 
+    /**
+     * Permet de se procurer les paramètres pour le message
+     * @return les paramètres
+     */
+    public List<String> getMessageParameters() {
+        return messageParameters;
+    }
+
+    /**
+     * Permet de définir les paramètres pour le message
+     * @param messageParameters les paramètres pour le message
+     */
+    public void setMessageParameters(List<String> messageParameters) {
+        this.messageParameters = messageParameters;
+    }
+
     @Override
     public String toString() {
         return "InformationException{" +
@@ -108,6 +126,7 @@ public class InformationException {
                 ", objectInError=" + objectInError +
                 ", stackTraceElements=" + Arrays.toString(stackTraceElements) +
                 ", exceptionParent=" + exceptionParent +
+                ", messageParameters=" + messageParameters +
                 '}';
     }
 }

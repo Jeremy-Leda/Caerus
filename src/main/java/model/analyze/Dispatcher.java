@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import model.abstracts.ProgressAbstract;
 import model.analyze.beans.*;
 import model.analyze.beans.specific.ConfigurationStructuredText;
+import model.analyze.cache.FileOrderCache;
 import model.analyze.constants.FolderSettingsEnum;
 import model.excel.CreateExcel;
 import model.excel.ImportExcel;
@@ -120,7 +121,7 @@ public class Dispatcher extends ProgressAbstract {
 		progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
 		for (int i = 0; i < memoryFiles.size(); i++) {
 			UserSettings.getInstance().addStructuredFile(folderType,
-					new Structuring(memoryFiles.get(i), folderType, i+1).getStructuredFile());
+					new Structuring(memoryFiles.get(i), folderType).getStructuredFile());
 
 			progressBean.setCurrentElementForCurrentIterate(i);
 		}
@@ -328,7 +329,7 @@ public class Dispatcher extends ProgressAbstract {
 			progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
 			progressBean.setCurrentElementForCurrentIterate(i);
 			configurationSpecific.getStructuredFileList()
-					.add(new Structuring(memoryFiles.get(i), folderType, configurationSpecific, i+1).getStructuredFile());
+					.add(new Structuring(memoryFiles.get(i), folderType, configurationSpecific).getStructuredFile());
 		}
 	}
 
@@ -435,6 +436,8 @@ public class Dispatcher extends ProgressAbstract {
 			}
 			if (Boolean.FALSE.equals(haveText)) {
 				PathUtils.deleteFile(new File(realDirectory, file));
+				Configuration currentConfiguration = UserSettings.getInstance().getCurrentConfiguration();
+				FileOrderCache.getInstance().deleteFileOrderInCacheAndSave(currentConfiguration, file);
 			}
 		}
 	}
@@ -449,7 +452,7 @@ public class Dispatcher extends ProgressAbstract {
 	public void deleteTextAndWriteCorpus(String key, FolderSettingsEnum folderType) throws IOException {
 		String fileName = UserSettings.getInstance().getCorpusNameOfText(key, folderType);
 		UserSettings.getInstance().deleteText(key, folderType);
-		writeText(folderType, Arrays.asList(fileName.toString()));
+		writeText(folderType, Arrays.asList(fileName));
 	}
 
 	/**

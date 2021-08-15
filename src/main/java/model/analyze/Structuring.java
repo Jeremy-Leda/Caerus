@@ -34,20 +34,13 @@ public class Structuring {
 
 	private final StructuredFile structuredFile;
 	private final List<Content> lstMetaContent = new ArrayList<Content>();
-	private final int number;
 
-	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType, int number) {
-		this(memoryFile, folderType, null, number);
+	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType) {
+		this(memoryFile, folderType, null);
 	}
 
 	public Structuring(MemoryFile memoryFile, FolderSettingsEnum folderType,
-					   ConfigurationStructuredText beanConfiguration, int number) {
-		String nameWithoutExtension = FilenameUtils.removeExtension(memoryFile.nameFile());
-		if (NumberUtils.isCreatable(nameWithoutExtension)) {
-			this.number = NumberUtils.createInteger(nameWithoutExtension);
-		} else {
-			this.number = number;
-		}
+					   ConfigurationStructuredText beanConfiguration) {
 		this.structuredFile = construct(memoryFile, folderType, beanConfiguration);
 	}
 
@@ -64,7 +57,7 @@ public class Structuring {
 	 */
 	private StructuredFile construct(MemoryFile memoryFile, FolderSettingsEnum folderType,
 			ConfigurationStructuredText beanConfiguration) {
-		final StructuredFile sf = new StructuredFile(memoryFile, number);
+		final StructuredFile sf = new StructuredFile(memoryFile);
 		final List<String> listLines = new ArrayList<String>();
 		final List<StructuredField> listStructuredField = new ArrayList<StructuredField>();
 		StructuredField structuredFieldNewText = null;

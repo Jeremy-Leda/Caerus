@@ -586,6 +586,9 @@ public final class Constants {
 	public static final String WINDOW_INFORMATION_DOCUMENT_LABEL="window.information.document.label";
 	public static final String WINDOW_INFORMATION_MATERIAL_LABEL="window.information.material.label";
 
+	public static final String WINDOW_FUNCTIONAL_ERROR_ORDER_DUPLICATE_CONFIGURATION="window.functional.error.order.duplicate.configuration";
+
+	public static final String WINDOW_CREATE_TEXT_NUMBER_LABEL="window.create.text.number.label";
 
 
 

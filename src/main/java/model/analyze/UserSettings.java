@@ -15,10 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.control.Either;
 import model.analyze.beans.*;
-import model.exceptions.ErrorCode;
-import model.exceptions.InformationExceptionBuilder;
-import model.exceptions.ServerException;
+import model.analyze.cache.FileOrderCache;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,8 +33,6 @@ import model.analyze.constants.TypeFilterTextEnum;
 import model.analyze.interfaces.IWriteText;
 import utils.JSonFactoryUtils;
 import utils.KeyGenerator;
-import utils.PathUtils;
-import utils.RessourcesUtils;
 
 /**
  * 
@@ -285,9 +284,10 @@ public class UserSettings {
 	 */
 	public void setEditingCorpusNameFile(String editingCorpusNameFile) {
 		if (StringUtils.isNotBlank(editingCorpusNameFile)) {
-			Optional<FileOrder> numberOfNameFile = getNumberOfNameFile(editingCorpusNameFile);
+			String realName = editingCorpusNameFile + ".txt";
+			Optional<FileOrder> numberOfNameFile = getNumberOfNameFile(realName);
 			if (numberOfNameFile.isEmpty()) {
-				generateAndSaveNumberOfNameFiles(editingCorpusNameFile);
+				generateNumberOfNameFileAndSaveConfig(realName);
 			}
 		}
 		this.editingCorpusNameFile = editingCorpusNameFile;
@@ -1513,21 +1513,24 @@ public class UserSettings {
 	 * @return le numéro du fichier optional
 	 */
 	private Optional<FileOrder> getNumberOfNameFile(String nameFile) {
-		String realName = nameFile + ".txt";
-		File orderFile = getFileOfOrders();
-		return getFilesOrder(orderFile).getFileOrderSet().stream().filter(x -> x.getNameFile().equals(realName)).findFirst();
+		return FileOrderCache.getInstance().getFileOrderOfDocument(getCurrentConfiguration(), nameFile);
 	}
 
 	/**
-	 * Permet de générer un numéro pour un nom de fichier
-	 * @param nameFile nom du fichier
-	 * @return le nom du fichier
+	 * Permet de se procurer le numéro du document en cours d'édition
+	 * @return le numéro du document en cours d'édition (si il existe)
 	 */
-	private void generateAndSaveNumberOfNameFiles(String nameFile) {
-		String realName = nameFile + ".txt";
-		File orderFile = getFileOfOrders();
-		FilesOrder filesOrderFromJsonFile = getFilesOrder(orderFile);
-		generateNumberOfNameFileAndSaveConfig(filesOrderFromJsonFile, realName, orderFile);
+	public Optional<Integer> getNumberOfCurrentEditingFile() {
+		return getNumberOfNameFile(getEditingCorpusNameFile() + ".txt").map(FileOrder::getNumber);
+	}
+
+	/**
+	 * Permet de se procurer les informations du document
+	 * @param key clé du document
+	 * @return Tuple avec nom du fichier et le numéro du document (si il existe)
+	 */
+	public Optional<Tuple2<String, Integer>> getInformationOfDocument(String key) {
+		return getTextFromKey(key).map(us -> new Tuple2<>(us.getFileNameWithoutExtension(), us.getDocumentNumber()));
 	}
 
 	/**
@@ -1536,75 +1539,31 @@ public class UserSettings {
 	 */
 	public void setNumberOfMemoryFile(MemoryFile memoryFile) {
 		if (Objects.isNull(memoryFile.getNumber())) {
-			File orderFile = getFileOfOrders();
-			FilesOrder filesOrderFromJsonFile = getFilesOrder(orderFile);
-			Optional<FileOrder> optionalFileOrder = filesOrderFromJsonFile.getFileOrderSet().stream()
-					.filter(x -> x.getNameFile().equals(memoryFile.nameFile()))
-					.findFirst();
-			optionalFileOrder.ifPresentOrElse(x -> memoryFile.setNumber(x.getNumber()),
-					() -> memoryFile.setNumber(generateNumberOfNameFileAndSaveConfig(filesOrderFromJsonFile, memoryFile.nameFile(), orderFile)));
+			Optional<FileOrder> fileOrderOptional = FileOrderCache.getInstance().getFileOrderOfDocument(getCurrentConfiguration(), memoryFile.nameFile());
+			if (fileOrderOptional.isPresent()) {
+				memoryFile.setNumber(fileOrderOptional.get().getNumber());
+			} else {
+				Integer number = generateNumberOfNameFileAndSaveConfig(memoryFile.nameFile());
+				memoryFile.setNumber(number);
+			}
 		}
 	}
 
 	/**
-	 * Permet de se procurer le fichier des ordres
-	 * @return le fichier des ordres
-	 */
-	private File getFileOfOrders() {
-		String rootPath = PathUtils.getCaerusFolder();
-		File directory = new File(rootPath, RessourcesUtils.FOLDER_ORDER_CONFIGURATION);
-		return new File(directory, getCurrentConfiguration().getConfigurationOrderNameFile());
-	}
-
-	/**
-	 * Permet de se procurer l'objet qui gére les ordres
-	 * @param orderFile fichier des ordres
-	 * @return l'objet qui géres les ordres
-	 */
-	private FilesOrder getFilesOrder(File orderFile) {
-		FilesOrder filesOrderFromJsonFile;
-		try (InputStream is = FileUtils.openInputStream(orderFile)) {
-			filesOrderFromJsonFile = JSonFactoryUtils.createFilesOrderFromJsonFile(is);
-		} catch (IOException exception) {
-			throw new ServerException().addInformationException(new InformationExceptionBuilder()
-					.errorCode(ErrorCode.TECHNICAL_ERROR)
-					.exceptionParent(exception)
-					.build());
-		}
-		return filesOrderFromJsonFile;
-	}
-
-	/**
-	 * Permet de générer un numéro et de sauvegarder la configuration
-	 * @param filesOrderFromJsonFile objet pour stocker les ordres
-	 * @param nameFile Nom du fichier
-	 * @param orderFile fichier de sauvegarde des ordres
+	 * Permet de générer un numéro et de sauvegarder la configuration*
+	 * @param nameFile Nom du fichier*
 	 * @return le numéro
 	 */
-	private Integer generateNumberOfNameFileAndSaveConfig(FilesOrder filesOrderFromJsonFile, String nameFile, File orderFile) {
-		FileOrder fileOrder = new FileOrder();
-		fileOrder.setNameFile(nameFile);
+	private Integer generateNumberOfNameFileAndSaveConfig(String nameFile) {
 		String numericNameFile = nameFile.replaceAll(".txt", "");
+		Integer order;
 		if (isInt(numericNameFile)) {
-			fileOrder.setNumber(Integer.parseInt(numericNameFile));
+			order = Integer.parseInt(numericNameFile);
 		} else {
-			Integer number = filesOrderFromJsonFile.getFileOrderSet().stream()
-					.filter(x -> x.getNameFile().equals(nameFile))
-					.findFirst()
-					.map(FileOrder::getNumber)
-					.orElse(filesOrderFromJsonFile.getMaxNumber());
-			fileOrder.setNumber(number);
+			order = FileOrderCache.getInstance().getNextNumber(getCurrentConfiguration());
 		}
-		filesOrderFromJsonFile.getFileOrderSet().add(fileOrder);
-		try {
-			JSonFactoryUtils.createJsonInFile(filesOrderFromJsonFile, orderFile);
-		} catch (IOException exception) {
-			throw new ServerException().addInformationException(new InformationExceptionBuilder()
-					.errorCode(ErrorCode.TECHNICAL_ERROR)
-					.exceptionParent(exception)
-					.build());
-		}
-		return fileOrder.getNumber();
+		FileOrderCache.getInstance().putOrderOfDocumentAndSave(getCurrentConfiguration(), nameFile, order);
+		return order;
 	}
 
 	/**

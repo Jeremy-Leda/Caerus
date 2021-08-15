@@ -1,6 +1,8 @@
 package view.windows;
 
 import controler.IConfigurationControler;
+import io.vavr.Tuple2;
+import model.analyze.UserSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.abstracts.ModalJFrameAbstract;
@@ -8,8 +10,10 @@ import view.beans.StateCorpusEnum;
 import view.beans.TextIhmTypeEnum;
 import view.interfaces.IActionPanel;
 import view.interfaces.IContentTextGenericPanel;
+import view.interfaces.ILabelsPanel;
 import view.panel.ActionPanel;
 import view.panel.ContentTextGenericPanel;
+import view.panel.LabelsPanel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
@@ -28,12 +32,12 @@ public class ReadText extends ModalJFrameAbstract {
 
     private static Logger logger = LoggerFactory.getLogger(ReadText.class);
 
-    //private final IFilePanel filePanel;
     private final IContentTextGenericPanel informationsCorpusPanel;
     private final IActionPanel actionPanel;
     private final JPanel content;
-    private final String keyText;
+    private String keyText;
     private Optional<ReadSpecificText> readSpecificTextOptional = Optional.empty();
+
 
     public ReadText(String title, IConfigurationControler configurationControler, Boolean isModal, String keyText) {
         super(title, configurationControler, isModal);
@@ -64,6 +68,7 @@ public class ReadText extends ModalJFrameAbstract {
      * @param key clé du corpus
      */
     public void setKeyText(String key) {
+        this.keyText = key;
         this.informationsCorpusPanel.setKeyText(key);
         this.readSpecificTextOptional.ifPresent(s -> s.setKeyText(key));
         this.informationsCorpusPanel.reloadValue();
@@ -110,6 +115,8 @@ public class ReadText extends ModalJFrameAbstract {
         this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), Map.of(0, getMessage(WINDOW_READ_SPECIFIC_TITLE),
                 1, getMessage(WINDOW_INFORMATION_ACTION_BUTTON_LABEL)));
     }
+
+
 
     @Override
     public String getWindowName() {

@@ -26,7 +26,7 @@ public class FilesOrder {
     }
 
     @JsonIgnore
-    public Integer getMaxNumber() {
+    public Integer getNextNumber() {
         return fileOrderSet.stream().max(Comparator.comparing(FileOrder::getNumber)).map(FileOrder::getNumber).orElse(0) + 1;
     }
 }

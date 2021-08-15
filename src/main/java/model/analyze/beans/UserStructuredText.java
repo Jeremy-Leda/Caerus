@@ -1,5 +1,6 @@
 package model.analyze.beans;
 
+import org.apache.commons.lang3.StringUtils;
 import utils.KeyGenerator;
 
 /**
@@ -49,6 +50,14 @@ public class UserStructuredText {
 	 */
 	public String getFileName() {
 		return fileName;
+	}
+
+	/**
+	 * Permet de se procurer le nom du fichier sans extension
+	 * @return le nom du fichier sans extension
+	 */
+	public String getFileNameWithoutExtension() {
+		return fileName.replaceAll(".txt", StringUtils.EMPTY);
 	}
 	
 	/**

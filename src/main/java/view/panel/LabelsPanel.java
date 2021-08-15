@@ -45,10 +45,35 @@ public class LabelsPanel implements ILabelsPanel {
 
     @Override
     public void setLabel(Integer id, String header, String value) {
+        setLabel(id, header, false, value, false);
+    }
+
+    @Override
+    public void setLabel(Integer id, String header, Boolean boldHeader, String value, Boolean boldValue) {
         JLabel headerLabel = this.headerLabelList.get(id);
         headerLabel.setText(header + " : ");
+        if (boldHeader) {
+            headerLabel.setFont(getBoldFont(headerLabel));
+        }
         JLabel valueLabel = this.valueLabelList.get(id);
         valueLabel.setText(value);
+        if (boldValue) {
+            valueLabel.setFont(getBoldFont(valueLabel));
+        }
+    }
+
+    @Override
+    public void addLabel(String header, Boolean boldHeader, String value, Boolean boldValue) {
+        int id = this.valueLabelList.size();
+        this.headerLabelList.add(new JLabel());
+        this.valueLabelList.add(new JLabel());
+        content.add(createLabelPanel(id));
+        setLabel(id, header, boldHeader, value, boldValue);
+    }
+
+    private Font getBoldFont(JLabel label) {
+        Font font = label.getFont();
+        return font.deriveFont(Font.BOLD);
     }
 
     /**

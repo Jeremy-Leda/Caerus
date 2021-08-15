@@ -56,7 +56,8 @@ public class ExecutionService {
                     ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_OPERATION_FAILURE_TECHNICAL_LABEL));
         } else {
             String functionalErrors = serverException.getInformationExceptionSet().stream()
-                    .map(informationException -> "<li>" + informationException.getErrorCode().getErrorLabel() + "</li>")
+                    .map(informationException -> "<li>" + String.format(informationException.getErrorCode().getErrorLabel(),
+                            informationException.getMessageParameters().toArray(String[]::new)) + "</li>")
                     .collect(Collectors.joining("\n"));
             String errorLabel = String.format(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_FUNCTIONAL_ERROR_LIST_LABEL), functionalErrors);
             new UserInformation(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_FUNCTIONAL_ERROR_PANEL_TITLE),

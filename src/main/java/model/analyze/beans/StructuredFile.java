@@ -19,16 +19,13 @@ public class StructuredFile {
 	private final List<StructuringError> listStructuringError = new ArrayList<StructuringError>();
 	private final MemoryFile memoryFile;
 	private final String key;
-	private final int number;
 	
 	/**
 	 * Constructeur
 	 * @param memoryFile Fichier mémoire
-	 * @param number
 	 */
-	public StructuredFile(MemoryFile memoryFile, int number) {
+	public StructuredFile(MemoryFile memoryFile) {
 		this.memoryFile = memoryFile;
-		this.number = number;
 		this.key = KeyGenerator.generateKey(this.memoryFile.nameFile());
 	}
 	
@@ -79,7 +76,7 @@ public class StructuredFile {
 	 * @return le numéro du fichier
 	 */
 	public int getNumber() {
-		return number;
+		return this.memoryFile.getNumber();
 	}
 
 	/**

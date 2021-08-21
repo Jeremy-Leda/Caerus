@@ -159,6 +159,8 @@ public class LexicometricAnalysis extends ProgressAbstract {
     public Set<AnalysisDetailResultDisplay> getAnalysisDetailResultDisplayForNumberTokens(AnalysisDetailResultDisplayCmd cmd) {
         super.createProgressBean(1);
         super.getProgressBean().setCurrentIterate(1);
+        AtomicInteger nbTreatElement = new AtomicInteger(1);
+        super.getProgressBean().setNbMaxElementForCurrentIterate(cmd.getKeyTextFilteredList().size());
         Set<AnalysisDetailResultDisplay> detailResultDisplaySet = cmd.getKeyTextFilteredList().stream().map(k -> {
             AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(List.of(k), false);
             Map<String, String> fieldValueMap = cmd.getKeyFieldSet().stream()
@@ -166,6 +168,7 @@ public class LexicometricAnalysis extends ProgressAbstract {
                     .collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
             analysisResultDisplayForNumberTokens.setKey(k);
             Tuple2<Integer, Integer> fileAndMaterialNumberOfText = getFileAndMaterialNumberOfText(k);
+            super.getProgressBean().setCurrentElementForCurrentIterate(nbTreatElement.getAndIncrement());
             return new AnalysisDetailResultDisplayBuilder()
             .analysisResultDisplay(analysisResultDisplayForNumberTokens)
             .fieldValueMap(fieldValueMap)
@@ -193,14 +196,18 @@ public class LexicometricAnalysis extends ProgressAbstract {
         Set<Text> textSet = this.analysisResultSet.stream().filter(t -> keyTextFilteredList.contains(t.getKey())).collect(Collectors.toSet());
         List<Token> tokenList = textSet.stream().flatMap(t -> t.getTokenSet().stream()).collect(Collectors.toList());
         Set<String> wordSet = textSet.stream().flatMap(t -> t.getTokenSet().stream()).map(t -> t.getWord()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
-        super.getProgressBean().setNbMaxElementForCurrentIterate(wordSet.size());
+        if (driveProgress) {
+            super.getProgressBean().setNbMaxElementForCurrentIterate(wordSet.size());
+        }
         AtomicInteger at = new AtomicInteger(1);
         Text text = new Text(StringUtils.EMPTY);
         Set<Token> tokenSet = wordSet.parallelStream().map(w -> {
             Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(t -> t.getNbOcurrency()).reduce(Long::sum).orElse(0L);
             Token token = new Token(w);
             token.setNbOcurrency(nbOccurrency);
-            super.getProgressBean().setCurrentElementForCurrentIterate(at.getAndIncrement());
+            if (driveProgress) {
+                super.getProgressBean().setCurrentElementForCurrentIterate(at.getAndIncrement());
+            }
             return token;
         }).collect(Collectors.toSet());
         text.getTokenSet().addAll(tokenSet);

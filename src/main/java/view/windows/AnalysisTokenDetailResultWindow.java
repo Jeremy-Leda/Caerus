@@ -7,7 +7,11 @@ import model.analyze.cmd.AnalysisDetailResultDisplayCmd;
 import model.analyze.cmd.AnalysisDetailResultDisplayCmdBuilder;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
+import model.interfaces.IProgressModel;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import view.Main;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisDetailResultDisplay;
 import view.analysis.beans.AnalysisGroupDisplay;
@@ -16,18 +20,21 @@ import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricEditEnum;
 import view.components.DragAndDropCloseableTabbedPane;
 import view.interfaces.*;
-import view.panel.ActionPanel;
-import view.panel.LabelsPanel;
-import view.panel.RadioButtonPanel;
-import view.panel.TextHighlightPanel;
+import view.panel.*;
 import view.panel.analysis.TableAnalysisPanel;
+import view.panel.model.ProgressBarModel;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -38,7 +45,7 @@ import static view.utils.Constants.*;
  * Fenêtre pour l'affichage des détails pour les tokens
  *
  */
-public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
+public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract implements IProgressModel {
 
     private JPanel content = new JPanel();
     private IRadioButtonPanel radioButtonPanel;
@@ -53,7 +60,10 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
     private final LinkedList<String> headerLinkedList = new LinkedList<>();
     private final DragAndDropCloseableTabbedPane tabbedPane = new DragAndDropCloseableTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
     private final Map<LexicometricConfigurationEnum, String> lexicometricConfigurationEnumStringMap;
-
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final IProgressBarPanel progressBarPanel = new ProgressBarPanel(new ProgressBarModel());
+    private static Logger logger = LoggerFactory.getLogger(AnalysisTokenDetailResultWindow.class);
+    private Integer currentLoadingTab = 0;
 
     /**
      * Constructeur
@@ -89,6 +99,8 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         });
         this.tabbedPane.setConsumerToRemove(c -> componentAnalysisDetailResultDisplayMap.remove(c));
         this.addActionOnClose(e -> closeAutomaticallyAllWindows());
+        this.addActionOnClose(e -> executorService.shutdown());
+
         createWindow();
     }
 
@@ -145,6 +157,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         content.add(radioButtonPanel.getJPanel());
+        content.add(progressBarPanel.getJPanel());
         content.add(tabbedPane);
         content.add(this.actionPanel.getJPanel());
     }
@@ -280,7 +293,26 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
                         Set<String> fieldToAnalyzeSet) {
         tabbedPane.removeAll();
         Set<AnalysisDetailResultDisplay> detailResultSet = getDetailResultSet(keyFilteredTextList, lexicometricAnalyzeTypeEnum, fieldToAnalyzeSet);
-        detailResultSet.forEach(this::addAnalysisDetailResultDisplay);
+        executorService.execute(() -> {
+            progressBarPanel.launchTreatment(detailResultSet.size(), getProgressConsumer(detailResultSet.size(), this));
+            detailResultSet.forEach(a -> {
+                this.addAnalysisDetailResultDisplay(a);
+                currentLoadingTab++;
+            });
+            tabbedPane.addMouseWheelListener(e -> {
+                JTabbedPane pane = (JTabbedPane) e.getSource();
+                int units = e.getWheelRotation();
+                int oldIndex = pane.getSelectedIndex();
+                int newIndex = oldIndex + units;
+                if (newIndex < 0)
+                    pane.setSelectedIndex(0);
+                else if (newIndex >= pane.getTabCount())
+                    pane.setSelectedIndex(pane.getTabCount() - 1);
+                else
+                    pane.setSelectedIndex(newIndex);
+            });
+            logger.info("Interface loaded");
+        });
     }
 
     /**
@@ -300,6 +332,11 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         this.componentAnalysisDetailResultDisplayMap.put(content, analysisDetailResultDisplay);
         this.analysisDetailResultDisplayITextHighlightPanelHashMap.put(analysisDetailResultDisplay, textHighlightPanel);
         this.tabbedPane.addCloseableTab(analysisDetailResultDisplay.getIdentification(), content);
+        try {
+            Thread.sleep(30);
+        } catch (Exception ex) {
+
+        }
     }
 
     /**
@@ -364,5 +401,10 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract {
         tableAnalysisPanel.addConsumerOnSelectedChangeForWord(getConsumerForHighlight(textHighlightPanel));
         tableAnalysisPanel.updateAnalysisResult(analysisDetailResultDisplay.getAnalysisResultDisplay().toAnalysisTokenRowList());
         return tableAnalysisPanel;
+    }
+
+    @Override
+    public Integer getProgress() {
+        return this.currentLoadingTab;
     }
 }

@@ -10,9 +10,11 @@ import view.analysis.beans.interfaces.IExcelSheet;
 import view.beans.FilePickerTypeEnum;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IActionPanel;
+import view.interfaces.ICheckBoxPanel;
 import view.interfaces.IFilePickerPanel;
 import view.interfaces.IInformationPanel;
 import view.panel.ActionPanel;
+import view.panel.CheckBoxPanel;
 import view.panel.FilePickerPanel;
 import view.panel.InformationPanel;
 import view.utils.ConfigurationUtils;
@@ -39,10 +41,11 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
     private final IFilePickerPanel filePickerPanel = new FilePickerPanel(getMessage(WINDOW_EXPORT_EXCEL_FILE_PICKER_PANEL_LABEL),
             getMessage(WINDOW_EXPORT_EXCEL_FILE_PICKER_PANEL_LABEL), FilePickerTypeEnum.SAVE_FILE);
     private final IInformationPanel informationPanel = new InformationPanel(PictureTypeEnum.INFORMATION,
-            getMessage(WINDOW_EXPORT_EXCEL_INFORMATION_LABEL),
+            getMessage(WINDOW_INFORMATION_PANEL_LABEL),
             getMessage(WINDOW_EXPORT_EXCEL_INFORMATION_MESSAGE),
             false,
             false);
+    private final ICheckBoxPanel checkBoxPanel = new CheckBoxPanel(1, false);
     private final IActionPanel actionPanel = new ActionPanel(1);
     private final List<IExcelSheet> iExcelSheetList;
 
@@ -57,8 +60,10 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         initActionPanel();
+        initCheckBox();
         content.add(informationPanel.getJPanel());
         content.add(filePickerPanel.getJPanel());
+        content.add(checkBoxPanel.getJPanel());
         content.add(actionPanel.getJPanel());
     }
 
@@ -71,6 +76,14 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
                 ioException.printStackTrace();
             }
         });
+    }
+
+    /**
+     * Permet d'initialiser les checkbox
+     */
+    private void initCheckBox() {
+        this.checkBoxPanel.setStaticLabel(getMessage(WINDOW_EXPORT_EXCEL_PREFERENCE_PANEL_TITLE), Map.of(0, getMessage(WINDOW_EXPORT_EXCEL_PREFERENCE_WITH_FORMAT_LABEL)));
+        this.checkBoxPanel.setChecked(0, true);
     }
 
     @Override
@@ -87,7 +100,7 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
         ICreateExcel createExcel = new CreateExcel(new File(filePickerPanel.getFile()));
         executeOnServerWithProgressView(() -> {
             List<ExcelSheet> excelSheetList = this.iExcelSheetList.stream().map(IExcelSheet::getExcelSheet).collect(Collectors.toList());
-            createExcel.generateExcel(excelSheetList);
+            createExcel.generateExcel(excelSheetList, this.checkBoxPanel.getCheckBoxIsChecked(0));
         }, createExcel, true, false);
 
     }

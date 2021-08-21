@@ -580,7 +580,9 @@ public final class Constants {
 	public static final String WINDOW_EXPORT_EXCEL_INFORMATION_MESSAGE="window.export.excel.information.message";
 	public static final String WINDOW_EXPORT_EXCEL_BUTTON_LABEL="window.export.excel.button.label";
 	public static final String WINDOW_EXPORT_EXCEL_FILE_PICKER_PANEL_LABEL="window.export.excel.file.picker.panel.label";
-	public static final String WINDOW_EXPORT_EXCEL_INFORMATION_LABEL="window.export.excel.information.label";
+	public static final String WINDOW_EXPORT_EXCEL_PREFERENCE_WITH_FORMAT_LABEL="window.export.excel.preference.with.format.label";
+	public static final String WINDOW_EXPORT_EXCEL_PREFERENCE_PANEL_TITLE="window.export.excel.preference.panel.title";
+
 
 
 	public static final String WINDOW_INFORMATION_DOCUMENT_LABEL="window.information.document.label";

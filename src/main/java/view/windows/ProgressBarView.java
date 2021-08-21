@@ -25,17 +25,17 @@ public class ProgressBarView extends ModalJFrameAbstract {
 
 	/**
 	 * Permet de construire une vue pour la progressBar
-	 * 
+	 *
 	 * @param actionProgressBarConsumer action pour la progressBar
 	 * @param updateProgressBarConsumer consumer de mise à jour pour la progressBar
 	 * @param maximumValue              valeur max de la porgressBar
 	 * @param label                     libellé a afficher dans la progressbar
 	 */
-	public ProgressBarView(Consumer<Void> actionProgressBarConsumer,
-			Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue) {
+	public ProgressBarView(Runnable actionProgressBarConsumer,
+						   Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_PANEL_TITLE), null);
 		this.progressBarModel = new ProgressBarModel(actionProgressBarConsumer, updateProgressBarConsumer,
-				r -> closeFrame(), maximumValue);
+				() -> closeFrame(), maximumValue);
 		this.progressBarPanel = new ProgressBarPanel(this.progressBarModel);
 		this.content = new JPanel();
 		createWindow(frame -> frame.setUndecorated(true), frame -> this.progressBarPanel.launchTreatment());

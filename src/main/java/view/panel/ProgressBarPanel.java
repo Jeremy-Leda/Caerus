@@ -8,6 +8,7 @@ import view.interfaces.IProgressBarModel;
 import view.interfaces.IProgressBarPanel;
 
 import java.awt.*;
+import java.util.function.Consumer;
 
 /**
  * 
@@ -55,4 +56,8 @@ public class ProgressBarPanel implements IProgressBarPanel {
 		this.progressBarModel.launchTreatment(this.progressBar, this.labelProgress);
 	}
 
+	@Override
+	public void launchTreatment(Integer maximumValue, Consumer<Consumer<Integer>> updateProgressBarConsumer) {
+		this.progressBarModel.launchTreatment(this.progressBar, this.labelProgress, updateProgressBarConsumer, maximumValue);
+	}
 }

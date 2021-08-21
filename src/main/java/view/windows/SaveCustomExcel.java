@@ -229,7 +229,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	 */
 	private ActionListener getGenerateExcelAction(ExcelTypeGenerationEnum excelGenerationType) {
 		return e -> {
-			new ProgressBarView(r -> {
+			new ProgressBarView(() -> {
 				try {
 					if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
 						getControler().generateExcelFromAnalyze(createExcelCmd());

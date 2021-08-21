@@ -53,7 +53,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
 
     public void executeOnServerWithProgressView(CheckedRunnable runnable, IProgressModel progressModel, Boolean closeCurrentFrameOnSucceed, Boolean showSucceedPanel) {
         Try.run(() -> {
-            new ProgressBarView(r -> {
+            new ProgressBarView(() -> {
                 if (closeCurrentFrameOnSucceed) {
                     executeOnServerWithCloseCurrentFrame(runnable, showSucceedPanel);
                 } else {
@@ -133,7 +133,6 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    logger.error(e.getMessage(), e);
                 }
             }
         };

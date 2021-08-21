@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 
@@ -85,14 +86,14 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 	}
 
 	@Override
-	public void generateExcel(List<ExcelSheet> excelSheetList) {
+	public void generateExcel(List<ExcelSheet> excelSheetList, Boolean withFormat) {
 		super.createProgressBean(excelSheetList.size());
 		List<String> listSheetName = new ArrayList<>();
 		try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
 			for (int i = 0; i < excelSheetList.size(); i++) {
 				super.getProgressBean().setCurrentIterate(i+1);
 				ExcelSheet currentSheet = excelSheetList.get(i);
-				createSheet(workbook, currentSheet, listSheetName, 1);
+				createSheet(workbook, currentSheet, listSheetName, 1, withFormat);
 				listSheetName.add(currentSheet.getFormattedName().toLowerCase(Locale.ROOT));
 			}
 			try (FileOutputStream fos = new FileOutputStream(path)) {
@@ -107,42 +108,49 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 		}
 	}
 
-	public void createSheet(SXSSFWorkbook workbook, ExcelSheet excelSheet, List<String> listSheetName, int numberSheetAddIfExist) {
+	public void createSheet(SXSSFWorkbook workbook, ExcelSheet excelSheet, List<String> listSheetName, int numberSheetAddIfExist, Boolean withFormat) {
 		if (listSheetName.contains(excelSheet.getFormattedName().toLowerCase(Locale.ROOT))) {
 			String newName = excelSheet.getFormattedName() + " " + numberSheetAddIfExist;
 			if (numberSheetAddIfExist > 1) {
 				newName = excelSheet.getFormattedName().substring(0, excelSheet.getFormattedName().length() - 1) + numberSheetAddIfExist;
 			}
 			excelSheet.setName(newName);
-			createSheet(workbook, excelSheet, listSheetName, numberSheetAddIfExist + 1);
+			createSheet(workbook, excelSheet, listSheetName, numberSheetAddIfExist + 1, withFormat);
 			return;
 		}
 		SXSSFSheet sheet = workbook.createSheet(excelSheet.getFormattedName());
 		ICellStyleWorkbook cellStyleWorkbook = new CellStyleWorkbookFactory(workbook);
-		sheet.trackAllColumnsForAutoSizing();
+		if (withFormat) {
+			sheet.trackAllColumnsForAutoSizing();
+		}
 		excelSheet.getExcelBlockList().forEach(excelBlock -> {
-			createBlock(sheet, excelBlock, cellStyleWorkbook);
+			Optional<ICellStyleWorkbook> cellStyleWorkbookFactoryOptional = withFormat ? Optional.of(cellStyleWorkbook) : Optional.empty();
+			createBlock(sheet, excelBlock, cellStyleWorkbookFactoryOptional);
 			sheet.createRow(sheet.getLastRowNum() + 1);
 		});
-		for (int i = 0; i < excelSheet.getNbColumnMax(); i++) {
-			sheet.autoSizeColumn(i);
+		if (withFormat) {
+			for (int i = 0; i < excelSheet.getNbColumnMax(); i++) {
+				sheet.autoSizeColumn(i);
+			}
 		}
 	}
 
-	public void createBlock(SXSSFSheet sheet, ExcelBlock excelBlock, ICellStyleWorkbook cellStyleWorkbook) {
+	public void createBlock(SXSSFSheet sheet, ExcelBlock excelBlock, Optional<ICellStyleWorkbook> cellStyleWorkbook) {
 		excelBlock.getExcelLineLinkedList().forEach(line -> {
 			SXSSFRow row = sheet.createRow(sheet.getLastRowNum()+1);
 			createLine(row, line, true, cellStyleWorkbook);
 		});
 	}
 
-	public void createLine(SXSSFRow row, ExcelLine excelLine, boolean isTableStyle, ICellStyleWorkbook cellStyleWorkbook) {
+	public void createLine(SXSSFRow row, ExcelLine excelLine, boolean isTableStyle, Optional<ICellStyleWorkbook> cellStyleWorkbook) {
 		excelLine.getExcelCellLinkedList().forEach(l -> {
 			int cellNumber = row.getLastCellNum() < 0 ?  row.getLastCellNum()+1 : row.getLastCellNum();
 			SXSSFCell cell = row.createCell(cellNumber);
-			if (isTableStyle) {
-				cell.setCellStyle(l.isHeader() ? cellStyleWorkbook.getHeaderTableStyle(BorderStyle.DOUBLE) : cellStyleWorkbook.getTableStyle(BorderStyle.MEDIUM));
-			}
+			cellStyleWorkbook.ifPresent(c -> {
+				if (isTableStyle) {
+					cell.setCellStyle(l.isHeader() ? c.getHeaderTableStyle(BorderStyle.DOUBLE) : c.getTableStyle(BorderStyle.MEDIUM));
+				}
+			});
 			if (l.getType().equals(String.class)) {
 				String value = (String) l.getValue();
 				cell.setCellValue(new XSSFRichTextString(value.replaceAll("\\R", " ")));

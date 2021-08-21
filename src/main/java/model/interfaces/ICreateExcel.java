@@ -25,8 +25,9 @@ public interface ICreateExcel extends IProgressModel {
     /**
      * Permet de générer l'excel
      * @param excelSheetList Liste des feuilles excel à générer
+     * @param withFormat Avec format (tableau et couleur)
      * @throws IOException
      */
-    void generateExcel(List<ExcelSheet> excelSheetList);
+    void generateExcel(List<ExcelSheet> excelSheetList, Boolean withFormat);
 
 }

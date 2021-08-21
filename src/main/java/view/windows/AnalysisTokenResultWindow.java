@@ -2,6 +2,7 @@ package view.windows;
 
 import controler.IConfigurationControler;
 import io.vavr.collection.Stream;
+import model.analyze.LexicometricAnalysis;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisGroupDisplay;

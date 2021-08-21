@@ -1,10 +1,16 @@
 package view.panel.model;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import javax.swing.*;
 
 import view.interfaces.IProgressBarModel;
+import view.panel.ProgressBarPanel;
+import view.services.ExecutionService;
 
 /**
  * 
@@ -15,35 +21,54 @@ import view.interfaces.IProgressBarModel;
  */
 public class ProgressBarModel implements IProgressBarModel {
 
-	private final Consumer<Void> actionProgressBarConsumer;
+	private final Runnable actionProgressBarConsumer;
 	private final Consumer<Consumer<Integer>> updateProgressBarConsumer;
-	private final Consumer<Void> closeWindowConsumer;
+	private final Runnable closeWindowConsumer;
 	private JProgressBar progressBar;
 	private JLabel labelProgress;
 	private final Integer maximumValue;
+	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-	public ProgressBarModel(Consumer<Void> actionProgressBarConsumer,
-			Consumer<Consumer<Integer>> updateProgressBarConsumer, Consumer<Void> closeWindowConsumer,
-			Integer maximumValue) {
+	public ProgressBarModel(Runnable actionProgressBarConsumer,
+							Consumer<Consumer<Integer>> updateProgressBarConsumer,
+							Runnable closeWindowConsumer,
+							Integer maximumValue) {
 		this.actionProgressBarConsumer = actionProgressBarConsumer;
 		this.updateProgressBarConsumer = updateProgressBarConsumer;
 		this.closeWindowConsumer = closeWindowConsumer;
 		this.maximumValue = maximumValue;
 	}
 
+	public ProgressBarModel() {
+		this.actionProgressBarConsumer = null;
+		this.updateProgressBarConsumer = null;
+		this.closeWindowConsumer = null;
+		this.maximumValue = null;
+	}
+
 	@Override
 	public void launchTreatment(JProgressBar progressBar, JLabel labelProgress) {
+		launchTreatment(progressBar, labelProgress, this.updateProgressBarConsumer, maximumValue);
+	}
+
+	@Override
+	public void launchTreatment(JProgressBar progressBar, JLabel labelProgress, Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue) {
 		this.progressBar = progressBar;
 		this.labelProgress = labelProgress;
-		if (null != actionProgressBarConsumer && null != updateProgressBarConsumer && null != progressBar) {
+		if (null != updateProgressBarConsumer && null != progressBar) {
 			progressBar.setMinimum(0);
-			progressBar.setMaximum(this.maximumValue);
-			new Thread(() -> {
-				actionProgressBarConsumer.accept(null);
-				closeWindowConsumer.accept(null);
-			}).start();
-			new Thread(() -> updateProgressBarConsumer.accept(getUpdateProgressBarConsumer())).start();
+			progressBar.setMaximum(maximumValue);
+			executorService.execute(() -> updateProgressBarConsumer.accept(getUpdateProgressBarConsumer()));
+			if (this.actionProgressBarConsumer != null) {
+				executorService.execute(this::launchTreatment);
+			}
 		}
+	}
+
+	private void launchTreatment() {
+		actionProgressBarConsumer.run();
+		closeWindowConsumer.run();
+		executorService.shutdownNow();
 	}
 
 	/**

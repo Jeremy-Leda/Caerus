@@ -1,5 +1,7 @@
 package view.interfaces;
 
+import model.interfaces.IProgressModel;
+
 import java.util.function.Consumer;
 
 /**
@@ -14,13 +16,11 @@ public interface IProgressBarPanel extends IAccessPanel{
 	/**
 	 * Permet de lancer le traitement
 	 */
-	void launchTreatment();
+	void launchTreatment(IProgressModel model);
 
 	/**
-	 * Permet de lancer le traitement
-	 * @param maximumValue valeur maximum
-	 * @param updateProgressBarConsumer Le consumer pour la progression
+	 * Permet de stopper les traitements
 	 */
-	void launchTreatment(Integer maximumValue, Consumer<Consumer<Integer>> updateProgressBarConsumer);
-	
+	void stop();
+
 }

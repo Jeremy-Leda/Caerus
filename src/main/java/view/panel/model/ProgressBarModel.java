@@ -1,5 +1,6 @@
 package view.panel.model;
 
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -8,9 +9,13 @@ import java.util.function.Consumer;
 
 import javax.swing.*;
 
+import model.interfaces.IProgressModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import view.interfaces.IProgressBarModel;
 import view.panel.ProgressBarPanel;
 import view.services.ExecutionService;
+import view.windows.AnalysisTokenDetailResultWindow;
 
 /**
  * 
@@ -22,71 +27,62 @@ import view.services.ExecutionService;
 public class ProgressBarModel implements IProgressBarModel {
 
 	private final Runnable actionProgressBarConsumer;
-	private final Consumer<Consumer<Integer>> updateProgressBarConsumer;
 	private final Runnable closeWindowConsumer;
-	private JProgressBar progressBar;
-	private JLabel labelProgress;
-	private final Integer maximumValue;
-	private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+	private ExecutorService executorService;
+	private static Logger logger = LoggerFactory.getLogger(ProgressBarModel.class);
+	private Boolean run;
 
 	public ProgressBarModel(Runnable actionProgressBarConsumer,
-							Consumer<Consumer<Integer>> updateProgressBarConsumer,
-							Runnable closeWindowConsumer,
-							Integer maximumValue) {
+							Runnable closeWindowConsumer) {
 		this.actionProgressBarConsumer = actionProgressBarConsumer;
-		this.updateProgressBarConsumer = updateProgressBarConsumer;
 		this.closeWindowConsumer = closeWindowConsumer;
-		this.maximumValue = maximumValue;
 	}
 
 	public ProgressBarModel() {
 		this.actionProgressBarConsumer = null;
-		this.updateProgressBarConsumer = null;
 		this.closeWindowConsumer = null;
-		this.maximumValue = null;
 	}
 
 	@Override
-	public void launchTreatment(JProgressBar progressBar, JLabel labelProgress) {
-		launchTreatment(progressBar, labelProgress, this.updateProgressBarConsumer, maximumValue);
-	}
-
-	@Override
-	public void launchTreatment(JProgressBar progressBar, JLabel labelProgress, Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue) {
-		this.progressBar = progressBar;
-		this.labelProgress = labelProgress;
-		if (null != updateProgressBarConsumer && null != progressBar) {
+	public void launchTreatment(JProgressBar progressBar, JLabel labelProgress, IProgressModel model) {
+		if (null != progressBar) {
+			executorService = Executors.newFixedThreadPool(2);
+			run = true;
 			progressBar.setMinimum(0);
-			progressBar.setMaximum(maximumValue);
-			executorService.execute(() -> updateProgressBarConsumer.accept(getUpdateProgressBarConsumer()));
+			progressBar.setMaximum(100);
+			executorService.execute(() -> {
+				while (run) {
+					int value = model.getProgress();
+					progressBar.setValue(value);
+					labelProgress.setText(getPercentage(value));
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+					}
+				}
+			});
 			if (this.actionProgressBarConsumer != null) {
 				executorService.execute(this::launchTreatment);
 			}
 		}
 	}
 
-	private void launchTreatment() {
-		actionProgressBarConsumer.run();
-		closeWindowConsumer.run();
+
+	@Override
+	public void stopExecutor() {
+		run = false;
 		executorService.shutdownNow();
 	}
 
-	/**
-	 * Permet de mettre à jour la valeur de la progress bar
-	 * 
-	 * @return le consumer
-	 */
-	private Consumer<Integer> getUpdateProgressBarConsumer() {
-		return value -> {
-			progressBar.setValue(value);
-			labelProgress.setText(getPercentage(value));
-		};
+	private void launchTreatment() {
+		actionProgressBarConsumer.run();
+		closeWindowConsumer.run();
+		stopExecutor();
 	}
 
 	private String getPercentage(int value) {
 		StringBuilder sb = new StringBuilder();
-		int realValue = value * 100 / this.progressBar.getMaximum();
-		sb.append(realValue).append(" %");
+		sb.append(value).append(" %");
 		return sb.toString();
 	}
 }

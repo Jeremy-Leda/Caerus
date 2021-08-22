@@ -25,7 +25,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static view.utils.Constants.*;
@@ -99,9 +98,9 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         this.actionPanel.addAction(1, e -> {
             actionPanel.setEnabled(1, false);
             AnalysisProperNounAddWindow analysisProperNounAddWindow =
-                    new AnalysisProperNounAddWindow(getControler(), getPotentialProperNounCollection(), getRelaunchAnalyzeConsumer(),
+                    new AnalysisProperNounAddWindow(getControler(), getPotentialProperNounCollection(), getRelaunchAnalyzeRunnable(),
                             cmd.getPreTreatmentListLexicometricMap().get(LexicometricEditEnum.PROPER_NOUN));
-            analysisProperNounAddWindow.addActionOnClose(s -> actionPanel.setEnabled(1, true));
+            analysisProperNounAddWindow.addActionOnClose(() -> actionPanel.setEnabled(1, true));
         });
         this.actionPanel.addAction(2, e -> openDetailResult(getSelectedWordsForDisplayDetail(), getKeySetForDisplayDetail()));
         this.actionPanel.addAction(3, e -> new AnalysisGroupResultWindow(getControler(), this, cmd));
@@ -123,8 +122,8 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         actionPanel.setEnabled(2, false);
         AnalysisTokenDetailResultWindow analysisTokenDetailResultWindow =
                 new AnalysisTokenDetailResultWindow(getControler(), cmd, lexicometricAnalyzeTypeEnum,
-                        getRelaunchAnalyzeConsumer(), selectedWordSet, keySet);
-        analysisTokenDetailResultWindow.addActionOnClose(x -> {
+                        getRelaunchAnalyzeRunnable(), selectedWordSet, keySet);
+        analysisTokenDetailResultWindow.addActionOnClose(() -> {
             actionPanel.setEnabled(0, true);
             actionPanel.setEnabled(2, true);
         });
@@ -169,14 +168,16 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
      * Consumer permettant de relancer l'analyse
      * @return le consumer
      */
-    private Consumer<?> getRelaunchAnalyzeConsumer() {
-        return x -> {
-            LexicometricAnalyzeTypeViewEnum lexicometricAnalyzeTypeViewEnum = LexicometricAnalyzeTypeViewEnum.valueOf(lexicometricAnalyzeTypeEnum.name());
-            lexicometricAnalyzeTypeViewEnum.getBiConsumerAnalysis().accept(getControler(), cmd);
-            AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(cmd.getKeyTextFilteredList());
-            this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
-            this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
-            this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
+    private Runnable getRelaunchAnalyzeRunnable() {
+        return () -> {
+            executeOnServerWithProgressView(() -> {
+                LexicometricAnalyzeTypeViewEnum lexicometricAnalyzeTypeViewEnum = LexicometricAnalyzeTypeViewEnum.valueOf(lexicometricAnalyzeTypeEnum.name());
+                lexicometricAnalyzeTypeViewEnum.getBiConsumerAnalysis().accept(getControler(), cmd);
+                AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(cmd.getKeyTextFilteredList());
+                this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
+                this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
+                this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
+            }, LexicometricAnalysis.getInstance(), false, false);
         };
     }
 

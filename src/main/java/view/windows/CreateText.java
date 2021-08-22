@@ -169,8 +169,8 @@ public class CreateText extends ModalJFrameAbstract {
 	 * Consumer pour récativer les boutons
 	 * @return consumer pour réactiver les boutons
 	 */
-	private Consumer<Void> enableAllButton() {
-		return (v) -> setEnabledForAllButton(true);
+	private Runnable enableAllButton() {
+		return () -> setEnabledForAllButton(true);
 	}
 	
 	/**
@@ -187,8 +187,8 @@ public class CreateText extends ModalJFrameAbstract {
 	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
 	 * @return
 	 */
-	private Consumer<Void> closeAutomaticallySpecificText() {
-		return (v) -> {
+	private Runnable closeAutomaticallySpecificText() {
+		return () -> {
 			if (null != fillSpecificTextFrame) {
 				fillSpecificTextFrame.closeFrame();
 			}

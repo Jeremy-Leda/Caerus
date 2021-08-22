@@ -160,8 +160,8 @@ public class ManageText extends ModalJFrameAbstract {
 	 * 
 	 * @return
 	 */
-	private Consumer<Void> closeAutomaticallyOtherChildrenWindow() {
-		return (v) -> {
+	private Runnable closeAutomaticallyOtherChildrenWindow() {
+		return () -> {
 			if (null != manageTextFilter) {
 				manageTextFilter.closeFrame();
 			}

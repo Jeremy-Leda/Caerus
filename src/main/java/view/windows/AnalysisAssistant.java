@@ -135,7 +135,6 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 Map.of(0, getMessage(Constants.WINDOW_START_ANALYSIS_HELP_BUTTON_LABEL),
                         1, getMessage(Constants.WINDOW_START_ANALYSIS_START_BUTTON_LABEL),
                         2, getMessage(Constants.WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL)));
-        // FIXME passer en progress
         this.chooseAnalyzeActionPanel.setIconButton(0, PictureTypeEnum.WARNING);
         this.chooseAnalyzeActionPanel.setEnabled(1, false);
         this.chooseAnalyzeActionPanel.setEnabled(2, false);
@@ -146,7 +145,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                     PictureTypeEnum.INFORMATION,
                     getMessage(Constants.WINDOW_START_ANALYSIS_INFORMATION_OPTIONALS_LISTE_MESSAGE),
                     false);
-            userInformation.addActionOnClose(x -> this.chooseAnalyzeActionPanel.setEnabled(0, true));
+            userInformation.addActionOnClose(() -> this.chooseAnalyzeActionPanel.setEnabled(0, true));
         });
         this.chooseAnalyzeActionPanel.addAction(1, e -> executeOnServerWithProgressView(() -> {
             chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
@@ -196,8 +195,8 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
      *
      * @return
      */
-    private Consumer<Void> closeAutomaticallyOtherChildrenWindow() {
-        return (v) -> {
+    private Runnable closeAutomaticallyOtherChildrenWindow() {
+        return () -> {
             if (null != manageTextFilter) {
                 manageTextFilter.closeFrame();
             }

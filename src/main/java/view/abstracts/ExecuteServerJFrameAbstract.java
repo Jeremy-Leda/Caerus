@@ -59,7 +59,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
                 } else {
                     executeOnServer(runnable, showSucceedPanel);
                 }
-            }, getProgressConsumer(100, progressModel), 100);
+            }, progressModel);
             getControler().resetProgress();
         }).onFailure(ServerException.class, this::logAndCreateErrorInterface);
     }

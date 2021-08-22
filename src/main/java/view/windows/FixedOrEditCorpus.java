@@ -131,7 +131,7 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 				addTextPanel = new FixedOrEditText(
 						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_CREATE_TEXT_TITLE),
 						getControler(), ActionUserTypeEnum.FOLDER_TEXTS, ActionOperationTypeEnum.ADD);
-				addTextPanel.addActionOnClose(v -> {
+				addTextPanel.addActionOnClose(() -> {
 					actionManagePanel.setEnabled(0, Boolean.TRUE);
 					actionManagePanel.setEnabled(1, Boolean.TRUE);
 					actionManagePanel.setEnabled(2, Boolean.TRUE);
@@ -148,8 +148,8 @@ public class FixedOrEditCorpus extends ModalJFrameAbstract {
 	 * 
 	 * @return
 	 */
-	private Consumer<Void> closeAutomaticallyAddText() {
-		return (v) -> {
+	private Runnable closeAutomaticallyAddText() {
+		return () -> {
 			if (null != addTextPanel) {
 				addTextPanel.closeFrame();
 			}

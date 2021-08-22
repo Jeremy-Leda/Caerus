@@ -240,7 +240,7 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 				} catch (IOException e1) {
 					logger.error(e1.getMessage(), e1);
 				}
-			}, getProgressConsumer(100, getControler()), 100);
+			}, getControler());
 			getControler().resetProgress();
 		};
 	}

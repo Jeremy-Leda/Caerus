@@ -1,5 +1,7 @@
 package view.interfaces;
 
+import model.interfaces.IProgressModel;
+
 import javax.swing.*;
 import java.util.function.Consumer;
 
@@ -17,15 +19,9 @@ public interface IProgressBarModel {
 	 * @param progressBar progressBar à définir
 	 * @param labelProgress Le label avec l'animation pour la progression
 	 */
-	void launchTreatment(JProgressBar progressBar, JLabel labelProgress);
+	void launchTreatment(JProgressBar progressBar, JLabel labelProgress, IProgressModel model);
 
-	/**
-	 * Permet de lancer le traitement sur la progressBar en paramètre
-	 * @param progressBar progressBar à définir
-	 * @param labelProgress Le label avec l'animation pour la progression
-	 * @param updateProgressBarConsumer Le consumer pour la progression
-	 * @param maximumValue valeur maximum
-	 */
-	void launchTreatment(JProgressBar progressBar, JLabel labelProgress, Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue);
+
+	void stopExecutor();
 
 }

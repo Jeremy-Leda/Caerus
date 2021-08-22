@@ -2,7 +2,6 @@ package view.windows;
 
 import controler.IConfigurationControler;
 import model.analyze.constants.ActionEditTableEnum;
-import model.analyze.lexicometric.beans.FillTableConfiguration;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricConfiguration;
 import org.apache.commons.lang3.StringUtils;
@@ -10,10 +9,7 @@ import view.abstracts.ModalJFrameAbstract;
 import view.beans.*;
 import view.interfaces.*;
 import view.panel.*;
-import view.panel.model.EditTableModel;
-import view.panel.model.SelectedTableModel;
 import view.utils.ConfigurationUtils;
-import view.utils.Constants;
 
 import javax.swing.*;
 
@@ -57,13 +53,13 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
             (col, filter) -> col.stream().filter(s -> s.getData().contains(filter)).collect(Collectors.toCollection(LinkedList::new)),
             ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_WORD_TABLE_FILTER_LABEL));
     private final IActionPanel actionPanel = new ActionPanel(3);
-    private final Consumer<?> consumerRelaunchAnalyze;
+    private final Runnable runnableRelaunchAnalyze;
     private final String selectedProfil;
 
-    public AnalysisProperNounAddWindow(IConfigurationControler configurationControler, Collection<String> properNounSet, Consumer<?> consumerRelaunchAnalyze,
+    public AnalysisProperNounAddWindow(IConfigurationControler configurationControler, Collection<String> properNounSet, Runnable consumerRelaunchAnalyze,
                                        String selectedProfil) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_PROPER_NOUN_ADD_PANEL_TITLE), configurationControler, false);
-        this.consumerRelaunchAnalyze = consumerRelaunchAnalyze;
+        this.runnableRelaunchAnalyze = consumerRelaunchAnalyze;
         this.selectedProfil = selectedProfil;
         //this.comboBoxPanel.addConsumerOnSelectChange(getConsumerOnProfileChange());
         reloadProperNounList();
@@ -136,8 +132,8 @@ public class AnalysisProperNounAddWindow extends ModalJFrameAbstract {
         this.actionPanel.setIconButton(0, PictureTypeEnum.SAVE);
         this.actionPanel.addAction(0, w -> saveAllCheckedProperNoun());
         this.actionPanel.addAction(1, w -> {
-            consumerRelaunchAnalyze.accept(null);
             closeFrame();
+            runnableRelaunchAnalyze.run();
         });
         this.actionPanel.addAction(2, w -> closeFrame());
     }

@@ -8,14 +8,10 @@ import model.analyze.cmd.AnalysisDetailResultDisplayCmdBuilder;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.interfaces.IProgressModel;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import view.Main;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisDetailResultDisplay;
-import view.analysis.beans.AnalysisGroupDisplay;
-import view.analysis.beans.AnalysisResultDisplay;
 import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricEditEnum;
 import view.components.DragAndDropCloseableTabbedPane;
@@ -28,8 +24,8 @@ import view.utils.Constants;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -54,16 +50,20 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     private Optional<ReadCorpus> optionalReadCorpusWindow = Optional.empty();
     private Optional<ReadText> optionalReadTextWindow = Optional.empty();
     private Optional<AnalysisProperNounAddWindow> optionalAnalysisProperNounAddWindow = Optional.empty();
-    private final Consumer<?> consumerRelaunchBase;
+    private final Runnable runnableRelaunchBase;
     private final Map<JComponent, AnalysisDetailResultDisplay> componentAnalysisDetailResultDisplayMap = new HashMap<>();
     private final Map<AnalysisDetailResultDisplay, ITextHighlightPanel> analysisDetailResultDisplayITextHighlightPanelHashMap = new HashMap<>();
     private final LinkedList<String> headerLinkedList = new LinkedList<>();
     private final DragAndDropCloseableTabbedPane tabbedPane = new DragAndDropCloseableTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
     private final Map<LexicometricConfigurationEnum, String> lexicometricConfigurationEnumStringMap;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService loadExecutorService = Executors.newSingleThreadExecutor();
+    private ExecutorService synchronousExecutorService = Executors.newSingleThreadExecutor();
     private final IProgressBarPanel progressBarPanel = new ProgressBarPanel(new ProgressBarModel());
     private static Logger logger = LoggerFactory.getLogger(AnalysisTokenDetailResultWindow.class);
     private Integer currentLoadingTab = 0;
+
+    private Integer oldSelectedIndex = -1;
+    private Integer currentSelectedIndex = -1;
 
     /**
      * Constructeur
@@ -72,11 +72,11 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     public AnalysisTokenDetailResultWindow(IConfigurationControler configurationControler,
                                            LexicometricAnalyzeCmd cmd,
                                            LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum,
-                                           Consumer<?> relaunchAnalyzeConsumer,
+                                           Runnable relaunchAnalyzeConsumer,
                                            Set<String> selectedWords,
                                            Set<String> keySet) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PANEL_TITLE), configurationControler, false);
-        this.consumerRelaunchBase = relaunchAnalyzeConsumer;
+        this.runnableRelaunchBase = relaunchAnalyzeConsumer;
         this.mapField = getControler().getFieldConfigurationNameLabelWithoutMetaMap();
         this.lexicometricConfigurationEnumStringMap = cmd.toPreTreatmentServerMap();
         List<String> keyFilteredTextList = new LinkedList<>();
@@ -89,19 +89,71 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         this.radioButtonPanel = getRadioButtonPanel(cmd);
         headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
         headerLinkedList.add(getMessage(Constants.WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL));
-        reload(keyFilteredTextList, lexicometricAnalyzeTypeEnum, cmd.getFieldToAnalyzeSet());
-        this.tabbedPane.addChangeListener(s -> {
-            optionalReadCorpusWindow.ifPresent(readCorpus -> readCorpus.setKeyText(getSelectedKeyText()));
-            optionalReadTextWindow.ifPresent(readText -> readText.setKeyText(getSelectedKeyText()));
-            optionalAnalysisProperNounAddWindow.ifPresent(analysisProperNounAddWindow -> analysisProperNounAddWindow.setProperNounSetOfText(getPotentialProperNounCollection()));
-            reloadTextHighlightPanel();
-            repack();
+        tabbedPane.addMouseWheelListener(e -> {
+            JTabbedPane pane = (JTabbedPane) e.getSource();
+            int units = e.getWheelRotation();
+            int oldIndex = pane.getSelectedIndex();
+            int newIndex = oldIndex + units;
+            if (newIndex < 0)
+                pane.setSelectedIndex(0);
+            else if (newIndex >= pane.getTabCount())
+                pane.setSelectedIndex(pane.getTabCount() - 1);
+            else
+                pane.setSelectedIndex(newIndex);
         });
-        this.tabbedPane.setConsumerToRemove(c -> componentAnalysisDetailResultDisplayMap.remove(c));
-        this.addActionOnClose(e -> closeAutomaticallyAllWindows());
-        this.addActionOnClose(e -> executorService.shutdown());
+        tabbedPane.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                logger.info("launch synchronous");
+                synchronousExecutorService = Executors.newSingleThreadExecutor();
+                synchronousExecutorService.execute(() -> { while(tabbedPane.isVisible()) checkForSynchronize(); });
+            }
 
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                logger.info("stop synchronous");
+                synchronousExecutorService.shutdownNow();
+            }
+        });
+        reload(keyFilteredTextList, lexicometricAnalyzeTypeEnum, cmd.getFieldToAnalyzeSet());
+        this.tabbedPane.setConsumerToRemove(c -> componentAnalysisDetailResultDisplayMap.remove(c));
+        this.addActionOnClose(closeAutomaticallyAllWindows());
+        this.addActionOnClose(() -> loadExecutorService.shutdownNow());
+        this.addActionOnClose(() -> {
+            tabbedPane.setVisible(false);
+            synchronousExecutorService.shutdownNow();
+        });
         createWindow();
+    }
+
+    /**
+     * Permet de vérifier si il est nécessaire de synchroniser
+     */
+    private void checkForSynchronize() {
+        try {
+            Thread.sleep(50);
+        } catch (Exception ex) {}
+        if (this.tabbedPane.getSelectedIndex() == -1) {
+            return;
+        }
+        if (this.oldSelectedIndex != this.tabbedPane.getSelectedIndex()) {
+            this.oldSelectedIndex = this.tabbedPane.getSelectedIndex();
+            return;
+        }
+        if (this.currentSelectedIndex != this.tabbedPane.getSelectedIndex()) {
+            this.currentSelectedIndex = this.tabbedPane.getSelectedIndex();
+            synchronize();
+        }
+    }
+
+    /**
+     * Permet de synchronizer les autres interfaces avec la sélection
+     */
+    private void synchronize() {
+        optionalReadCorpusWindow.ifPresent(readCorpus -> readCorpus.setKeyText(getSelectedKeyText()));
+        optionalReadTextWindow.ifPresent(readText -> readText.setKeyText(getSelectedKeyText()));
+        optionalAnalysisProperNounAddWindow.ifPresent(analysisProperNounAddWindow -> analysisProperNounAddWindow.setProperNounSetOfText(getPotentialProperNounCollection()));
+        reloadTextHighlightPanel();
     }
 
     /**
@@ -118,42 +170,24 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         this.actionPanel.addAction(0, e -> {
             actionPanel.setEnabled(0, false);
             optionalReadCorpusWindow = Optional.of(new ReadCorpus(getMessage(WINDOW_READ_CORPUS_TITLE), getControler(), false, getSelectedKeyText()));
-            optionalReadCorpusWindow.get().addActionOnClose(s -> actionPanel.setEnabled(0, true));
+            optionalReadCorpusWindow.get().addActionOnClose(() -> actionPanel.setEnabled(0, true));
         });
         this.actionPanel.addAction(1, e -> {
             actionPanel.setEnabled(1, false);
             optionalReadTextWindow = Optional.of(new ReadText(getMessage(WINDOW_READ_TEXT_TITLE), getControler(), false, getSelectedKeyText()));
-            optionalReadTextWindow.get().addActionOnClose(s -> actionPanel.setEnabled(1, true));
+            optionalReadTextWindow.get().addActionOnClose(() -> actionPanel.setEnabled(1, true));
         });
         this.actionPanel.addAction(2, e -> {
             actionPanel.setEnabled(2, false);
             optionalAnalysisProperNounAddWindow = Optional.of(new AnalysisProperNounAddWindow(getControler(), getPotentialProperNounCollection(),
-                    getRelaunchAnalyzeConsumer(consumerRelaunchBase, keyFilteredTextList, lexicometricAnalyzeTypeEnum, cmd.getFieldToAnalyzeSet()),
+                    getRelaunchAnalyzeConsumer(runnableRelaunchBase, keyFilteredTextList, lexicometricAnalyzeTypeEnum, cmd.getFieldToAnalyzeSet()),
                     cmd.getPreTreatmentListLexicometricMap().get(LexicometricEditEnum.PROPER_NOUN)));
-            optionalAnalysisProperNounAddWindow.get().addActionOnClose(s -> actionPanel.setEnabled(2, true));
+            optionalAnalysisProperNounAddWindow.get().addActionOnClose(() -> actionPanel.setEnabled(2, true));
         });
     }
-//
-//    /**
-//     * Permet d'initialiser le panel de navigation
-//     */
-//    private void initNavigationPanel() {
-//        this.navigationPanel.addAction(0, x -> {
-//            current--;
-//            loadText();
-//        });
-//        this.navigationPanel.addAction(1, x -> {
-//            current++;
-//            loadText();
-//        });
-//    }
 
     @Override
     public void initComponents() {
-//        initRadioButton(cmd);
-//        initActionPanel();
-//        initNavigationPanel();
-//        this.tableAnalysisPanel.addConsumerOnSelectedChangeForWord(getConsumerForHighlight());
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         content.add(radioButtonPanel.getJPanel());
@@ -171,18 +205,6 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     public String getWindowName() {
         return "Detail analysis result window";
     }
-
-//    /**
-//     * Permet de rafraichir la navigation
-//     */
-//    private void refreshNavigationDisplay() {
-//        Map<Integer, String> labelMap = Map.of(0, getMessage(WINDOW_WIZARD_NAVIGATION_PREVIOUS_BUTTON_LABEL),
-//                1, getMessage(WINDOW_WIZARD_NAVIGATION_NEXT_BUTTON_LABEL));
-//        this.navigationPanel.setStaticLabel(String.format(getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_NAVIGATION_LABEL),
-//                this.current + 1, this.keyFilteredTextList.size()), labelMap);
-//        this.navigationPanel.setEnabled(0, current > 0);
-//        this.navigationPanel.setEnabled(1, current + 1 < this.keyFilteredTextList.size());
-//    }
 
     /**
      * Permet de se procurer un set de détail des résultats
@@ -203,23 +225,6 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         }, LexicometricAnalysis.getInstance(), false, false);
         return analysisDetailResultDisplaySet;
     }
-
-//    /**
-//     * Permet de charger le texte
-//     */
-//    private void loadText() {
-//        tableAnalysisPanel.clearSelection();
-//        String key = this.keyFilteredTextList.get(current);
-//        optionalReadCorpusWindow.ifPresent(readCorpus -> readCorpus.setKeyText(key));
-//        optionalReadTextWindow.ifPresent(readText -> readText.setKeyText(key));
-//        AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(List.of(key));
-//        this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
-//        this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
-//        this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
-//        String field = mapField.entrySet().stream().filter(s -> s.getValue().equals(this.radioButtonPanel.getSelectedLabel())).findFirst().get().getKey();
-//        this.textHighlightPanel.setText(StringUtils.trim(getControler().getValueFromKeyTextAndFieldWithAnalyzeTreatment(key, field, cmd.toPreTreatmentServerMap())));
-//        refreshNavigationDisplay();
-//    }
 
     /**
      * Permet de se procurer la liste des noms propres potentiel
@@ -256,8 +261,8 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
      *
      * @return
      */
-    private Consumer<Void> closeAutomaticallyAllWindows() {
-        return (v) -> {
+    private Runnable closeAutomaticallyAllWindows() {
+        return () -> {
             optionalReadCorpusWindow.ifPresent(ModalJFrameAbstract::closeFrame);
             optionalReadTextWindow.ifPresent(ModalJFrameAbstract::closeFrame);
             optionalAnalysisProperNounAddWindow.ifPresent(ModalJFrameAbstract::closeFrame);
@@ -266,20 +271,41 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
 
     /**
      * Permet de se procurer le consumer qui relance l'analyse
-     * @param consumerBase consumer de base
+     * @param runnableBase consumer de base
      * @param keyFilteredTextList liste des clés
      * @param lexicometricAnalyzeTypeEnum le type d'analyse
      * @param fieldToAnalyzeSet le set des champs d'analyse
      * @return le consumer qui relance l'analyse
      */
-    private Consumer<?> getRelaunchAnalyzeConsumer(Consumer<?> consumerBase,
+    private Runnable getRelaunchAnalyzeConsumer(Runnable runnableBase,
                                                    List<String> keyFilteredTextList,
                                                    LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum,
                                                    Set<String> fieldToAnalyzeSet) {
-        return x -> {
-            consumerBase.accept(null);
+        return () -> {
+            runnableBase.run();
             reload(keyFilteredTextList, lexicometricAnalyzeTypeEnum, fieldToAnalyzeSet);
         };
+    }
+
+    private void displayLoading() {
+        this.tabbedPane.setVisible(false);
+        currentLoadingTab = 0;
+        progressBarPanel.launchTreatment(this);
+        progressBarPanel.getJPanel().setVisible(true);
+        this.actionPanel.setEnabled(0, false);
+        this.actionPanel.setEnabled(1, false);
+        this.actionPanel.setEnabled(2, false);
+        repack();
+    }
+
+    private void displayTab() {
+        this.tabbedPane.setVisible(true);
+        progressBarPanel.getJPanel().setVisible(false);
+        progressBarPanel.stop();
+        this.actionPanel.setEnabled(0, true);
+        this.actionPanel.setEnabled(1, true);
+        this.actionPanel.setEnabled(2, true);
+        repack();
     }
 
     /**
@@ -291,27 +317,16 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     private void reload(List<String> keyFilteredTextList,
                         LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum,
                         Set<String> fieldToAnalyzeSet) {
-        tabbedPane.removeAll();
+        displayLoading();
         Set<AnalysisDetailResultDisplay> detailResultSet = getDetailResultSet(keyFilteredTextList, lexicometricAnalyzeTypeEnum, fieldToAnalyzeSet);
-        executorService.execute(() -> {
-            progressBarPanel.launchTreatment(detailResultSet.size(), getProgressConsumer(detailResultSet.size(), this));
+        AtomicInteger temp = new AtomicInteger(0);
+        loadExecutorService.execute(() -> {
+            tabbedPane.removeAll();
             detailResultSet.forEach(a -> {
                 this.addAnalysisDetailResultDisplay(a);
-                currentLoadingTab++;
+                currentLoadingTab = temp.getAndIncrement() * 100 / detailResultSet.size();
             });
-            tabbedPane.addMouseWheelListener(e -> {
-                JTabbedPane pane = (JTabbedPane) e.getSource();
-                int units = e.getWheelRotation();
-                int oldIndex = pane.getSelectedIndex();
-                int newIndex = oldIndex + units;
-                if (newIndex < 0)
-                    pane.setSelectedIndex(0);
-                else if (newIndex >= pane.getTabCount())
-                    pane.setSelectedIndex(pane.getTabCount() - 1);
-                else
-                    pane.setSelectedIndex(newIndex);
-            });
-            logger.info("Interface loaded");
+            displayTab();
         });
     }
 
@@ -332,11 +347,6 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         this.componentAnalysisDetailResultDisplayMap.put(content, analysisDetailResultDisplay);
         this.analysisDetailResultDisplayITextHighlightPanelHashMap.put(analysisDetailResultDisplay, textHighlightPanel);
         this.tabbedPane.addCloseableTab(analysisDetailResultDisplay.getIdentification(), content);
-        try {
-            Thread.sleep(30);
-        } catch (Exception ex) {
-
-        }
     }
 
     /**

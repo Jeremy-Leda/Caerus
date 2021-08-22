@@ -100,7 +100,7 @@ public class ReadText extends ModalJFrameAbstract {
         this.actionPanel.addAction(0, e -> {
             this.actionPanel.setEnabled(0, false);
             readSpecificTextOptional = Optional.of(new ReadSpecificText(getMessage(WINDOW_READ_SPECIFIC_TITLE), getControler(), false, keyText));
-            readSpecificTextOptional.get().addActionOnClose(x -> {
+            readSpecificTextOptional.get().addActionOnClose(() -> {
                 this.actionPanel.setEnabled(0, true);
                 readSpecificTextOptional = Optional.empty();
             });

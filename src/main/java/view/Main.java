@@ -356,7 +356,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 				new CreateCorpus(getControler());
 				if (getControler().haveEditingCorpus()) {
 					IActionOnClose createText = new CreateText(getControler());
-					createText.addActionOnClose((v) -> setEnabled(true));
+					createText.addActionOnClose(() -> setEnabled(true));
 					setEnabled(false);
 				}
 			}
@@ -365,9 +365,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 		manageTextLibrary.addActionListener(e -> super.executeOnServerWithProgressView(() -> {
 			getControler().loadTexts();
 			ManageText manageText = new ManageText(getControler());
-			manageText.addActionOnClose((v) -> {
-				setEnabled(true);
-			});
+			manageText.addActionOnClose(() -> setEnabled(true));
 			setEnabled(false);
 		}, getControler(), false, Boolean.FALSE));
 //		manageTextLibrary.addActionListener(e -> {
@@ -397,7 +395,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 			super.executeOnServerWithProgressView(() -> getControler().loadTexts(), getControler(), false, Boolean.FALSE);
 			AnalysisAssistant analysisAssistant = new AnalysisAssistant(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
-			analysisAssistant.addActionOnClose((v) -> setEnabled(true));
+			analysisAssistant.addActionOnClose(() -> setEnabled(true));
 			setEnabled(false);
 		});
 //		analysis_assistant.addActionListener(e -> super.executeOnServerWithProgressView(() -> {
@@ -824,7 +822,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 				IActionOnClose fixedText = new FixedOrEditText(
 						ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_TEXT_TITLE),
 						getControler(), ActionUserTypeEnum.FOLDER_ANALYZE, ActionOperationTypeEnum.EDIT);
-				fixedText.addActionOnClose((v) -> {
+				fixedText.addActionOnClose(() -> {
 					setEnabled(true);
 					launchAnalyze();
 				});
@@ -839,7 +837,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				IActionOnClose fixedBlankLine = new FixedBlankLine(getControler());
-				fixedBlankLine.addActionOnClose((v) -> {
+				fixedBlankLine.addActionOnClose(() -> {
 					setEnabled(true);
 					launchAnalyze();
 				});

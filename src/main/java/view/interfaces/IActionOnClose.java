@@ -15,7 +15,7 @@ public interface IActionOnClose {
 	 * Permet d'ajouter un consumer à lancer sur la fermeture de la fenêtre
 	 * @param consumer consumer à lancer
 	 */
-	void addActionOnClose(Consumer<?> consumer);
+	void addActionOnClose(Runnable consumer);
 	
 	
 	/**

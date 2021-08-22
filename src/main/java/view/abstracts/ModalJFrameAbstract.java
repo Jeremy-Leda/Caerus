@@ -40,7 +40,7 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 	private final IConfigurationControler configurationControler;
 	private final JDialog frame;
 	private final Boolean isModal;
-	private final List<Consumer<?>> consumerForCloseList;
+	private final List<Runnable> consumerForCloseList;
 	private final Dimension screenSize;
 	private final List<JComponent> optionalComponents;
 	private Boolean automaticRepack = Boolean.FALSE;
@@ -183,8 +183,8 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 	 * Permet de créer un consumer pour logger la fermeture
 	 * @return le consumer
 	 */
-	private Consumer<Void> getConsumerOnCloseForLog() {
-		return (v) -> logger.debug("Close " + getWindowName());
+	private Runnable getConsumerOnCloseForLog() {
+		return () -> logger.debug("Close " + getWindowName());
 	}
 
 	/**
@@ -210,13 +210,13 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 	 * @param consumer consumer à lancer
 	 */
 	@Override
-	public void addActionOnClose(Consumer<?> consumer) {
+	public void addActionOnClose(Runnable consumer) {
 		this.consumerForCloseList.add(consumer);
 	}
 	
 	@Override
 	public void dispose() {
-		this.consumerForCloseList.forEach(c -> c.accept(null));
+		this.consumerForCloseList.forEach(c -> c.run());
 		super.dispose();
 	}
 	

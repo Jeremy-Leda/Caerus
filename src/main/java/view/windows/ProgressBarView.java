@@ -5,6 +5,7 @@ import java.util.function.Consumer;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
+import model.interfaces.IProgressModel;
 import view.abstracts.ModalJFrameAbstract;
 import view.interfaces.IProgressBarModel;
 import view.interfaces.IProgressBarPanel;
@@ -31,14 +32,13 @@ public class ProgressBarView extends ModalJFrameAbstract {
 	 * @param maximumValue              valeur max de la porgressBar
 	 * @param label                     libellé a afficher dans la progressbar
 	 */
-	public ProgressBarView(Runnable actionProgressBarConsumer,
-						   Consumer<Consumer<Integer>> updateProgressBarConsumer, Integer maximumValue) {
+	public ProgressBarView(Runnable actionProgressBarConsumer, IProgressModel model) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_PANEL_TITLE), null);
-		this.progressBarModel = new ProgressBarModel(actionProgressBarConsumer, updateProgressBarConsumer,
-				() -> closeFrame(), maximumValue);
+		this.progressBarModel = new ProgressBarModel(actionProgressBarConsumer,
+				() -> closeFrame());
 		this.progressBarPanel = new ProgressBarPanel(this.progressBarModel);
 		this.content = new JPanel();
-		createWindow(frame -> frame.setUndecorated(true), frame -> this.progressBarPanel.launchTreatment());
+		createWindow(frame -> frame.setUndecorated(true), frame -> this.progressBarPanel.launchTreatment(model));
 	}
 
 	@Override

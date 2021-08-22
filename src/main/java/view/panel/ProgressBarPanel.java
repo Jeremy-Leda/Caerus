@@ -2,6 +2,7 @@ package view.panel;
 
 import javax.swing.*;
 
+import model.interfaces.IProgressModel;
 import utils.RessourcesUtils;
 import view.beans.PictureTypeEnum;
 import view.interfaces.IProgressBarModel;
@@ -23,6 +24,7 @@ public class ProgressBarPanel implements IProgressBarPanel {
 	private final IProgressBarModel progressBarModel;
 	private final JLabel iconLabel;
 	private final JLabel labelProgress;
+	private final JPanel panel = new JPanel();
 
 	/**
 	 * Constructeur
@@ -35,13 +37,12 @@ public class ProgressBarPanel implements IProgressBarPanel {
 		this.progressBar = new JProgressBar();
 		this.progressBar.setStringPainted(true);
 		this.iconLabel = new JLabel(new ImageIcon(RessourcesUtils.getInstance().getAnimatedImage(PictureTypeEnum.PROGRESS)));
-		this.labelProgress = new JLabel();
+		this.labelProgress = new JLabel("Chargement");
 		this.labelProgress.setFont(new Font("Arial", 25, 25));
 	}
 
 	@Override
 	public JComponent getJPanel() {
-		JPanel panel = new JPanel();
 		panel.setLayout(new OverlayLayout(panel));
 		this.labelProgress.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.iconLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -52,12 +53,14 @@ public class ProgressBarPanel implements IProgressBarPanel {
 	}
 
 	@Override
-	public void launchTreatment() {
-		this.progressBarModel.launchTreatment(this.progressBar, this.labelProgress);
+	public void launchTreatment(IProgressModel model) {
+		this.progressBarModel.launchTreatment(this.progressBar, this.labelProgress, model);
 	}
 
 	@Override
-	public void launchTreatment(Integer maximumValue, Consumer<Consumer<Integer>> updateProgressBarConsumer) {
-		this.progressBarModel.launchTreatment(this.progressBar, this.labelProgress, updateProgressBarConsumer, maximumValue);
+	public void stop() {
+		this.progressBarModel.stopExecutor();
 	}
+
+
 }

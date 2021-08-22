@@ -229,8 +229,8 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	 * 
 	 * @return
 	 */
-	private Consumer<Void> closeAutomaticallySpecificText() {
-		return (v) -> {
+	private Runnable closeAutomaticallySpecificText() {
+		return () -> {
 			if (null != fillSpecificTextFrame) {
 				fillSpecificTextFrame.closeFrame();
 			}
@@ -396,8 +396,8 @@ public class FixedOrEditText extends ModalJFrameAbstract {
 	 * 
 	 * @return le consumer
 	 */
-	private Consumer<?> actionOnCloseSpecificFrame() {
-		return v -> {
+	private Runnable actionOnCloseSpecificFrame() {
+		return () -> {
 			setEnabledForAllButton(true);
 			displayIconIfHaveErrorInSpecific();
 		};

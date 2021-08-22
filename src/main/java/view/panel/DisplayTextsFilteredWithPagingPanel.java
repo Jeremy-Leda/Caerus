@@ -244,7 +244,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPa
 				if (null != consumerOnOpenEditText) {
 					consumerOnOpenEditText.accept(null);
 				}
-				fixedOrEditTextPanel.addActionOnClose(v -> {
+				fixedOrEditTextPanel.addActionOnClose(() -> {
 					fixedOrEditTextPanel = null;
 					setEnabledAllButton(true);
 					if (null != consumerOnCloseEditText) {
@@ -267,7 +267,7 @@ public class DisplayTextsFilteredWithPagingPanel implements IManageTextDisplayPa
 				if (null != consumerOnOpenEditText) {
 					consumerOnOpenEditText.accept(null);
 				}
-				fixedOrEditCorpusPanel.addActionOnClose(v -> {
+				fixedOrEditCorpusPanel.addActionOnClose(() -> {
 					fixedOrEditCorpusPanel = null;
 					setEnabledAllButton(true);
 					if (null != consumerOnCloseEditText) {

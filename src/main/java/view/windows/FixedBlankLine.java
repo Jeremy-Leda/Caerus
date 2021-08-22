@@ -150,9 +150,7 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 			public void actionPerformed(ActionEvent e) {
 				fillSpecificText = new FillSpecificText(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_FIXED_SPECIFIC_TITLE), getControler());
 				actionPanel.setEnabled(0, Boolean.FALSE);
-				fillSpecificText.addActionOnClose(v -> {
-					actionPanel.setEnabled(0, Boolean.TRUE);
-				});
+				fillSpecificText.addActionOnClose(() -> actionPanel.setEnabled(0, Boolean.TRUE));
 			}
 		});
 		this.actionPanel.addAction(1, saveAndGoToNextIndexOrQuit());
@@ -162,8 +160,8 @@ public class FixedBlankLine extends ModalJFrameAbstract {
 	 * Consumer pour rattacher la fermeture de la fenêtre fille si présente
 	 * @return
 	 */
-	private Consumer<Void> closeAutomaticallySpecificText() {
-		return (v) -> {
+	private Runnable closeAutomaticallySpecificText() {
+		return () -> {
 			if (null != fillSpecificText) {
 				fillSpecificText.closeFrame();
 			}

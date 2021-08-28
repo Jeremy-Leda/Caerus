@@ -177,7 +177,10 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
                 this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
                 this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
                 this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
-            }, LexicometricAnalysis.getInstance(), false, false);
+            }, LexicometricAnalysis.getInstance(),
+                    String.format(getMessage(WINDOW_LOADING_RELAUNCH_ANALYSIS_LABEL), cmd.getLabel()),
+                    false,
+                    false);
         };
     }
 

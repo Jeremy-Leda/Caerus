@@ -51,7 +51,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
         executeOnServer(runnable, Boolean.FALSE);
     }
 
-    public void executeOnServerWithProgressView(CheckedRunnable runnable, IProgressModel progressModel, Boolean closeCurrentFrameOnSucceed, Boolean showSucceedPanel) {
+    public void executeOnServerWithProgressView(CheckedRunnable runnable, IProgressModel progressModel, String informationLoading, Boolean closeCurrentFrameOnSucceed, Boolean showSucceedPanel) {
         Try.run(() -> {
             new ProgressBarView(() -> {
                 if (closeCurrentFrameOnSucceed) {
@@ -59,7 +59,7 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
                 } else {
                     executeOnServer(runnable, showSucceedPanel);
                 }
-            }, progressModel);
+            }, progressModel, informationLoading);
             getControler().resetProgress();
         }).onFailure(ServerException.class, this::logAndCreateErrorInterface);
     }

@@ -25,6 +25,9 @@ public class LexicometricAnalyzeCmd {
     @NotEmpty
     private Set<String> fieldToAnalyzeSet;
 
+    @NotNull
+    private String label;
+
     /**
      * Permet de se procurer la liste des clés filtrés
      * @return la liste des clés filtrés
@@ -79,5 +82,21 @@ public class LexicometricAnalyzeCmd {
      */
     public void setFieldToAnalyzeSet(Set<String> fieldToAnalyzeSet) {
         this.fieldToAnalyzeSet = fieldToAnalyzeSet;
+    }
+
+    /**
+     * Permet de se procurer le label de l'analyse
+     * @return le label de l'analyse
+     */
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * Permet de définir le label de l'analyse
+     * @param label le label de l'analyse
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

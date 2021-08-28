@@ -231,11 +231,17 @@ public class Dispatcher extends ProgressAbstract {
 	 * @param cmd    commande de génération
 	 * @throws IOException
 	 */
-	public void generateExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd) throws IOException {
-		if (cmd.getHaveToGenerateReferenceText()) {
-			generateClassicalExcel(folder, cmd);
-		} else {
-			generateCustomExcel(folder, cmd);
+	public void generateExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd) {
+		try {
+			if (cmd.getHaveToGenerateReferenceText()) {
+				generateClassicalExcel(folder, cmd);
+			} else {
+				generateCustomExcel(folder, cmd);
+			}
+		} catch (IOException ex) {
+			throw new ServerException().addInformationException(new InformationExceptionBuilder()
+					.errorCode(ErrorCode.TECHNICAL_ERROR)
+					.build());
 		}
 	}
 
@@ -246,8 +252,7 @@ public class Dispatcher extends ProgressAbstract {
 	 * @param cmd    cmd
 	 * @throws IOException
 	 */
-	private void generateClassicalExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd)
-			throws IOException {
+	private void generateClassicalExcel(FolderSettingsEnum folder, ExcelGenerateConfigurationCmd cmd) throws IOException {
 		Integer nbMaxIterate = cmd.getMapLabelSpecificFileName().size() + 1;
 		IProgressBean progressBean = super.createProgressBean(nbMaxIterate);
 		Integer currentIterate = 1;
@@ -273,11 +278,7 @@ public class Dispatcher extends ProgressAbstract {
 				cmd.clearFieldListGenerate();
 				listSf.forEach(sf -> cmd.addFieldToGenerate(sf.getFieldName()));
 				cmd.setConfigurationSpecificOrder(findFirstCst.get().getSpecificConfiguration().getOrder());
-				try {
-					createExcelSpecific(new File(entry.getValue()), findFirstCst.get(), cmd, progressBean);
-				} catch (IOException e) {
-					logger.error(e.getMessage(), e);
-				}
+				createExcelSpecific(new File(entry.getValue()), findFirstCst.get(), cmd, progressBean);
 			}
 		}
 	}

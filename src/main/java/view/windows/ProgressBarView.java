@@ -1,9 +1,9 @@
 package view.windows;
 
+import java.awt.*;
 import java.util.function.Consumer;
 
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import model.interfaces.IProgressModel;
 import view.abstracts.ModalJFrameAbstract;
@@ -23,22 +23,29 @@ public class ProgressBarView extends ModalJFrameAbstract {
 	private final IProgressBarModel progressBarModel;
 	private final JPanel content;
 	private final IProgressBarPanel progressBarPanel;
+	private final JLabel labelProgress;
 
 	/**
 	 * Permet de construire une vue pour la progressBar
 	 *
 	 * @param actionProgressBarConsumer action pour la progressBar
-	 * @param updateProgressBarConsumer consumer de mise à jour pour la progressBar
-	 * @param maximumValue              valeur max de la porgressBar
-	 * @param label                     libellé a afficher dans la progressbar
+	 * @param model Le model pour la barre de progression
 	 */
-	public ProgressBarView(Runnable actionProgressBarConsumer, IProgressModel model) {
+	public ProgressBarView(Runnable actionProgressBarConsumer, IProgressModel model, String informationLoading) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_PANEL_TITLE), null);
 		this.progressBarModel = new ProgressBarModel(actionProgressBarConsumer,
 				() -> closeFrame());
 		this.progressBarPanel = new ProgressBarPanel(this.progressBarModel);
+		this.progressBarPanel.getJPanel().setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.content = new JPanel();
-		createWindow(frame -> frame.setUndecorated(true), frame -> this.progressBarPanel.launchTreatment(model));
+		this.labelProgress = new JLabel(informationLoading);
+		this.labelProgress.setFont(new Font("Arial", 25, 18));
+		this.labelProgress.setAlignmentX(Component.CENTER_ALIGNMENT);
+		this.labelProgress.setBorder(BorderFactory.createEmptyBorder(30,0,0,0));
+		createWindow(null, frame -> {
+			this.progressBarPanel.launchTreatment(model);
+			frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		});
 	}
 
 	@Override
@@ -53,6 +60,7 @@ public class ProgressBarView extends ModalJFrameAbstract {
 		BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
 		content.setLayout(boxlayout);
 		content.add(this.progressBarPanel.getJPanel());
+		content.add(labelProgress);
 	}
 
 	@Override

@@ -1,40 +1,27 @@
 package view.windows;
 
-import java.awt.event.ActionEvent;
+import controler.IConfigurationControler;
+import model.excel.beans.ExcelGenerateConfigurationCmd;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import view.abstracts.ModalJFrameAbstract;
+import view.beans.ExcelTypeGenerationEnum;
+import view.beans.FilePickerTypeEnum;
+import view.beans.PictureTypeEnum;
+import view.interfaces.*;
+import view.panel.*;
+import view.utils.ConfigurationUtils;
+import view.utils.Constants;
+
+import javax.swing.*;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import controler.IConfigurationControler;
-import model.excel.beans.ExcelGenerateConfigurationCmd;
-import view.abstracts.ModalJFrameAbstract;
-import view.beans.ExcelTypeGenerationEnum;
-import view.beans.FilePickerTypeEnum;
-import view.beans.PictureTypeEnum;
-import view.interfaces.IActionPanel;
-import view.interfaces.ICheckBoxPanel;
-import view.interfaces.ICheckBoxTextFieldPanel;
-import view.interfaces.IFilePickerPanel;
-import view.interfaces.IInformationPanel;
-import view.panel.ActionPanel;
-import view.panel.CheckBoxPanel;
-import view.panel.CheckBoxTextFieldPanel;
-import view.panel.FilePickerPanel;
-import view.panel.InformationPanel;
-import view.utils.ConfigurationUtils;
-import view.utils.Constants;
 
 /**
  * 
@@ -186,21 +173,13 @@ public class SaveReferenceExcels extends ModalJFrameAbstract {
 	}
 	
 	private ActionListener getGenerateExcelAction(ExcelTypeGenerationEnum excelGenerationType) {
-		return e -> {
-			new ProgressBarView(() -> {
-				try {
-					if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
-						getControler().generateExcelFromAnalyze(createExcelCmd());
-					} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
-						getControler().generateExcelFromTexts(createExcelCmd());
-					}
-					closeFrame();
-				} catch (IOException e1) {
-					logger.error(e1.getMessage(), e1);
-				}
-			}, getControler());
-			getControler().resetProgress();
-		};
+		return e -> executeOnServerWithProgressView(() -> {
+			if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
+				getControler().generateExcelFromAnalyze(createExcelCmd());
+			} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
+				getControler().generateExcelFromTexts(createExcelCmd());
+			}
+		}, getControler(), getMessage(Constants.WINDOW_LOADING_EXPORT_EXCEL_LABEL), true, false);
 	}
 	
 	/**

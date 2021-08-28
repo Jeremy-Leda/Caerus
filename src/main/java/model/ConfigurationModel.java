@@ -331,7 +331,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public void generateExcelFromAnalyze(ExcelGenerateConfigurationCmd cmd) throws IOException {
+	public void generateExcelFromAnalyze(ExcelGenerateConfigurationCmd cmd) {
 		logger.debug("CALL generateExcelFromAnalyze");
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -341,7 +341,7 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
-	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) throws IOException {
+	public void generateExcelFromTexts(ExcelGenerateConfigurationCmd cmd) {
 		logger.debug("CALL generateExcelFromTexts");
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();

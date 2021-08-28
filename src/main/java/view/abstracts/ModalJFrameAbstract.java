@@ -76,6 +76,8 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 
 		createWindow(null, null);
 	}
+
+
 	
 	/**
 	 * Permet de créer la fenêtre
@@ -163,6 +165,7 @@ public abstract class ModalJFrameAbstract extends ExecuteServerJFrameAbstract im
 	 */
 	@Override
 	public void closeFrame() {
+		this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 	}
 

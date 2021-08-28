@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 
+import static view.utils.Constants.WINDOW_LOADING_IMPORT_EXCEL_LABEL;
 import static view.utils.Constants.WINDOW_PROGRESS_BAR_IMPORT_EXCEL_LABEL;
 
 /**
@@ -220,6 +221,7 @@ public class ImportExcel extends ModalJFrameAbstract {
 	private ActionListener getImportExcelAction() {
 		return e-> executeOnServerWithProgressView(() -> getControler().importExcel(importExcelCmd()),
 				getControler(),
+				getMessage(WINDOW_LOADING_IMPORT_EXCEL_LABEL),
 				Boolean.TRUE,
 				Boolean.TRUE);
 

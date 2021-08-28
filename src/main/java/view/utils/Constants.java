@@ -592,6 +592,14 @@ public final class Constants {
 
 	public static final String WINDOW_CREATE_TEXT_NUMBER_LABEL="window.create.text.number.label";
 
+	public static final String WINDOW_LOADING_EXPORT_EXCEL_LABEL="window.loading.export.excel.label";
+	public static final String WINDOW_LOADING_LIBRARY_TEXT_LABEL="window.loading.library.text.label";
+	public static final String WINDOW_LOADING_ANALYSIS_LABEL="window.loading.analysis.label";
+	public static final String WINDOW_LOADING_RESULTS_ANALYSIS_LABEL="window.loading.results.analysis.label";
+	public static final String WINDOW_LOADING_RESULTS_GROUP_ANALYSIS_LABEL="window.loading.results.group.analysis.label";
+	public static final String WINDOW_LOADING_RESULTS_DETAIL_ANALYSIS_LABEL="window.loading.results.detail.analysis.label";
+	public static final String WINDOW_LOADING_IMPORT_EXCEL_LABEL="window.loading.import.excel.label";
+	public static final String WINDOW_LOADING_RELAUNCH_ANALYSIS_LABEL="window.loading.relaunch.analysis.label";
 
 
 

@@ -150,12 +150,19 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         this.chooseAnalyzeActionPanel.addAction(1, e -> executeOnServerWithProgressView(() -> {
             chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
             this.chooseAnalyzeActionPanel.setEnabled(2, true);
-        }, LexicometricAnalysis.getInstance(), false, false));
+        }, LexicometricAnalysis.getInstance(),
+                String.format(getMessage(Constants.WINDOW_LOADING_ANALYSIS_LABEL), chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLabel()),
+                false,
+                false));
         this.chooseAnalyzeActionPanel.addAction(2, e -> {
             AtomicReference<AnalysisResultDisplay> analysisResultDisplayAtomicReference = new AtomicReference<>();
             LexicometricAnalyzeCmd lexicometricAnalyzeCmd = getLexicometricAnalyzeCmd();
             executeOnServerWithProgressView(() -> analysisResultDisplayAtomicReference.set(chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getFunctionDisplayResult()
-                    .apply(lexicometricAnalyzeCmd)), LexicometricAnalysis.getInstance(), false, false);
+                    .apply(lexicometricAnalyzeCmd)),
+                    LexicometricAnalysis.getInstance(),
+                    String.format(getMessage(Constants.WINDOW_LOADING_RESULTS_ANALYSIS_LABEL), chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLabel()),
+                    false,
+                    false);
             new AnalysisTokenResultWindow(getControler(), analysisResultDisplayAtomicReference.get(),
                     lexicometricAnalyzeCmd,
                     chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLexicometricAnalyzeTypeEnum());
@@ -244,6 +251,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 .keyTextFilteredList(getControler().getFilteredTextKeyList())
                 .preTreatmentListLexicometricMap(preTreatmentListLexicometricMap)
                 .fieldToAnalyzeSet(fieldToAnalyzeSet)
+                .label(chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLabel())
                 .build();
     }
 

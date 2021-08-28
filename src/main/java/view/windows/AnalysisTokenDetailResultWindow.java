@@ -60,6 +60,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     private ExecutorService synchronousExecutorService = Executors.newSingleThreadExecutor();
     private final IProgressBarPanel progressBarPanel = new ProgressBarPanel(new ProgressBarModel());
     private static Logger logger = LoggerFactory.getLogger(AnalysisTokenDetailResultWindow.class);
+    private final String analysisLabel;
     private Integer currentLoadingTab = 0;
 
     private Integer oldSelectedIndex = -1;
@@ -79,6 +80,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         this.runnableRelaunchBase = relaunchAnalyzeConsumer;
         this.mapField = getControler().getFieldConfigurationNameLabelWithoutMetaMap();
         this.lexicometricConfigurationEnumStringMap = cmd.toPreTreatmentServerMap();
+        this.analysisLabel = cmd.getLabel();
         List<String> keyFilteredTextList = new LinkedList<>();
         if (selectedWords.isEmpty()) {
             keyFilteredTextList.addAll(keySet);
@@ -222,7 +224,10 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
                     .preTreatmentListLexicometricMap(this.lexicometricConfigurationEnumStringMap)
                     .build();
             analysisDetailResultDisplaySet.addAll(lexicometricAnalyzeTypeEnum.getAnalysisDetailResultDisplayCmdSetFunction().apply(cmd));
-        }, LexicometricAnalysis.getInstance(), false, false);
+        }, LexicometricAnalysis.getInstance(),
+                String.format(getMessage(WINDOW_LOADING_RESULTS_DETAIL_ANALYSIS_LABEL), analysisLabel),
+                false,
+                false);
         return analysisDetailResultDisplaySet;
     }
 

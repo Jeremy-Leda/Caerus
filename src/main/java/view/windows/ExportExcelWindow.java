@@ -101,7 +101,10 @@ public class ExportExcelWindow extends ModalJFrameAbstract {
         executeOnServerWithProgressView(() -> {
             List<ExcelSheet> excelSheetList = this.iExcelSheetList.stream().map(IExcelSheet::getExcelSheet).collect(Collectors.toList());
             createExcel.generateExcel(excelSheetList, this.checkBoxPanel.getCheckBoxIsChecked(0));
-        }, createExcel, true, false);
+        }, createExcel,
+                getMessage(WINDOW_LOADING_EXPORT_EXCEL_LABEL),
+                true,
+                false);
 
     }
 }

@@ -228,21 +228,13 @@ public class SaveCustomExcel extends ModalJFrameAbstract {
 	 * @return consumer
 	 */
 	private ActionListener getGenerateExcelAction(ExcelTypeGenerationEnum excelGenerationType) {
-		return e -> {
-			new ProgressBarView(() -> {
-				try {
-					if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
-						getControler().generateExcelFromAnalyze(createExcelCmd());
-					} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
-						getControler().generateExcelFromTexts(createExcelCmd());
-					}
-					closeFrame();
-				} catch (IOException e1) {
-					logger.error(e1.getMessage(), e1);
-				}
-			}, getControler());
-			getControler().resetProgress();
-		};
+		return e -> executeOnServerWithProgressView(() -> {
+			if (ExcelTypeGenerationEnum.ANALYZE_TEXTS.equals(excelGenerationType)) {
+				getControler().generateExcelFromAnalyze(createExcelCmd());
+			} else if (ExcelTypeGenerationEnum.MANAGE_TEXTS.equals(excelGenerationType)) {
+				getControler().generateExcelFromTexts(createExcelCmd());
+			}
+		}, getControler(), getMessage(Constants.WINDOW_LOADING_EXPORT_EXCEL_LABEL), true, false);
 	}
 
 	/**

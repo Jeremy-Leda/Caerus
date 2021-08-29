@@ -647,6 +647,21 @@ public class ConfigurationControler implements IConfigurationControler {
 	}
 
 	@Override
+	public void cancel() {
+		this.configurationModel.cancel();
+	}
+
+	@Override
+	public boolean treatmentIsCancelled() {
+		return this.configurationModel.treatmentIsCancelled();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return this.configurationModel.isRunning();
+	}
+
+	@Override
 	public void resetProgress() {
 		this.configurationModel.resetProgress();
 	}

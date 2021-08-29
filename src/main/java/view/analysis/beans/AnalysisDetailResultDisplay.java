@@ -1,14 +1,21 @@
 package view.analysis.beans;
 
 import model.PojoBuilder;
+import model.excel.beans.*;
 import org.apache.commons.lang3.StringUtils;
+import view.analysis.beans.interfaces.IExcelSheet;
 import view.utils.ConfigurationUtils;
 import view.utils.Constants;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static view.utils.Constants.*;
 
 /**
  *
@@ -16,7 +23,7 @@ import java.util.Map;
  *
  */
 @PojoBuilder
-public class AnalysisDetailResultDisplay {
+public class AnalysisDetailResultDisplay implements IExcelSheet {
 
     @NotNull
     private AnalysisResultDisplay analysisResultDisplay;
@@ -76,5 +83,30 @@ public class AnalysisDetailResultDisplay {
 
     public void setMaterialNumber(Integer materialNumber) {
         this.materialNumber = materialNumber;
+    }
+
+    @Override
+    public ExcelSheet getExcelSheet() {
+        // Creation du premier bloc
+        List<ExcelLine> excelLines = fieldValueMap.entrySet().stream().map(entry -> {
+            ExcelCell header = new ExcelStringCellBuilder()
+                    .value(entry.getKey())
+                    .header(true)
+                    .build();
+            ExcelCell value = new ExcelStringCellBuilder()
+                    .value(entry.getValue())
+                    .header(false)
+                    .build();
+            return new ExcelLine(header, value);
+        }).collect(Collectors.toList());
+        List<ExcelBlock> excelBlockList = new ArrayList<>();
+        excelBlockList.add(new ExcelBlock(excelLines.toArray(ExcelLine[]::new)));
+        excelBlockList.addAll(analysisResultDisplay.toExcelBlockList());
+        // Creation de la feuille
+        return new ExcelSheetBuilder()
+                .name(getIdentification())
+                .excelBlockList(excelBlockList)
+                .nbColumnMax(2)
+                .build();
     }
 }

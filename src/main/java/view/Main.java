@@ -364,9 +364,11 @@ public class Main extends ExecuteServerJFrameAbstract {
 
 		manageTextLibrary.addActionListener(e -> super.executeOnServerWithProgressView(() -> {
 			getControler().loadTexts();
-			ManageText manageText = new ManageText(getControler());
-			manageText.addActionOnClose(() -> setEnabled(true));
-			setEnabled(false);
+			if (!getControler().treatmentIsCancelled()) {
+				ManageText manageText = new ManageText(getControler());
+				manageText.addActionOnClose(() -> setEnabled(true));
+				setEnabled(false);
+			}
 		}, getControler(),
 				ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_LOADING_LIBRARY_TEXT_LABEL),
 				false,
@@ -395,13 +397,17 @@ public class Main extends ExecuteServerJFrameAbstract {
 		analysis.add(analysis_assistant);
 
 		analysis_assistant.addActionListener(e -> {
-			super.executeOnServerWithProgressView(() -> getControler().loadTexts(), getControler(),
-					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_LOADING_LIBRARY_TEXT_LABEL),
-					false, Boolean.FALSE);
-			AnalysisAssistant analysisAssistant = new AnalysisAssistant(
-					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
-			analysisAssistant.addActionOnClose(() -> setEnabled(true));
-			setEnabled(false);
+			super.executeOnServerWithProgressView(() -> {
+				getControler().loadTexts();
+				if (!getControler().treatmentIsCancelled()) {
+					AnalysisAssistant analysisAssistant = new AnalysisAssistant(
+							ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_START_ANALYSIS_CODE_TITLE), getControler());
+					analysisAssistant.addActionOnClose(() -> setEnabled(true));
+					setEnabled(false);
+				}
+			}, getControler(),
+			ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_LOADING_LIBRARY_TEXT_LABEL),
+			false, Boolean.FALSE);
 		});
 //		analysis_assistant.addActionListener(e -> super.executeOnServerWithProgressView(() -> {
 //			getControler().loadTexts();

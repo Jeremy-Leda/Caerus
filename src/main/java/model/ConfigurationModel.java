@@ -593,6 +593,21 @@ public class ConfigurationModel implements IConfigurationModel {
 	}
 
 	@Override
+	public void cancel() {
+		this.dispatcher.cancel();
+	}
+
+	@Override
+	public boolean treatmentIsCancelled() {
+		return this.dispatcher.treatmentIsCancelled();
+	}
+
+	@Override
+	public boolean isRunning() {
+		return this.dispatcher.isRunning();
+	}
+
+	@Override
 	public void resetProgress() {
 		this.dispatcher.resetProgress();
 	}

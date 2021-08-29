@@ -21,6 +21,7 @@ public enum PictureTypeEnum {
 	LOGO_256_256("icons/icons_logo_256_256.png"),
 	QUESTION("icons/icons_question.png"),
 	WARNING("icons/icons_warning.png"),
+	WARNING_16("icons/icons_warning_16.png"),
 	PROGRESS("icons/icons_progress.gif");
 
 	/**

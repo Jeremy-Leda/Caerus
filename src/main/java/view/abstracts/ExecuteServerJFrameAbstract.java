@@ -18,6 +18,7 @@ import view.windows.ProgressBarView;
 import view.windows.UserInformation;
 
 import javax.swing.*;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -51,28 +52,38 @@ public abstract class ExecuteServerJFrameAbstract extends JFrame {
         executeOnServer(runnable, Boolean.FALSE);
     }
 
-    public void executeOnServerWithProgressView(CheckedRunnable runnable, IProgressModel progressModel, String informationLoading, Boolean closeCurrentFrameOnSucceed, Boolean showSucceedPanel) {
+    public void executeOnServerWithProgressView(CheckedRunnable runnable,
+                                                IProgressModel progressModel,
+                                                String informationLoading,
+                                                Boolean closeCurrentFrameOnSucceed,
+                                                Boolean showSucceedPanel) {
         Try.run(() -> {
             new ProgressBarView(() -> {
                 if (closeCurrentFrameOnSucceed) {
-                    executeOnServerWithCloseCurrentFrame(runnable, showSucceedPanel);
+                    executeOnServerWithCloseCurrentFrame(runnable, Optional.of(progressModel), showSucceedPanel);
                 } else {
                     executeOnServer(runnable, showSucceedPanel);
                 }
+                progressModel.resetProgress();
             }, progressModel, informationLoading);
-            getControler().resetProgress();
         }).onFailure(ServerException.class, this::logAndCreateErrorInterface);
     }
 
     public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable) {
-        executeOnServerWithCloseCurrentFrame(runnable, Boolean.FALSE);
+        executeOnServerWithCloseCurrentFrame(runnable, Optional.empty(), Boolean.FALSE);
     }
 
-    public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable, Boolean showSucceedPanel) {
+    public void executeOnServerWithCloseCurrentFrame(CheckedRunnable runnable, Optional<IProgressModel> optionalProgressModel, Boolean showSucceedPanel) {
         Try.run(() -> runnable.run())
                 .onFailure(ServerException.class, this::logAndCreateErrorInterface)
                 .onSuccess(x -> { if (showSucceedPanel) { createSucceedInterface(); } })
-                .onSuccess(x -> closeFrame());
+                .onSuccess(x -> {
+                    optionalProgressModel.ifPresentOrElse(p -> {
+                        if (!p.treatmentIsCancelled()) {
+                            closeFrame();
+                        } ;
+                    }, this::closeFrame);
+                });
     }
 
 

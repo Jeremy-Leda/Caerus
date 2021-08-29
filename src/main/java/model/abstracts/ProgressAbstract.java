@@ -4,9 +4,10 @@ import model.analyze.beans.Progress;
 import model.interfaces.IProgressBean;
 import model.interfaces.IProgressModel;
 
-public class ProgressAbstract implements IProgressModel {
+public abstract class ProgressAbstract implements IProgressModel {
 
     private Progress progressBean;
+    private boolean treatmentIsCancelled;
 
     /**
      * Création d'une nouvelle progression
@@ -16,6 +17,7 @@ public class ProgressAbstract implements IProgressModel {
     protected IProgressBean createProgressBean(Integer nbMaxIterate) {
        Progress progress = new Progress(nbMaxIterate);
        this.progressBean = progress;
+       this.treatmentIsCancelled = false;
        return progress;
     }
 
@@ -38,7 +40,9 @@ public class ProgressAbstract implements IProgressModel {
     /**
      * Permet de remettre la barre de progression à zéro
      */
+    @Override
     public void resetProgress() {
+        this.treatmentIsCancelled = false;
         this.progressBean = null;
     }
 
@@ -48,5 +52,20 @@ public class ProgressAbstract implements IProgressModel {
             return progressBean.getProgress();
         }
         return 0;
+    }
+
+    @Override
+    public void cancel() {
+        this.treatmentIsCancelled = true;
+    }
+
+    @Override
+    public boolean treatmentIsCancelled() {
+        return this.treatmentIsCancelled;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return this.progressBean != null;
     }
 }

@@ -24,7 +24,7 @@ public class ProgressBarView extends ModalJFrameAbstract {
 	private final JPanel content;
 	private final IProgressBarPanel progressBarPanel;
 	private final JLabel labelProgress;
-
+	private final IProgressModel model;
 	/**
 	 * Permet de construire une vue pour la progressBar
 	 *
@@ -33,13 +33,13 @@ public class ProgressBarView extends ModalJFrameAbstract {
 	 */
 	public ProgressBarView(Runnable actionProgressBarConsumer, IProgressModel model, String informationLoading) {
 		super(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_PROGRESS_BAR_PANEL_TITLE), null);
+		this.model = model;
 		this.progressBarModel = new ProgressBarModel(actionProgressBarConsumer,
 				() -> closeFrame());
 		this.progressBarPanel = new ProgressBarPanel(this.progressBarModel);
 		this.progressBarPanel.getJPanel().setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.content = new JPanel();
 		this.labelProgress = new JLabel(informationLoading);
-		this.labelProgress.setFont(new Font("Arial", 25, 18));
 		this.labelProgress.setAlignmentX(Component.CENTER_ALIGNMENT);
 		this.labelProgress.setBorder(BorderFactory.createEmptyBorder(30,0,0,0));
 		createWindow(null, frame -> {
@@ -61,6 +61,16 @@ public class ProgressBarView extends ModalJFrameAbstract {
 		content.setLayout(boxlayout);
 		content.add(this.progressBarPanel.getJPanel());
 		content.add(labelProgress);
+	}
+
+
+	@Override
+	public void dispose() {
+		if (this.model.isRunning()) {
+			this.labelProgress.setText(getMessage(Constants.WINDOW_LOADING_CANCEL_LABEL));
+			this.model.cancel();
+		}
+		super.dispose();
 	}
 
 	@Override

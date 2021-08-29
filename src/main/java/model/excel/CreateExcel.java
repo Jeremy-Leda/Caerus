@@ -3,10 +3,7 @@ package model.excel;
 import model.abstracts.ProgressAbstract;
 import model.analyze.Dispatcher;
 import model.analyze.beans.Progress;
-import model.excel.beans.ExcelBlock;
-import model.excel.beans.ExcelLine;
-import model.excel.beans.ExcelRow;
-import model.excel.beans.ExcelSheet;
+import model.excel.beans.*;
 import model.excel.factories.CellStyleWorkbookFactory;
 import model.excel.interfaces.ICellStyleWorkbook;
 import model.exceptions.ErrorCode;
@@ -63,8 +60,14 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 			SXSSFSheet sheet = workbook.createSheet("Textos");
 			progressBean.setNbMaxElementForCurrentIterate(rows.size());
 			for (int i = 0; i < rows.size(); i++) {
+				if (treatmentIsCancelled()) {
+					break;
+				}
 				progressBean.setCurrentElementForCurrentIterate(i);
 				createRow(sheet, rows.get(i));
+			}
+			if (treatmentIsCancelled()) {
+				return;
 			}
 			try (FileOutputStream fos = new FileOutputStream(path)) {
 				workbook.write(fos);
@@ -75,6 +78,9 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 	private void createRow(SXSSFSheet sheet, ExcelRow er) {
 		SXSSFRow row = sheet.createRow(sheet.getLastRowNum()+1);
 		for (String ecell : er.getCells()) {
+			if (treatmentIsCancelled()) {
+				break;
+			}
 			SXSSFCell cell;
 			if (row.getLastCellNum() < 0) {
 				cell = row.createCell(row.getLastCellNum()+1);
@@ -91,10 +97,16 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 		List<String> listSheetName = new ArrayList<>();
 		try (SXSSFWorkbook workbook = new SXSSFWorkbook()) {
 			for (int i = 0; i < excelSheetList.size(); i++) {
+				if (treatmentIsCancelled()) {
+					break;
+				}
 				super.getProgressBean().setCurrentIterate(i+1);
 				ExcelSheet currentSheet = excelSheetList.get(i);
 				createSheet(workbook, currentSheet, listSheetName, 1, withFormat);
 				listSheetName.add(currentSheet.getFormattedName().toLowerCase(Locale.ROOT));
+			}
+			if (treatmentIsCancelled()) {
+				return;
 			}
 			try (FileOutputStream fos = new FileOutputStream(path)) {
 				workbook.write(fos);
@@ -136,14 +148,20 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 	}
 
 	public void createBlock(SXSSFSheet sheet, ExcelBlock excelBlock, Optional<ICellStyleWorkbook> cellStyleWorkbook) {
-		excelBlock.getExcelLineLinkedList().forEach(line -> {
+		for (ExcelLine line : excelBlock.getExcelLineLinkedList()) {
+			if (treatmentIsCancelled()) {
+				break;
+			}
 			SXSSFRow row = sheet.createRow(sheet.getLastRowNum()+1);
 			createLine(row, line, true, cellStyleWorkbook);
-		});
+		}
 	}
 
 	public void createLine(SXSSFRow row, ExcelLine excelLine, boolean isTableStyle, Optional<ICellStyleWorkbook> cellStyleWorkbook) {
-		excelLine.getExcelCellLinkedList().forEach(l -> {
+		for (ExcelCell l : excelLine.getExcelCellLinkedList()) {
+			if (treatmentIsCancelled()) {
+				break;
+			}
 			int cellNumber = row.getLastCellNum() < 0 ?  row.getLastCellNum()+1 : row.getLastCellNum();
 			SXSSFCell cell = row.createCell(cellNumber);
 			cellStyleWorkbook.ifPresent(c -> {
@@ -160,10 +178,6 @@ public class CreateExcel extends ProgressAbstract implements ICreateExcel {
 				cell.setCellType(CellType.NUMERIC);
 				cell.setCellValue(value);
 			}
-		});
+		}
 	}
-
-
-
-
 }

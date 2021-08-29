@@ -87,4 +87,24 @@ public class Progress implements IProgressBean, IProgressModel {
 		return currentPercentInIteration.add(currentPercentForIteration).intValue();
 	}
 
+	@Override
+	public void cancel() {
+
+	}
+
+	@Override
+	public boolean treatmentIsCancelled() {
+		return false;
+	}
+
+	@Override
+	public boolean isRunning() {
+		return true;
+	}
+
+	@Override
+	public void resetProgress() {
+
+	}
+
 }

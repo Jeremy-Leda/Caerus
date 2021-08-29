@@ -107,10 +107,12 @@ public class AnalysisGroupResultWindow extends ModalJFrameAbstract {
                     .collect(Collectors.toSet());
             analysisGroupDisplaySet.addAll(getControler().getAnalysisGroupDisplaySet(cmd.getKeyTextFilteredList().stream().collect(Collectors.toSet()), fieldSet));
         },
-                LexicometricAnalysis.getInstance(),
-                getMessage(WINDOW_LOADING_RESULTS_GROUP_ANALYSIS_LABEL),
-                true,
-                false);
-        analysisGroupDisplaySet.forEach(addAnalysisGroupDisplay::addAnalysisGroupDisplay);
+        LexicometricAnalysis.getInstance(),
+        getMessage(WINDOW_LOADING_RESULTS_GROUP_ANALYSIS_LABEL),
+        true,
+        false);
+        if (!LexicometricAnalysis.getInstance().treatmentIsCancelled()) {
+            analysisGroupDisplaySet.forEach(addAnalysisGroupDisplay::addAnalysisGroupDisplay);
+        }
     }
 }

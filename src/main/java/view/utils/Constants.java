@@ -600,6 +600,9 @@ public final class Constants {
 	public static final String WINDOW_LOADING_RESULTS_DETAIL_ANALYSIS_LABEL="window.loading.results.detail.analysis.label";
 	public static final String WINDOW_LOADING_IMPORT_EXCEL_LABEL="window.loading.import.excel.label";
 	public static final String WINDOW_LOADING_RELAUNCH_ANALYSIS_LABEL="window.loading.relaunch.analysis.label";
+	public static final String WINDOW_LOADING_CANCEL_LABEL="window.loading.cancel.label";
+
+	public static final String WINDOW_RESULT_DETAIL_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL="window.result.detail.token.action.export.excel.button.label";
 
 
 

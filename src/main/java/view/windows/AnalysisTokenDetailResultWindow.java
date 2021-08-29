@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisDetailResultDisplay;
+import view.analysis.beans.interfaces.IExcelSheet;
 import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricEditEnum;
 import view.components.DragAndDropCloseableTabbedPane;
@@ -45,7 +46,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
 
     private JPanel content = new JPanel();
     private IRadioButtonPanel radioButtonPanel;
-    private IActionPanel actionPanel = new ActionPanel(3);
+    private IActionPanel actionPanel = new ActionPanel(4);
     private final Map<String, String> mapField;
     private Optional<ReadCorpus> optionalReadCorpusWindow = Optional.empty();
     private Optional<ReadText> optionalReadTextWindow = Optional.empty();
@@ -167,7 +168,8 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
                                  LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum) {
         Map<Integer, String> labelMap = Map.of(0, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_META_BUTTON_LABEL),
                 1, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_ACTION_VIEW_DATA_BUTTON_LABEL),
-                2, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PROPER_NOUN_BUTTON_LABEL));
+                2, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PROPER_NOUN_BUTTON_LABEL),
+                3, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL));
         this.actionPanel.setStaticLabel(getMessage(WINDOW_INFORMATION_ACTION_PANEL_LABEL), labelMap);
         this.actionPanel.addAction(0, e -> {
             actionPanel.setEnabled(0, false);
@@ -185,6 +187,12 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
                     getRelaunchAnalyzeConsumer(runnableRelaunchBase, keyFilteredTextList, lexicometricAnalyzeTypeEnum, cmd.getFieldToAnalyzeSet()),
                     cmd.getPreTreatmentListLexicometricMap().get(LexicometricEditEnum.PROPER_NOUN)));
             optionalAnalysisProperNounAddWindow.get().addActionOnClose(() -> actionPanel.setEnabled(2, true));
+        });
+        this.actionPanel.addAction(3, e -> {
+            actionPanel.setEnabled(3, false);
+            List<IExcelSheet> sheetsList = new LinkedList<>();
+            sheetsList.addAll(componentAnalysisDetailResultDisplayMap.values().stream().sorted(Comparator.comparing(AnalysisDetailResultDisplay::getFileNumber).thenComparing(AnalysisDetailResultDisplay::getMaterialNumber)).collect(Collectors.toList()));
+            new ExportExcelWindow(getControler(), sheetsList);
         });
     }
 
@@ -300,6 +308,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         this.actionPanel.setEnabled(0, false);
         this.actionPanel.setEnabled(1, false);
         this.actionPanel.setEnabled(2, false);
+        this.actionPanel.setEnabled(3, false);
         repack();
     }
 
@@ -310,6 +319,7 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
         this.actionPanel.setEnabled(0, true);
         this.actionPanel.setEnabled(1, true);
         this.actionPanel.setEnabled(2, true);
+        this.actionPanel.setEnabled(3, true);
         repack();
     }
 
@@ -322,6 +332,9 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     private void reload(List<String> keyFilteredTextList,
                         LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum,
                         Set<String> fieldToAnalyzeSet) {
+        if (LexicometricAnalysis.getInstance().treatmentIsCancelled()) {
+            return;
+        }
         displayLoading();
         Set<AnalysisDetailResultDisplay> detailResultSet = getDetailResultSet(keyFilteredTextList, lexicometricAnalyzeTypeEnum, fieldToAnalyzeSet);
         AtomicInteger temp = new AtomicInteger(0);
@@ -331,6 +344,9 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
                 this.addAnalysisDetailResultDisplay(a);
                 currentLoadingTab = temp.getAndIncrement() * 100 / detailResultSet.size();
             });
+            if (LexicometricAnalysis.getInstance().treatmentIsCancelled()) {
+                tabbedPane.removeAll();
+            }
             displayTab();
         });
     }
@@ -421,5 +437,25 @@ public class AnalysisTokenDetailResultWindow extends ModalJFrameAbstract impleme
     @Override
     public Integer getProgress() {
         return this.currentLoadingTab;
+    }
+
+    @Override
+    public void cancel() {
+
+    }
+
+    @Override
+    public boolean treatmentIsCancelled() {
+        return false;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return true;
+    }
+
+    @Override
+    public void resetProgress() {
+
     }
 }

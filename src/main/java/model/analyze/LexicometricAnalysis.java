@@ -161,24 +161,32 @@ public class LexicometricAnalysis extends ProgressAbstract {
         super.getProgressBean().setCurrentIterate(1);
         AtomicInteger nbTreatElement = new AtomicInteger(1);
         super.getProgressBean().setNbMaxElementForCurrentIterate(cmd.getKeyTextFilteredList().size());
-        Set<AnalysisDetailResultDisplay> detailResultDisplaySet = cmd.getKeyTextFilteredList().stream().map(k -> {
-            AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(List.of(k), false);
-            Map<String, String> fieldValueMap = cmd.getKeyFieldSet().stream()
-                    .map(f -> new Tuple2<>(f, getTextPreTreatment(getValueFromKeyTextAndField(k, f), cmd.getPreTreatmentListLexicometricMap())))
-                    .collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
-            analysisResultDisplayForNumberTokens.setKey(k);
-            Tuple2<Integer, Integer> fileAndMaterialNumberOfText = getFileAndMaterialNumberOfText(k);
-            super.getProgressBean().setCurrentElementForCurrentIterate(nbTreatElement.getAndIncrement());
-            return new AnalysisDetailResultDisplayBuilder()
-            .analysisResultDisplay(analysisResultDisplayForNumberTokens)
-            .fieldValueMap(fieldValueMap)
-            .fileNumber(fileAndMaterialNumberOfText._1)
-            .materialNumber(fileAndMaterialNumberOfText._2)
-            .build();
-        }).sorted(Comparator.comparing(AnalysisDetailResultDisplay::getFileNumber).thenComparing(AnalysisDetailResultDisplay::getMaterialNumber))
+        Set<AnalysisDetailResultDisplay> detailResultDisplaySet = cmd.getKeyTextFilteredList().stream()
+                .map(k -> transformKeyTextToDisplayResult(nbTreatElement, cmd, k))
+                .filter(Objects::nonNull)
+                .sorted(Comparator.comparing(AnalysisDetailResultDisplay::getFileNumber).thenComparing(AnalysisDetailResultDisplay::getMaterialNumber))
                 .collect(Collectors.toCollection(LinkedHashSet::new));
         super.resetProgress();
         return detailResultDisplaySet;
+    }
+
+    private AnalysisDetailResultDisplay transformKeyTextToDisplayResult(AtomicInteger nbTreatElement, AnalysisDetailResultDisplayCmd cmd, String k) {
+        if (treatmentIsCancelled()) {
+            return null;
+        }
+        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(List.of(k), false);
+        Map<String, String> fieldValueMap = cmd.getKeyFieldSet().stream()
+                .map(f -> new Tuple2<>(f, getTextPreTreatment(getValueFromKeyTextAndField(k, f), cmd.getPreTreatmentListLexicometricMap())))
+                .collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
+        analysisResultDisplayForNumberTokens.setKey(k);
+        Tuple2<Integer, Integer> fileAndMaterialNumberOfText = getFileAndMaterialNumberOfText(k);
+        super.getProgressBean().setCurrentElementForCurrentIterate(nbTreatElement.getAndIncrement());
+        return new AnalysisDetailResultDisplayBuilder()
+                .analysisResultDisplay(analysisResultDisplayForNumberTokens)
+                .fieldValueMap(fieldValueMap)
+                .fileNumber(fileAndMaterialNumberOfText._1)
+                .materialNumber(fileAndMaterialNumberOfText._2)
+                .build();
     }
 
 
@@ -202,6 +210,9 @@ public class LexicometricAnalysis extends ProgressAbstract {
         AtomicInteger at = new AtomicInteger(1);
         Text text = new Text(StringUtils.EMPTY);
         Set<Token> tokenSet = wordSet.parallelStream().map(w -> {
+            if (treatmentIsCancelled()) {
+                return new Token(StringUtils.EMPTY);
+            }
             Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(t -> t.getNbOcurrency()).reduce(Long::sum).orElse(0L);
             Token token = new Token(w);
             token.setNbOcurrency(nbOccurrency);
@@ -330,9 +341,13 @@ public class LexicometricAnalysis extends ProgressAbstract {
         AtomicInteger at = new AtomicInteger(0);
         Set<AnalysisGroupDisplay> result = cartesianGroup.stream()
                 .map(s -> {
+                    if (treatmentIsCancelled()) {
+                        return null;
+                    }
                     super.getProgressBean().setCurrentIterate(at.getAndIncrement());
                     return constructAnalysisGroupDisplay(keySet, s);
                 })
+                .filter(Objects::nonNull)
                 .filter(s -> !s.getKeySet().isEmpty())
                 .collect(Collectors.toSet());
         return result;

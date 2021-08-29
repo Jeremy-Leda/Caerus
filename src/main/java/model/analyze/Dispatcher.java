@@ -120,6 +120,9 @@ public class Dispatcher extends ProgressAbstract {
 		UserSettings.getInstance().addMemoryFilesList(folderType, memoryFiles);
 		progressBean.setNbMaxElementForCurrentIterate(memoryFiles.size());
 		for (int i = 0; i < memoryFiles.size(); i++) {
+			if (treatmentIsCancelled()) {
+				return;
+			}
 			UserSettings.getInstance().addStructuredFile(folderType,
 					new Structuring(memoryFiles.get(i), folderType).getStructuredFile());
 
@@ -138,6 +141,9 @@ public class Dispatcher extends ProgressAbstract {
 		List<ConfigurationStructuredText> configurationStructuredTextList = UserSettings.getInstance()
 				.getConfigurationStructuredTextList(folderType);
 		for (int i = 0; i < configurationStructuredTextList.size(); i++) {
+			if (treatmentIsCancelled()) {
+				return;
+			}
 			structuredTextSpecificProcess(memoryFiles, folderType, configurationStructuredTextList.get(i), i,
 					progressBean);
 		}
@@ -265,6 +271,9 @@ public class Dispatcher extends ProgressAbstract {
 		ce.generateExcel(progressBean);
 		/* -- SPECIFIC CONFIGURATION EXCEL PROCESSING -- */
 		for (Entry<String, String> entry : cmd.getMapLabelSpecificFileName().entrySet()) {
+			if (treatmentIsCancelled()) {
+				break;
+			}
 			Optional<ConfigurationStructuredText> findFirstCst = UserSettings.getInstance()
 					.getConfigurationStructuredTextList(folder).stream()
 					.filter(s -> s.getSpecificConfiguration().getLabel().equals(entry.getKey())).findFirst();
@@ -350,7 +359,12 @@ public class Dispatcher extends ProgressAbstract {
 		List<List<String>> rows = es.getStructuringRows(configurationSpecific.getStructuredFileList(),
 				UserSettings.getInstance().getCurrentConfiguration(), cmd);
 		CreateExcel ce = new CreateExcel(path);
-		rows.forEach(r -> ce.createRow(r));
+		for (List<String> row :rows) {
+			if (treatmentIsCancelled()) {
+				break;
+			}
+			ce.createRow(row);
+		}
 		ce.generateExcel(progressBean);
 	}
 

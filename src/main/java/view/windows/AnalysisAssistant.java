@@ -135,7 +135,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 Map.of(0, getMessage(Constants.WINDOW_START_ANALYSIS_HELP_BUTTON_LABEL),
                         1, getMessage(Constants.WINDOW_START_ANALYSIS_START_BUTTON_LABEL),
                         2, getMessage(Constants.WINDOW_START_ANALYSIS_CONSULT_RESULTS_BUTTON_LABEL)));
-        this.chooseAnalyzeActionPanel.setIconButton(0, PictureTypeEnum.WARNING);
+        this.chooseAnalyzeActionPanel.setIconButton(0, PictureTypeEnum.WARNING_16);
         this.chooseAnalyzeActionPanel.setEnabled(1, false);
         this.chooseAnalyzeActionPanel.setEnabled(2, false);
         this.chooseAnalyzeActionPanel.addAction(0, e -> {
@@ -149,7 +149,9 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
         });
         this.chooseAnalyzeActionPanel.addAction(1, e -> executeOnServerWithProgressView(() -> {
             chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getBiConsumerAnalysis().accept(getControler(), getLexicometricAnalyzeCmd());
-            this.chooseAnalyzeActionPanel.setEnabled(2, true);
+            if (!LexicometricAnalysis.getInstance().treatmentIsCancelled()) {
+                this.chooseAnalyzeActionPanel.setEnabled(2, true);
+            }
         }, LexicometricAnalysis.getInstance(),
                 String.format(getMessage(Constants.WINDOW_LOADING_ANALYSIS_LABEL), chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLabel()),
                 false,
@@ -163,9 +165,11 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                     String.format(getMessage(Constants.WINDOW_LOADING_RESULTS_ANALYSIS_LABEL), chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLabel()),
                     false,
                     false);
-            new AnalysisTokenResultWindow(getControler(), analysisResultDisplayAtomicReference.get(),
-                    lexicometricAnalyzeCmd,
-                    chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLexicometricAnalyzeTypeEnum());
+            if (!LexicometricAnalysis.getInstance().treatmentIsCancelled()) {
+                new AnalysisTokenResultWindow(getControler(), analysisResultDisplayAtomicReference.get(),
+                        lexicometricAnalyzeCmd,
+                        chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getLexicometricAnalyzeTypeEnum());
+            }
         });
     }
 

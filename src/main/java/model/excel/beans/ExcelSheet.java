@@ -31,9 +31,7 @@ public class ExcelSheet {
     public String getFormattedName() {
         String excelTitle = name.replaceAll("/[^a-zA-Z ]/g", "")
                 .replaceAll("[\\p{Punct}&&[^'-]]+", "")
-                .replaceAll("-", "")
                 .replaceAll("¿", "")
-                .replaceAll("[0-9]", "")
                 .replaceAll("^\"|\"$", "")
                 .replaceAll("“", "")
                 .replaceAll("”", "")

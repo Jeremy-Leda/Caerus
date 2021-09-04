@@ -68,7 +68,7 @@ public class ImportExcel extends ModalJFrameAbstract {
 		this.actionSelectedFieldPanel = new ActionPanel(2);
 		this.content = new JPanel();
 		this.comboBoxPanel.addConsumerOnSelectChange(getConsumerEnableAndCheckBoxFieldsFromLabelSpecific());
-		this.textBoxPanel = new TextBoxPanel(1, false);
+		this.textBoxPanel = new TextBoxPanel(1, false, 12);
 		this.textBoxPanel.addConsumerOnChange(0, getConsumerUpdateInformation());
 		createWindow();
 	}

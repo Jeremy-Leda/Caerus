@@ -12,13 +12,13 @@ import java.util.Set;
 @PojoBuilder
 public class AnalysisDetailResultDisplayCmd {
 
-    @NotEmpty
+    @NotEmpty(message = "La liste des clés filtrés")
     private List<String> keyTextFilteredList;
 
-    @NotEmpty
+    @NotEmpty(message = "la liste des clés")
     private Set<String> keyFieldSet;
 
-    @NotNull
+    @NotNull(message = "la map de prétraitement")
     private Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap;
 
     public List<String> getKeyTextFilteredList() {

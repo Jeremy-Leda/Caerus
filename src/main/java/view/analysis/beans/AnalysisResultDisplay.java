@@ -9,6 +9,7 @@ import view.utils.ConfigurationUtils;
 import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,10 @@ public class AnalysisResultDisplay implements IExcelSheet {
     private String key;
     private Integer NbToken;
     private Long NbOccurrency;
+    @NotNull
+    private Boolean excludeTexts;
+
+    private Set<String> keySet;
 
     /**
      * Permet de se procurer la liste des tokens à afficher
@@ -99,6 +104,43 @@ public class AnalysisResultDisplay implements IExcelSheet {
     }
 
     /**
+     * Permet de savoir s'il s'agit des textes exclus
+     * @return Vrai s'il s'agit des textes exclus
+     */
+    public Boolean getExcludeTexts() {
+        return excludeTexts;
+    }
+
+    /**
+     * Permet de définir s'il s'agit des textes exclus
+     * @param excludeTexts Vrai s'il s'agit des textes exclus
+     */
+    public void setExcludeTexts(Boolean excludeTexts) {
+        this.excludeTexts = excludeTexts;
+    }
+
+    public Set<String> getKeySet() {
+        return keySet;
+    }
+
+    public void setKeySet(Set<String> keySet) {
+        this.keySet = keySet;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AnalysisResultDisplay that = (AnalysisResultDisplay) o;
+        return Objects.equals(analysisTokenDisplaySet, that.analysisTokenDisplaySet) && Objects.equals(key, that.key) && Objects.equals(NbToken, that.NbToken) && Objects.equals(NbOccurrency, that.NbOccurrency) && Objects.equals(excludeTexts, that.excludeTexts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(analysisTokenDisplaySet, key, NbToken, NbOccurrency, excludeTexts);
+    }
+
+    /**
      * Permet de se procurer la liste des bloc excels
      * @return la liste des blocs excel
      */
@@ -137,9 +179,13 @@ public class AnalysisResultDisplay implements IExcelSheet {
 
     @Override
     public ExcelSheet getExcelSheet() {
+        String title = ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_GLOBAL_LABEL);
+        if (excludeTexts) {
+            title = ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_EXCLUDE_LABEL);
+        }
         // Creation de la feuille
         return new ExcelSheetBuilder()
-                .name(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_GLOBAL_LABEL))
+                .name(title)
                 .excelBlockList(toExcelBlockList())
                 .nbColumnMax(2)
                 .build();

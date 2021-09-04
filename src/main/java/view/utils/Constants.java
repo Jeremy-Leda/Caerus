@@ -506,6 +506,7 @@ public final class Constants {
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_LEMMATIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.lemmatization.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_PROFILE_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.profile.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_TOKENIZATION_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.tokenization.treatment.optional.list.label";
+	public static final String WINDOW_START_ANALYSIS_CHOOSE_TYPE_EXCLUDE_TEXTS_TREATMENT_OPTIONAL_LIST_LABEL="window.start.analysis.choose.type.exclude.texts.treatment.optional.list.label";
 	public static final String WINDOW_START_ANALYSIS_INFORMATION_OPTIONALS_LISTE_MESSAGE="window.start.analysis.information.optionals.liste.message";
 
 
@@ -603,6 +604,21 @@ public final class Constants {
 	public static final String WINDOW_LOADING_CANCEL_LABEL="window.loading.cancel.label";
 
 	public static final String WINDOW_RESULT_DETAIL_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL="window.result.detail.token.action.export.excel.button.label";
+
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_PANEL_TITLE="window.manage.exclude.texts.panel.title";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_INFORMATION_MESSAGE="window.manage.exclude.texts.information.message";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_TABLE_HEADER_LABEL="window.manage.exclude.texts.table.header.label";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_ADD_INFORMATION_MESSAGE="window.manage.exclude.texts.add.information.message";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_ADD_TEXT_LABEL="window.manage.exclude.texts.add.text.label";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_TABLE_PANEL_TITLE="window.manage.exclude.texts.table.panel.title";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_ADD_BUTTON_LABEL="window.manage.exclude.texts.add.button.label";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_REMOVE_BUTTON_LABEL="window.manage.exclude.texts.remove.button.label";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_FILTER_LABEL="window.manage.exclude.texts.filter.label";
+	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_INFORMATION_LABEL="window.manage.exclude.texts.information.label";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL5_TITLE="window.menu.level6.sublevel3.sublevel5.title";
+
+	public static final String WINDOW_RESULT_TOKEN_EXCLUDE_LABEL="window.result.token.exclude.label";
+
 
 
 

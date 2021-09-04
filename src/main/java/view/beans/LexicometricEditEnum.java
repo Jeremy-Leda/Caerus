@@ -15,7 +15,8 @@ public enum LexicometricEditEnum implements IHierarchicalTable {
     LEMMATIZATION(Set.of(LemmatizationHierarchicalEditEnum.BASE, LemmatizationHierarchicalEditEnum.LEMME)),
     LEMMATIZATION_BY_GRAMMATICAL_CATEGORY(Set.of(LemmatizationByGrammaticalCategoryHierarchicalEditEnum.CATEGORY,
             LemmatizationByGrammaticalCategoryHierarchicalEditEnum.BASE, LemmatizationByGrammaticalCategoryHierarchicalEditEnum.LEMME)),
-    PROPER_NOUN(Set.of(ProperNounHierarchicalEditEnum.BASE));
+    PROPER_NOUN(Set.of(ProperNounHierarchicalEditEnum.BASE)),
+    EXCLUDE_TEXTS(Set.of(ExcludeTextsHierarchicalEditEnum.BASE));
 
     private final Set<IRootTable> hierarchicalTableSet;
 

@@ -99,4 +99,5 @@ public class LexicometricAnalyzeCmd {
     public void setLabel(String label) {
         this.label = label;
     }
+
 }

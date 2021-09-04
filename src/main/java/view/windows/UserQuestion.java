@@ -31,7 +31,7 @@ public class UserQuestion extends ModalJFrameAbstract {
         this.content = new JPanel();
         this.infoPanel = new InformationPanel(PictureTypeEnum.QUESTION, ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_MESSAGE_PANEL_LABEL),
                 message, true, true);
-        this.textBoxPanel = new TextBoxPanel(1, false);
+        this.textBoxPanel = new TextBoxPanel(1, false, 40);
         this.textBoxPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_ANSWER_USER_PANEL_TITLE), Map.of(0, label));
         this.actionPanel = new ActionPanel(2);
         this.actionPanel.setStaticLabel(ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_INFORMATION_ACTION_PANEL_LABEL),

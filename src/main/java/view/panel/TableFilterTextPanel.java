@@ -17,7 +17,7 @@ import java.util.function.Consumer;
  */
 public class TableFilterTextPanel<T> implements ITableFilterPanel<T>, ITextBoxPanel {
 
-    private final ITextBoxPanel textBoxPanel = new TextBoxPanel(1, false);
+    private final ITextBoxPanel textBoxPanel = new TextBoxPanel(1, false, 20);
 
     @Override
     public JComponent getJPanel() {

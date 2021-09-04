@@ -77,31 +77,41 @@ public class UserLexicometricAnalysisSettings {
      */
     private void loadConfigurationsList() throws IOException {
         Optional<File> configurationFolder = UserFolder.getInstance().getFolder(FolderSettingsEnum.FOLDER_CONFIGURATIONS_LEXICOMETRIC_ANALYSIS);
-        dataMap.clear();
-        dataMap.put(LexicometricCleanListEnum.TOKENIZATION, new UserLexicometricCleanListData());
-        dataMap.put(LexicometricCleanListEnum.LEMMATIZATION, new UserLexicometricCleanListData());
-        dataMap.put(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY, new UserLexicometricCleanListData());
-        dataMap.put(LexicometricCleanListEnum.PROPER_NOUN, new UserLexicometricCleanListData());
+        clearAndPrepareMap();
         if (configurationFolder.isPresent() && configurationFolder.get().exists()) {
             Files.walkFileTree(Paths.get(configurationFolder.get().toURI()), new SimpleFileVisitor<>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (!Files.isDirectory(file)) {
-                        logger.debug(String.format("Loading Configuration Lexicometric %s", file));
-                        LexicometricAnalysis configurationFromJsonFile = JSonFactoryUtils
-                                .createAnalyseConfigurationFromJsonFile(FileUtils.openInputStream(file.toFile()));
-                        dataMap.get(LexicometricCleanListEnum.TOKENIZATION).getDataSet().addAll(configurationFromJsonFile.getTokenizationSet());
-                        dataMap.get(LexicometricCleanListEnum.LEMMATIZATION).getDataSet().addAll(configurationFromJsonFile.getLemmatizationSet());
-                        dataMap.get(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY).getDataSet().addAll(configurationFromJsonFile.getLemmatizationByGrammaticalCategorySet());
-                        dataMap.get(LexicometricCleanListEnum.PROPER_NOUN).getDataSet().addAll(configurationFromJsonFile.getProperNounSet());
-                        configurationFromJsonFile.getLemmatizationSet().stream().map(Lemmatization::getProfile).distinct().forEach(p -> dataMap.get(LexicometricCleanListEnum.LEMMATIZATION).getProfilFileMap().put(p, file));
-                        configurationFromJsonFile.getTokenizationSet().stream().map(Tokenization::getProfile).distinct().forEach(p -> dataMap.get(LexicometricCleanListEnum.TOKENIZATION).getProfilFileMap().put(p, file));
-                        configurationFromJsonFile.getLemmatizationByGrammaticalCategorySet().stream().map(LemmatizationByGrammaticalCategory::getProfile).distinct().forEach(p -> dataMap.get(LexicometricCleanListEnum.LEMMATIZATION_BY_GRAMMATICAL_CATEGORY).getProfilFileMap().put(p, file));
-                        configurationFromJsonFile.getProperNounSet().stream().map(ProperNoun::getProfile).distinct().forEach(p -> dataMap.get(LexicometricCleanListEnum.PROPER_NOUN).getProfilFileMap().put(p, file));
+                        loadConfigurationFile(file);
                     }
                     return FileVisitResult.CONTINUE;
                 }
             });
+        }
+    }
+
+    /**
+     * Permet de nettoyer et de préparer la map
+     */
+    private void clearAndPrepareMap() {
+        dataMap.clear();
+        for (LexicometricCleanListEnum value : LexicometricCleanListEnum.values()) {
+            dataMap.put(value, new UserLexicometricCleanListData());
+        }
+    }
+
+    /**
+     * Permet de charger la configuration en provenance du fichier
+     * @param file fichier à charger
+     */
+    private void loadConfigurationFile(Path file) throws IOException {
+        logger.debug(String.format("Loading Configuration Lexicometric %s", file));
+        LexicometricAnalysis configurationFromJsonFile = JSonFactoryUtils
+                .createAnalyseConfigurationFromJsonFile(FileUtils.openInputStream(file.toFile()));
+        for (LexicometricCleanListEnum value : LexicometricCleanListEnum.values()) {
+            dataMap.get(value).getDataSet().addAll(value.getLexicometricDataSetFunction().apply(configurationFromJsonFile));
+            value.getProfilSetFunction().apply(configurationFromJsonFile).forEach(p -> dataMap.get(value).getProfilFileMap().put(p, file));
         }
     }
 

@@ -34,7 +34,7 @@ public class TextBoxPanel implements ITextBoxPanel {
 	 *
 	 * @param nbTextbox nb de textBox souhaités
 	 */
-	public TextBoxPanel(Integer nbTextbox, Boolean enableScrollPane) {
+	public TextBoxPanel(Integer nbTextbox, Boolean enableScrollPane, Integer nbColumns) {
 		this.enableScrollPane = enableScrollPane;
 		this.textBoxPanel = new JPanel();
 		if (enableScrollPane) {
@@ -42,7 +42,7 @@ public class TextBoxPanel implements ITextBoxPanel {
 		}
 		for (int i = 0; i < nbTextbox; i++) {
 			JTextField jTextField = new JTextField();
-			jTextField.setColumns(12);
+			jTextField.setColumns(nbColumns);
 			textBoxMap.put(i, jTextField);
 			JLabel jLabel = new JLabel();
 			labelBoxMap.put(i, jLabel);

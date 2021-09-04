@@ -72,6 +72,8 @@ public class Main extends ExecuteServerJFrameAbstract {
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL3_TITLE)),
 			properNounList = new JMenuItem(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL4_TITLE)),
+			excludeTextsList = new JMenuItem(
+					ConfigurationUtils.getInstance().getDisplayMessage(Constants.WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL5_TITLE)),
 			saveConfiguration = new JMenuItem(
 					ConfigurationUtils.getInstance().getDisplayMessage(Constants.FILE_WRITE_EXCEL_TITLE)),
 			saveCustomExcel = new JMenuItem(
@@ -300,6 +302,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 		lemmatizationList.addActionListener(e -> new ManageLemmatization(getControler()));
 		lemmatizationByGrammaticalCategoryList.addActionListener(e -> new ManageLemmatizationByGrammaticalCategory(getControler()));
 		properNounList.addActionListener(e -> new ManageProperNoun(getControler()));
+		excludeTextsList.addActionListener(e -> new ManageExcludeTexts(getControler()));
 
 		importExcel.addActionListener(e -> new ImportExcel(getControler()));
 
@@ -426,6 +429,7 @@ public class Main extends ExecuteServerJFrameAbstract {
 		manageList.add(lemmatizationList);
 		manageList.add(lemmatizationByGrammaticalCategoryList);
 		manageList.add(properNounList);
+		manageList.add(excludeTextsList);
 		analysis.add(manageList);
 
 		menuBar.add(about);

@@ -6,12 +6,17 @@ import model.analyze.beans.CartesianGroup;
 import model.analyze.beans.CartesianGroupBuilder;
 import model.analyze.beans.UserStructuredText;
 import model.analyze.cmd.AnalysisDetailResultDisplayCmd;
+import model.analyze.lexicometric.analyze.beans.AnalyzeResultToken;
 import model.analyze.lexicometric.analyze.beans.Text;
 import model.analyze.lexicometric.analyze.beans.Token;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
 import model.analyze.lexicometric.beans.LexicometricCleanListEnum;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
 import model.analyze.lexicometric.interfaces.ILexicometricData;
+import model.exceptions.ErrorCode;
+import model.exceptions.InformationExceptionBuilder;
+import model.exceptions.ServerException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import view.analysis.beans.*;
 
@@ -25,6 +30,7 @@ public class LexicometricAnalysis extends ProgressAbstract {
 
     private static final LexicometricAnalysis _instance = new LexicometricAnalysis();
     private final Set<Text> analysisResultSet = new HashSet<>();
+    private final Set<String> analysisExcludeTextsKeySet = new HashSet<>();
 
     /**
      * Permet de se procurer l'instance statique
@@ -63,7 +69,7 @@ public class LexicometricAnalysis extends ProgressAbstract {
      * @return une map qui détient en clé un mot et en valeur son nombre total d'apparition
      */
     private Map<String, Long> getNbTokensOfText(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
-        Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet);
+        Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet, preTreatmentListLexicometricMap);
         if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
             Set<String> properNounToRemoveSet = getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN));
             tokenCleanedCollection.removeAll(properNounToRemoveSet);
@@ -90,7 +96,7 @@ public class LexicometricAnalysis extends ProgressAbstract {
      * @return la liste des noms propres potentiels
      */
     private Collection<String> getPotentialProperNounCollection(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
-        Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet);
+        Collection<String> tokenCleanedCollection = getTokenCleaned(keyText, fieldSet, preTreatmentListLexicometricMap);
         if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.PROPER_NOUN)) {
             Set<String> properNounToRemoveSet = getProperNounToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.PROPER_NOUN));
             tokenCleanedCollection.removeAll(properNounToRemoveSet);
@@ -102,13 +108,21 @@ public class LexicometricAnalysis extends ProgressAbstract {
      * Permet de se procurer la liste des tokens nettoyés
      * @param keyText Clé du texte
      * @param fieldSet Liste des champs à analyser
+     * @param preTreatmentListLexicometricMap map pour le prétraitement
      * @return la liste des tokens nettoyés
      */
-    private Collection<String> getTokenCleaned(String keyText, Set<String> fieldSet) {
+    private Collection<String> getTokenCleaned(String keyText, Set<String> fieldSet, Map<LexicometricConfigurationEnum, String> preTreatmentListLexicometricMap) {
         Optional<UserStructuredText> textFromKey = UserSettings.getInstance().getTextFromKey(keyText);
         String textToAnalyze = fieldSet.stream()
                 .map(f -> textFromKey.get().getStructuredText().getContent(f)).reduce((s1, s2) -> s1 + StringUtils.SPACE + s2)
                 .orElse(StringUtils.EMPTY);
+        if (preTreatmentListLexicometricMap.containsKey(LexicometricConfigurationEnum.EXCLUDE_TEXTS)) {
+            Set<String> properNounToRemoveSet = getExcludeTextsToRemoveSet(preTreatmentListLexicometricMap.get(LexicometricConfigurationEnum.EXCLUDE_TEXTS));
+            String textToControl = textToAnalyze.replaceAll("\\s+",StringUtils.SPACE);
+            if (properNounToRemoveSet.contains(textToControl)) {
+                analysisExcludeTextsKeySet.add(keyText);
+            }
+        }
         List<String> tokenList = Arrays.stream(StringUtils.split(textToAnalyze))
                 .map(s -> s.replaceAll("/[^a-zA-Z ]/g", ""))
                 .map(s -> s.replaceAll("[\\p{Punct}&&[^'-]]+", ""))
@@ -174,7 +188,9 @@ public class LexicometricAnalysis extends ProgressAbstract {
         if (treatmentIsCancelled()) {
             return null;
         }
-        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(List.of(k), false);
+        Set<AnalysisResultDisplay> analysisResultDisplayForNumberTokensSet = getAnalysisResultDisplayForNumberTokens(List.of(k), false);
+        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getUniqueResult(analysisResultDisplayForNumberTokensSet,
+                "Le résultat de l'analyse ne peut être supérieure à 1 dans le cadre d'une consultation au détail");
         Map<String, String> fieldValueMap = cmd.getKeyFieldSet().stream()
                 .map(f -> new Tuple2<>(f, getTextPreTreatment(getValueFromKeyTextAndField(k, f), cmd.getPreTreatmentListLexicometricMap())))
                 .collect(Collectors.toMap(Tuple2::_1, Tuple2::_2));
@@ -189,6 +205,20 @@ public class LexicometricAnalysis extends ProgressAbstract {
                 .build();
     }
 
+    private AnalysisResultDisplay getUniqueResult(Set<AnalysisResultDisplay> analysisResultDisplayForNumberTokensSet, String errorMessage) {
+        AnalysisResultDisplay defaultAnalysisResultDisplay = new AnalysisResultDisplayBuilder()
+                .key(StringUtils.EMPTY)
+                .excludeTexts(false)
+                .build();
+        if (analysisResultDisplayForNumberTokensSet.size() > 1) {
+            throw new ServerException().addInformationException(new InformationExceptionBuilder()
+                    .errorCode(ErrorCode.TECHNICAL_ERROR)
+                    .parameters(Set.of(errorMessage))
+                    .build());
+        }
+        return analysisResultDisplayForNumberTokensSet.stream().findFirst().orElse(defaultAnalysisResultDisplay);
+    }
+
 
 
     /**
@@ -196,18 +226,37 @@ public class LexicometricAnalysis extends ProgressAbstract {
      * @param keyTextFilteredList liste des clés à récupérer
      * @return le résultat de l'analyse
      */
-    public AnalysisResultDisplay getAnalysisResultDisplayForNumberTokens(List<String> keyTextFilteredList, Boolean driveProgress) {
+    public Set<AnalysisResultDisplay> getAnalysisResultDisplayForNumberTokens(List<String> keyTextFilteredList, Boolean driveProgress) {
         if (driveProgress) {
             super.createProgressBean(1);
             super.getProgressBean().setCurrentIterate(1);
         }
-        Set<Text> textSet = this.analysisResultSet.stream().filter(t -> keyTextFilteredList.contains(t.getKey())).collect(Collectors.toSet());
-        List<Token> tokenList = textSet.stream().flatMap(t -> t.getTokenSet().stream()).collect(Collectors.toList());
-        Set<String> wordSet = textSet.stream().flatMap(t -> t.getTokenSet().stream()).map(t -> t.getWord()).sorted().collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<Text> textSetWithoutExludeTexts = this.analysisResultSet.stream().filter(t -> keyTextFilteredList.contains(t.getKey())).filter(t -> !this.analysisExcludeTextsKeySet.contains(t.getKey())).collect(Collectors.toSet());
+        AnalyzeResultToken resultWithoutExcludeTexts = new AnalyzeResultToken(textSetWithoutExludeTexts, false);
+        Set<Text> textSetWithExludeTexts = this.analysisResultSet.stream().filter(t -> this.analysisExcludeTextsKeySet.contains(t.getKey())).filter(t -> keyTextFilteredList.contains(t.getKey())).collect(Collectors.toSet());
+        AnalyzeResultToken resultOnlyExcludeTexts = new AnalyzeResultToken(textSetWithExludeTexts, true);
+
+        Set<String> wordSetWithoutExcludeTexts = resultWithoutExcludeTexts.getWordSet();
+        List<Token> tokenListWithoutExcludeTexts = resultWithoutExcludeTexts.getTokenList();
+        Set<String> wordSetOnlyExcludeTexts = resultOnlyExcludeTexts.getWordSet();
+        List<Token> tokenListOnlyExcludeTexts = resultOnlyExcludeTexts.getTokenList();
+        Integer maxCurrentProgress = wordSetWithoutExcludeTexts.size() + wordSetOnlyExcludeTexts.size();
         if (driveProgress) {
-            super.getProgressBean().setNbMaxElementForCurrentIterate(wordSet.size());
+            super.getProgressBean().setNbMaxElementForCurrentIterate(maxCurrentProgress);
         }
         AtomicInteger at = new AtomicInteger(1);
+        Set<String> keyWithoutExcludeTextSet = new HashSet<>();
+        keyWithoutExcludeTextSet.addAll(keyTextFilteredList);
+        keyWithoutExcludeTextSet.removeAll(this.analysisExcludeTextsKeySet);
+        AnalysisResultDisplay globalResult = getAnalysisResultDisplayForNumberTokens(wordSetWithoutExcludeTexts, tokenListWithoutExcludeTexts, at, driveProgress, false, keyWithoutExcludeTextSet);
+        AnalysisResultDisplay excludeTextsResult = getAnalysisResultDisplayForNumberTokens(wordSetOnlyExcludeTexts, tokenListOnlyExcludeTexts, at, driveProgress, true, new HashSet<>(CollectionUtils.intersection(keyTextFilteredList, this.analysisExcludeTextsKeySet)));
+        if (driveProgress) {
+            super.resetProgress();
+        }
+        return Set.of(globalResult, excludeTextsResult).stream().filter(s -> s.getNbOccurrency() > 0).collect(Collectors.toSet());
+    }
+
+    private AnalysisResultDisplay getAnalysisResultDisplayForNumberTokens(Set<String> wordSet, List<Token> tokenList, AtomicInteger atProgress, Boolean driveProgress, boolean isExcludeTexts, Set<String> keySet) {
         Text text = new Text(StringUtils.EMPTY);
         Set<Token> tokenSet = wordSet.parallelStream().map(w -> {
             if (treatmentIsCancelled()) {
@@ -217,16 +266,12 @@ public class LexicometricAnalysis extends ProgressAbstract {
             Token token = new Token(w);
             token.setNbOcurrency(nbOccurrency);
             if (driveProgress) {
-                super.getProgressBean().setCurrentElementForCurrentIterate(at.getAndIncrement());
+                super.getProgressBean().setCurrentElementForCurrentIterate(atProgress.getAndIncrement());
             }
             return token;
         }).collect(Collectors.toSet());
         text.getTokenSet().addAll(tokenSet);
-        AnalysisResultDisplay analysisResultDisplay = convertTextToAnalysisResultDisplay(text);
-        if (driveProgress) {
-            super.resetProgress();
-        }
-        return analysisResultDisplay;
+        return convertTextToAnalysisResultDisplay(text, isExcludeTexts, keySet);
     }
 
     /**
@@ -234,7 +279,7 @@ public class LexicometricAnalysis extends ProgressAbstract {
      * @param textToConvert texte à convertir
      * @return le résultat d'analyse
      */
-    private AnalysisResultDisplay convertTextToAnalysisResultDisplay(Text textToConvert) {
+    private AnalysisResultDisplay convertTextToAnalysisResultDisplay(Text textToConvert, boolean isExcludeTexts, Set<String> keySet) {
         Set<AnalysisTokenDisplay> analysisTokenDisplaySet = textToConvert.getTokenSet()
                 .stream()
                 .map(this::convertTokenToAnalysisTokenDisplay)
@@ -244,6 +289,8 @@ public class LexicometricAnalysis extends ProgressAbstract {
                 .analysisTokenDisplaySet(analysisTokenDisplaySet)
                 .nbOccurrency(analysisTokenDisplaySet.stream().map(AnalysisTokenDisplay::getNbOcurrency).reduce(Long::sum).orElse(0L))
                 .nbToken(analysisTokenDisplaySet.size())
+                .excludeTexts(isExcludeTexts)
+                .keySet(keySet)
                 .build();
         return analysisResultDisplay;
     }
@@ -297,6 +344,15 @@ public class LexicometricAnalysis extends ProgressAbstract {
 
     private Set<String> getProperNounToRemoveSet(String profil) {
         Optional<ILexicometricData> optionalILexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.PROPER_NOUN).stream().filter(s -> s.getProfile().equals(profil)).findFirst();
+        if (optionalILexicometricData.isPresent()) {
+            ILexicometricData<Set<String>> iLexicometricData = optionalILexicometricData.get();
+            return iLexicometricData.getData();
+        }
+        return new HashSet<>();
+    }
+
+    private Set<String> getExcludeTextsToRemoveSet(String profil) {
+        Optional<ILexicometricData> optionalILexicometricData = UserLexicometricAnalysisSettings.getInstance().getDataSet(LexicometricCleanListEnum.EXCLUDE_TEXTS).stream().filter(s -> s.getProfile().equals(profil)).findFirst();
         if (optionalILexicometricData.isPresent()) {
             ILexicometricData<Set<String>> iLexicometricData = optionalILexicometricData.get();
             return iLexicometricData.getData();
@@ -423,7 +479,9 @@ public class LexicometricAnalysis extends ProgressAbstract {
      */
     private AnalysisGroupDisplay constructAnalysisGroupDisplay(Set<String> keySet, List<CartesianGroup> cartesianGroupList) {
         Set<String> keyFilteredSet = getKeySetFromCartesianGroupList(keySet, cartesianGroupList);
-        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getAnalysisResultDisplayForNumberTokens(keyFilteredSet.stream().collect(Collectors.toList()), false);
+        Set<AnalysisResultDisplay> analysisResultDisplayForNumberTokensSet = getAnalysisResultDisplayForNumberTokens(keyFilteredSet.stream().collect(Collectors.toList()), false);
+        AnalysisResultDisplay analysisResultDisplayForNumberTokens = getUniqueResult(analysisResultDisplayForNumberTokensSet,
+                "Le résultat de l'analyse ne peut être supérieure à 1 dans le cadre d'un regroupement");
         return new AnalysisGroupDisplayBuilder()
                 .cartesianGroupSet(cartesianGroupList.stream().collect(Collectors.toSet()))
                 .analysisResultDisplay(analysisResultDisplayForNumberTokens)

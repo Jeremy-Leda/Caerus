@@ -40,12 +40,12 @@ public class AnalysisGroupResultWindow extends ModalJFrameAbstract {
     private final JPanel content = new JPanel();
     private final IActionPanel actionPanel = new ActionPanel(1);
     private final IAddAnalysisGroupDisplay addAnalysisGroupDisplay;
-    private final LexicometricAnalyzeCmd cmd;
+    private final Set<String> keySet;
 
-    public AnalysisGroupResultWindow(IConfigurationControler configurationControler, IAddAnalysisGroupDisplay addTab, LexicometricAnalyzeCmd cmd) {
+    public AnalysisGroupResultWindow(IConfigurationControler configurationControler, IAddAnalysisGroupDisplay addTab, Set<String> keySet) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_ANALYSIS_RESULT_GROUP_PANEL_TITLE), configurationControler);
+        this.keySet = keySet;
         this.addAnalysisGroupDisplay = addTab;
-        this.cmd = cmd;
         this.checkBoxFieldsPanel = new CheckBoxPanel(getControler().getFieldConfigurationNameLabelMap().size(), true);
         createWindow();
     }
@@ -105,7 +105,7 @@ public class AnalysisGroupResultWindow extends ModalJFrameAbstract {
                     .filter(x -> allIndexChecked.contains(x.getKey()))
                     .map(Map.Entry::getValue)
                     .collect(Collectors.toSet());
-            analysisGroupDisplaySet.addAll(getControler().getAnalysisGroupDisplaySet(cmd.getKeyTextFilteredList().stream().collect(Collectors.toSet()), fieldSet));
+            analysisGroupDisplaySet.addAll(getControler().getAnalysisGroupDisplaySet(keySet, fieldSet));
         },
         LexicometricAnalysis.getInstance(),
         getMessage(WINDOW_LOADING_RESULTS_GROUP_ANALYSIS_LABEL),

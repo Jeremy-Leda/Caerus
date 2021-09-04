@@ -67,6 +67,16 @@ public enum LexicometricConfigurationEnum {
             getRemoveProfilConsumer(LexicometricCleanListEnum.PROPER_NOUN),
             x -> UserLexicometricAnalysisSettings.getInstance().saveLexicometricConfigurationInFile(LexicometricCleanListEnum.PROPER_NOUN, x),
             x -> getProfilSet(LexicometricCleanListEnum.PROPER_NOUN),
+            false),
+    EXCLUDE_TEXTS((profil, x) -> editData(LexicometricCleanListEnum.EXCLUDE_TEXTS, profil, x),
+            LexicometricEditEnum.EXCLUDE_TEXTS,
+            iLexicometricHierarchical -> new ExcludeTextsHierarchicalService((ILexicometricHierarchical<ExcludeTextsHierarchicalEditEnum>) iLexicometricHierarchical),
+            LexicometricConfigurationEnum::getExcludeTextsConfiguration,
+            getCopyConsumer(LexicometricCleanListEnum.EXCLUDE_TEXTS),
+            getAddProfilConsumer(LexicometricCleanListEnum.EXCLUDE_TEXTS),
+            getRemoveProfilConsumer(LexicometricCleanListEnum.EXCLUDE_TEXTS),
+            x -> UserLexicometricAnalysisSettings.getInstance().saveLexicometricConfigurationInFile(LexicometricCleanListEnum.EXCLUDE_TEXTS, x),
+            x -> getProfilSet(LexicometricCleanListEnum.EXCLUDE_TEXTS),
             false);
 
     private static final LexicometricEditTableService lexicometricEditTableService = new LexicometricEditTableService();
@@ -263,6 +273,15 @@ public enum LexicometricConfigurationEnum {
      */
     private static ILexicometricConfiguration getProperNounConfiguration(ILexicometricHierarchical<?> lexicometricHierarchical) {
         return new ProperNounConfiguration((ILexicometricHierarchical<ProperNounHierarchicalEnum>) lexicometricHierarchical, hierarchicalTableSet);
+    }
+
+    /**
+     * Permet de se procurer la configuration pour les textes à exclure
+     * @param lexicometricHierarchical interface contenant les informations des datas
+     * @return La configuration pour les textes à exclure
+     */
+    private static ILexicometricConfiguration getExcludeTextsConfiguration(ILexicometricHierarchical<?> lexicometricHierarchical) {
+        return new ExcludeTextsConfiguration((ILexicometricHierarchical<ExcludeTextsHierarchicalEditEnum>) lexicometricHierarchical, hierarchicalTableSet);
     }
 
     /**

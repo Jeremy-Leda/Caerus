@@ -20,6 +20,7 @@ public class LexicometricAnalysis {
     private Set<Tokenization> tokenizationSet = new HashSet<>();
     private Set<LemmatizationByGrammaticalCategory> lemmatizationByGrammaticalCategorySet = new HashSet<>();
     private Set<ProperNoun> properNounSet = new HashSet<>();
+    private Set<ExcludeTexts> excludeTextsSet = new HashSet<>();
 
     public Set<Lemmatization> getLemmatizationSet() {
         return lemmatizationSet;
@@ -53,12 +54,21 @@ public class LexicometricAnalysis {
         this.properNounSet = properNounSet;
     }
 
+    public Set<ExcludeTexts> getExcludeTextsSet() {
+        return excludeTextsSet;
+    }
+
+    public void setExcludeTextsSet(Set<ExcludeTexts> excludeTextsSet) {
+        this.excludeTextsSet = excludeTextsSet;
+    }
+
     @JsonIgnore
     public boolean isEmpty() {
         return lemmatizationSet.isEmpty() &&
                 tokenizationSet.isEmpty() &&
                 lemmatizationByGrammaticalCategorySet.isEmpty() &&
-                properNounSet.isEmpty();
+                properNounSet.isEmpty() &&
+                excludeTextsSet.isEmpty();
     }
 
 }

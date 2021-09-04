@@ -26,6 +26,12 @@ public interface ILexicometricListApplyChoosePanel extends IAccessPanel{
     ILexicometricConfigurationChoosePanel getProperNounConfiguration();
 
     /**
+     * Permet de se procurer la configuration pour les textes à exclure
+     * @return la configuration pour les textes à exclure
+     */
+    ILexicometricConfigurationChoosePanel getExcludeTextsConfiguration();
+
+    /**
      * Permet de savoir si les données ont bien été remplis par l'utilisateur
      * @return vrai si les données ont bien été remplis par l'utilisateur
      */

@@ -157,7 +157,7 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
                 false,
                 false));
         this.chooseAnalyzeActionPanel.addAction(2, e -> {
-            AtomicReference<AnalysisResultDisplay> analysisResultDisplayAtomicReference = new AtomicReference<>();
+            AtomicReference<Set<AnalysisResultDisplay>> analysisResultDisplayAtomicReference = new AtomicReference<>();
             LexicometricAnalyzeCmd lexicometricAnalyzeCmd = getLexicometricAnalyzeCmd();
             executeOnServerWithProgressView(() -> analysisResultDisplayAtomicReference.set(chooseLexicometricAnalyzePanel.getAnalyzeToLaunch().getFunctionDisplayResult()
                     .apply(lexicometricAnalyzeCmd)),
@@ -242,6 +242,8 @@ public class AnalysisAssistant extends ModalJFrameAbstract {
             lemmeEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
             Optional<Tuple2<LexicometricEditEnum, String>> properNounEntry = getOptionalEntryForLexicometricPanel(optionalILexicometricListApplyChoosePanel.get().getProperNounConfiguration());
             properNounEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
+            Optional<Tuple2<LexicometricEditEnum, String>> excludeTextsEntry = getOptionalEntryForLexicometricPanel(optionalILexicometricListApplyChoosePanel.get().getExcludeTextsConfiguration());
+            excludeTextsEntry.ifPresent(s -> preTreatmentListLexicometricMap.put(s._1, s._2));
         }
         Set<String> fieldToAnalyzeSet = new HashSet<>();
         Integer currentIndex = 0;

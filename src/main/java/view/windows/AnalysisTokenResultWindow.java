@@ -4,9 +4,11 @@ import controler.IConfigurationControler;
 import io.vavr.collection.Stream;
 import model.analyze.LexicometricAnalysis;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeTypeEnum;
+import org.apache.commons.lang3.StringUtils;
 import view.abstracts.ModalJFrameAbstract;
 import view.analysis.beans.AnalysisGroupDisplay;
 import view.analysis.beans.AnalysisResultDisplay;
+import view.analysis.beans.AnalysisResultDisplayBuilder;
 import view.analysis.beans.interfaces.IExcelSheet;
 import view.beans.LexicometricAnalyzeCmd;
 import view.beans.LexicometricAnalyzeTypeViewEnum;
@@ -19,6 +21,7 @@ import view.interfaces.ITableAnalysisPanel;
 import view.panel.ActionPanel;
 import view.panel.LabelsPanel;
 import view.panel.analysis.TableAnalysisPanel;
+import view.panel.analysis.model.AnalysisRow;
 import view.utils.ConfigurationUtils;
 
 import javax.swing.*;
@@ -37,30 +40,30 @@ import static view.utils.Constants.*;
 public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IAddAnalysisGroupDisplay {
 
     private final JPanel content = new JPanel();
-    private AnalysisResultDisplay analysisResultDisplay;
-    private final ITableAnalysisPanel tableAnalysisPanel;
+    private Set<AnalysisResultDisplay> analysisResultDisplaySet;
     private final ILabelsPanel labelsPanel;
     private final IActionPanel actionPanel = new ActionPanel(5);
     private final LexicometricAnalyzeCmd cmd;
     private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
     private final DragAndDropCloseableTabbedPane tabbedPane = new DragAndDropCloseableTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
     private final Map<JComponent, AnalysisGroupDisplay> componentAnalysisGroupDisplayMap = new HashMap<>();
+    private final Map<JComponent, AnalysisResultDisplay> componentAnalysisResultDisplayHashMap = new HashMap<>();
     private final Map<JComponent, ITableAnalysisPanel> componentTableAnalysisPanelMap = new HashMap<>();
+    private final Map<String, ITableAnalysisPanel> titleTableAnalysisPanelGlobalMap = new HashMap<>();
+    private final Map<String, ILabelsPanel> titleLabelsPanelGlobalMap = new HashMap<>();
     private final LinkedList<String> headerLinkedList;
 
     public AnalysisTokenResultWindow(IConfigurationControler controler,
-                                     AnalysisResultDisplay analysisResultDisplay,
+                                     Set<AnalysisResultDisplay> analysisResultDisplaySet,
                                      LexicometricAnalyzeCmd cmd,
                                      LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum) {
         super(ConfigurationUtils.getInstance().getDisplayMessage(WINDOW_RESULT_TOKEN_ANALYSIS_PANEL_TITLE), controler, false);
-        this.analysisResultDisplay = analysisResultDisplay;
+        this.analysisResultDisplaySet = analysisResultDisplaySet;
         this.cmd = cmd;
         this.lexicometricAnalyzeTypeEnum = lexicometricAnalyzeTypeEnum;
         this.headerLinkedList = new LinkedList<>();
         headerLinkedList.add(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_1_LABEL));
         headerLinkedList.add(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_HEADER_COLUMN_2_LABEL));
-        this.tableAnalysisPanel = new TableAnalysisPanel(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE),
-                headerLinkedList, List.of(String.class, Long.class), analysisResultDisplay.toAnalysisTokenRowList());
         this.labelsPanel = new LabelsPanel(getMessage(WINDOW_RESULT_TOKEN_TOTAL_PANEL_TITLE), 2);
         this.tabbedPane.addChangeListener(s -> repack());
         this.tabbedPane.setConsumerToRemove(c -> {
@@ -75,10 +78,8 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
         initActionPanel();
-        this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
-        this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
-        this.tabbedPane.addTab(getMessage(WINDOW_RESULT_TOKEN_GLOBAL_LABEL), this.tableAnalysisPanel.getJPanel());
-
+        refreshGlobalLabel(analysisResultDisplaySet);
+        constructTab();
         content.add(this.labelsPanel.getJPanel());
         content.add(this.tabbedPane);
         content.add(this.actionPanel.getJPanel());
@@ -103,10 +104,10 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
             analysisProperNounAddWindow.addActionOnClose(() -> actionPanel.setEnabled(1, true));
         });
         this.actionPanel.addAction(2, e -> openDetailResult(getSelectedWordsForDisplayDetail(), getKeySetForDisplayDetail()));
-        this.actionPanel.addAction(3, e -> new AnalysisGroupResultWindow(getControler(), this, cmd));
+        this.actionPanel.addAction(3, e -> new AnalysisGroupResultWindow(getControler(), this, getKeySetForDisplayDetail()));
         this.actionPanel.addAction(4, e -> {
             List<IExcelSheet> sheetsList = new LinkedList<>();
-            sheetsList.add(analysisResultDisplay);
+            sheetsList.addAll(analysisResultDisplaySet);
             sheetsList.addAll(componentAnalysisGroupDisplayMap.values());
             new ExportExcelWindow(getControler(), sheetsList);
         });
@@ -139,6 +140,10 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
             AnalysisGroupDisplay analysisGroupDisplay = this.componentAnalysisGroupDisplayMap.get(selectedComponent);
             return analysisGroupDisplay.getKeySet();
         }
+        if (this.componentAnalysisResultDisplayHashMap.containsKey(selectedComponent)) {
+            AnalysisResultDisplay analysisGroupDisplay = this.componentAnalysisResultDisplayHashMap.get(selectedComponent);
+            return analysisGroupDisplay.getKeySet();
+        }
         return this.cmd.getKeyTextFilteredList().stream().collect(Collectors.toSet());
     }
 
@@ -151,7 +156,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         if (this.componentTableAnalysisPanelMap.containsKey(selectedComponent)) {
             return this.componentTableAnalysisPanelMap.get(selectedComponent).getSelectedWords();
         }
-        return this.tableAnalysisPanel.getSelectedWords();
+        return Collections.emptySet();
     }
 
     @Override
@@ -173,15 +178,30 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
             executeOnServerWithProgressView(() -> {
                 LexicometricAnalyzeTypeViewEnum lexicometricAnalyzeTypeViewEnum = LexicometricAnalyzeTypeViewEnum.valueOf(lexicometricAnalyzeTypeEnum.name());
                 lexicometricAnalyzeTypeViewEnum.getBiConsumerAnalysis().accept(getControler(), cmd);
-                AnalysisResultDisplay analysisResultDisplay = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(cmd.getKeyTextFilteredList());
-                this.tableAnalysisPanel.updateAnalysisResult(analysisResultDisplay.toAnalysisTokenRowList());
-                this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplay.getNbToken()));
-                this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplay.getNbOccurrency()));
+                Set<AnalysisResultDisplay> analysisResultDisplaySet = lexicometricAnalyzeTypeEnum.getAnalysisResultDisplayFunction().apply(cmd.getKeyTextFilteredList());
+                String globalTitle = getMessage(WINDOW_RESULT_TOKEN_GLOBAL_LABEL);
+                String excludeTitle = getMessage(WINDOW_RESULT_TOKEN_EXCLUDE_LABEL);
+                AnalysisResultDisplay excludeTextsAnalysisResultDisplay = getDefaultAnalysisResultDisplayIfEmpty(analysisResultDisplaySet, true);
+                AnalysisResultDisplay globalAnalysisResultDisplay = getDefaultAnalysisResultDisplayIfEmpty(analysisResultDisplaySet, false);
+                refreshLabel(this.titleLabelsPanelGlobalMap.get(globalTitle), globalAnalysisResultDisplay);
+                refreshLabel(this.titleLabelsPanelGlobalMap.get(excludeTitle), excludeTextsAnalysisResultDisplay);
+                this.titleTableAnalysisPanelGlobalMap.get(globalTitle).updateAnalysisResult(globalAnalysisResultDisplay.toAnalysisTokenRowList());
+                this.titleTableAnalysisPanelGlobalMap.get(excludeTitle).updateAnalysisResult(excludeTextsAnalysisResultDisplay.toAnalysisTokenRowList());
+                refreshGlobalLabel(analysisResultDisplaySet);
             }, LexicometricAnalysis.getInstance(),
                     String.format(getMessage(WINDOW_LOADING_RELAUNCH_ANALYSIS_LABEL), cmd.getLabel()),
                     false,
                     false);
         };
+    }
+
+    /**
+     * Permet de rafraichir l'affichage des résultats globaux
+     * @param analysisResultDisplaySet resultats
+     */
+    private void refreshGlobalLabel(Set<AnalysisResultDisplay> analysisResultDisplaySet) {
+        this.labelsPanel.setLabel(0, getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL), String.valueOf(analysisResultDisplaySet.stream().map(x -> x.getNbToken()).reduce(Integer::sum).orElse(0)));
+        this.labelsPanel.setLabel(1, getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL), String.valueOf(analysisResultDisplaySet.stream().map(x -> x.getNbOccurrency()).reduce(Long::sum).orElse(0L)));
     }
 
     /**
@@ -195,6 +215,34 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
 
     @Override
     public void addAnalysisGroupDisplay(AnalysisGroupDisplay analysisGroupDisplay) {
+        JPanel content = createContentTab(analysisGroupDisplay);
+        this.componentAnalysisGroupDisplayMap.put(content, analysisGroupDisplay);
+        this.tabbedPane.addCloseableTab(analysisGroupDisplay.getTitle(), content);
+    }
+
+    private void constructTab() {
+        AnalysisResultDisplay excludeTexts = getDefaultAnalysisResultDisplayIfEmpty(analysisResultDisplaySet, true);
+        AnalysisResultDisplay globalTexts = getDefaultAnalysisResultDisplayIfEmpty(analysisResultDisplaySet, false);
+        String globalTitle = getMessage(WINDOW_RESULT_TOKEN_GLOBAL_LABEL);
+        String excludeTitle = getMessage(WINDOW_RESULT_TOKEN_EXCLUDE_LABEL);
+        JPanel globalContent = createContentTab(globalTexts, globalTitle);
+        JPanel excludeContent = createContentTab(excludeTexts, excludeTitle);
+        this.componentAnalysisResultDisplayHashMap.put(globalContent, globalTexts);
+        this.componentAnalysisResultDisplayHashMap.put(excludeContent, excludeTexts);
+        this.tabbedPane.addTab(globalTitle, globalContent);
+        this.tabbedPane.addTab(excludeTitle, excludeContent);
+    }
+
+    private AnalysisResultDisplay getDefaultAnalysisResultDisplayIfEmpty(Set<AnalysisResultDisplay> analysisResultDisplaySet, boolean withExcludeTexts) {
+        AnalysisResultDisplay analysisResultDefaultDisplay = new AnalysisResultDisplayBuilder()
+                .key(StringUtils.EMPTY)
+                .excludeTexts(false)
+                .build();
+        return analysisResultDisplaySet.stream().filter(x -> x.getExcludeTexts().equals(withExcludeTexts)).findFirst().orElse(analysisResultDefaultDisplay);
+    }
+
+
+    private JPanel createContentTab(AnalysisGroupDisplay analysisGroupDisplay) {
         JPanel content = new JPanel();
         BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
         content.setLayout(boxlayout);
@@ -202,9 +250,23 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         TableAnalysisPanel tableAnalysisPanel = new TableAnalysisPanel(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE),
                 headerLinkedList, List.of(String.class, Long.class), analysisGroupDisplay.getAnalysisResultDisplay().toAnalysisTokenRowList());
         content.add(tableAnalysisPanel.getJPanel());
-        this.componentAnalysisGroupDisplayMap.put(content, analysisGroupDisplay);
         this.componentTableAnalysisPanelMap.put(content, tableAnalysisPanel);
-        this.tabbedPane.addCloseableTab(analysisGroupDisplay.getTitle(), content);
+        return content;
+    }
+
+    private JPanel createContentTab(AnalysisResultDisplay analysisResultDisplay, String title) {
+        JPanel content = new JPanel();
+        BoxLayout boxlayout = new BoxLayout(content, BoxLayout.Y_AXIS);
+        content.setLayout(boxlayout);
+        ILabelsPanel labelsPanel = createLabelsPanel(analysisResultDisplay);
+        this.titleLabelsPanelGlobalMap.put(title, labelsPanel);
+        content.add(labelsPanel.getJPanel());
+        TableAnalysisPanel tableAnalysisPanel = new TableAnalysisPanel(getMessage(WINDOW_RESULT_TOKEN_ANALYSIS_TABLE_PANEL_TITLE),
+                headerLinkedList, List.of(String.class, Long.class), analysisResultDisplay.toAnalysisTokenRowList());
+        this.titleTableAnalysisPanelGlobalMap.put(title, tableAnalysisPanel);
+        content.add(tableAnalysisPanel.getJPanel());
+        this.componentTableAnalysisPanelMap.put(content, tableAnalysisPanel);
+        return content;
     }
 
     private ILabelsPanel createLabelsPanel(AnalysisGroupDisplay analysisGroupDisplay) {
@@ -217,5 +279,20 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
                 getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL),
                 String.valueOf(analysisGroupDisplay.getAnalysisResultDisplay().getNbOccurrency()));
         return  labelsPanel;
+    }
+
+    private ILabelsPanel createLabelsPanel(AnalysisResultDisplay analysisResultDisplay) {
+        ILabelsPanel labelsPanel = new LabelsPanel(getMessage(WINDOW_RESULT_TOKEN_GROUP_RESULT_INFORMATION_PANEL_TITLE), 2);
+        refreshLabel(labelsPanel, analysisResultDisplay);
+        return  labelsPanel;
+    }
+
+    private void refreshLabel(ILabelsPanel labelsPanel, AnalysisResultDisplay analysisResultDisplay) {
+        labelsPanel.setLabel(0,
+                getMessage(WINDOW_RESULT_TOKEN_TOTAL_TOKENS_LABEL),
+                String.valueOf(analysisResultDisplay.getNbToken()));
+        labelsPanel.setLabel( 1,
+                getMessage(WINDOW_RESULT_TOKEN_TOTAL_WORDS_LABEL),
+                String.valueOf(analysisResultDisplay.getNbOccurrency()));
     }
 }

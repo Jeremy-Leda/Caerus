@@ -30,10 +30,10 @@ public enum LexicometricAnalyzeTypeEnum {
             cmd -> LexicometricAnalysis.getInstance().getAnalysisDetailResultDisplayForNumberTokens(cmd));
 
     private final Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer;
-    private final Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction;
+    private final Function<List<String>, Set<AnalysisResultDisplay>> analysisResultDisplayFunction;
     private final Function<AnalysisDetailResultDisplayCmd, Set<AnalysisDetailResultDisplay>> analysisDetailResultDisplayCmdSetFunction;
 
-    LexicometricAnalyzeTypeEnum(Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer, Function<List<String>, AnalysisResultDisplay> analysisResultDisplayFunction, Function<AnalysisDetailResultDisplayCmd, Set<AnalysisDetailResultDisplay>> analysisDetailResultDisplayCmdSetFunction) {
+    LexicometricAnalyzeTypeEnum(Consumer<LexicometricAnalyzeServerCmd> analyzeServerCmdConsumer, Function<List<String>, Set<AnalysisResultDisplay>> analysisResultDisplayFunction, Function<AnalysisDetailResultDisplayCmd, Set<AnalysisDetailResultDisplay>> analysisDetailResultDisplayCmdSetFunction) {
         this.analyzeServerCmdConsumer = analyzeServerCmdConsumer;
         this.analysisResultDisplayFunction = analysisResultDisplayFunction;
         this.analysisDetailResultDisplayCmdSetFunction = analysisDetailResultDisplayCmdSetFunction;
@@ -51,7 +51,7 @@ public enum LexicometricAnalyzeTypeEnum {
      * Function pour se procurer le résultat de l'analyse
      * @return la function pour se procurer le résultat de l'analyse
      */
-    public Function<List<String>, AnalysisResultDisplay> getAnalysisResultDisplayFunction() {
+    public Function<List<String>, Set<AnalysisResultDisplay>> getAnalysisResultDisplayFunction() {
         return analysisResultDisplayFunction;
     }
 

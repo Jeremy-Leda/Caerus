@@ -21,13 +21,12 @@ import view.interfaces.ITableAnalysisPanel;
 import view.panel.ActionPanel;
 import view.panel.LabelsPanel;
 import view.panel.analysis.TableAnalysisPanel;
-import view.panel.analysis.model.AnalysisRow;
 import view.utils.ConfigurationUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static view.utils.Constants.*;
@@ -237,6 +236,10 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
         AnalysisResultDisplay analysisResultDefaultDisplay = new AnalysisResultDisplayBuilder()
                 .key(StringUtils.EMPTY)
                 .excludeTexts(false)
+                .analysisTokenDisplaySet(Collections.emptySet())
+                .keySet(Collections.emptySet())
+                .nbToken(0)
+                .nbOccurrency(0L)
                 .build();
         return analysisResultDisplaySet.stream().filter(x -> x.getExcludeTexts().equals(withExcludeTexts)).findFirst().orElse(analysisResultDefaultDisplay);
     }

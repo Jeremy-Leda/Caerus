@@ -21,14 +21,18 @@ import static view.utils.Constants.*;
 @PojoBuilder
 public class AnalysisResultDisplay implements IExcelSheet {
 
+    @NotNull
     private Set<AnalysisTokenDisplay> analysisTokenDisplaySet;
     @NotNull
     private String key;
+    @NotNull
     private Integer NbToken;
+    @NotNull
     private Long NbOccurrency;
     @NotNull
     private Boolean excludeTexts;
 
+    @NotNull
     private Set<String> keySet;
 
     /**

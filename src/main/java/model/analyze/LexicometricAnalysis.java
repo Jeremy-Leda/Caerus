@@ -209,6 +209,10 @@ public class LexicometricAnalysis extends ProgressAbstract {
         AnalysisResultDisplay defaultAnalysisResultDisplay = new AnalysisResultDisplayBuilder()
                 .key(StringUtils.EMPTY)
                 .excludeTexts(false)
+                .analysisTokenDisplaySet(Collections.emptySet())
+                .keySet(Collections.emptySet())
+                .nbToken(0)
+                .nbOccurrency(0L)
                 .build();
         if (analysisResultDisplayForNumberTokensSet.size() > 1) {
             throw new ServerException().addInformationException(new InformationExceptionBuilder()

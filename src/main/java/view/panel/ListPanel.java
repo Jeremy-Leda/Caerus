@@ -88,7 +88,7 @@ public class ListPanel implements IListPanel {
 	public void refresh(List<String> labels) {
 		this.list.removeAll();
 		DefaultListModel<String> dlm = new DefaultListModel<String>();
-		labels.forEach(l -> dlm.addElement(l));
+		labels.forEach(dlm::addElement);
 		this.list.setModel(dlm);
 	}
 

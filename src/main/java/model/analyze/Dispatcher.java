@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import utils.JSonFactoryUtils;
 import utils.PathUtils;
 import utils.RessourcesUtils;
+import view.beans.FrequencyOrder;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,11 +49,13 @@ public class Dispatcher extends ProgressAbstract {
 	private static final String FOLDER_TEXTS = "library";
 	private static final String FOLDER_CONFIGURATIONS = "configurations";
 	private static final String FOLDER_ANALYZE_CONFIGURATIONS = "configurations_analysis";
+	private static final String FOLDER_ANALYZE_REPOSITORY = "repository";
 	private static final String ANALYZE_CONFIGURATION_DEFAULT_NAME = "LexicometricAnalyze";
 	private static final String ANALYZE_LEMMATIZATION_BY_GRAMMATICAL_CATEGORY_DEFAULT_NAME = "LemmatizationByGrammaticalCategoryAnalyze";
 	private static final String CONFIGURATION_CLASSIC_NAME = "Configuración básica";
 	private static final String FILE_CURRENT_STATE = "currentState.pyl";
 	private static final String FILE_CURRENT_USER_CONFIGURATION = "currentUserConfiguration.pyl";
+	private static final String FILE_FREQUENCY_ORDER_REPOSITORY = "frequencyOrder.pyl";
 	private static final String ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT = "ERROR_IN_LOAD_TEXT_FOR_FOLDER_TEXT";
 
 	/**
@@ -63,6 +66,7 @@ public class Dispatcher extends ProgressAbstract {
 			createDefaultConfigurationIfFolderIsEmpty();
 			createDefaultAnalyzeConfigurationIfFolderIsEmpty();
 			loadContextFromUserConfiguration();
+			loadFrequencyOrderFromDisk();
 			UserSettings.getInstance().clearCurrentFolderUserTextsMap();
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
@@ -520,6 +524,19 @@ public class Dispatcher extends ProgressAbstract {
 	}
 
 	/**
+	 * Permet de se procurer le fichier des ordres de fréquence Si le
+	 * repertoire n'existe pas, il sera créé lors du passage dans cette méthode. Le
+	 * fichier quand à lui ne sera pas créé
+	 *
+	 * @return
+	 */
+	private File getFrequencyOrderFile() {
+		String rootPath = PathUtils.getCaerusFolder();
+		File parentFile = PathUtils.addFolderAndCreate(rootPath, FOLDER_ANALYZE_REPOSITORY);
+		return new File(parentFile, FILE_FREQUENCY_ORDER_REPOSITORY);
+	}
+
+	/**
 	 * Permet de charger le context à partir de la configuration utilisateur
 	 * 
 	 * @throws JsonParseException
@@ -547,6 +564,15 @@ public class Dispatcher extends ProgressAbstract {
 		saveUserConfiguration();
 	}
 
+	private void loadFrequencyOrderFromDisk() throws JsonParseException, JsonMappingException, IOException {
+		File frequencyOrderFile = getFrequencyOrderFile();
+		if (frequencyOrderFile.exists()) {
+			InputStream is = new FileInputStream(frequencyOrderFile);
+			FrequencyOrderRepository frequencyOrderRepositoryFromJsonFile = JSonFactoryUtils.createFrequencyOrderRepositoryFromJsonFile(is);
+			UserSettings.getInstance().saveFrequencyOrderSet(frequencyOrderRepositoryFromJsonFile.getFrequencyOrderSet());
+		}
+	}
+
 	/**
 	 * Permet de sauvegarder temporairement l'état
 	 */
@@ -554,6 +580,20 @@ public class Dispatcher extends ProgressAbstract {
 		CurrentUserConfiguration save = UserSettings.getInstance().getUserConfiguration();
 		try {
 			JSonFactoryUtils.createJsonInFile(save, getUserConfigurationFile());
+		} catch (IOException e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 * Permet de sauvegarder le fichier des ordres des fréquences sur le disque
+	 */
+	public void saveFrequencyOrderInFile() {
+		Set<FrequencyOrder> frequencyOrderSet = UserSettings.getInstance().getFrequencyOrderSet();
+		FrequencyOrderRepository frequencyOrderRepository = new FrequencyOrderRepository();
+		frequencyOrderRepository.setFrequencyOrderSet(frequencyOrderSet);
+		try {
+			JSonFactoryUtils.createJsonInFile(frequencyOrderRepository, getFrequencyOrderFile());
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}

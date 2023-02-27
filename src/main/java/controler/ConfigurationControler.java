@@ -772,4 +772,19 @@ public class ConfigurationControler implements IConfigurationControler {
 	public Set<AnalysisGroupDisplay> getAnalysisGroupDisplaySet(Set<String> keySet, Set<String> fieldSet) {
 		return LexicometricAnalysis.getInstance().getAnalysisGroupDisplaySet(keySet, fieldSet);
 	}
+
+	@Override
+	public Collection<FrequencyOrder> getFrequencyOrderList() {
+		return configurationModel.getFrequencyOrderList();
+	}
+
+	@Override
+	public void saveFrequencyOrderInDisk() {
+		configurationModel.saveFrequencyOrderInDisk();
+	}
+
+	@Override
+	public void saveFrequencyOrder(Collection<FrequencyOrder> frequencyOrderCollection) {
+		configurationModel.saveFrequencyOrder(frequencyOrderCollection);
+	}
 }

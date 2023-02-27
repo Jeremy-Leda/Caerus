@@ -3,10 +3,7 @@ package model;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -21,6 +18,7 @@ import model.exceptions.LoadTextException;
 import model.exceptions.MoveFileException;
 import model.interfaces.IProgressModel;
 import view.beans.ExportTypeEnum;
+import view.beans.FrequencyOrder;
 
 /**
  * 
@@ -619,5 +617,11 @@ public interface IConfigurationModel extends IProgressModel {
 //	 */
 //	@Deprecated
 //	void saveLemmatization(EditTable editTable);
+
+	Collection<FrequencyOrder> getFrequencyOrderList();
+
+	void saveFrequencyOrderInDisk();
+
+	void saveFrequencyOrder(Collection<FrequencyOrder> frequencyOrderCollection);
 
 }

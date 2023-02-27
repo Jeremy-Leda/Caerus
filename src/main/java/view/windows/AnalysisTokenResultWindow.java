@@ -41,7 +41,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
     private final JPanel content = new JPanel();
     private Set<AnalysisResultDisplay> analysisResultDisplaySet;
     private final ILabelsPanel labelsPanel;
-    private final IActionPanel actionPanel = new ActionPanel(5);
+    private final IActionPanel actionPanel = new ActionPanel(6);
     private final LexicometricAnalyzeCmd cmd;
     private final LexicometricAnalyzeTypeEnum lexicometricAnalyzeTypeEnum;
     private final DragAndDropCloseableTabbedPane tabbedPane = new DragAndDropCloseableTabbedPane(SwingConstants.LEFT, JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -93,7 +93,8 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
                         1, getMessage(WINDOW_RESULT_DETAIL_TOKEN_ANALYSIS_PROPER_NOUN_BUTTON_LABEL),
                             2, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_DETAIL_FOR_WORD_BUTTON_LABEL),
                         3, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_GROUP_RESULT_BUTTON_LABEL),
-                        4, getMessage(WINDOW_RESULT_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL)));
+                        4, getMessage(WINDOW_RESULT_TOKEN_ACTION_EXPORT_EXCEL_BUTTON_LABEL),
+                        5, getMessage(WINDOW_RESULT_TOKEN_ACTION_SHOW_FREQUENCY_ORDER_BUTTON_LABEL)));
         this.actionPanel.addAction(0, e -> openDetailResult(new HashSet<>(), getKeySetForDisplayDetail()));
         this.actionPanel.addAction(1, e -> {
             actionPanel.setEnabled(1, false);
@@ -110,7 +111,7 @@ public class AnalysisTokenResultWindow extends ModalJFrameAbstract implements IA
             sheetsList.addAll(componentAnalysisGroupDisplayMap.values());
             new ExportExcelWindow(getControler(), sheetsList);
         });
-        
+        this.actionPanel.addAction(5, e -> new AnalysisTokenFrequencyOrderWindow(getControler(), analysisResultDisplaySet, this.componentAnalysisGroupDisplayMap.values()));
     }
 
     /**

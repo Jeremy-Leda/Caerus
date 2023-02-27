@@ -18,6 +18,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import view.beans.ExportTypeEnum;
+import view.beans.FrequencyOrder;
 
 import java.io.File;
 import java.io.IOException;
@@ -642,6 +643,24 @@ public class ConfigurationModel implements IConfigurationModel {
 	public String getLexicometricDefaultProfile() {
 		logger.debug("CALL getLexicometricDefaultProfile");
 		return UserLexicometricAnalysisSettings.getInstance().getUserProfile();
+	}
+
+	@Override
+	public Collection<FrequencyOrder> getFrequencyOrderList() {
+		logger.debug("CALL getFrequencyOrderList");
+		return UserSettings.getInstance().getFrequencyOrderSet();
+	}
+
+	@Override
+	public void saveFrequencyOrderInDisk() {
+		logger.debug("CALL saveFrequencyOrderInDisk");
+		dispatcher.saveFrequencyOrderInFile();
+	}
+
+	@Override
+	public void saveFrequencyOrder(Collection<FrequencyOrder> frequencyOrderCollection) {
+		logger.debug("CALL saveFrequencyOrder");
+		UserSettings.getInstance().saveFrequencyOrderSet(frequencyOrderCollection);
 	}
 //
 //	@Override

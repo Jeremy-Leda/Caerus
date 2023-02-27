@@ -616,8 +616,39 @@ public final class Constants {
 	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_FILTER_LABEL="window.manage.exclude.texts.filter.label";
 	public static final String WINDOW_MANAGE_EXCLUDE_TEXTS_INFORMATION_LABEL="window.manage.exclude.texts.information.label";
 	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL5_TITLE="window.menu.level6.sublevel3.sublevel5.title";
+	public static final String WINDOW_MENU_LEVEL6_SUBLEVEL3_SUBLEVEL6_TITLE="window.menu.level6.sublevel3.sublevel6.title";
+
 
 	public static final String WINDOW_RESULT_TOKEN_EXCLUDE_LABEL="window.result.token.exclude.label";
+
+
+
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_PANEL_TITLE="window.manage.frequency.order.panel.title";
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_INFORMATION_MESSAGE="window.manage.frequency.order.information.message";
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_TABLE_HEADER_ORDER_LABEL="window.manage.frequency.order.table.header.order.label";
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_TABLE_HEADER_WORD_LABEL="window.manage.frequency.order.table.header.word.label";
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_TABLE_HEADER_FREQUENCY_LABEL="window.manage.frequency.order.table.header.frequency.label";
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_TABLE_HEADER_NORMALIZE_FREQUENCY_LABEL="window.manage.frequency.order.table.header.normalize.frequency.label";
+
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_CREATE_PANEL_TITLE="window.manage.frequency.order.create.panel.title";
+
+	public static final String WINDOW_MANAGE_FREQUENCY_ORDER_SAVE_BUTTON="window.manage.frequency.order.save.button";
+
+
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_PANEL_TITLE="window.analysis.frequency.order.panel.title";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_INFORMATION_MESSAGE="window.analysis.frequency.order.information.message";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_TEXT_ORDER_COLUMN_LABEL="window.analysis.frequency.order.text.order.column.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_TEXT_WORD_COLUMN_LABEL="window.analysis.frequency.order.text.word.column.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_TEXT_FREQUENCY_COLUMN_LABEL="window.analysis.frequency.order.text.frequency.column.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_REPO_ORDER_COLUMN_LABEL="window.analysis.frequency.order.repo.order.column.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_REPO_WORD_COLUMN_LABEL="window.analysis.frequency.order.repo.word.column.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_REPO_FREQUENCY_COLUMN_LABEL="window.analysis.frequency.order.repo.frequency.column.label";
+
+	public static final String WINDOW_RESULT_TOKEN_ACTION_SHOW_FREQUENCY_ORDER_BUTTON_LABEL="window.result.token.action.show.frequency.order.button.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_ACTION_EXPORT_LABEL="window.analysis.frequency.order.action.export.label";
+
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_EXPORT_GENERAL_LABEL="window.analysis.frequency.order.export.general.label";
+	public static final String WINDOW_ANALYSIS_FREQUENCY_ORDER_EXPORT_ORPHELAN_LABEL="window.analysis.frequency.order.export.orphelan.label";
 
 
 

@@ -1,6 +1,7 @@
 package model.analyze.lexicometric.analyze.beans;
 
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  *
@@ -11,6 +12,10 @@ public class Token {
 
     private final String word;
     private Long nbOcurrency;
+
+    private Integer frequencyOrder;
+
+    private Optional<TokenFrequencyOrderRepo> tokenFrequencyOrderRepoOptional;
 
     /**
      * Constructeur
@@ -44,18 +49,38 @@ public class Token {
         this.nbOcurrency = nbOcurrency;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Token token = (Token) o;
-        return Objects.equals(word, token.word);
+    public Optional<TokenFrequencyOrderRepo> getTokenFrequencyOrderRepoOptional() {
+        return tokenFrequencyOrderRepoOptional;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(word);
+    public void setTokenFrequencyOrderRepoOptional(Optional<TokenFrequencyOrderRepo> tokenFrequencyOrderRepoOptional) {
+        this.tokenFrequencyOrderRepoOptional = tokenFrequencyOrderRepoOptional;
     }
+
+    public Integer getFrequencyOrder() {
+        return frequencyOrder;
+    }
+
+    public void setFrequencyOrder(Integer frequencyOrder) {
+        this.frequencyOrder = frequencyOrder;
+    }
+
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        Token token = (Token) o;
+//        return Objects.equals(word, token.word);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        int result = 17;
+//        if (word != null) {
+//            result = 31 * result + word.hashCode();
+//        }
+//        return result;
+//    }
 
     @Override
     public String toString() {

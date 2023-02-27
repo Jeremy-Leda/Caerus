@@ -33,6 +33,7 @@ import model.analyze.constants.TypeFilterTextEnum;
 import model.analyze.interfaces.IWriteText;
 import utils.JSonFactoryUtils;
 import utils.KeyGenerator;
+import view.beans.FrequencyOrder;
 
 /**
  * 
@@ -66,6 +67,8 @@ public class UserSettings {
 	private Configuration currentConfiguration;
 	private String editingCorpusNameFile;
 
+	private final Set<FrequencyOrder> frequencyOrderSet = new HashSet<>();
+
 	public UserSettings() {
 		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.BLANK_LINE, Collections.synchronizedSet(new LinkedHashSet<>()));
 		MAP_TYPE_ERROR_KEYS_LIST.put(ErrorTypeEnum.META_BLANK_LINE, Collections.synchronizedSet(new LinkedHashSet<>()));
@@ -82,6 +85,16 @@ public class UserSettings {
 			_instance = new UserSettings();
 		}
 		return _instance;
+	}
+
+
+	public void saveFrequencyOrderSet(Collection<FrequencyOrder> frequencyOrderList) {
+		this.frequencyOrderSet.clear();
+		this.frequencyOrderSet.addAll(frequencyOrderList);
+	}
+
+	public Set<FrequencyOrder> getFrequencyOrderSet() {
+		return this.frequencyOrderSet;
 	}
 
 	/**
@@ -969,6 +982,8 @@ public class UserSettings {
 			logger.error(e.getMessage(), e);
 		}
 	}
+
+
 
 	/**
 	 * Permet de restaurer l'environnement en cours de correction

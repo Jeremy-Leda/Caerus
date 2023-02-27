@@ -5,6 +5,7 @@ import model.excel.beans.*;
 import view.panel.analysis.model.AnalysisRow;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,9 @@ public class AnalysisTokenDisplay {
     @NotEmpty
     private String word;
     private Long nbOcurrency;
+
+    @NotNull
+    private AnalysisFrequencyOrder analysisFrequencyOrder;
 
     /**
      * Permet de se procurer le mot
@@ -50,6 +54,14 @@ public class AnalysisTokenDisplay {
      */
     public void setNbOcurrency(Long nbOcurrency) {
         this.nbOcurrency = nbOcurrency;
+    }
+
+    public AnalysisFrequencyOrder getAnalysisFrequencyOrder() {
+        return analysisFrequencyOrder;
+    }
+
+    public void setAnalysisFrequencyOrder(AnalysisFrequencyOrder analysisFrequencyOrder) {
+        this.analysisFrequencyOrder = analysisFrequencyOrder;
     }
 
     /**

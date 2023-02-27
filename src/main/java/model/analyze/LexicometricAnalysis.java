@@ -9,6 +9,7 @@ import model.analyze.cmd.AnalysisDetailResultDisplayCmd;
 import model.analyze.lexicometric.analyze.beans.AnalyzeResultToken;
 import model.analyze.lexicometric.analyze.beans.Text;
 import model.analyze.lexicometric.analyze.beans.Token;
+import model.analyze.lexicometric.analyze.beans.TokenFrequencyOrderRepo;
 import model.analyze.lexicometric.beans.LexicometricAnalyzeServerCmd;
 import model.analyze.lexicometric.beans.LexicometricCleanListEnum;
 import model.analyze.lexicometric.beans.LexicometricConfigurationEnum;
@@ -19,6 +20,8 @@ import model.exceptions.ServerException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import view.analysis.beans.*;
+import view.beans.FrequencyOrder;
+import view.beans.FrequencyOrderBuilder;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -266,14 +269,25 @@ public class LexicometricAnalysis extends ProgressAbstract {
             if (treatmentIsCancelled()) {
                 return new Token(StringUtils.EMPTY);
             }
-            Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(t -> t.getNbOcurrency()).reduce(Long::sum).orElse(0L);
+            Long nbOccurrency = tokenList.parallelStream().filter(t -> t.getWord().equals(w)).map(Token::getNbOcurrency).reduce(Long::sum).orElse(0L);
             Token token = new Token(w);
             token.setNbOcurrency(nbOccurrency);
+            token.setTokenFrequencyOrderRepoOptional(Optional.empty());
+            Optional<FrequencyOrder> frequencyOrderOptional = UserSettings.getInstance().getFrequencyOrderSet().parallelStream().filter(t -> t.getWord().equals(token.getWord())).findFirst();
+            frequencyOrderOptional.ifPresent(t -> {
+                TokenFrequencyOrderRepo tokenFrequencyOrderRepo = new TokenFrequencyOrderRepo();
+                tokenFrequencyOrderRepo.setFrequency(t.getFrequency());
+                tokenFrequencyOrderRepo.setWord(t.getWord());
+                tokenFrequencyOrderRepo.setOrder(t.getOrder());
+                token.setTokenFrequencyOrderRepoOptional(Optional.of(tokenFrequencyOrderRepo));
+            });
             if (driveProgress) {
                 super.getProgressBean().setCurrentElementForCurrentIterate(atProgress.getAndIncrement());
             }
             return token;
         }).collect(Collectors.toSet());
+        AtomicInteger atomicInteger = new AtomicInteger(1);
+        tokenSet.stream().sorted(Comparator.comparing(Token::getNbOcurrency).reversed()).forEach(x -> x.setFrequencyOrder(atomicInteger.getAndIncrement()));
         text.getTokenSet().addAll(tokenSet);
         return convertTextToAnalysisResultDisplay(text, isExcludeTexts, keySet);
     }
@@ -308,6 +322,20 @@ public class LexicometricAnalysis extends ProgressAbstract {
         AnalysisTokenDisplay analysisTokenDisplay = new AnalysisTokenDisplay();
         analysisTokenDisplay.setWord(token.getWord());
         analysisTokenDisplay.setNbOcurrency(token.getNbOcurrency());
+        FrequencyOrder frequencyOrder = new FrequencyOrder();
+        frequencyOrder.setOrder(token.getFrequencyOrder());
+        frequencyOrder.setWord(token.getWord());
+        frequencyOrder.setFrequency(token.getNbOcurrency().intValue());
+        AnalysisFrequencyOrder analysisFrequencyOrder = new AnalysisFrequencyOrder();
+        analysisFrequencyOrder.setFrequencyOrderText(frequencyOrder);
+        token.getTokenFrequencyOrderRepoOptional().ifPresentOrElse(x -> {
+            FrequencyOrder frequencyOrderRepo = new FrequencyOrder();
+            frequencyOrderRepo.setOrder(x.getOrder());
+            frequencyOrderRepo.setWord(x.getWord());
+            frequencyOrderRepo.setFrequency(x.getFrequency());
+            analysisFrequencyOrder.setOptionalFrequencyOrderRepository(Optional.of(frequencyOrderRepo));
+        }, () -> analysisFrequencyOrder.setOptionalFrequencyOrderRepository(Optional.empty()));
+        analysisTokenDisplay.setAnalysisFrequencyOrder(analysisFrequencyOrder);
         return analysisTokenDisplay;
     }
 

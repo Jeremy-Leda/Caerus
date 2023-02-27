@@ -715,4 +715,10 @@ public interface IConfigurationControler extends IProgressModel {
 	 */
 	Set<AnalysisGroupDisplay> getAnalysisGroupDisplaySet(Set<String> keySet, Set<String> fieldSet);
 
+	Collection<FrequencyOrder> getFrequencyOrderList();
+
+	void saveFrequencyOrderInDisk();
+
+	void saveFrequencyOrder(Collection<FrequencyOrder> frequencyOrderCollection);
+
 }

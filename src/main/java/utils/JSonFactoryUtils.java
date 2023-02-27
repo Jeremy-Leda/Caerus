@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import model.analyze.beans.Configuration;
 import model.analyze.beans.FilesOrder;
+import model.analyze.beans.FrequencyOrderRepository;
 import model.analyze.lexicometric.beans.LexicometricAnalysis;
 
 /**
@@ -71,6 +72,19 @@ public final class JSonFactoryUtils {
 	public static Configuration createConfigurationFromJsonFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		return mapper.readValue(inputStream, Configuration.class);
+	}
+
+	/**
+	 * Permet de se procurer le frequency order à partir d'un fichier Json
+	 * @param inputStream Inputstream
+	 * @return le frequency order
+	 * @throws JsonParseException
+	 * @throws JsonMappingException
+	 * @throws IOException
+	 */
+	public static FrequencyOrderRepository createFrequencyOrderRepositoryFromJsonFile(InputStream inputStream) throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		return mapper.readValue(inputStream, FrequencyOrderRepository.class);
 	}
 
 	/**
